@@ -5,6 +5,8 @@
 	export let selected: Option | undefined = firstSelected ? options[0] : undefined;
 	export let selectedValue: any = selected?.value;
 	export let onSelect = (value: any, option: Option) => {};
+	let className = '';
+	export { className as class };
 
 	let dropdownElement: HTMLDetailsElement;
 
@@ -20,7 +22,7 @@
 </script>
 
 <details class="dropdown dropdown-bottom dropdown-end" bind:this={dropdownElement}>
-	<summary class="m-1 btn">{selected?.name || 'None'}</summary>
+	<summary class="m-1 btn {className}">{selected?.name || 'None'}</summary>
 	<ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
 		{#each options as opt}
 			<li on:keydown={null} on:click={handleOptClick(opt)}>
