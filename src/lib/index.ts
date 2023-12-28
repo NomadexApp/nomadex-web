@@ -13,6 +13,8 @@ export type Token = {
 export const knownTokens: Token[] = [
     { ticker: 'VOI', id: 0, type: TokenType.Default },
     { ticker: 'VIA', id: 6779767, type: TokenType.ARC200 },
-    { ticker: 'VRC200', id: 6778021, type: TokenType.ARC200 },
-    { ticker: 'Voice', id: 23218271, type: TokenType.ARC200 },
+    // { ticker: 'VRC200', id: 6778021, type: TokenType.ARC200 },
+    // { ticker: 'Voice', id: 23218271, type: TokenType.ARC200 },
 ];
+
+export const knownPools = [];

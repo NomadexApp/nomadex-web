@@ -1,0 +1,282 @@
+{
+  "name": "VoiSwap",
+  "desc": "",
+  "methods": [
+    {
+      "name": "updateApplication",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "createApplication",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_governor",
+      "args": [
+        {
+          "name": "governor",
+          "type": "account",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "bootstrap",
+      "args": [
+        {
+          "name": "voiPayTxn",
+          "type": "pay",
+          "desc": ""
+        },
+        {
+          "name": "viaAmount",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "bootstrapStep2",
+      "args": [
+        {
+          "name": "optinTxn",
+          "type": "axfer",
+          "desc": ""
+        },
+        {
+          "name": "poolAsset",
+          "type": "asset",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "bringOnline",
+      "args": [
+        {
+          "name": "selectionPK",
+          "type": "byte[]",
+          "desc": ""
+        },
+        {
+          "name": "stateProofPK",
+          "type": "byte[]",
+          "desc": ""
+        },
+        {
+          "name": "votePK",
+          "type": "byte[]",
+          "desc": ""
+        },
+        {
+          "name": "voteFirst",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "voteLast",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "voteKeyDilution",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "bringOffline",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "emergencyWithdraw",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "mint",
+      "args": [
+        {
+          "name": "voiPayTxn",
+          "type": "pay",
+          "desc": ""
+        },
+        {
+          "name": "viaAmount",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "poolAsset",
+          "type": "asset",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "burn",
+      "args": [
+        {
+          "name": "poolXfer",
+          "type": "axfer",
+          "desc": ""
+        },
+        {
+          "name": "poolAsset",
+          "type": "asset",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "swapVoiForVia",
+      "args": [
+        {
+          "name": "voiPayTxn",
+          "type": "pay",
+          "desc": ""
+        },
+        {
+          "name": "minVia",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "simulateSwapVoiForVia",
+      "args": [
+        {
+          "name": "voiAmount",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "simulateSwapVoiForXVia",
+      "args": [
+        {
+          "name": "viaAmount",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "swapViaForVoi",
+      "args": [
+        {
+          "name": "viaAmount",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "minVoi",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "simulateSwapViaForVoi",
+      "args": [
+        {
+          "name": "viaAmount",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "simulateSwapViaForXVoi",
+      "args": [
+        {
+          "name": "voiAmount",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    }
+  ]
+}

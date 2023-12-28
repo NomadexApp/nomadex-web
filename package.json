@@ -9,18 +9,37 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "format": "prettier --plugin-search-dir . --write ."
+    "format": "prettier --plugin-search-dir . --write .",
+    "generate-client": "algokitgen generate -a src/contracts/artifacts/VoiSwap.arc32.json -o src/contracts/clients/VoiSwapClient.ts",
+    "compile-contract": "tealscript src/contracts/voi_swap.algo.ts src/contracts/artifacts",
+    "compile": "npm run compile-contract && npm run generate-client",
+    "fix": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
+    "@algorandfoundation/algokit-client-generator": "^2.3.0",
+    "@algorandfoundation/algokit-utils": "^5.1.2",
+    "@algorandfoundation/tealscript": "^0.66.1",
+    "@blockshake/defly-connect": "^1.1.6",
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/kit": "^1.5.0",
     "@tailwindcss/typography": "^0.5.10",
+    "@txnlab/use-wallet": "^2.3.1",
+    "@types/node": "^20.10.5",
+    "@types/ungap__structured-clone": "^1.2.0",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
+    "@ungap/structured-clone": "^1.2.0",
+    "algosdk": "^2.7.0",
+    "arc200js": "^2.3.2",
     "autoprefixer": "^10.4.16",
+    "buffer": "^6.0.3",
     "daisyui": "^4.4.23",
     "eslint": "^8.28.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-svelte": "^2.26.0",
     "postcss": "^8.4.32",
     "prettier": "^2.8.0",
@@ -32,5 +51,6 @@
     "typescript": "^5.0.0",
     "vite": "^4.3.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": { "arccjs": "^2.3.7" }
 }
