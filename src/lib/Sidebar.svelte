@@ -47,9 +47,7 @@
 				</a>
 			</li>
 			<div class="h-full flex flex-col grow">&nbsp;</div>
-			<li>
-				<UseWallet />
-			</li>
+			<UseWallet />
 		</ul>
 	</div>
 </div>

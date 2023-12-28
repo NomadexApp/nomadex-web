@@ -120,6 +120,9 @@
 		const voiAmount = Math.floor(inputTokenA * 1e6);
 		const viaAmount = Math.floor(inputTokenB * 1e6);
 
+		const lptBalance = await getASABalance(currentLptAssetId, $connectedAccount);
+		console.log({ lptBalance });
+
 		const optInTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
 			from: $connectedAccount,
 			to: $connectedAccount,
@@ -164,8 +167,11 @@
 
 		const mintTxns = atc.buildGroup().map(({ txn }) => txn);
 
-		const liquidityAded = await signAndSendTransections(nodeClient, [[optInTxn], approveTxns, mintTxns]);
-		console.log({ liquidityAded });
+		const liquidityAded = await signAndSendTransections(nodeClient, [
+			...(lptBalance === -1 ? [[optInTxn]] : []),
+			approveTxns,
+			mintTxns,
+		]);
 	}
 
 	async function burn() {

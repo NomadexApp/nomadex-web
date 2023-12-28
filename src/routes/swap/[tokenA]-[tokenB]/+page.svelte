@@ -11,12 +11,10 @@
 		getBoxName,
 		getClient,
 		getUnnamedResourcesAccessedFromMethod,
-		indexerClient,
 		nodeClient,
 		viaAppId,
 	} from '$lib/_shared';
 	import { currentAppId } from '$lib/_deployed';
-	import Contract from 'arc200js';
 	import algosdk from 'algosdk';
 	import { simulateHowMuch } from '$lib/howMuch';
 	import { connectedAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
