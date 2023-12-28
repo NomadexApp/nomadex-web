@@ -1,26 +1,13 @@
 {
   "name": "voi.nomadex.app",
   "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "format": "prettier --plugin-search-dir . --write .",
-    "generate-client": "algokitgen generate -a src/contracts/artifacts/VoiSwap.arc32.json -o src/contracts/clients/VoiSwapClient.ts",
-    "compile-contract": "tealscript src/contracts/voi_swap.algo.ts src/contracts/artifacts",
-    "compile": "npm run compile-contract && npm run generate-client",
-    "fix": "eslint . --ext .ts --fix"
-  },
   "devDependencies": {
     "@algorandfoundation/algokit-client-generator": "^2.3.0",
-    "@algorandfoundation/algokit-utils": "^5.1.2",
+    "@algorandfoundation/algokit-utils": "file:./packages/algokit-utils",
     "@algorandfoundation/tealscript": "^0.66.1",
     "@blockshake/defly-connect": "^1.1.6",
     "@sveltejs/adapter-auto": "^2.0.0",
+    "@sveltejs/adapter-cloudflare": "^3.0.1",
     "@sveltejs/kit": "^1.5.0",
     "@tailwindcss/typography": "^0.5.10",
     "@txnlab/use-wallet": "^2.3.1",
@@ -49,8 +36,22 @@
     "tailwindcss": "^3.4.0",
     "tslib": "^2.4.1",
     "typescript": "^5.0.0",
+    "url": "^0.11.3",
     "vite": "^4.3.0"
   },
-  "type": "module",
-  "dependencies": { "arccjs": "^2.3.7" }
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "format": "prettier --plugin-search-dir . --write .",
+    "generate-client": "algokitgen generate -a src/contracts/artifacts/VoiSwap.arc32.json -o src/contracts/clients/VoiSwapClient.ts",
+    "compile-contract": "tealscript src/contracts/voi_swap.algo.ts src/contracts/artifacts",
+    "compile": "npm run compile-contract && npm run generate-client",
+    "fix": "eslint . --ext .ts --fix"
+  },
+  "type": "module"
 }
