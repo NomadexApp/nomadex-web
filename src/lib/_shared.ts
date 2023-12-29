@@ -1,5 +1,5 @@
 import algosdk, { AtomicTransactionComposer, type EncodedSignedTransaction } from "algosdk";
-import { VoiSwapClient } from "../contracts/clients/VoiSwapClient";
+import { Arc200SwapClient } from "../contracts/clients/Arc200SwapClient";
 import { Buffer } from 'buffer';
 import { connectedAccount, getTransactionSignerAccount } from "./UseWallet.svelte";
 import { get } from "svelte/store";
@@ -49,7 +49,7 @@ export const getSuggestedParams = async () => {
 export const deployVoiSwap = async (appId = 0) => {
     const account = get(connectedAccount);
     if (!account) return;
-    const voiSwapClient = new VoiSwapClient({
+    const voiSwapClient = new Arc200SwapClient({
         resolveBy: 'id',
         id: appId ?? 0,
         sender: getTransactionSignerAccount()
@@ -66,7 +66,7 @@ export const deployVoiSwap = async (appId = 0) => {
 }
 
 export const getClient = (appId: number, signer = <SendTransactionFrom>getTransactionSignerAccount()) => {
-    return new VoiSwapClient({
+    return new Arc200SwapClient({
         resolveBy: 'id',
         id: appId,
         ...(signer ? {
@@ -105,7 +105,7 @@ export async function getUnnamedResourcesAccessedFromComposer(composer: AtomicTr
     return getUnnamedResourcesAccessed(txns);
 }
 
-export async function getUnnamedResourcesAccessedFromMethod<C extends VoiSwapClient>(client: C, methodName: keyof ReturnType<C['compose']>, args: any = {}) {
+export async function getUnnamedResourcesAccessedFromMethod<C extends Arc200SwapClient>(client: C, methodName: keyof ReturnType<C['compose']>, args: any = {}) {
     const cl: any = client;
     const composer: AtomicTransactionComposer = await cl.compose()[methodName](args, {}).atc();
     return getUnnamedResourcesAccessedFromComposer(composer);

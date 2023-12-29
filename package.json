@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "devDependencies": {
     "@algorandfoundation/algokit-client-generator": "^2.3.0",
-    "@algorandfoundation/algokit-utils": "file:./packages/algokit-utils",
     "@algorandfoundation/tealscript": "^0.66.1",
     "@blockshake/defly-connect": "^1.1.6",
     "@sveltejs/adapter-auto": "^2.0.0",
@@ -48,8 +47,8 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
-    "generate-client": "algokitgen generate -a src/contracts/artifacts/VoiSwap.arc32.json -o src/contracts/clients/VoiSwapClient.ts",
-    "compile-contract": "tealscript src/contracts/voi_swap.algo.ts src/contracts/artifacts",
+    "generate-client": "algokitgen generate -a src/contracts/artifacts/Arc200Swap.arc32.json -o src/contracts/clients/Arc200SwapClient.ts",
+    "compile-contract": "tealscript src/contracts/arc200_swap.algo.ts src/contracts/artifacts",
     "compile": "npm run compile-contract && npm run generate-client",
     "fix": "eslint . --ext .ts --fix"
   },

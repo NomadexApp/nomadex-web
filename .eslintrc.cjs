@@ -25,9 +25,16 @@ module.exports = {
 			parserOptions: {
 				parser: '@typescript-eslint/parser'
 			}
+		},
+		{
+			files: ['*.algo.ts'],
+			rules: {
+				"@typescript-eslint/no-unused-vars": "off"
+			}
 		}
 	],
 	rules: {
-		"@typescript-eslint/no-explicit-any": "off"
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-unused-vars": "error"
 	}
 };
