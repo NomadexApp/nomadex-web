@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import UseWallet from './UseWallet.svelte';
 	import { currentAppId } from './_deployed';
 	import { deployVoiSwap } from './_shared';
@@ -16,10 +17,10 @@
 	<div class="drawer-side">
 		<label for="my-drawer" aria-label="close sidebar" class="drawer-overlay" />
 		<ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content text-lg">
-			<div class="cursor-pointer transition-all relative">
-				<img class="mask mask-triangle-2 opacity-50" alt="voi logo" src="/favicon.png" />
+			<div class="cursor-pointer transition-all relative" on:click={() => goto('/')} on:keydown>
+				<img class="mask mask-triangle-2 opacity-80" alt="voi logo" src="/favicon.png" />
 				<img
-					class="absolute top-0 opacity-5 hover:opacity-100 transition-opacity duration-1000"
+					class="absolute top-0 opacity-10 hover:opacity-100 transition-opacity duration-1000"
 					alt="voi logo"
 					src="/favicon.png"
 				/>
