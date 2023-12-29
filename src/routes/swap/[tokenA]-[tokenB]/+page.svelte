@@ -65,10 +65,17 @@
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenB = 0;
-		if (!inputTokenA || typeof inputTokenA === 'number') return;
-		await new Promise((r) => (timeout = setTimeout(r, 1000)));
-		inputTokenB = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenA * 1e6)), false)) / 1e6;
-		disabled = !inputTokenB;
+		if (!inputTokenA || typeof inputTokenA !== 'number') return;
+		let tm: NodeJS.Timeout | undefined;
+		await new Promise((r) => {
+			timeout = setTimeout(r, 1000);
+			tm = timeout;
+		});
+		const ret = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenA * 1e6)), false)) / 1e6;
+		if (tm && tm === timeout) {
+			inputTokenB = ret;
+			disabled = !inputTokenB;
+		}
 	}
 
 	async function onInputTokenB() {
@@ -76,10 +83,17 @@
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenA = 0;
-		if (!inputTokenB || typeof inputTokenB === 'number') return;
-		await new Promise((r) => (timeout = setTimeout(r, 1000)));
-		inputTokenA = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenB * 1e6)), true)) / 1e6;
-		disabled = !inputTokenB;
+		if (!inputTokenB || typeof inputTokenB !== 'number') return;
+		let tm: NodeJS.Timeout | undefined;
+		await new Promise((r) => {
+			timeout = setTimeout(r, 1000);
+			tm = timeout;
+		});
+		const ret = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenB * 1e6)), true)) / 1e6;
+		if (tm && tm === timeout) {
+			inputTokenA = ret;
+			disabled = !inputTokenB;
+		}
 	}
 
 	async function swapVoiToVia(voiAmount: number, minViaAmount: number) {
