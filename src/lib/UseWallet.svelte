@@ -117,6 +117,8 @@
 	import { nodeClient } from './_shared';
 	import { browser } from '$app/environment';
 
+	let usingKibisisWallet = false;
+
 	onMount(async () => {
 		if (!$connectedAccount) {
 			const defaultWallet = localStorage.getItem('defaultWallet');
@@ -129,6 +131,10 @@
 				}
 			}
 		}
+
+		setTimeout(() => {
+			usingKibisisWallet = !!window['algorand']?.wallets.find((w) => w.id === 'kibisis');
+		}, 1000);
 	});
 
 	async function test() {
@@ -173,7 +179,7 @@
 			<span on:click={() => walletConnect()} on:keydown={null}>Wallet Connect</span>
 		</a>
 	</li>
-	{#if browser && window['algorand']?.wallets?.[0]}
+	{#if browser && usingKibisisWallet}
 		<li>
 			<a href={null} tabindex="0">
 				<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
