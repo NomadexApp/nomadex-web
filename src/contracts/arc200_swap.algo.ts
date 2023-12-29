@@ -2,55 +2,25 @@ import { Contract } from '@algorandfoundation/tealscript';
 
 const TOTAL_SUPPLY = 10_000_000_000_000_000;
 const SCALE = 10000;
+const POOL_TOKEN_NAME = "VOI-VIA LPT";
+const POOL_TOKEN_UNIT = "LPT";
 
-class Arc200Swap extends Contract {
+export class Arc200Swap extends Contract {
 
   // admin account
   admin = GlobalStateKey<Address>({ key: 'admin' });
-  set_admin(admin: Account): void {
-    assert(this.txn.sender === this.admin.value);
-    this.admin.value = admin;
-  }
 
   // pool token (lpt), given to liquidity providers
   pool_token = GlobalStateKey<Asset>({ key: 'pool_token' });
-  create_pool_token(seed: PayTxn): Asset {
-    assert(this.txn.sender === this.admin.value);
-    verifyPayTxn(seed, { receiver: this.app.address, amount: { greaterThanEqualTo: 300_000 } });
-    assert(!this.pool_token.exists);
-
-    this.pool_token.value = sendAssetCreation({
-      configAssetName: 'VOI-VIA LPT',
-      configAssetUnitName: 'LPT',
-      configAssetTotal: TOTAL_SUPPLY,
-      configAssetDecimals: 6,
-      configAssetManager: this.app.address,
-      configAssetReserve: this.app.address,
-      fee: 1000
-    });
-
-    return this.pool_token.value;
-  }
 
   // ratio
   ratio = GlobalStateKey<uint64>({ key: 'ratio' });
-  private set_ratio(): uint64 {
-    this.ratio.value = wideRatio(
-      [this.get_balance(), SCALE],
-      [this.get_arc200_balance()]
-    );
-    return this.ratio.value;
+  private set_ratio(): void {
+    this.ratio.value = wideRatio([this.get_balance(), SCALE], [this.get_arc200_balance()]);
   }
 
-  // fee, 1 = 0.01%
-  // liquidity providers fee
+  // liquidity providers fee, 1 = 0.01%
   fee = GlobalStateKey<uint64>({ key: 'fee' });
-  // platform fee
-  platform_fee = GlobalStateKey<uint64>({ key: 'platform_fee' });
-  set_fees(fee: uint64): void {
-    assert(this.txn.sender === this.admin.value);
-    this.fee.value = fee;
-  }
 
   // arc200 token application
   arc200_token = GlobalStateKey<Application>({ key: 'arc200_token' });
@@ -62,8 +32,7 @@ class Arc200Swap extends Contract {
   createApplication(): void {
     this.admin.value = this.txn.sender;
     this.arc200_token.value = Application.fromID(6779767); // via
-    this.fee.value = 25; // 0.25 %
-    this.platform_fee.value = 25; // 0.25%
+    this.fee.value = 50; // 0.5 %
     this.initialized.value = false;
   }
 
@@ -72,7 +41,7 @@ class Arc200Swap extends Contract {
     assert(this.txn.sender === this.admin.value);
   }
 
-  /*********************************** */
+  /**************************************************/
 
   private tokens_to_mint_intial(a_amount: uint64, b_amount: uint64): uint64 {
     return sqrt(a_amount * b_amount);
@@ -92,7 +61,7 @@ class Arc200Swap extends Contract {
   }
 
   private compute_out_tokens(in_amount: uint64, in_supply: uint64, out_supply: uint64): uint64 {
-    const factor = SCALE - (this.fee.value + this.platform_fee.value);
+    const factor = SCALE - this.fee.value;
 
     const xf = <uint<256>>(
       <uint<256>>in_amount * <uint<256>>factor
@@ -108,7 +77,7 @@ class Arc200Swap extends Contract {
   }
 
   private compute_in_tokens(out_amount: uint64, in_supply: uint64, out_supply: uint64): uint64 {
-    const factor = SCALE - (this.fee.value + this.platform_fee.value);
+    const factor = SCALE - this.fee.value;
 
     const numerator = <uint<256>>(
       <uint<256>>out_amount * <uint<256>>out_supply * <uint<256>>in_supply * <uint<256>>SCALE
@@ -137,8 +106,6 @@ class Arc200Swap extends Contract {
       fee: 1000,
     });
   }
-
-  /**************************************************/
 
   private transfer_to(to: Address, amount: uint64): boolean {
     sendPayment({
@@ -182,39 +149,6 @@ class Arc200Swap extends Contract {
   }
 
   /**************************************************/
-
-  register_online(selection_pk: bytes, state_proof_pk: bytes, vote_pk: bytes, vote_first: uint64, vote_last: uint64, vote_key_dilution: uint64): void {
-    assert(this.txn.sender === this.admin.value);
-
-    sendOnlineKeyRegistration({
-      sender: this.app.address,
-      selectionPK: selection_pk,
-      stateProofPK: state_proof_pk,
-      votePK: vote_pk,
-      voteFirst: vote_first,
-      voteLast: vote_last,
-      voteKeyDilution: vote_key_dilution,
-      fee: 1000,
-    });
-  }
-
-  register_offline(): void {
-    assert(this.txn.sender === this.admin.value);
-
-    sendOfflineKeyRegistration({
-      sender: this.app.address,
-      fee: 1000
-    });
-  }
-
-  emergency_withdraw(): void {
-    assert(this.txn.sender === this.admin.value);
-
-    const arc200_balance = this.get_arc200_balance();
-
-    this.arc200_transfer_to(this.txn.sender, arc200_balance);
-    this.transfer_to(this.txn.sender, this.get_balance());
-  }
 
   mint(pay_txn: PayTxn, arc200_amount: uint64, pool_token: Asset): void {
     verifyPayTxn(pay_txn, {
@@ -271,6 +205,8 @@ class Arc200Swap extends Contract {
     this.set_ratio();
   }
 
+  /**************************************************/
+
   swap_to_arc200(pay_txn: PayTxn, min_amount: uint64): uint64 {
     verifyPayTxn(pay_txn, {
       sender: this.txn.sender,
@@ -323,6 +259,71 @@ class Arc200Swap extends Contract {
 
     return to_swap;
   }
+
+  /**************************************************/
+
+  create_pool_token(seed: PayTxn): Asset {
+    assert(this.txn.sender === this.admin.value);
+    verifyPayTxn(seed, { receiver: this.app.address, amount: { greaterThanEqualTo: 1010_000 } });
+    assert(!this.pool_token.exists);
+
+    this.pool_token.value = sendAssetCreation({
+      configAssetName: POOL_TOKEN_NAME,
+      configAssetUnitName: POOL_TOKEN_UNIT,
+      configAssetTotal: TOTAL_SUPPLY,
+      configAssetDecimals: 6,
+      configAssetManager: this.app.address,
+      configAssetReserve: this.app.address,
+      fee: 1000
+    });
+
+    return this.pool_token.value;
+  }
+
+  register_online(selection_pk: bytes, state_proof_pk: bytes, vote_pk: bytes, vote_first: uint64, vote_last: uint64, vote_key_dilution: uint64): void {
+    assert(this.txn.sender === this.admin.value);
+
+    sendOnlineKeyRegistration({
+      sender: this.app.address,
+      selectionPK: selection_pk,
+      stateProofPK: state_proof_pk,
+      votePK: vote_pk,
+      voteFirst: vote_first,
+      voteLast: vote_last,
+      voteKeyDilution: vote_key_dilution,
+      fee: 1000,
+    });
+  }
+
+  register_offline(): void {
+    assert(this.txn.sender === this.admin.value);
+
+    sendOfflineKeyRegistration({
+      sender: this.app.address,
+      fee: 1000
+    });
+  }
+
+  set_fees(fee: uint64): void {
+    assert(this.txn.sender === this.admin.value);
+    this.fee.value = fee;
+  }
+
+  set_admin(admin: Account): void {
+    assert(this.txn.sender === this.admin.value);
+    this.admin.value = admin;
+  }
+
+  emergency_withdraw(): void {
+    assert(this.txn.sender === this.admin.value);
+
+    const arc200_balance = this.get_arc200_balance();
+
+    this.arc200_transfer_to(this.txn.sender, arc200_balance);
+    this.transfer_to(this.txn.sender, this.get_balance());
+  }
+
+  /**************************************************/
 
   compute_swap_to_arc200(amount: uint64): uint64 {
     const arc200_balance = this.get_arc200_balance();

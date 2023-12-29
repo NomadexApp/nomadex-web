@@ -3,51 +3,6 @@
   "desc": "",
   "methods": [
     {
-      "name": "set_admin",
-      "args": [
-        {
-          "name": "admin",
-          "type": "account",
-          "desc": ""
-        }
-      ],
-      "desc": "",
-      "returns": {
-        "type": "void",
-        "desc": ""
-      }
-    },
-    {
-      "name": "create_pool_token",
-      "args": [
-        {
-          "name": "seed",
-          "type": "pay",
-          "desc": ""
-        }
-      ],
-      "desc": "",
-      "returns": {
-        "type": "uint64",
-        "desc": ""
-      }
-    },
-    {
-      "name": "set_fees",
-      "args": [
-        {
-          "name": "fee",
-          "type": "uint64",
-          "desc": ""
-        }
-      ],
-      "desc": "",
-      "returns": {
-        "type": "void",
-        "desc": ""
-      }
-    },
-    {
       "name": "createApplication",
       "args": [],
       "desc": "",
@@ -62,6 +17,101 @@
       "desc": "",
       "returns": {
         "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "mint",
+      "args": [
+        {
+          "name": "pay_txn",
+          "type": "pay",
+          "desc": ""
+        },
+        {
+          "name": "arc200_amount",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "pool_token",
+          "type": "asset",
+          "desc": ""
+        }
+      ],
+      "desc": "***********************************************",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "burn",
+      "args": [
+        {
+          "name": "lpt_pay_txn",
+          "type": "axfer",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "swap_to_arc200",
+      "args": [
+        {
+          "name": "pay_txn",
+          "type": "pay",
+          "desc": ""
+        },
+        {
+          "name": "min_amount",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "***********************************************",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "swap_from_arc200",
+      "args": [
+        {
+          "name": "arc200_amount",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "min_amount",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "create_pool_token",
+      "args": [
+        {
+          "name": "seed",
+          "type": "pay",
+          "desc": ""
+        }
+      ],
+      "desc": "***********************************************",
+      "returns": {
+        "type": "uint64",
         "desc": ""
       }
     },
@@ -99,7 +149,7 @@
           "desc": ""
         }
       ],
-      "desc": "***********************************************",
+      "desc": "",
       "returns": {
         "type": "void",
         "desc": ""
@@ -108,6 +158,36 @@
     {
       "name": "register_offline",
       "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_fees",
+      "args": [
+        {
+          "name": "fee",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_admin",
+      "args": [
+        {
+          "name": "admin",
+          "type": "account",
+          "desc": ""
+        }
+      ],
       "desc": "",
       "returns": {
         "type": "void",
@@ -124,86 +204,6 @@
       }
     },
     {
-      "name": "mint",
-      "args": [
-        {
-          "name": "pay_txn",
-          "type": "pay",
-          "desc": ""
-        },
-        {
-          "name": "arc200_amount",
-          "type": "uint64",
-          "desc": ""
-        },
-        {
-          "name": "pool_token",
-          "type": "asset",
-          "desc": ""
-        }
-      ],
-      "desc": "",
-      "returns": {
-        "type": "void",
-        "desc": ""
-      }
-    },
-    {
-      "name": "burn",
-      "args": [
-        {
-          "name": "lpt_pay_txn",
-          "type": "axfer",
-          "desc": ""
-        }
-      ],
-      "desc": "",
-      "returns": {
-        "type": "void",
-        "desc": ""
-      }
-    },
-    {
-      "name": "swap_to_arc200",
-      "args": [
-        {
-          "name": "pay_txn",
-          "type": "pay",
-          "desc": ""
-        },
-        {
-          "name": "min_amount",
-          "type": "uint64",
-          "desc": ""
-        }
-      ],
-      "desc": "",
-      "returns": {
-        "type": "uint64",
-        "desc": ""
-      }
-    },
-    {
-      "name": "swap_from_arc200",
-      "args": [
-        {
-          "name": "arc200_amount",
-          "type": "uint64",
-          "desc": ""
-        },
-        {
-          "name": "min_amount",
-          "type": "uint64",
-          "desc": ""
-        }
-      ],
-      "desc": "",
-      "returns": {
-        "type": "uint64",
-        "desc": ""
-      }
-    },
-    {
       "name": "compute_swap_to_arc200",
       "args": [
         {
@@ -212,7 +212,7 @@
           "desc": ""
         }
       ],
-      "desc": "",
+      "desc": "***********************************************",
       "returns": {
         "type": "uint64",
         "desc": ""

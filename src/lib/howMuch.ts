@@ -12,26 +12,26 @@ export async function simulateHowMuch(tokenA: Token, tokenB: Token, amount: bigi
 
     if (tokenA.ticker === 'VOI' && tokenB.ticker === 'VIA') {
         if (simulateByOutAmount) {
-            atc = await compose.simulateSwapVoiForXVia(
-                { viaAmount: amount },
-                await getUnnamedResourcesAccessedFromMethod(client, 'simulateSwapVoiForXVia', { viaAmount: amount })
+            atc = await compose.computeSwapToArc200ByOutTokens(
+                { arc200_amount: amount },
+                await getUnnamedResourcesAccessedFromMethod(client, 'computeSwapToArc200ByOutTokens', { arc200_amount: amount })
             ).atc();
         } else {
-            atc = await compose.simulateSwapVoiForVia(
-                { voiAmount: amount },
-                await getUnnamedResourcesAccessedFromMethod(client, 'simulateSwapVoiForVia', { voiAmount: amount })
+            atc = await compose.computeSwapToArc200(
+                { amount: amount },
+                await getUnnamedResourcesAccessedFromMethod(client, 'computeSwapToArc200', { amount: amount })
             ).atc();
         }
     } else if (tokenA.ticker === 'VIA' && tokenB.ticker === 'VOI') {
         if (simulateByOutAmount) {
-            atc = await compose.simulateSwapViaForXVoi(
-                { voiAmount: amount },
-                await getUnnamedResourcesAccessedFromMethod(client, 'simulateSwapViaForXVoi', { voiAmount: amount })
+            atc = await compose.computeSwapFromArc200ByOutAmount(
+                { amount: amount },
+                await getUnnamedResourcesAccessedFromMethod(client, 'computeSwapFromArc200ByOutAmount', { amount: amount })
             ).atc();
         } else {
-            atc = await compose.simulateSwapViaForVoi(
-                { viaAmount: amount },
-                await getUnnamedResourcesAccessedFromMethod(client, 'simulateSwapViaForVoi', { viaAmount: amount })
+            atc = await compose.computeSwapFromArc200(
+                { arc200_amount: amount },
+                await getUnnamedResourcesAccessedFromMethod(client, 'computeSwapFromArc200', { arc200_amount: amount })
             ).atc();
         }
     }

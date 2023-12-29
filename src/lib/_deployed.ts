@@ -1,2 +1,2 @@
-export const currentAppId = 24588060;
-export const currentLptAssetId = 24588068;
+export const currentAppId = 24589652;
+export const currentLptAssetId = 24589656;

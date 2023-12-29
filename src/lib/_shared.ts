@@ -110,3 +110,13 @@ export async function getUnnamedResourcesAccessedFromMethod<C extends Arc200Swap
     const composer: AtomicTransactionComposer = await cl.compose()[methodName](args, {}).atc();
     return getUnnamedResourcesAccessedFromComposer(composer);
 }
+
+export async function balanceString(appId: number, arc200Id: number) {
+    const appAddress = algosdk.getApplicationAddress(appId);
+    const voiBalance = (await getBalance(appAddress, false)) - 1_000_000;
+    const viaBalance = await getArc200Balance(arc200Id, appAddress);
+    return `${(voiBalance / 1e6).toLocaleString('en')} VOI / ${(viaBalance / 1e6).toLocaleString('en')} VIA`;
+    // (k=${(
+    // 	Number((BigInt(voiBalance) * BigInt(viaBalance)) / BigInt(1e6)) / 1e6
+    // ).toLocaleString('en')})
+}

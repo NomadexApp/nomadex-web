@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
+		balanceString,
 		getArc200Balance,
 		getBalance,
 		getBoxName,
@@ -103,17 +104,17 @@
 		let viaAmount = minViaAmount;
 
 		const swapArgs = () => ({
-			voiPayTxn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+			pay_txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
 				amount: voiAmount,
 				from: $connectedAccount,
 				to: algosdk.getApplicationAddress(currentAppId),
 				suggestedParams: suggestedParams,
 			}),
-			minVia: Math.floor(viaAmount - Math.round(viaAmount * slippage)),
+			min_amount: Math.floor(viaAmount - Math.round(viaAmount * slippage)),
 		});
-		const swapResponse = await client.swapVoiForVia(
+		const swapResponse = await client.swapToArc200(
 			swapArgs(),
-			await getUnnamedResourcesAccessedFromMethod(client, 'swapVoiForVia', swapArgs())
+			await getUnnamedResourcesAccessedFromMethod(client, 'swapToArc200', swapArgs())
 		);
 
 		return swapResponse.return;
@@ -130,15 +131,15 @@
 		);
 
 		const swapArgs = () => ({
-			viaAmount: viaAmount,
-			minVoi: Math.floor(minVoiAmount - Math.round(minVoiAmount * slippage)),
+			arc200_amount: viaAmount,
+			min_amount: Math.floor(minVoiAmount - Math.round(minVoiAmount * slippage)),
 		});
 		const composer = client.compose();
 
-		const opts = await getUnnamedResourcesAccessedFromMethod(client, 'swapViaForVoi', swapArgs());
+		const opts = await getUnnamedResourcesAccessedFromMethod(client, 'swapFromArc200', swapArgs());
 
 		const atc = await composer
-			.swapViaForVoi(swapArgs(), {
+			.swapFromArc200(swapArgs(), {
 				...opts,
 				boxes: [
 					...opts.boxes,
@@ -170,13 +171,6 @@
 			location.reload();
 		}
 		disabled = prev;
-	}
-
-	async function balanceString() {
-		const appAddress = algosdk.getApplicationAddress(currentAppId);
-		const voiBalance = await getBalance(appAddress);
-		const viaBalance = await getArc200Balance(viaAppId, appAddress);
-		return `${voiBalance / 1e6} VOI / ${viaBalance / 1e6} VIA`;
 	}
 </script>
 
@@ -252,7 +246,7 @@
 			Min Received = {inputTokenB - inputTokenB * slippage}
 			{tokenB.ticker}
 
-			{#await balanceString() then balance}
+			{#await balanceString(currentAppId, viaAppId) then balance}
 				<br />
 				Liq. {balance}
 			{/await}

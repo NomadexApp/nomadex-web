@@ -4,6 +4,7 @@
 	import { getStores } from '$app/stores';
 	import { browser } from '$app/environment';
 	import {
+		balanceString,
 		getASABalance,
 		getArc200Balance,
 		getBalance,
@@ -18,12 +19,11 @@
 	import { connectedAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
 	import { ChainInterface } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
+	import { onMount } from 'svelte';
 
 	const { page } = getStores();
 
 	$: action = $page.params.action;
-
-	const slippage = 0.01;
 
 	let tokens: [Token, Token] = [knownTokens[0], knownTokens[1]];
 
@@ -52,6 +52,16 @@
 
 	let timeout: NodeJS.Timeout;
 
+	let poolInitialized = false;
+
+	onMount(async () => {
+		const client = getClient(currentAppId);
+		poolInitialized = Boolean((await client.getGlobalState()).initialized?.asByteArray()?.[0]);
+		if (!poolInitialized) {
+			disabled = false;
+		}
+	});
+
 	async function onInputTokenLpt() {
 		clearTimeout(timeout);
 		disabled = true;
@@ -74,12 +84,13 @@
 	}
 
 	async function onInputTokenA() {
+		if (!poolInitialized) return;
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenB = 0;
 		if (!inputTokenA) return;
 		await new Promise((r) => (timeout = setTimeout(r, 1000)));
-		const voiBalance = await getBalance(algosdk.getApplicationAddress(currentAppId));
+		const voiBalance = (await getBalance(algosdk.getApplicationAddress(currentAppId), false)) - 1e6;
 		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
 
 		const ratio = viaBalance / voiBalance;
@@ -90,12 +101,13 @@
 	}
 
 	async function onInputTokenB() {
+		if (!poolInitialized) return;
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenA = 0;
 		if (!inputTokenB) return;
 		await new Promise((r) => (timeout = setTimeout(r, 1000)));
-		const voiBalance = await getBalance(algosdk.getApplicationAddress(currentAppId));
+		const voiBalance = (await getBalance(algosdk.getApplicationAddress(currentAppId))) - 1e6;
 		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
 
 		const ratio = voiBalance / viaBalance;
@@ -131,14 +143,14 @@
 		);
 
 		const mintArgs = () => ({
-			voiPayTxn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+			pay_txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
 				amount: voiAmount,
 				from: $connectedAccount,
 				to: algosdk.getApplicationAddress(currentAppId),
 				suggestedParams: suggestedParams,
 			}),
-			viaAmount,
-			poolAsset: currentLptAssetId,
+			arc200_amount: viaAmount,
+			pool_token: currentLptAssetId,
 		});
 		const composer = client.compose();
 
@@ -173,14 +185,13 @@
 		const lptAmount = Math.floor(inputTokenLpt * 1e6);
 
 		const removeLiqArgs = () => ({
-			poolXfer: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+			lpt_pay_txn: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
 				assetIndex: currentLptAssetId,
 				amount: lptAmount,
 				from: $connectedAccount,
 				to: algosdk.getApplicationAddress(currentAppId),
 				suggestedParams: suggestedParams,
 			}),
-			poolAsset: currentLptAssetId,
 		});
 
 		const res = await client.burn(
@@ -202,13 +213,6 @@
 			window.location.reload();
 		}
 		disabled = prev;
-	}
-
-	async function balanceString() {
-		const appAddress = algosdk.getApplicationAddress(currentAppId);
-		const voiBalance = await getBalance(appAddress);
-		const viaBalance = await getArc200Balance(viaAppId, appAddress);
-		return `${voiBalance / 1e6} VOI / ${viaBalance / 1e6} VIA`;
 	}
 </script>
 
@@ -328,10 +332,12 @@
 			<!-- Min Received = {inputTokenB - inputTokenB * slippage}
 			{tokenB.ticker} -->
 
-			{#await balanceString() then balance}
-				<br />
-				Liq. {balance}
-			{/await}
+			{#if poolInitialized}
+				{#await balanceString(currentAppId, viaAppId) then balance}
+					<br />
+					Liq. {balance}
+				{/await}
+			{/if}
 			<!-- <br />
 			Fee: {0.5}% -->
 
