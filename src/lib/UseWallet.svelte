@@ -166,7 +166,7 @@
 				/>
 			</svg>
 			<span class="flex flex-col" on:click={() => walletDisconnect()} on:keydown>
-				<span>Disconnect</span>
+				<span class="text-xs">Disconnect</span>
 				<span class="text-xs">({$connectedAccount.slice(0, 4)}...{$connectedAccount.slice(-4)})</span>
 			</span>
 		</a>
