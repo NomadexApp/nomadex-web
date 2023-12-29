@@ -18,7 +18,7 @@
 	import { currentAppId } from '$lib/_deployed';
 	import algosdk from 'algosdk';
 	import { simulateHowMuch } from '$lib/howMuch';
-	import { connectedAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
+	import { connectedAccount, pendingTxn, signAndSendTransections } from '$lib/UseWallet.svelte';
 	import { ChainInterface } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 
@@ -112,23 +112,29 @@
 			}),
 			min_amount: Math.floor(viaAmount - Math.round(viaAmount * slippage)),
 		});
-		const swapResponse = await client.swapToArc200(
-			swapArgs(),
-			await getUnnamedResourcesAccessedFromMethod(client, 'swapToArc200', swapArgs())
-		);
 
-		return swapResponse.return;
+		const composer = client.compose();
+		const atc = await composer
+			.swapToArc200(swapArgs(), await getUnnamedResourcesAccessedFromMethod(client, 'swapToArc200', swapArgs()))
+			.atc();
+
+		const swapTxns = atc.buildGroup().map(({ txn }) => txn);
+
+		await signAndSendTransections(nodeClient, [swapTxns]);
+		console.log({ success: true });
 	}
 
 	async function swapViaToVoi(viaAmount: number, minVoiAmount: number) {
 		const client = getClient(currentAppId);
 
+		$pendingTxn = true;
 		const approveTxns = await ChainInterface.arc200_approve(
 			viaAppId,
 			$connectedAccount,
 			algosdk.getApplicationAddress(currentAppId),
 			BigInt(viaAmount)
 		);
+		$pendingTxn = false;
 
 		const swapArgs = () => ({
 			arc200_amount: viaAmount,
@@ -153,8 +159,8 @@
 
 		const swapTxns = atc.buildGroup().map(({ txn }) => txn);
 
-		const swapComplete = await signAndSendTransections(nodeClient, [approveTxns, swapTxns]);
-		console.log({ swapComplete });
+		await signAndSendTransections(nodeClient, [approveTxns, swapTxns]);
+		console.log({ success: true });
 	}
 
 	async function swap() {

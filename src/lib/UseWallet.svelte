@@ -5,6 +5,7 @@
 	export const deflyWallet = new DeflyWalletConnect({});
 	export const connectedAccount = writable<string>();
 	export const connectedWallet = writable<'wc' | 'kibisis'>();
+	export const pendingTxn = writable(false);
 
 	connectedWallet.subscribe((walletType) => {
 		if (!browser || !walletType) return;
@@ -18,7 +19,7 @@
 		localStorage.removeItem('defaultWallet');
 	}
 
-	export async function walletConnect(kibisis = false) {
+	export async function walletConnect(kibisis = browser ? localStorage.getItem('defaultWallet') === 'kibisis' : false) {
 		if (kibisis) {
 			if (!window['algorand']?.wallets?.[0]) return;
 			const { accounts } = await window['algorand'].enable({
@@ -39,28 +40,38 @@
 		txnGroups: algosdk.Transaction[][],
 		kibisis = get(connectedWallet) === 'kibisis'
 	) {
-		if (kibisis) {
-			const signed: Uint8Array[] = [];
-			for (const group of txnGroups) {
-				const txns: { txn: string }[] = [];
-				for (const txn of group) {
-					txns.push({ txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64') });
+		pendingTxn.set(true);
+		try {
+			if (kibisis) {
+				const signed: Uint8Array[] = [];
+				for (const group of txnGroups) {
+					const txns: { txn: string }[] = [];
+					for (const txn of group) {
+						txns.push({ txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64') });
+					}
+					const { stxns } = await window['algorand'].signTxns({
+						txns: txns,
+					});
+					signed.push(...stxns.map((stxn) => Uint8Array.from(Buffer.from(stxn, 'base64'))));
 				}
-				const { stxns } = await window['algorand'].signTxns({
-					txns: txns,
-				});
-				signed.push(...stxns.map((stxn) => Uint8Array.from(Buffer.from(stxn, 'base64'))));
+
+				pendingTxn.set(false);
+
+				return signed;
+			} else {
+				const signed = await deflyWallet.signTransaction(
+					txnGroups.map((group) => {
+						return group.map((txn) => ({ txn }));
+					})
+				);
+
+				pendingTxn.set(false);
+
+				return signed;
 			}
-
-			return signed;
-		} else {
-			const signed = await deflyWallet.signTransaction(
-				txnGroups.map((group) => {
-					return group.map((txn) => ({ txn }));
-				})
-			);
-
-			return signed;
+		} catch (error) {
+			pendingTxn.set(false);
+			throw error;
 		}
 	}
 
@@ -71,6 +82,7 @@
 	) {
 		const signed = await signTransactions(txnGroups, kibisis);
 
+		pendingTxn.set(true);
 		const groups = txnGroups.map((group) => {
 			return <Uint8Array[]>group
 				.map((txn) => {
@@ -94,6 +106,7 @@
 				console.warn((<Error>error).message);
 			}
 		}
+		pendingTxn.set(false);
 
 		return true;
 	}

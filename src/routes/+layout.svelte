@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PendingTxns from '$lib/PendingTxns.svelte';
 	import Sidebar from '$lib/Sidebar.svelte';
 	import { connectedAccount, walletConnect } from '$lib/UseWallet.svelte';
 	import '../app.css';
@@ -9,9 +10,10 @@
 	<div class="w-full flex flex-col">
 		{#if $connectedAccount}
 			<slot />
+			<PendingTxns />
 		{:else}
 			<section class="flex justify-center items-center h-full">
-				<button class="btn" on:click={walletConnect}>Connect To Wallet</button>
+				<button class="btn" on:click={() => walletConnect()}>Connect To Wallet</button>
 			</section>
 		{/if}
 	</div>

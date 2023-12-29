@@ -16,7 +16,7 @@
 	} from '$lib/_shared';
 	import { currentAppId, currentLptAssetId } from '$lib/_deployed';
 	import algosdk from 'algosdk';
-	import { connectedAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
+	import { connectedAccount, pendingTxn, signAndSendTransections } from '$lib/UseWallet.svelte';
 	import { ChainInterface } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import { onMount } from 'svelte';
@@ -135,12 +135,14 @@
 			suggestedParams,
 		});
 
+		$pendingTxn = true;
 		const approveTxns = await ChainInterface.arc200_approve(
 			viaAppId,
 			$connectedAccount,
 			algosdk.getApplicationAddress(currentAppId),
 			BigInt(viaAmount)
 		);
+		$pendingTxn = false;
 
 		const mintArgs = () => ({
 			pay_txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -171,11 +173,9 @@
 
 		const mintTxns = atc.buildGroup().map(({ txn }) => txn);
 
-		const liquidityAded = await signAndSendTransections(nodeClient, [
-			...(lptBalance === -1 ? [[optInTxn]] : []),
-			approveTxns,
-			mintTxns,
-		]);
+		await signAndSendTransections(nodeClient, [...(lptBalance === -1 ? [[optInTxn]] : []), approveTxns, mintTxns]);
+
+		console.log({ success: true });
 	}
 
 	async function burn() {
@@ -194,12 +194,16 @@
 			}),
 		});
 
-		const res = await client.burn(
-			removeLiqArgs(),
-			await getUnnamedResourcesAccessedFromMethod(client, 'burn', removeLiqArgs())
-		);
+		const composer = client.compose();
 
-		console.log('Burned:', { res });
+		const atc = await composer
+			.burn(removeLiqArgs(), await getUnnamedResourcesAccessedFromMethod(client, 'burn', removeLiqArgs()))
+			.atc();
+
+		const burnTxns = atc.buildGroup().map(({ txn }) => txn);
+
+		await signAndSendTransections(nodeClient, [burnTxns]);
+		console.log({ success: true });
 	}
 
 	async function changeLiquidity() {
