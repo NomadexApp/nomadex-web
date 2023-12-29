@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "devDependencies": {
     "@algorandfoundation/algokit-client-generator": "^2.3.0",
+    "@algorandfoundation/algokit-utils": "file:./packages/algokit-utils",
     "@algorandfoundation/tealscript": "^0.66.1",
     "@blockshake/defly-connect": "^1.1.6",
     "@sveltejs/adapter-auto": "^2.0.0",
