@@ -158,6 +158,8 @@
 
 	async function swap() {
 		if (!tokenA || !tokenB) return;
+		const prev = disabled;
+		disabled = true;
 		if (tokenA.ticker === 'VOI' && tokenB.ticker === 'VIA') {
 			const resp = await swapVoiToVia(Math.floor(inputTokenA * 1e6), 1);
 			console.log({ resp });
@@ -167,6 +169,7 @@
 			console.log({ resp });
 			location.reload();
 		}
+		disabled = prev;
 	}
 
 	async function balanceString() {
