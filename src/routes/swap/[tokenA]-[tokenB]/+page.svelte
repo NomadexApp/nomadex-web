@@ -193,7 +193,7 @@
 					required
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
-				{#await getBalance($connectedAccount) then balance}
+				{#await tokens[0].ticker === 'VIA' ? getArc200Balance(viaAppId, $connectedAccount) : getBalance($connectedAccount) then balance}
 					<span
 						class="absolute right-0 bottom-full z-10 cursor-pointer"
 						on:click={() => {
