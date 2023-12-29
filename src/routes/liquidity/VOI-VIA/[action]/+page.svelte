@@ -52,15 +52,6 @@
 
 	let timeout: NodeJS.Timeout;
 
-	async function getRatio() {
-		const app = await nodeClient.getApplicationByID(currentAppId).do();
-
-		const ratio = app.params['global-state'].find((key: { key: string }) => key.key === btoa('r'));
-		if (ratio) {
-			return ratio.value.uint / 1000;
-		}
-	}
-
 	async function onInputTokenLpt() {
 		clearTimeout(timeout);
 		disabled = true;
