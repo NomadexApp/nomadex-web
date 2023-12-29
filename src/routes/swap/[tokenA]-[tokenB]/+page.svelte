@@ -230,7 +230,7 @@
 				>{tokens[1].ticker}
 				{#if tokens[1].type}({tokens[1].type}){/if}</label
 			>
-			<div class="flex items-center">
+			<div class="flex items-center relative">
 				<input
 					type="number"
 					placeholder="{tokens[1].ticker} amount"
@@ -241,6 +241,9 @@
 					required
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
+				{#await tokens[1].ticker === 'VIA' ? getArc200Balance(viaAppId, $connectedAccount) : getBalance($connectedAccount) then balance}
+					<span class="absolute right-0 bottom-full z-10 cursor-pointer">{(balance / 1e6).toFixed(2)}</span>
+				{/await}
 				<Dropdown
 					class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"
 					options={knownTokens.map((token) => ({ name: token.ticker, value: token }))}
