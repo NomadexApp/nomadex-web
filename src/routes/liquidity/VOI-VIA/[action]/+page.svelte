@@ -17,6 +17,7 @@
 	import algosdk from 'algosdk';
 	import { connectedAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
 	import { ChainInterface } from '$lib/utils';
+	import { onNumberKeyPress } from '$lib/inputs';
 
 	const { page } = getStores();
 
@@ -200,6 +201,8 @@
 	}
 
 	async function changeLiquidity() {
+		const prev = disabled;
+		disabled = true;
 		if (action === 'add') {
 			await mint();
 			window.location.reload();
@@ -207,6 +210,7 @@
 			await burn();
 			window.location.reload();
 		}
+		disabled = prev;
 	}
 
 	async function balanceString() {
@@ -230,6 +234,8 @@
 						placeholder="{tokens[0].ticker} amount"
 						bind:value={inputTokenLpt}
 						step={1 / 1e6}
+						on:keypress={onNumberKeyPress}
+						required
 						on:keyup={onInputTokenLpt}
 						class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 					/>
@@ -261,9 +267,12 @@
 					placeholder="{tokens[0].ticker} amount"
 					bind:value={inputTokenA}
 					step={1 / 1e6}
+					on:keypress={onNumberKeyPress}
+					required
 					on:keyup={onInputTokenA}
 					disabled={action === 'remove'}
-					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
+					class="input input-primary border-r-0 input-bordered w-full focus:outline-none"
+					class:rounded-r-none={action === 'add'}
 				/>
 				{#if action === 'add'}
 					{#await getBalance($connectedAccount) then balance}
@@ -296,9 +305,12 @@
 					placeholder="{tokens[1].ticker} amount"
 					bind:value={inputTokenB}
 					step={1 / 1e6}
+					on:keypress={onNumberKeyPress}
+					required
 					on:keyup={onInputTokenB}
 					disabled={action === 'remove'}
-					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
+					class="input input-primary border-r-0 input-bordered w-full focus:outline-none"
+					class:rounded-r-none={action === 'add'}
 				/>
 				{#if action === 'add'}
 					{#await getArc200Balance(viaAppId, $connectedAccount) then balance}

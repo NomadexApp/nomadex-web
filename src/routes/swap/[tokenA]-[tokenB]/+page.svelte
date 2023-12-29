@@ -19,6 +19,7 @@
 	import { simulateHowMuch } from '$lib/howMuch';
 	import { connectedAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
 	import { ChainInterface } from '$lib/utils';
+	import { onNumberKeyPress } from '$lib/inputs';
 
 	const { page } = getStores();
 	const tokenA = knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -64,7 +65,7 @@
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenB = 0;
-		if (!inputTokenA) return;
+		if (!inputTokenA || typeof inputTokenA === 'number') return;
 		await new Promise((r) => (timeout = setTimeout(r, 1000)));
 		inputTokenB = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenA * 1e6)), false)) / 1e6;
 		disabled = !inputTokenB;
@@ -75,7 +76,7 @@
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenA = 0;
-		if (!inputTokenB) return;
+		if (!inputTokenB || typeof inputTokenB === 'number') return;
 		await new Promise((r) => (timeout = setTimeout(r, 1000)));
 		inputTokenA = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenB * 1e6)), true)) / 1e6;
 		disabled = !inputTokenB;
@@ -176,7 +177,9 @@
 					placeholder="{tokens[0].ticker} amount"
 					bind:value={inputTokenA}
 					step={1 / 1e6}
+					on:keypress={onNumberKeyPress}
 					on:keyup={onInputTokenA}
+					required
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
 				{#await getBalance($connectedAccount) then balance}
@@ -216,7 +219,9 @@
 					placeholder="{tokens[1].ticker} amount"
 					bind:value={inputTokenB}
 					step={1 / 1e6}
+					on:keypress={onNumberKeyPress}
 					on:keyup={onInputTokenB}
+					required
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
 				<Dropdown
