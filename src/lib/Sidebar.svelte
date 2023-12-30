@@ -38,8 +38,14 @@
 
 <style>
 	@keyframes pulse {
+		0% {
+			opacity: 0.7;
+		}
 		50% {
-			opacity: 0.9;
+			opacity: 0.8;
+		}
+		100% {
+			opacity: 0.7;
 		}
 	}
 	.animate-pulse {
