@@ -6,6 +6,7 @@
 	let appId = 24589652;
 	let poolToken = 24589656;
 	let fee = 0;
+	let admin = '';
 
 	async function deploy() {
 		appId = (await deployVoiSwap(0)) ?? appId;
@@ -35,6 +36,10 @@
 		if (globalState.fee) {
 			fee = globalState.fee.asNumber();
 		}
+		const pk = globalState.admin?.asByteArray();
+		if (pk) {
+			admin = algosdk.encodeAddress(pk) ?? admin;
+		}
 		return globalState.initialized;
 	}
 
@@ -45,31 +50,42 @@
 			fee: _fee,
 		});
 	}
+
+	async function set_admin() {
+		const client = getClient(appId);
+		if (algosdk.isValidAddress(admin)) {
+			await client.setAdmin({
+				admin: admin,
+			});
+		} else {
+			console.log('invalid address admin =', admin);
+		}
+	}
 </script>
 
 <section class="p-4 h-full flex flex-col justify-center items-center gap-3">
-	<div class="w-full max-w-[200px] flex flex-col justify-center">
+	<div class="w-full max-w-[300px] flex flex-col justify-center">
 		<div>App Id:</div>
 		<input class="input input-primary" type="number" bind:value={appId} />
 	</div>
-	<div class="w-full max-w-[200px] flex flex-col justify-center">
+	<div class="w-full max-w-[300px] flex flex-col justify-center">
 		<button class="btn btn-primary btn-sm" on:click={deploy}>DEPLOY</button>
 	</div>
 	{#if appId !== 0 && appId > 100}
-		<div class="w-full max-w-[200px] flex flex-col justify-center">
+		<div class="w-full max-w-[300px] flex flex-col justify-center">
 			<button class="btn btn-primary btn-sm" on:click={update}>Update</button>
 		</div>
 
-		<div class="w-full max-w-[200px] flex flex-col justify-center">
+		<div class="w-full max-w-[300px] flex flex-col justify-center">
 			<div>Pool Token:</div>
 			<input class="input input-primary" type="number" bind:value={poolToken} />
 		</div>
 		{#if !poolToken}
-			<div class="w-full max-w-[200px] flex flex-col justify-center">
+			<div class="w-full max-w-[300px] flex flex-col justify-center">
 				<button class="btn btn-primary btn-sm" on:click={create_pool_token}>Create LPT</button>
 			</div>
 		{:else}
-			<div class="w-full max-w-[200px] flex flex-col justify-center">
+			<div class="w-full max-w-[300px] flex flex-col justify-center">
 				{#await getInitializetion()}
 					Initialized: ...
 				{:then isInitialized}
@@ -77,11 +93,19 @@
 				{/await}
 			</div>
 		{/if}
-		<div class="w-full max-w-[200px] flex flex-col justify-center">
+
+		<div class="w-full max-w-[300px] flex flex-col justify-center">
+			<div>Admin:</div>
+			<input class="input input-primary" type="text" bind:value={admin} />
+		</div>
+		<div class="w-full max-w-[300px] flex flex-col justify-center">
+			<button class="btn btn-primary btn-sm" on:click={set_admin}>Set Admin</button>
+		</div>
+		<div class="w-full max-w-[300px] flex flex-col justify-center">
 			<div>Fee:</div>
 			<input class="input input-primary" type="number" min={0} max={10000} step={1} bind:value={fee} />
 		</div>
-		<div class="w-full max-w-[200px] flex flex-col justify-center">
+		<div class="w-full max-w-[300px] flex flex-col justify-center">
 			<button class="btn btn-primary btn-sm" on:click={update_fee}>Update Fee</button>
 		</div>
 	{/if}
