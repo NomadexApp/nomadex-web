@@ -127,8 +127,8 @@
 <script lang="ts">
 	import algosdk from 'algosdk';
 	import { onMount } from 'svelte';
-	import { nodeClient } from './_shared';
 	import { browser } from '$app/environment';
+	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
 
 	let usingKibisisWallet = false;
 
@@ -149,35 +149,12 @@
 			usingKibisisWallet = !!window['algorand']?.wallets.find((w) => w.id === 'kibisis');
 		}, 1000);
 	});
-
-	async function test() {
-		const suggestedParams = await nodeClient.getTransactionParams().do();
-		const success = await signAndSendTransections(nodeClient, [
-			[
-				algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-					from: $connectedAccount,
-					to: $connectedAccount,
-					amount: 0,
-					suggestedParams,
-				}),
-			],
-		]);
-
-		console.log({ success });
-		console.log('confirmed');
-	}
 </script>
 
 {#if $connectedAccount}
 	<li>
 		<a href={null} tabindex="0">
-			<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
-				<path
-					d="M440-440v-400h80v400h-80Zm40 320q-74 0-139.5-28.5T226-226q-49-49-77.5-114.5T120-480q0-80 33-151t93-123l56 56q-48 40-75 97t-27 121q0 116 82 198t198 82q117 0 198.5-82T760-480q0-64-26.5-121T658-698l56-56q60 52 93 123t33 151q0 74-28.5 139.5t-77 114.5q-48.5 49-114 77.5T480-120Z"
-					stroke="currentColor"
-					fill="currentColor"
-				/>
-			</svg>
+			<span class="h-6"><LogoutIcon /></span>
 			<span class="flex flex-col" on:click={() => walletDisconnect()} on:keydown>
 				<span class="text-xs">Disconnect</span>
 				<span class="text-xs">({$connectedAccount.slice(0, 4)}...{$connectedAccount.slice(-4)})</span>
@@ -185,15 +162,9 @@
 		</a>
 	</li>
 {:else}
-	<li>
+	<!-- <li>
 		<a href={null} tabindex="0">
-			<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
-				<path
-					d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"
-					stroke="currentColor"
-					fill="currentColor"
-				/>
-			</svg>
+			<span class="h-6"><QRCodeIcon /></span>
 			<span on:click={() => walletConnect()} on:keydown={null}>Wallet Connect</span>
 		</a>
 	</li>
@@ -210,5 +181,5 @@
 				<span on:click={() => walletConnect(true)} on:keydown={null}>Kibisis Wallet</span>
 			</a>
 		</li>
-	{/if}
+	{/if} -->
 {/if}

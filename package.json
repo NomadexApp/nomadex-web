@@ -53,5 +53,9 @@
     "compile": "npm run compile-contract && npm run generate-client",
     "fix": "eslint . --ext .ts --fix"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "svelte-icons": "^2.1.0",
+    "svelte-star": "https://github.com/sveltedeveth/svelte-star.git"
+  }
 }

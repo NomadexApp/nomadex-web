@@ -21,6 +21,7 @@
 	import { connectedAccount, pendingTxn, signAndSendTransections } from '$lib/UseWallet.svelte';
 	import { ChainInterface } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
+	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
 
 	const { page } = getStores();
 	const tokenA = knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -224,7 +225,7 @@
 				}}
 				on:keydown={null}
 			>
-				&lang;&rang;
+				<button class="btn btn-ghost w-full btn-sm"><MdSwapVert /></button>
 			</div>
 			<label for=""
 				>{tokens[1].ticker}
