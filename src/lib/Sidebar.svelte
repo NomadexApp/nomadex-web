@@ -16,7 +16,7 @@
 				on:click={() => goto('/')}
 				on:keydown
 			>
-				<img class="grayscale" alt="voi logo" src="/favicon.png" />
+				<img class="grayscale" alt="voi logo" src="/logo.png" />
 			</div>
 			<li class="pl-0">
 				<a class="flex justify-between items-center" href="/swap" tabindex="0">
