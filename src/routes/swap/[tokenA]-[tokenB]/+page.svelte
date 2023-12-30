@@ -218,7 +218,7 @@
 				/>
 			</div>
 			<div
-				class="flex justify-center mt-2 px-1 cursor-pointer"
+				class="flex justify-center px-1 cursor-pointer"
 				on:click={() => {
 					if (!tokens) return;
 					updateRoute(tokens[1], tokens[0]);
