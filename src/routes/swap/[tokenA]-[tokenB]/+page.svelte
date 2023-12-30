@@ -225,7 +225,7 @@
 				}}
 				on:keydown={null}
 			>
-				<button class="btn btn-ghost w-full btn-sm"><MdSwapVert /></button>
+				<button class="btn btn-ghost w-full btn-sm opacity-30 text-base-content"><MdSwapVert /></button>
 			</div>
 			<label for=""
 				>{tokens[1].ticker}
