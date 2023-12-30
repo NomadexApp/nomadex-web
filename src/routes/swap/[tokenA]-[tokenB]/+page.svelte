@@ -186,7 +186,6 @@
 			<h4 class="text-left">Swap {tokens[0].ticker} for {tokens[1].ticker}</h4>
 			<label for="">
 				{tokens[0].ticker}
-				{#if tokens[0].type}({tokens[0].type}){/if}
 			</label>
 			<div class="flex items-center relative">
 				<input
@@ -255,11 +254,13 @@
 			</div>
 
 			Min Received = {inputTokenB - inputTokenB * slippage}
-			{tokenB.ticker}
+			{tokens[1].ticker}
 
-			{#await balanceString(currentAppId, viaAppId) then balance}
-				<br />
-				Liq. {balance}
+			<br />
+			{#await balanceString(currentAppId, viaAppId)}
+				Liquidity = 0 VOI / 0 VIA
+			{:then balance}
+				Liquidity = {balance}
 			{/await}
 			<!-- <br />
 			Fee: {0.5}% -->

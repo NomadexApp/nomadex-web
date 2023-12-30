@@ -339,7 +339,7 @@
 			{#if poolInitialized}
 				{#await balanceString(currentAppId, viaAppId) then balance}
 					<br />
-					Liq. {balance}
+					Liquidity = {balance}
 				{/await}
 			{/if}
 			<!-- <br />
