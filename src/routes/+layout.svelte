@@ -3,17 +3,23 @@
 	import PendingTxns from '$lib/PendingTxns.svelte';
 	import Sidebar from '$lib/Sidebar.svelte';
 	import { connectedAccount, walletConnect } from '$lib/UseWallet.svelte';
+	import { pageContentRefreshPending } from '$lib/utils';
 	import '../app.css';
 
 	import QRCodeIcon from 'svelte-star/dist/io/IoMdQrScanner.svelte';
-	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
 </script>
 
 <div class="hidden md:flex">
 	<Sidebar />
 	<div class="w-full flex flex-col">
 		{#if $connectedAccount}
-			<slot />
+			{#if $pageContentRefreshPending}
+				<section class="flex flex-col justify-center items-center h-full max-h-[95vh]">
+					<span class="loading" />
+				</section>
+			{:else}
+				<slot />
+			{/if}
 			<PendingTxns />
 		{:else}
 			<section class="flex flex-col justify-center items-center h-full max-h-[95vh]">

@@ -19,7 +19,7 @@
 	import algosdk from 'algosdk';
 	import { simulateHowMuch } from '$lib/howMuch';
 	import { connectedAccount, pendingTxn, signAndSendTransections } from '$lib/UseWallet.svelte';
-	import { ChainInterface } from '$lib/utils';
+	import { ChainInterface, hardGoto, pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
 
@@ -49,7 +49,8 @@
 	function updateRoute(tokenA: Token, tokenB: Token) {
 		if (!tokens) return;
 		if (tokens[0].ticker !== tokenA.ticker || tokens[1].ticker !== tokenB.ticker) {
-			location.href = `/swap/${tokenA.ticker}-${tokenB.ticker}`;
+			goto(`/swap/${tokenA.ticker}-${tokenB.ticker}`, { replaceState: true });
+			pageContentRefresh(0);
 		}
 	}
 
@@ -169,13 +170,11 @@
 		const prev = disabled;
 		disabled = true;
 		if (tokenA.ticker === 'VOI' && tokenB.ticker === 'VIA') {
-			const resp = await swapVoiToVia(Math.floor(inputTokenA * 1e6), 1);
-			console.log({ resp });
-			location.reload();
+			await swapVoiToVia(Math.floor(inputTokenA * 1e6), 1);
+			pageContentRefresh(0);
 		} else if (tokenA.ticker === 'VIA' && tokenB.ticker === 'VOI') {
-			const resp = await swapViaToVoi(Math.floor(inputTokenA * 1e6), 1);
-			console.log({ resp });
-			location.reload();
+			await swapViaToVoi(Math.floor(inputTokenA * 1e6), 1);
+			pageContentRefresh(0);
 		}
 		disabled = prev;
 	}
@@ -217,15 +216,17 @@
 					onSelect={(value) => setSelectedToken(value, 0)}
 				/>
 			</div>
-			<div
-				class="flex justify-center px-1 cursor-pointer"
-				on:click={() => {
-					if (!tokens) return;
-					updateRoute(tokens[1], tokens[0]);
-				}}
-				on:keydown={null}
-			>
-				<button class="btn btn-ghost w-full btn-sm opacity-30 text-base-content"><MdSwapVert /></button>
+			<div class="flex justify-center px-1">
+				<button
+					type="reset"
+					class="btn btn-ghost btn-link btn-sm opacity-30 text-base-content"
+					on:click={() => {
+						if (!tokens) return;
+						updateRoute(tokens[1], tokens[0]);
+					}}
+				>
+					<span class="block h-6"><MdSwapVert /></span>
+				</button>
 			</div>
 			<label for=""
 				>{tokens[1].ticker}
@@ -281,5 +282,17 @@
 	.disabled {
 		@apply btn-outline;
 		pointer-events: none;
+	}
+	form {
+		opacity: 0;
+		animation: fadein 1s forwards;
+	}
+	@keyframes fadein {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 </style>

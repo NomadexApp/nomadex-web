@@ -17,7 +17,7 @@
 	import { currentAppId, currentLptAssetId } from '$lib/_deployed';
 	import algosdk from 'algosdk';
 	import { connectedAccount, pendingTxn, signAndSendTransections } from '$lib/UseWallet.svelte';
-	import { ChainInterface } from '$lib/utils';
+	import { ChainInterface, pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import { onMount } from 'svelte';
 
@@ -211,10 +211,10 @@
 		disabled = true;
 		if (action === 'add') {
 			await mint();
-			window.location.reload();
+			pageContentRefresh(0);
 		} else if (action === 'remove') {
 			await burn();
-			window.location.reload();
+			pageContentRefresh(0);
 		}
 		disabled = prev;
 	}
