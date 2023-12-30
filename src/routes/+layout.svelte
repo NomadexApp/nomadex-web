@@ -27,7 +27,7 @@
 					<button class="btn btn-ghost" on:click={() => walletConnect()}>
 						<span class="block h-6"><QRCodeIcon /></span> Wallet Connect
 					</button>
-					{#if browser && true}
+					{#if browser && window['algorand']?.wallets.find((w) => w.id === 'kibisis')}
 						<button class="btn btn-ghost flex justify-start" on:click={() => walletConnect(true)}>
 							<span class="block h-6">
 								<svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">

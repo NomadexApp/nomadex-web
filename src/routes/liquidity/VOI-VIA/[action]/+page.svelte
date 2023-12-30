@@ -20,6 +20,7 @@
 	import { ChainInterface, pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	const { page } = getStores();
 
@@ -52,7 +53,7 @@
 
 	let timeout: NodeJS.Timeout;
 
-	let poolInitialized = false;
+	let poolInitialized: boolean;
 
 	onMount(async () => {
 		const client = getClient(currentAppId);
@@ -335,13 +336,13 @@
 
 			<!-- Min Received = {inputTokenB - inputTokenB * slippage}
 			{tokenB.ticker} -->
-
-			{#if poolInitialized}
-				{#await balanceString(currentAppId, viaAppId) then balance}
-					<br />
-					Liquidity = {balance}
-				{/await}
-			{/if}
+			{#await balanceString(currentAppId, viaAppId)}
+				<span class="flex gap-4">Liquidity = 0 VOI / 0 VIA</span>
+			{:then balance}
+				Liquidity = {balance}
+			{:catch}
+				<span class="flex gap-4">Liquidity = 0 VOI / 0 VIA</span>
+			{/await}
 			<!-- <br />
 			Fee: {0.5}% -->
 
@@ -357,8 +358,11 @@
 			</div>
 			<div class="flex justify-center mt-2 pr-0">
 				<a
-					href="/liquidity/VOI-VIA/{action === 'remove' ? 'add' : 'remove'}"
-					target="_self"
+					on:click|preventDefault={() => {
+						goto(`/liquidity/VOI-VIA/${action === 'remove' ? 'add' : 'remove'}`);
+						pageContentRefresh(0);
+					}}
+					href={null}
 					class="btn btn-ghost w-full box-border"
 				>
 					{action === 'remove' ? 'Add' : 'Remove'} Liquidity

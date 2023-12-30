@@ -1,3 +1,27 @@
+const theme = {
+  default: {
+    "--rounded-box": "0.25rem",
+    "--rounded-btn": "0.125rem",
+    "--rounded-badge": "0.125rem",
+    "--tab-radius": "0.125rem",
+    "--animation-btn": "0",
+    "--animation-input": "0",
+    "--btn-focus-scale": "1",
+  },
+  light: {
+    "color-scheme": "light",
+    "base-100": "#fafafa",
+    "primary": "#101010",
+    "primary-content": "#fafafa",
+  },
+  dark: {
+    "color-scheme": "dark",
+    "base-100": "#222222",
+    "primary": "#fafafa",
+    "primary-content": "#101010",
+  }
+}
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -5,21 +29,19 @@ export default {
   daisyui: {
     themes: [
       {
-        voitheme: {
-
-          "primary": "#6f2ae2",
-          "secondary": "#d4bff6",
-          "accent": "#6f2ae2",
-          "neutral": "#ffffff",
-          "base-100": "#ffffff",
-          // "info": "#ffffff",
-          // "success": "#00ffff",
-          // "warning": "#ffffff",
-          // "error": "#ffffff",
+        "light": {
+          ...theme.default,
+          ...theme.light
         },
+      },
+      {
+        "dark": {
+          ...theme.default,
+          ...theme.dark
+        }
       }
-    ], // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
-    darkTheme: "dark", // name of one of the included themes for dark mode
+    ],
+    // darkTheme: "dark", // name of one of the included themes for dark mode
     base: true, // applies background color and foreground color for root element by default
     styled: true, // include daisyUI colors and design decisions for all components
     utils: true, // adds responsive and modifier utility classes
@@ -29,7 +51,6 @@ export default {
   },
   theme: {
     extend: {
-
     },
   },
   plugins: [
