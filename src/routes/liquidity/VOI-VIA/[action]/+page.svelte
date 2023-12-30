@@ -3,24 +3,15 @@
 	import Dropdown from '$lib/Dropdown.svelte';
 	import { getStores } from '$app/stores';
 	import { browser } from '$app/environment';
-	import {
-		balanceString,
-		getASABalance,
-		getArc200Balance,
-		getBalance,
-		getBoxName,
-		getClient,
-		getUnnamedResourcesAccessedFromMethod,
-		nodeClient,
-		viaAppId,
-	} from '$lib/_shared';
+	import { balanceString, getASABalance, getArc200Balance, getBalance, getClient, viaAppId } from '$lib/_shared';
 	import { currentAppId, currentLptAssetId } from '$lib/_deployed';
 	import algosdk from 'algosdk';
-	import { connectedAccount, pendingTxn, signAndSendTransections } from '$lib/UseWallet.svelte';
-	import { ChainInterface, pageContentRefresh } from '$lib/utils';
+	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import ContractMethods from '$lib/contractMethods';
 
 	const { page } = getStores();
 
@@ -50,6 +41,7 @@
 	let inputTokenB: number = 0;
 
 	let disabled = true;
+	let loading = false;
 
 	let timeout: NodeJS.Timeout;
 
@@ -70,6 +62,7 @@
 		inputTokenB = 0;
 		if (!inputTokenLpt) return;
 		await new Promise((r) => (timeout = setTimeout(r, 1000)));
+		loading = true;
 		const appLptBalance = await getASABalance(currentLptAssetId, algosdk.getApplicationAddress(currentAppId));
 
 		const issued = BigInt(10_000_000_000) * BigInt(1e6) - BigInt(appLptBalance);
@@ -77,6 +70,7 @@
 		const ratio = (BigInt(inputTokenLpt * 1e6) * BigInt(1e6)) / issued;
 		const voiBalance = await getBalance(algosdk.getApplicationAddress(currentAppId));
 		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
+		loading = false;
 
 		inputTokenA = Number((BigInt(voiBalance) * ratio) / BigInt(1e6)) / 1e6;
 		inputTokenB = Number((BigInt(viaBalance) * ratio) / BigInt(1e6)) / 1e6;
@@ -91,8 +85,10 @@
 		inputTokenB = 0;
 		if (!inputTokenA) return;
 		await new Promise((r) => (timeout = setTimeout(r, 1000)));
+		loading = true;
 		const voiBalance = (await getBalance(algosdk.getApplicationAddress(currentAppId), false)) - 1e6;
 		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
+		loading = false;
 
 		const ratio = viaBalance / voiBalance;
 		if (ratio) {
@@ -108,8 +104,10 @@
 		inputTokenA = 0;
 		if (!inputTokenB) return;
 		await new Promise((r) => (timeout = setTimeout(r, 1000)));
+		loading = true;
 		const voiBalance = (await getBalance(algosdk.getApplicationAddress(currentAppId))) - 1e6;
 		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
+		loading = false;
 
 		const ratio = voiBalance / viaBalance;
 
@@ -119,102 +117,14 @@
 		}
 	}
 
-	async function mint() {
-		const suggestedParams = await nodeClient.getTransactionParams().do();
-		const client = getClient(currentAppId);
-		const voiAmount = Math.floor(inputTokenA * 1e6);
-		const viaAmount = Math.floor(inputTokenB * 1e6);
-
-		const lptBalance = await getASABalance(currentLptAssetId, $connectedAccount);
-		console.log({ lptBalance });
-
-		const optInTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-			from: $connectedAccount,
-			to: $connectedAccount,
-			amount: 0,
-			assetIndex: currentLptAssetId,
-			suggestedParams,
-		});
-
-		$pendingTxn = true;
-		const approveTxns = await ChainInterface.arc200_approve(
-			viaAppId,
-			$connectedAccount,
-			algosdk.getApplicationAddress(currentAppId),
-			BigInt(viaAmount)
-		);
-		$pendingTxn = false;
-
-		const mintArgs = () => ({
-			pay_txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-				amount: voiAmount,
-				from: $connectedAccount,
-				to: algosdk.getApplicationAddress(currentAppId),
-				suggestedParams: suggestedParams,
-			}),
-			arc200_amount: viaAmount,
-			pool_token: currentLptAssetId,
-		});
-		const composer = client.compose();
-
-		const opts = await getUnnamedResourcesAccessedFromMethod(client, 'mint', mintArgs());
-
-		const atc = await composer
-			.mint(mintArgs(), {
-				...opts,
-				boxes: [
-					...opts.boxes,
-					{
-						appId: viaAppId,
-						name: getBoxName(algosdk.getApplicationAddress(currentAppId)),
-					},
-				],
-			})
-			.atc();
-
-		const mintTxns = atc.buildGroup().map(({ txn }) => txn);
-
-		await signAndSendTransections(nodeClient, [...(lptBalance === -1 ? [[optInTxn]] : []), approveTxns, mintTxns]);
-
-		console.log({ success: true });
-	}
-
-	async function burn() {
-		const suggestedParams = await nodeClient.getTransactionParams().do();
-		const client = getClient(currentAppId);
-
-		const lptAmount = Math.floor(inputTokenLpt * 1e6);
-
-		const removeLiqArgs = () => ({
-			lpt_pay_txn: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-				assetIndex: currentLptAssetId,
-				amount: lptAmount,
-				from: $connectedAccount,
-				to: algosdk.getApplicationAddress(currentAppId),
-				suggestedParams: suggestedParams,
-			}),
-		});
-
-		const composer = client.compose();
-
-		const atc = await composer
-			.burn(removeLiqArgs(), await getUnnamedResourcesAccessedFromMethod(client, 'burn', removeLiqArgs()))
-			.atc();
-
-		const burnTxns = atc.buildGroup().map(({ txn }) => txn);
-
-		await signAndSendTransections(nodeClient, [burnTxns]);
-		console.log({ success: true });
-	}
-
 	async function changeLiquidity() {
 		const prev = disabled;
 		disabled = true;
 		if (action === 'add') {
-			await mint();
+			await ContractMethods.call('mint', inputTokenA, inputTokenB);
 			pageContentRefresh(0);
 		} else if (action === 'remove') {
-			await burn();
+			await ContractMethods.call('burn', inputTokenLpt);
 			pageContentRefresh(0);
 		}
 		disabled = prev;
@@ -336,13 +246,20 @@
 
 			<!-- Min Received = {inputTokenB - inputTokenB * slippage}
 			{tokenB.ticker} -->
-			{#await balanceString(currentAppId, viaAppId)}
-				<span class="flex gap-4">Liquidity = 0 VOI / 0 VIA</span>
-			{:then balance}
-				Liquidity = {balance}
-			{:catch}
-				<span class="flex gap-4">Liquidity = 0 VOI / 0 VIA</span>
-			{/await}
+
+			<div class="flex flex-col gap-0">
+				<span class="flex justify-between items-center">
+					{#await balanceString(currentAppId, viaAppId)}
+						<span class="flex gap-4">Liquidity = 0 VOI / 0 VIA</span>
+					{:then balance}
+						Liquidity = {balance}
+					{:catch}
+						<span class="flex gap-4">Liquidity = 0 VOI / 0 VIA</span>
+					{/await}
+					{#if loading}<span class="loading h-4 w-4" />{/if}
+				</span>
+			</div>
+
 			<!-- <br />
 			Fee: {0.5}% -->
 

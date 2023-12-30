@@ -5,23 +5,14 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		balanceString,
-		getArc200Balance,
-		getBalance,
-		getBoxName,
-		getClient,
-		getUnnamedResourcesAccessedFromMethod,
-		nodeClient,
-		viaAppId,
-	} from '$lib/_shared';
+	import { balanceString, getArc200Balance, getBalance, viaAppId } from '$lib/_shared';
 	import { currentAppId } from '$lib/_deployed';
-	import algosdk from 'algosdk';
 	import { simulateHowMuch } from '$lib/howMuch';
-	import { connectedAccount, pendingTxn, signAndSendTransections } from '$lib/UseWallet.svelte';
-	import { ChainInterface, hardGoto, pageContentRefresh } from '$lib/utils';
+	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
+	import ContractMethods from '$lib/contractMethods';
 
 	const { page } = getStores();
 	const tokenA = knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -58,8 +49,8 @@
 
 	let inputTokenA: number = 0;
 	let inputTokenB: number = 0;
-
 	let disabled = true;
+	let loading = false;
 
 	let timeout: NodeJS.Timeout;
 
@@ -74,7 +65,9 @@
 			timeout = setTimeout(r, 1000);
 			tm = timeout;
 		});
+		loading = true;
 		const ret = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenA * 1e6)), false)) / 1e6;
+		loading = false;
 		if (tm && tm === timeout) {
 			inputTokenB = ret;
 			disabled = !inputTokenB;
@@ -92,88 +85,29 @@
 			timeout = setTimeout(r, 1000);
 			tm = timeout;
 		});
+		loading = true;
 		const ret = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenB * 1e6)), true)) / 1e6;
+		loading = false;
 		if (tm && tm === timeout) {
 			inputTokenA = ret;
 			disabled = !inputTokenB;
 		}
 	}
 
-	async function swapVoiToVia(voiAmount: number, minViaAmount: number) {
-		const suggestedParams = await nodeClient.getTransactionParams().do();
-		const client = getClient(currentAppId);
-
-		let viaAmount = minViaAmount;
-
-		const swapArgs = () => ({
-			pay_txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-				amount: voiAmount,
-				from: $connectedAccount,
-				to: algosdk.getApplicationAddress(currentAppId),
-				suggestedParams: suggestedParams,
-			}),
-			min_amount: Math.floor(viaAmount - Math.round(viaAmount * slippage)),
-		});
-
-		const composer = client.compose();
-		const atc = await composer
-			.swapToArc200(swapArgs(), await getUnnamedResourcesAccessedFromMethod(client, 'swapToArc200', swapArgs()))
-			.atc();
-
-		const swapTxns = atc.buildGroup().map(({ txn }) => txn);
-
-		await signAndSendTransections(nodeClient, [swapTxns]);
-		console.log({ success: true });
-	}
-
-	async function swapViaToVoi(viaAmount: number, minVoiAmount: number) {
-		const client = getClient(currentAppId);
-
-		$pendingTxn = true;
-		const approveTxns = await ChainInterface.arc200_approve(
-			viaAppId,
-			$connectedAccount,
-			algosdk.getApplicationAddress(currentAppId),
-			BigInt(viaAmount)
-		);
-		$pendingTxn = false;
-
-		const swapArgs = () => ({
-			arc200_amount: viaAmount,
-			min_amount: Math.floor(minVoiAmount - Math.round(minVoiAmount * slippage)),
-		});
-		const composer = client.compose();
-
-		const opts = await getUnnamedResourcesAccessedFromMethod(client, 'swapFromArc200', swapArgs());
-
-		const atc = await composer
-			.swapFromArc200(swapArgs(), {
-				...opts,
-				boxes: [
-					...opts.boxes,
-					{
-						appId: viaAppId,
-						name: getBoxName(algosdk.getApplicationAddress(currentAppId)),
-					},
-				],
-			})
-			.atc();
-
-		const swapTxns = atc.buildGroup().map(({ txn }) => txn);
-
-		await signAndSendTransections(nodeClient, [approveTxns, swapTxns]);
-		console.log({ success: true });
-	}
-
 	async function swap() {
 		if (!tokenA || !tokenB) return;
 		const prev = disabled;
 		disabled = true;
+
+		const tokenAAmount = Math.floor(inputTokenA * 1e6);
+		const tokenBAmount = Math.floor(inputTokenB * 1e6);
+		const minOfTokenB = Math.floor(tokenBAmount - Math.round(tokenBAmount * slippage));
+
 		if (tokenA.ticker === 'VOI' && tokenB.ticker === 'VIA') {
-			await swapVoiToVia(Math.floor(inputTokenA * 1e6), 1);
+			await ContractMethods.call('swapVoiToVia', tokenAAmount, minOfTokenB);
 			pageContentRefresh(0);
 		} else if (tokenA.ticker === 'VIA' && tokenB.ticker === 'VOI') {
-			await swapViaToVoi(Math.floor(inputTokenA * 1e6), 1);
+			await ContractMethods.call('swapViaToVoi', tokenAAmount, minOfTokenB);
 			pageContentRefresh(0);
 		}
 		disabled = prev;
@@ -250,15 +184,20 @@
 				/>
 			</div>
 
-			Min Received = {inputTokenB - inputTokenB * slippage}
-			{tokens[1].ticker}
-
-			<br />
-			{#await balanceString(currentAppId, viaAppId)}
-				Liquidity = 0 VOI / 0 VIA
-			{:then balance}
-				Liquidity = {balance}
-			{/await}
+			<div class="flex flex-col gap-0">
+				<span class="flex justify-between items-center">
+					Min Received = {inputTokenB - inputTokenB * slippage}
+					{tokens[1].ticker}
+					{#if loading}<span class="loading h-4 w-4" />{/if}
+				</span>
+				<span class="">
+					{#await balanceString(currentAppId, viaAppId)}
+						Liquidity = 0 VOI / 0 VIA
+					{:then balance}
+						Liquidity = {balance}
+					{/await}
+				</span>
+			</div>
 			<!-- <br />
 			Fee: {0.5}% -->
 

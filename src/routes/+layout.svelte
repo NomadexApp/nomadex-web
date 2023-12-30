@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import PendingTxns from '$lib/PendingTxns.svelte';
+	import Notify from '$lib/Notify.svelte';
 	import Sidebar from '$lib/Sidebar.svelte';
 	import { connectedAccount, walletConnect } from '$lib/UseWallet.svelte';
 	import { pageContentRefreshPending } from '$lib/utils';
@@ -20,7 +20,6 @@
 			{:else}
 				<slot />
 			{/if}
-			<PendingTxns />
 		{:else}
 			<section class="flex flex-col justify-center items-center h-full max-h-[95vh]">
 				<div class="flex flex-col gap-2">
@@ -44,6 +43,7 @@
 			</section>
 		{/if}
 	</div>
+	<Notify />
 </div>
 <div class="md:hidden flex w-[calc(100vw)] h-[calc(100vh)] justify-center items-center">
 	This screen size not supported for now

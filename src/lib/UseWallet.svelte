@@ -5,7 +5,6 @@
 	export const deflyWallet = new DeflyWalletConnect({});
 	export const connectedAccount = writable<string>();
 	export const connectedWallet = writable<'wc' | 'kibisis'>();
-	export const pendingTxn = writable(false);
 
 	connectedWallet.subscribe((walletType) => {
 		if (!browser || !walletType) return;
@@ -40,7 +39,6 @@
 		txnGroups: algosdk.Transaction[][],
 		kibisis = get(connectedWallet) === 'kibisis'
 	) {
-		pendingTxn.set(true);
 		try {
 			if (kibisis) {
 				const signed: Uint8Array[] = [];
@@ -55,8 +53,6 @@
 					signed.push(...stxns.map((stxn) => Uint8Array.from(Buffer.from(stxn, 'base64'))));
 				}
 
-				pendingTxn.set(false);
-
 				return signed;
 			} else {
 				const signed = await deflyWallet.signTransaction(
@@ -65,12 +61,9 @@
 					})
 				);
 
-				pendingTxn.set(false);
-
 				return signed;
 			}
 		} catch (error) {
-			pendingTxn.set(false);
 			throw error;
 		}
 	}
@@ -82,7 +75,6 @@
 	) {
 		const signed = await signTransactions(txnGroups, kibisis);
 
-		pendingTxn.set(true);
 		const groups = txnGroups.map((group) => {
 			return <Uint8Array[]>group
 				.map((txn) => {
@@ -106,7 +98,6 @@
 				console.warn((<Error>error).message);
 			}
 		}
-		pendingTxn.set(false);
 
 		return true;
 	}
