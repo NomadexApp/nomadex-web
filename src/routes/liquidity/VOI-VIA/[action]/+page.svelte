@@ -5,7 +5,7 @@
 	import { browser } from '$app/environment';
 	import { balanceString, getASABalance, getArc200Balance, getBalance, getClient, viaAppId } from '$lib/_shared';
 	import { currentAppId, currentLptAssetId } from '$lib/_deployed';
-	import algosdk from 'algosdk';
+	import algosdk, { getApplicationAddress } from 'algosdk';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
@@ -133,7 +133,25 @@
 
 {#if tokens}
 	<div class="w-full h-full flex flex-col items-center p-12">
-		<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-40 prose">
+		<div class="flex flex-col items-end gap-2 w-full max-w-[448px] prose pt-20">
+			<span class="text-sm">
+				Total Shares:
+				{#await getASABalance(currentLptAssetId, algosdk.getApplicationAddress(currentAppId))}
+					0 LPT
+				{:then balance}
+					{(10_000 * 1e6 - balance / 1e6).toLocaleString('en')} LPT
+				{/await}
+			</span>
+			<span class="text-sm">
+				My Shares:
+				{#await getASABalance(currentLptAssetId, $connectedAccount)}
+					0 LPT
+				{:then balance}
+					{algosdk.microalgosToAlgos(balance).toLocaleString('en')} LPT
+				{/await}
+			</span>
+		</div>
+		<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-10 prose">
 			<h4 class="text-left">
 				{action === 'remove' ? 'Remove' : 'Add'} Liquidity
 			</h4>
