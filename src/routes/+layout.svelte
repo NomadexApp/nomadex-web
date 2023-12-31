@@ -9,7 +9,7 @@
 	import QRCodeIcon from 'svelte-star/dist/io/IoMdQrScanner.svelte';
 </script>
 
-<div class="hidden md:flex">
+<div class="flex min-h-screen">
 	<Sidebar />
 	<div class="w-full flex flex-col">
 		{#if $connectedAccount}
@@ -45,6 +45,6 @@
 	</div>
 	<Notify />
 </div>
-<div class="md:hidden flex w-[calc(100vw)] h-[calc(100vh)] justify-center items-center">
+<!-- <div class="md:hidden flex w-[calc(100vw)] h-[calc(100vh)] justify-center items-center">
 	This screen size not supported for now
-</div>
+</div> -->
