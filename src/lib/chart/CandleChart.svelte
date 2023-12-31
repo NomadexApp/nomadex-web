@@ -121,6 +121,7 @@
 		width: 100%;
 		opacity: 0;
 		animation: fadein 500ms ease-in 100ms forwards;
+		transform: scale(1.05);
 	}
 
 	@keyframes fadein {
