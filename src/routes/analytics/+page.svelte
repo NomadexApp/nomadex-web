@@ -4,6 +4,7 @@
 	import algosdk from 'algosdk';
 	import { SwapEvents, type SwapTxn } from '$lib/events';
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
+	import { browser } from '$app/environment';
 
 	enum Timescale {
 		'15m' = 15 * 60,
@@ -21,8 +22,12 @@
 		txn: SwapTxn;
 	}[] = [];
 	let pricingDirection: 'VOI/VIA' | 'VIA/VOI' = 'VOI/VIA';
-	let timescale = Timescale['15m'];
+	let timescale = browser
+		? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m']))
+		: Timescale['15m'];
 	let logarithmic = false;
+
+	$: browser && localStorage.setItem('timescale', JSON.stringify(timescale));
 
 	onMount(async () => {
 		const txns = await SwapEvents.loadTxnsByEvent(currentAppId, 'Swap(address,uint64,uint64,uint8)');
