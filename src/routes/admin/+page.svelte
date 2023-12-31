@@ -2,9 +2,10 @@
 	import { deployVoiSwap, getClient, nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import { browser } from '$app/environment';
-	let appId = 24589652;
-	let poolToken = 24589656;
+	import { currentAppId, currentLptAssetId } from '$lib/_deployed';
+
+	let appId = currentAppId;
+	let poolToken = currentLptAssetId;
 	let fee = 0;
 	let admin = '';
 
