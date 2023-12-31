@@ -28,6 +28,8 @@ export class Arc200Swap extends Contract {
   // check if pool has been initialized
   initialized = GlobalStateKey<boolean>({ key: 'initialized' });
 
+  Swap = new EventLogger<[Address, uint64, uint64, uint<8>]>();
+
   // initialize values
   createApplication(): void {
     this.admin.value = this.txn.sender;
@@ -233,6 +235,13 @@ export class Arc200Swap extends Contract {
     this.arc200_transfer_to(this.txn.sender, to_swap);
     this.set_ratio();
 
+    this.Swap.log(
+      this.txn.sender,
+      pay_txn.amount,
+      to_swap,
+      0
+    );
+
     return to_swap;
   }
 
@@ -256,6 +265,13 @@ export class Arc200Swap extends Contract {
 
     this.transfer_to(this.txn.sender, to_swap);
     this.set_ratio();
+
+    this.Swap.log(
+      this.txn.sender,
+      arc200_amount,
+      to_swap,
+      1,
+    );
 
     return to_swap;
   }
