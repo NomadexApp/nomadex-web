@@ -21,12 +21,15 @@
 		direction: number;
 		txn: SwapTxn;
 	}[] = [];
-	let pricingDirection: 'VOI/VIA' | 'VIA/VOI' = 'VOI/VIA';
+	let pricingDirection: 'VOI/VIA' | 'VIA/VOI' = browser
+		? <any>localStorage.getItem('price_direction') ?? 'VOI/VIA'
+		: 'VOI/VIA';
 	let timescale = browser
 		? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m']))
 		: Timescale['15m'];
 	let logarithmic = false;
 
+	$: browser && localStorage.setItem('price_direction', pricingDirection);
 	$: browser && localStorage.setItem('timescale', JSON.stringify(timescale));
 
 	onMount(async () => {
