@@ -59,3 +59,27 @@ export function fillMissingSeconds(data: { time: number; value: number }[]): { t
 
     return filledData;
 }
+
+export function timeAgo(timestamp: number): string {
+    const now = Date.now();
+    const seconds = Math.floor((now - timestamp) / 1000);
+
+    if (seconds < 60) {
+        return `${seconds}sec${seconds !== 1 ? 's' : ''} ago`;
+    } else if (seconds < 3600) {
+        const minutes = Math.floor(seconds / 60);
+        return `${minutes}min${minutes !== 1 ? 's' : ''} ago`;
+    } else if (seconds < 86400) {
+        const hours = Math.floor(seconds / 3600);
+        return `${hours}hr${hours !== 1 ? 's' : ''} ago`;
+    } else if (seconds < 2592000) {
+        const days = Math.floor(seconds / 86400);
+        return `${days}d${days !== 1 ? 's' : ''} ago`;
+    } else if (seconds < 31536000) {
+        const months = Math.floor(seconds / 2592000);
+        return `${months}mon${months !== 1 ? 's' : ''} ago`;
+    } else {
+        const years = Math.floor(seconds / 31536000);
+        return `${years}yr${years !== 1 ? 's' : ''} ago`;
+    }
+}

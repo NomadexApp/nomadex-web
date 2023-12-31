@@ -5,6 +5,7 @@
 	import { SwapEvents, type SwapTxn } from '$lib/events';
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
 	import { browser } from '$app/environment';
+	import { timeAgo } from '$lib/utils';
 
 	enum Timescale {
 		'15m' = 15 * 60,
@@ -229,6 +230,7 @@
 		{#if swapEvents?.length}
 			<div class="event bg-base-300 p-2 px-5 rounded-btn flex justify-start items-center gap-1 max-w-[800px] font-bold">
 				<span class="w-28"> TxId </span>
+				<span class="w-28 hidden lg:flex">Time</span>
 				<span class="w-28 hidden lg:flex">Round</span>
 				<span class="w-28 hidden lg:flex"> Sender </span>
 				<span class="w-32 flex-grow text-right">From Amount</span>
@@ -239,6 +241,7 @@
 					<a class="w-28" href="https://voi.observer/explorer/transaction/{event.txn.id}" target="_blank">
 						{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 					</a>
+					<span class="w-28 hidden lg:flex">{timeAgo(event.txn['round-time'] * 1000)}</span>
 					<span class="w-28 hidden lg:flex">{event.txn['confirmed-round']}</span>
 					<a class="w-28 hidden lg:flex" href="https://voi.observer/explorer/account/{event.sender}" target="_blank">
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
