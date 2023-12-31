@@ -135,19 +135,19 @@
 	<div class="w-full h-full flex flex-col items-center p-12">
 		<div class="flex flex-col items-end gap-2 w-full max-w-[448px] prose pt-20">
 			<span class="text-sm">
-				Total Shares:
-				{#await getASABalance(currentLptAssetId, algosdk.getApplicationAddress(currentAppId))}
-					0 LPT
-				{:then balance}
-					{(10_000 * 1e6 - balance / 1e6).toLocaleString('en')} LPT
-				{/await}
-			</span>
-			<span class="text-sm">
 				My Shares:
 				{#await getASABalance(currentLptAssetId, $connectedAccount)}
 					0 LPT
 				{:then balance}
 					{algosdk.microalgosToAlgos(balance).toLocaleString('en')} LPT
+				{/await}
+			</span>
+			<span class="text-sm">
+				Total Shares:
+				{#await getASABalance(currentLptAssetId, algosdk.getApplicationAddress(currentAppId))}
+					0 LPT
+				{:then balance}
+					{(10_000 * 1e6 - balance / 1e6).toLocaleString('en')} LPT
 				{/await}
 			</span>
 		</div>
