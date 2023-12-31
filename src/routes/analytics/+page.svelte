@@ -97,11 +97,23 @@
 			return pricingCurrency === 0 ? viaAmount / voiAmount : voiAmount / viaAmount;
 		};
 
+		const getStartOfHour = (ms: number) => {
+			let date = new Date(ms);
+			while (date.getMinutes() !== 0 || date.getSeconds() !== 0 || date.getMilliseconds() !== 0) {
+				date = new Date(++ms);
+			}
+			return ms;
+		};
+
 		let close = 1;
 
 		// getTime(events[events.length - 1])
 
-		for (let time = getTime(events[0]); time < Math.floor(Date.now() / 1000); time += duration) {
+		for (
+			let time = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000) + 0.1;
+			time < Math.floor(Date.now() / 1000);
+			time += duration
+		) {
 			const matchingEvents = events.filter((e) => getTime(e) >= time && getTime(e) < time + duration);
 			if (matchingEvents.length) {
 				for (const event of matchingEvents) {
@@ -161,6 +173,7 @@
 			>
 			<button
 				class="btn btn-sm"
+				class:btn-primary={timescale === Timescale['15m']}
 				on:click={() => {
 					timescale = Timescale['15m'];
 					generateDataByTime(pricingDirection);
@@ -168,6 +181,7 @@
 			>
 			<button
 				class="btn btn-sm"
+				class:btn-primary={timescale === Timescale['30m']}
 				on:click={() => {
 					timescale = Timescale['30m'];
 					generateDataByTime(pricingDirection);
@@ -175,6 +189,7 @@
 			>
 			<button
 				class="btn btn-sm"
+				class:btn-primary={timescale === Timescale['1hr']}
 				on:click={() => {
 					timescale = Timescale['1hr'];
 					generateDataByTime(pricingDirection);
@@ -182,6 +197,7 @@
 			>
 			<button
 				class="btn btn-sm"
+				class:btn-primary={timescale === Timescale['4hr']}
 				on:click={() => {
 					timescale = Timescale['4hr'];
 					generateDataByTime(pricingDirection);
@@ -189,6 +205,7 @@
 			>
 			<button
 				class="btn btn-sm"
+				class:btn-primary={timescale === Timescale['1d']}
 				on:click={() => {
 					timescale = Timescale['1d'];
 					generateDataByTime(pricingDirection);

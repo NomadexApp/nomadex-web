@@ -61,6 +61,16 @@
 							beginAtZero: true,
 						},
 					},
+					x: {
+						type: 'timeseries',
+						time: {
+							unit: 'minute',
+							displayFormats: { minute: 'hh:mm' },
+						},
+						title: {
+							text: 'Time',
+						},
+					},
 				},
 			},
 			data: {
