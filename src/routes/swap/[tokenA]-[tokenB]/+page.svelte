@@ -186,7 +186,7 @@
 
 			<div class="flex flex-col gap-0">
 				<span class="flex justify-between items-center">
-					Min Received = {inputTokenB - inputTokenB * slippage}
+					Min Received = {(inputTokenB - inputTokenB * slippage).toLocaleString('en')}
 					{tokens[1].ticker}
 					{#if loading}<span class="loading h-4 w-4" />{/if}
 				</span>

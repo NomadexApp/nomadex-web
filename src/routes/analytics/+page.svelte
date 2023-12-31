@@ -225,6 +225,8 @@
 	<div class="chart-container">
 		<CandleChart label={pricingDirection} {logarithmic} data={priceData.slice(-80)} />
 	</div>
+	<br />
+	<br />
 	<div class="events flex flex-col gap-2 justify-center items-center">
 		<h4 class="text-lg font-semibold text-left w-full">Recent Swaps</h4>
 		{#if swapEvents?.length}
