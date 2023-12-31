@@ -3,6 +3,7 @@
 	import UseWallet from './UseWallet.svelte';
 	import SwapIcon from 'svelte-star/dist/md/MdAutorenew.svelte';
 	import PoolsIcon from 'svelte-star/dist/md/MdFormatListBulleted.svelte';
+	import AnalyticsIcon from 'svelte-star/dist/md/MdShowChart.svelte';
 </script>
 
 <div class="drawer drawer-open max-w-min">
@@ -28,6 +29,12 @@
 				<a class="flex justify-between" href="/pools" tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">POOLS</span>
 					<span class="h-5"><PoolsIcon /></span>
+				</a>
+			</li>
+			<li class="pl-0">
+				<a class="flex justify-between" href="/analytics" tabindex="0">
+					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">ANALYTICS</span>
+					<span class="h-5"><AnalyticsIcon /></span>
 				</a>
 			</li>
 			<div class="h-full flex flex-col grow">&nbsp;</div>

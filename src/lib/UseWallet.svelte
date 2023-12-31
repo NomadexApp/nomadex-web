@@ -120,6 +120,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
+	import { isDarkTheme } from './stores';
 
 	let usingKibisisWallet = false;
 
@@ -140,12 +141,6 @@
 			usingKibisisWallet = !!window['algorand']?.wallets.find((w) => w.id === 'kibisis');
 		}, 1000);
 	});
-
-	let isDark = browser ? localStorage.getItem('theme') === 'dark' : false;
-
-	$: if (browser) {
-		document.body?.setAttribute('data-theme', isDark ? 'dark' : 'light');
-	}
 </script>
 
 {#if $connectedAccount}
@@ -164,8 +159,8 @@
 					<input
 						type="checkbox"
 						class="theme-controller"
-						bind:checked={isDark}
-						on:change={() => localStorage.setItem('theme', isDark ? 'dark' : 'light')}
+						bind:checked={$isDarkTheme}
+						on:change={() => localStorage.setItem('theme', $isDarkTheme ? 'dark' : 'light')}
 					/>
 					<svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 						<path

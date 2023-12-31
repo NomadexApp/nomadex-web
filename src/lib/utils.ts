@@ -36,3 +36,26 @@ export async function pageContentRefresh(ms = 1000) {
     await new Promise(r => setTimeout(r, ms));
     pageContentRefreshPending.set(false);
 }
+
+export function fillMissingSeconds(data: { time: number; value: number }[]): { time: number; value: number }[] {
+    const filledData: { time: number; value: number }[] = [];
+
+    for (let i = 0; i < data.length; i++) {
+        filledData.push(data[i]);
+
+        // Check if there is a missing hour
+        if (i < data.length - 1 && data[i + 1].time - data[i].time > 1) {
+            const missingHours = data[i + 1].time - data[i].time - 1;
+
+            // Fill missing hours with the previous hour's value
+            for (let j = 1; j <= missingHours; j++) {
+                filledData.push({
+                    time: data[i].time + j,
+                    value: data[i].value,
+                });
+            }
+        }
+    }
+
+    return filledData;
+}
