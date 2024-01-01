@@ -65,14 +65,11 @@ export class Arc200Swap extends Contract {
   private compute_out_tokens(in_amount: uint64, in_supply: uint64, out_supply: uint64): uint64 {
     const factor = SCALE - this.fee.value;
 
-    const xf = <uint<256>>(
-      <uint<256>>in_amount * <uint<256>>factor
-    );
     const numerator = <uint<256>>(
-      <uint<256>>xf * <uint<256>>out_supply
+      <uint<256>>in_amount * <uint<256>>out_supply * <uint<256>>factor
     );
     const denominator = <uint<256>>(
-      (<uint<256>>in_supply * <uint<256>>SCALE) + <uint<256>>xf
+      (<uint<256>>in_amount + <uint<256>>in_supply) * <uint<256>>SCALE
     );
 
     return <uint64>(numerator / denominator);
@@ -82,12 +79,10 @@ export class Arc200Swap extends Contract {
     const factor = SCALE - this.fee.value;
 
     const numerator = <uint<256>>(
-      <uint<256>>out_amount * <uint<256>>out_supply * <uint<256>>in_supply * <uint<256>>SCALE
+      <uint<256>>out_amount * <uint<256>>in_supply * <uint<256>>SCALE
     );
     const denominator = <uint<256>>(
-      <uint<256>>out_supply * <uint<256>>factor * (
-        <uint<256>>out_supply - <uint<256>>out_amount
-      )
+      (<uint<256>>out_supply * <uint<256>>factor) - (<uint<256>>out_amount * <uint<256>>SCALE)
     );
 
     return <uint64>(numerator / denominator);
