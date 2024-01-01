@@ -315,29 +315,29 @@ export class Arc200Swap extends Contract {
     return this.pool_token.value;
   }
 
-  // register_online(selection_pk: bytes, state_proof_pk: bytes, vote_pk: bytes, vote_first: uint64, vote_last: uint64, vote_key_dilution: uint64): void {
-  //   assert(this.txn.sender === this.admin.value);
+  register_online(selection_pk: bytes, state_proof_pk: bytes, vote_pk: bytes, vote_first: uint64, vote_last: uint64, vote_key_dilution: uint64): void {
+    assert(this.txn.sender === this.admin.value);
 
-  //   sendOnlineKeyRegistration({
-  //     sender: this.app.address,
-  //     selectionPK: selection_pk,
-  //     stateProofPK: state_proof_pk,
-  //     votePK: vote_pk,
-  //     voteFirst: vote_first,
-  //     voteLast: vote_last,
-  //     voteKeyDilution: vote_key_dilution,
-  //     fee: 1000,
-  //   });
-  // }
+    sendOnlineKeyRegistration({
+      sender: this.app.address,
+      selectionPK: selection_pk,
+      stateProofPK: state_proof_pk,
+      votePK: vote_pk,
+      voteFirst: vote_first,
+      voteLast: vote_last,
+      voteKeyDilution: vote_key_dilution,
+      fee: 1000,
+    });
+  }
 
-  // register_offline(): void {
-  //   assert(this.txn.sender === this.admin.value);
+  register_offline(): void {
+    assert(this.txn.sender === this.admin.value);
 
-  //   sendOfflineKeyRegistration({
-  //     sender: this.app.address,
-  //     fee: 1000
-  //   });
-  // }
+    sendOfflineKeyRegistration({
+      sender: this.app.address,
+      fee: 1000
+    });
+  }
 
   set_fees(fee: uint64): void {
     assert(this.txn.sender === this.admin.value);
@@ -347,45 +347,5 @@ export class Arc200Swap extends Contract {
   set_admin(admin: Account): void {
     assert(this.txn.sender === this.admin.value);
     this.admin.value = admin;
-  }
-
-  emergency_withdraw(): void {
-    assert(this.txn.sender === this.admin.value);
-
-    const arc200_balance = this.get_arc200_balance();
-
-    this.arc200_transfer_to(this.txn.sender, arc200_balance);
-    this.transfer_to(this.txn.sender, this.get_balance());
-  }
-
-  /**************************************************/
-
-  compute_swap_to_arc200(amount: uint64): uint64 {
-    const arc200_balance = this.get_arc200_balance();
-    return this.compute_out_tokens(amount, this.get_balance(), arc200_balance, this.fee.value);
-  }
-
-  compute_swap_to_arc200_by_out_tokens(arc200_amount: uint64): uint64 {
-    const arc200_balance = this.get_arc200_balance();
-    return this.compute_in_tokens(arc200_amount, this.get_balance(), arc200_balance);
-  }
-
-  compute_swap_from_arc200(arc200_amount: uint64): uint64 {
-    const arc200_balance = this.get_arc200_balance();
-    return this.compute_out_tokens(
-      arc200_amount,
-      arc200_balance,
-      this.get_balance(),
-      this.fee.value
-    );
-  }
-
-  compute_swap_from_arc200_by_out_amount(amount: uint64): uint64 {
-    const arc200_balance = this.get_arc200_balance();
-    return this.compute_in_tokens(
-      amount,
-      arc200_balance,
-      this.get_balance()
-    );
   }
 }

@@ -1547,9 +1547,151 @@ create_pool_token:
 	app_global_get
 	retsub
 
+// register_online(uint64,uint64,uint64,bytes,bytes,bytes)void
+abi_route_register_online:
+	// vote_key_dilution: uint64
+	txna ApplicationArgs 6
+	btoi
+
+	// vote_last: uint64
+	txna ApplicationArgs 5
+	btoi
+
+	// vote_first: uint64
+	txna ApplicationArgs 4
+	btoi
+
+	// vote_pk: byte[]
+	txna ApplicationArgs 3
+	extract 2 0
+
+	// state_proof_pk: byte[]
+	txna ApplicationArgs 2
+	extract 2 0
+
+	// selection_pk: byte[]
+	txna ApplicationArgs 1
+	extract 2 0
+
+	// execute register_online(uint64,uint64,uint64,bytes,bytes,bytes)void
+	callsub register_online
+	int 1
+	return
+
+register_online:
+	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
+	proto 6 0
+
+	// src/contracts/arc200_swap.algo.ts:319
+	// assert(this.txn.sender === this.admin.value)
+	txn Sender
+	byte 0x61646d696e // "admin"
+	app_global_get
+	==
+	assert
+
+	// src/contracts/arc200_swap.algo.ts:321
+	// sendOnlineKeyRegistration({
+	//       sender: this.app.address,
+	//       selectionPK: selection_pk,
+	//       stateProofPK: state_proof_pk,
+	//       votePK: vote_pk,
+	//       voteFirst: vote_first,
+	//       voteLast: vote_last,
+	//       voteKeyDilution: vote_key_dilution,
+	//       fee: 1000,
+	//     })
+	itxn_begin
+	int keyreg
+	itxn_field TypeEnum
+
+	// src/contracts/arc200_swap.algo.ts:322
+	// sender: this.app.address
+	global CurrentApplicationAddress
+	itxn_field Sender
+
+	// src/contracts/arc200_swap.algo.ts:323
+	// selectionPK: selection_pk
+	frame_dig -1 // selection_pk: bytes
+	itxn_field SelectionPK
+
+	// src/contracts/arc200_swap.algo.ts:324
+	// stateProofPK: state_proof_pk
+	frame_dig -2 // state_proof_pk: bytes
+	itxn_field StateProofPK
+
+	// src/contracts/arc200_swap.algo.ts:325
+	// votePK: vote_pk
+	frame_dig -3 // vote_pk: bytes
+	itxn_field VotePK
+
+	// src/contracts/arc200_swap.algo.ts:326
+	// voteFirst: vote_first
+	frame_dig -4 // vote_first: uint64
+	itxn_field VoteFirst
+
+	// src/contracts/arc200_swap.algo.ts:327
+	// voteLast: vote_last
+	frame_dig -5 // vote_last: uint64
+	itxn_field VoteLast
+
+	// src/contracts/arc200_swap.algo.ts:328
+	// voteKeyDilution: vote_key_dilution
+	frame_dig -6 // vote_key_dilution: uint64
+	itxn_field VoteKeyDilution
+
+	// src/contracts/arc200_swap.algo.ts:329
+	// fee: 1000
+	int 1000
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+	retsub
+
+// register_offline()void
+abi_route_register_offline:
+	// execute register_offline()void
+	callsub register_offline
+	int 1
+	return
+
+register_offline:
+	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
+	proto 0 0
+
+	// src/contracts/arc200_swap.algo.ts:334
+	// assert(this.txn.sender === this.admin.value)
+	txn Sender
+	byte 0x61646d696e // "admin"
+	app_global_get
+	==
+	assert
+
+	// src/contracts/arc200_swap.algo.ts:336
+	// sendOfflineKeyRegistration({
+	//       sender: this.app.address,
+	//       fee: 1000
+	//     })
+	itxn_begin
+	int keyreg
+	itxn_field TypeEnum
+
+	// src/contracts/arc200_swap.algo.ts:337
+	// sender: this.app.address
+	global CurrentApplicationAddress
+	itxn_field Sender
+
+	// src/contracts/arc200_swap.algo.ts:338
+	// fee: 1000
+	int 1000
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+	retsub
+
 // set_fees(uint64)void
-//
-// // }
 abi_route_set_fees:
 	// fee: uint64
 	txna ApplicationArgs 1
@@ -1610,206 +1752,6 @@ set_admin:
 	app_global_put
 	retsub
 
-// emergency_withdraw()void
-abi_route_emergency_withdraw:
-	// execute emergency_withdraw()void
-	callsub emergency_withdraw
-	int 1
-	return
-
-emergency_withdraw:
-	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 0 0; byte 0x
-
-	// src/contracts/arc200_swap.algo.ts:353
-	// assert(this.txn.sender === this.admin.value)
-	txn Sender
-	byte 0x61646d696e // "admin"
-	app_global_get
-	==
-	assert
-
-	// src/contracts/arc200_swap.algo.ts:355
-	// arc200_balance = this.get_arc200_balance()
-	callsub get_arc200_balance
-	frame_bury 0 // arc200_balance: uint64
-
-	// src/contracts/arc200_swap.algo.ts:357
-	// this.arc200_transfer_to(this.txn.sender, arc200_balance)
-	frame_dig 0 // arc200_balance: uint64
-	txn Sender
-	callsub arc200_transfer_to
-
-	// src/contracts/arc200_swap.algo.ts:358
-	// this.transfer_to(this.txn.sender, this.get_balance())
-	callsub get_balance
-	txn Sender
-	callsub transfer_to
-	retsub
-
-// compute_swap_to_arc200(uint64)uint64
-//
-// **********************************************
-abi_route_compute_swap_to_arc200:
-	// The ABI return prefix
-	byte 0x151f7c75
-
-	// amount: uint64
-	txna ApplicationArgs 1
-	btoi
-
-	// execute compute_swap_to_arc200(uint64)uint64
-	callsub compute_swap_to_arc200
-	itob
-	concat
-	log
-	int 1
-	return
-
-compute_swap_to_arc200:
-	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 1 1; byte 0x
-
-	// src/contracts/arc200_swap.algo.ts:364
-	// arc200_balance = this.get_arc200_balance()
-	callsub get_arc200_balance
-	frame_bury 0 // arc200_balance: uint64
-
-	// src/contracts/arc200_swap.algo.ts:365
-	// return this.compute_out_tokens(amount, this.get_balance(), arc200_balance, this.fee.value);
-	byte 0x666565 // "fee"
-	app_global_get
-	frame_dig 0 // arc200_balance: uint64
-	callsub get_balance
-	frame_dig -1 // amount: uint64
-	callsub compute_out_tokens
-
-	// set the subroutine return value
-	frame_bury 0
-	retsub
-
-// compute_swap_to_arc200_by_out_tokens(uint64)uint64
-abi_route_compute_swap_to_arc200_by_out_tokens:
-	// The ABI return prefix
-	byte 0x151f7c75
-
-	// arc200_amount: uint64
-	txna ApplicationArgs 1
-	btoi
-
-	// execute compute_swap_to_arc200_by_out_tokens(uint64)uint64
-	callsub compute_swap_to_arc200_by_out_tokens
-	itob
-	concat
-	log
-	int 1
-	return
-
-compute_swap_to_arc200_by_out_tokens:
-	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 1 1; byte 0x
-
-	// src/contracts/arc200_swap.algo.ts:369
-	// arc200_balance = this.get_arc200_balance()
-	callsub get_arc200_balance
-	frame_bury 0 // arc200_balance: uint64
-
-	// src/contracts/arc200_swap.algo.ts:370
-	// return this.compute_in_tokens(arc200_amount, this.get_balance(), arc200_balance);
-	frame_dig 0 // arc200_balance: uint64
-	callsub get_balance
-	frame_dig -1 // arc200_amount: uint64
-	callsub compute_in_tokens
-
-	// set the subroutine return value
-	frame_bury 0
-	retsub
-
-// compute_swap_from_arc200(uint64)uint64
-abi_route_compute_swap_from_arc200:
-	// The ABI return prefix
-	byte 0x151f7c75
-
-	// arc200_amount: uint64
-	txna ApplicationArgs 1
-	btoi
-
-	// execute compute_swap_from_arc200(uint64)uint64
-	callsub compute_swap_from_arc200
-	itob
-	concat
-	log
-	int 1
-	return
-
-compute_swap_from_arc200:
-	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 1 1; byte 0x
-
-	// src/contracts/arc200_swap.algo.ts:374
-	// arc200_balance = this.get_arc200_balance()
-	callsub get_arc200_balance
-	frame_bury 0 // arc200_balance: uint64
-
-	// src/contracts/arc200_swap.algo.ts:375
-	// return this.compute_out_tokens(
-	//       arc200_amount,
-	//       arc200_balance,
-	//       this.get_balance(),
-	//       this.fee.value
-	//     );
-	byte 0x666565 // "fee"
-	app_global_get
-	callsub get_balance
-	frame_dig 0 // arc200_balance: uint64
-	frame_dig -1 // arc200_amount: uint64
-	callsub compute_out_tokens
-
-	// set the subroutine return value
-	frame_bury 0
-	retsub
-
-// compute_swap_from_arc200_by_out_amount(uint64)uint64
-abi_route_compute_swap_from_arc200_by_out_amount:
-	// The ABI return prefix
-	byte 0x151f7c75
-
-	// amount: uint64
-	txna ApplicationArgs 1
-	btoi
-
-	// execute compute_swap_from_arc200_by_out_amount(uint64)uint64
-	callsub compute_swap_from_arc200_by_out_amount
-	itob
-	concat
-	log
-	int 1
-	return
-
-compute_swap_from_arc200_by_out_amount:
-	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 1 1; byte 0x
-
-	// src/contracts/arc200_swap.algo.ts:384
-	// arc200_balance = this.get_arc200_balance()
-	callsub get_arc200_balance
-	frame_bury 0 // arc200_balance: uint64
-
-	// src/contracts/arc200_swap.algo.ts:385
-	// return this.compute_in_tokens(
-	//       amount,
-	//       arc200_balance,
-	//       this.get_balance()
-	//     );
-	callsub get_balance
-	frame_dig 0 // arc200_balance: uint64
-	frame_dig -1 // amount: uint64
-	callsub compute_in_tokens
-
-	// set the subroutine return value
-	frame_bury 0
-	retsub
-
 create_NoOp:
 	method "createApplication()void"
 	txna ApplicationArgs 0
@@ -1822,15 +1764,12 @@ call_NoOp:
 	method "swap_to_arc200(pay,uint64)uint64"
 	method "swap_from_arc200(uint64,uint64)uint64"
 	method "create_pool_token(pay)uint64"
+	method "register_online(byte[],byte[],byte[],uint64,uint64,uint64)void"
+	method "register_offline()void"
 	method "set_fees(uint64)void"
 	method "set_admin(account)void"
-	method "emergency_withdraw()void"
-	method "compute_swap_to_arc200(uint64)uint64"
-	method "compute_swap_to_arc200_by_out_tokens(uint64)uint64"
-	method "compute_swap_from_arc200(uint64)uint64"
-	method "compute_swap_from_arc200_by_out_amount(uint64)uint64"
 	txna ApplicationArgs 0
-	match abi_route_mint abi_route_burn abi_route_swap_to_arc200 abi_route_swap_from_arc200 abi_route_create_pool_token abi_route_set_fees abi_route_set_admin abi_route_emergency_withdraw abi_route_compute_swap_to_arc200 abi_route_compute_swap_to_arc200_by_out_tokens abi_route_compute_swap_from_arc200 abi_route_compute_swap_from_arc200_by_out_amount
+	match abi_route_mint abi_route_burn abi_route_swap_to_arc200 abi_route_swap_from_arc200 abi_route_create_pool_token abi_route_register_online abi_route_register_offline abi_route_set_fees abi_route_set_admin
 	err
 
 call_UpdateApplication:
