@@ -22,6 +22,7 @@
 		direction: number;
 		txn: SwapTxn;
 	}[] = [];
+	let price = 0;
 	let pricingDirection: 'VOI/VIA' | 'VIA/VOI' = browser
 		? <any>localStorage.getItem('price_direction') ?? 'VOI/VIA'
 		: 'VOI/VIA';
@@ -143,6 +144,7 @@
 				});
 
 				close = _close;
+				price = _close;
 			} else {
 				priceData.push({
 					x: time * 1000,
@@ -161,16 +163,17 @@
 	<br />
 	<br />
 	<div class="flex justify-between w-full max-w-[900px]">
-		<!-- <span class="flex-grow"></span> -->
 		<div
-			class="cursor-pointer font-bold text-lg btn btn-sm"
+			class="cursor-pointer font-bold text-lg"
 			on:click={() => {
 				pricingDirection = pricingDirection === 'VOI/VIA' ? 'VIA/VOI' : 'VOI/VIA';
 				generateDataByTime(pricingDirection);
 			}}
 			on:keydown
 		>
-			{pricingDirection}
+			Price ≈ {price.toLocaleString('en')}
+			{pricingDirection.split('/')[1]}
+			<span class="text-[0.8rem] font-normal">/ 1 {pricingDirection.split('/')[0]} </span>
 		</div>
 		<div>
 			<button
