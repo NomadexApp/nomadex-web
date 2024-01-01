@@ -4,6 +4,7 @@ const TOTAL_SUPPLY = 10_000_000_000_000_000;
 const SCALE = 10000;
 const POOL_TOKEN_NAME = "VOI-VIA LPT";
 const POOL_TOKEN_UNIT = "LPT";
+const PLATFORM_FEE = 5000;
 
 export class Arc200Swap extends Contract {
 
@@ -62,8 +63,8 @@ export class Arc200Swap extends Contract {
     return wideRatio([supply, amount], [issued]);
   }
 
-  private compute_out_tokens(in_amount: uint64, in_supply: uint64, out_supply: uint64): uint64 {
-    const factor = SCALE - this.fee.value;
+  private compute_out_tokens(in_amount: uint64, in_supply: uint64, out_supply: uint64, fee: uint64): uint64 {
+    const factor = SCALE - fee;
 
     const numerator = <uint<256>>(
       <uint<256>>in_amount * <uint<256>>out_supply * <uint<256>>factor
@@ -73,6 +74,13 @@ export class Arc200Swap extends Contract {
     );
 
     return <uint64>(numerator / denominator);
+  }
+
+  private compute_out_tokens_platform_fee(in_amount: uint64, in_supply: uint64, out_supply: uint64): uint64 {
+    const amount_without_fee = this.compute_out_tokens(in_amount, in_supply, out_supply, 0);
+    const amount_with_fee = this.compute_out_tokens(in_amount, in_supply, out_supply, this.fee.value);
+
+    return ((amount_without_fee - amount_with_fee) * PLATFORM_FEE) / SCALE;
   }
 
   private compute_in_tokens(out_amount: uint64, in_supply: uint64, out_supply: uint64): uint64 {
@@ -221,13 +229,21 @@ export class Arc200Swap extends Contract {
     const to_swap = this.compute_out_tokens(
       pay_txn.amount,
       balance - pay_txn.amount,
-      arc200_balance
+      arc200_balance,
+      this.fee.value
     );
+
+    const platform_fee = this.compute_out_tokens_platform_fee(
+      pay_txn.amount,
+      balance - pay_txn.amount,
+      arc200_balance,
+    )
 
     assert(to_swap > 0);
     assert(to_swap >= min_amount);
 
     this.arc200_transfer_to(this.txn.sender, to_swap);
+    this.arc200_transfer_to(this.admin.value, platform_fee);
     this.set_ratio();
 
     this.Swap.log(
@@ -252,13 +268,21 @@ export class Arc200Swap extends Contract {
     const to_swap = this.compute_out_tokens(
       arc200_amount,
       arc200_balance - arc200_amount,
-      balance
+      balance,
+      this.fee.value
+    );
+
+    const platform_fee = this.compute_out_tokens_platform_fee(
+      arc200_amount,
+      arc200_balance - arc200_amount,
+      balance,
     );
 
     assert(to_swap > 0);
     assert(to_swap >= min_amount);
 
     this.transfer_to(this.txn.sender, to_swap);
+    this.transfer_to(this.admin.value, platform_fee);
     this.set_ratio();
 
     this.Swap.log(
@@ -291,29 +315,29 @@ export class Arc200Swap extends Contract {
     return this.pool_token.value;
   }
 
-  register_online(selection_pk: bytes, state_proof_pk: bytes, vote_pk: bytes, vote_first: uint64, vote_last: uint64, vote_key_dilution: uint64): void {
-    assert(this.txn.sender === this.admin.value);
+  // register_online(selection_pk: bytes, state_proof_pk: bytes, vote_pk: bytes, vote_first: uint64, vote_last: uint64, vote_key_dilution: uint64): void {
+  //   assert(this.txn.sender === this.admin.value);
 
-    sendOnlineKeyRegistration({
-      sender: this.app.address,
-      selectionPK: selection_pk,
-      stateProofPK: state_proof_pk,
-      votePK: vote_pk,
-      voteFirst: vote_first,
-      voteLast: vote_last,
-      voteKeyDilution: vote_key_dilution,
-      fee: 1000,
-    });
-  }
+  //   sendOnlineKeyRegistration({
+  //     sender: this.app.address,
+  //     selectionPK: selection_pk,
+  //     stateProofPK: state_proof_pk,
+  //     votePK: vote_pk,
+  //     voteFirst: vote_first,
+  //     voteLast: vote_last,
+  //     voteKeyDilution: vote_key_dilution,
+  //     fee: 1000,
+  //   });
+  // }
 
-  register_offline(): void {
-    assert(this.txn.sender === this.admin.value);
+  // register_offline(): void {
+  //   assert(this.txn.sender === this.admin.value);
 
-    sendOfflineKeyRegistration({
-      sender: this.app.address,
-      fee: 1000
-    });
-  }
+  //   sendOfflineKeyRegistration({
+  //     sender: this.app.address,
+  //     fee: 1000
+  //   });
+  // }
 
   set_fees(fee: uint64): void {
     assert(this.txn.sender === this.admin.value);
@@ -338,7 +362,7 @@ export class Arc200Swap extends Contract {
 
   compute_swap_to_arc200(amount: uint64): uint64 {
     const arc200_balance = this.get_arc200_balance();
-    return this.compute_out_tokens(amount, this.get_balance(), arc200_balance);
+    return this.compute_out_tokens(amount, this.get_balance(), arc200_balance, this.fee.value);
   }
 
   compute_swap_to_arc200_by_out_tokens(arc200_amount: uint64): uint64 {
@@ -351,7 +375,8 @@ export class Arc200Swap extends Contract {
     return this.compute_out_tokens(
       arc200_amount,
       arc200_balance,
-      this.get_balance()
+      this.get_balance(),
+      this.fee.value
     );
   }
 

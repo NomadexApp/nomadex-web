@@ -116,55 +116,6 @@
       }
     },
     {
-      "name": "register_online",
-      "args": [
-        {
-          "name": "selection_pk",
-          "type": "byte[]",
-          "desc": ""
-        },
-        {
-          "name": "state_proof_pk",
-          "type": "byte[]",
-          "desc": ""
-        },
-        {
-          "name": "vote_pk",
-          "type": "byte[]",
-          "desc": ""
-        },
-        {
-          "name": "vote_first",
-          "type": "uint64",
-          "desc": ""
-        },
-        {
-          "name": "vote_last",
-          "type": "uint64",
-          "desc": ""
-        },
-        {
-          "name": "vote_key_dilution",
-          "type": "uint64",
-          "desc": ""
-        }
-      ],
-      "desc": "",
-      "returns": {
-        "type": "void",
-        "desc": ""
-      }
-    },
-    {
-      "name": "register_offline",
-      "args": [],
-      "desc": "",
-      "returns": {
-        "type": "void",
-        "desc": ""
-      }
-    },
-    {
       "name": "set_fees",
       "args": [
         {

@@ -26,7 +26,7 @@ set_ratio:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 0 0
 
-	// src/contracts/arc200_swap.algo.ts:19
+	// src/contracts/arc200_swap.algo.ts:20
 	// this.ratio.value = wideRatio([this.get_balance(), SCALE], [this.get_arc200_balance()])
 	byte 0x726174696f // "ratio"
 	callsub get_balance
@@ -56,25 +56,25 @@ createApplication:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 0 0
 
-	// src/contracts/arc200_swap.algo.ts:35
+	// src/contracts/arc200_swap.algo.ts:36
 	// this.admin.value = this.txn.sender
 	byte 0x61646d696e // "admin"
 	txn Sender
 	app_global_put
 
-	// src/contracts/arc200_swap.algo.ts:36
+	// src/contracts/arc200_swap.algo.ts:37
 	// this.arc200_token.value = Application.fromID(6779767)
 	byte 0x6172633230305f746f6b656e // "arc200_token"
 	int 6779767
 	app_global_put
 
-	// src/contracts/arc200_swap.algo.ts:37
+	// src/contracts/arc200_swap.algo.ts:38
 	// this.fee.value = 50
 	byte 0x666565 // "fee"
 	int 50
 	app_global_put
 
-	// src/contracts/arc200_swap.algo.ts:38
+	// src/contracts/arc200_swap.algo.ts:39
 	// this.initialized.value = false
 	byte 0x696e697469616c697a6564 // "initialized"
 	int 0
@@ -98,7 +98,7 @@ updateApplication:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 0 0
 
-	// src/contracts/arc200_swap.algo.ts:43
+	// src/contracts/arc200_swap.algo.ts:44
 	// assert(this.txn.sender === this.admin.value)
 	txn Sender
 	byte 0x61646d696e // "admin"
@@ -111,7 +111,7 @@ tokens_to_mint_intial:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 2 1
 
-	// src/contracts/arc200_swap.algo.ts:49
+	// src/contracts/arc200_swap.algo.ts:50
 	// return sqrt(a_amount * b_amount);
 	frame_dig -1 // a_amount: uint64
 	frame_dig -2 // b_amount: uint64
@@ -123,7 +123,7 @@ tokens_to_mint:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 5 1; byte 0x; dupn 2
 
-	// src/contracts/arc200_swap.algo.ts:53
+	// src/contracts/arc200_swap.algo.ts:54
 	// a_ratio = wideRatio([a_amount, SCALE], [a_supply])
 	frame_dig -4 // a_amount: uint64
 	int 10000
@@ -138,7 +138,7 @@ tokens_to_mint:
 	assert
 	frame_bury 0 // a_ratio: uint64
 
-	// src/contracts/arc200_swap.algo.ts:54
+	// src/contracts/arc200_swap.algo.ts:55
 	// b_ratio = wideRatio([b_amount, SCALE], [b_supply])
 	frame_dig -5 // b_amount: uint64
 	int 10000
@@ -153,7 +153,7 @@ tokens_to_mint:
 	assert
 	frame_bury 1 // b_ratio: uint64
 
-	// src/contracts/arc200_swap.algo.ts:56
+	// src/contracts/arc200_swap.algo.ts:57
 	// ratio = a_ratio < b_ratio ? a_ratio : b_ratio
 	frame_dig 0 // a_ratio: uint64
 	frame_dig 1 // b_ratio: uint64
@@ -168,7 +168,7 @@ ternary1_false:
 ternary1_end:
 	frame_bury 2 // ratio: uint64
 
-	// src/contracts/arc200_swap.algo.ts:58
+	// src/contracts/arc200_swap.algo.ts:59
 	// return wideRatio([ratio, issued], [SCALE]);
 	frame_dig 2 // ratio: uint64
 	frame_dig -1 // issued: uint64
@@ -193,7 +193,7 @@ compute_token_withdraw_amount:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 3 1
 
-	// src/contracts/arc200_swap.algo.ts:62
+	// src/contracts/arc200_swap.algo.ts:63
 	// return wideRatio([supply, amount], [issued]);
 	frame_dig -2 // supply: uint64
 	frame_dig -3 // amount: uint64
@@ -210,17 +210,16 @@ compute_token_withdraw_amount:
 
 compute_out_tokens:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 3 1; byte 0x; dupn 2
+	proto 4 1; byte 0x; dupn 2
 
-	// src/contracts/arc200_swap.algo.ts:66
-	// factor = SCALE - this.fee.value
+	// src/contracts/arc200_swap.algo.ts:67
+	// factor = SCALE - fee
 	int 10000
-	byte 0x666565 // "fee"
-	app_global_get
+	frame_dig -4 // fee: uint64
 	-
 	frame_bury 0 // factor: uint64
 
-	// src/contracts/arc200_swap.algo.ts:68
+	// src/contracts/arc200_swap.algo.ts:69
 	// numerator = <uint<256>>(
 	//       <uint<256>>in_amount * <uint<256>>out_supply * <uint<256>>factor
 	//     )
@@ -269,7 +268,7 @@ compute_out_tokens:
 	substring3
 	frame_bury 1 // numerator: uint256
 
-	// src/contracts/arc200_swap.algo.ts:71
+	// src/contracts/arc200_swap.algo.ts:72
 	// denominator = <uint<256>>(
 	//       (<uint<256>>in_amount + <uint<256>>in_supply) * <uint<256>>SCALE
 	//     )
@@ -317,7 +316,7 @@ compute_out_tokens:
 	substring3
 	frame_bury 2 // denominator: uint256
 
-	// src/contracts/arc200_swap.algo.ts:75
+	// src/contracts/arc200_swap.algo.ts:76
 	// return <uint64>(numerator / denominator);
 	frame_dig 1 // numerator: uint256
 	frame_dig 2 // denominator: uint256
@@ -345,11 +344,51 @@ compute_out_tokens:
 	popn 2
 	retsub
 
+compute_out_tokens_platform_fee:
+	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
+	proto 3 1; byte 0x; dupn 1
+
+	// src/contracts/arc200_swap.algo.ts:80
+	// amount_without_fee = this.compute_out_tokens(in_amount, in_supply, out_supply, 0)
+	int 0
+	frame_dig -3 // out_supply: uint64
+	frame_dig -2 // in_supply: uint64
+	frame_dig -1 // in_amount: uint64
+	callsub compute_out_tokens
+	frame_bury 0 // amount_without_fee: uint64
+
+	// src/contracts/arc200_swap.algo.ts:81
+	// amount_with_fee = this.compute_out_tokens(in_amount, in_supply, out_supply, this.fee.value)
+	byte 0x666565 // "fee"
+	app_global_get
+	frame_dig -3 // out_supply: uint64
+	frame_dig -2 // in_supply: uint64
+	frame_dig -1 // in_amount: uint64
+	callsub compute_out_tokens
+	frame_bury 1 // amount_with_fee: uint64
+
+	// src/contracts/arc200_swap.algo.ts:83
+	// return ((amount_without_fee - amount_with_fee) * PLATFORM_FEE) / SCALE;
+	frame_dig 0 // amount_without_fee: uint64
+	frame_dig 1 // amount_with_fee: uint64
+	-
+	int 5000
+	*
+	int 10000
+	/
+
+	// set the subroutine return value
+	frame_bury 0
+
+	// pop all local variables from the stack
+	popn 1
+	retsub
+
 compute_in_tokens:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 3 1; byte 0x; dupn 2
 
-	// src/contracts/arc200_swap.algo.ts:79
+	// src/contracts/arc200_swap.algo.ts:87
 	// factor = SCALE - this.fee.value
 	int 10000
 	byte 0x666565 // "fee"
@@ -357,7 +396,7 @@ compute_in_tokens:
 	-
 	frame_bury 0 // factor: uint64
 
-	// src/contracts/arc200_swap.algo.ts:81
+	// src/contracts/arc200_swap.algo.ts:89
 	// numerator = <uint<256>>(
 	//       <uint<256>>out_amount * <uint<256>>in_supply * <uint<256>>SCALE
 	//     )
@@ -405,7 +444,7 @@ compute_in_tokens:
 	substring3
 	frame_bury 1 // numerator: uint256
 
-	// src/contracts/arc200_swap.algo.ts:84
+	// src/contracts/arc200_swap.algo.ts:92
 	// denominator = <uint<256>>(
 	//       (<uint<256>>out_supply * <uint<256>>factor) - (<uint<256>>out_amount * <uint<256>>SCALE)
 	//     )
@@ -463,7 +502,7 @@ compute_in_tokens:
 	substring3
 	frame_bury 2 // denominator: uint256
 
-	// src/contracts/arc200_swap.algo.ts:88
+	// src/contracts/arc200_swap.algo.ts:96
 	// return <uint64>(numerator / denominator);
 	frame_dig 1 // numerator: uint256
 	frame_dig 2 // denominator: uint256
@@ -495,7 +534,7 @@ get_balance:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 0 1
 
-	// src/contracts/arc200_swap.algo.ts:94
+	// src/contracts/arc200_swap.algo.ts:102
 	// return this.app.address.balance - 1000_000;
 	global CurrentApplicationAddress
 	acct_params_get AcctBalance
@@ -508,7 +547,7 @@ get_arc200_balance:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 0 1
 
-	// src/contracts/arc200_swap.algo.ts:98
+	// src/contracts/arc200_swap.algo.ts:106
 	// return <uint64>sendMethodCall<[Address], uint<256>>({
 	//       sender: this.app.address,
 	//       name: 'arc200_balanceOf',
@@ -522,23 +561,23 @@ get_arc200_balance:
 	method "arc200_balanceOf(address)uint256"
 	itxn_field ApplicationArgs
 
-	// src/contracts/arc200_swap.algo.ts:99
+	// src/contracts/arc200_swap.algo.ts:107
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/arc200_swap.algo.ts:101
+	// src/contracts/arc200_swap.algo.ts:109
 	// applicationID: this.arc200_token.value
 	byte 0x6172633230305f746f6b656e // "arc200_token"
 	app_global_get
 	itxn_field ApplicationID
 
-	// src/contracts/arc200_swap.algo.ts:102
+	// src/contracts/arc200_swap.algo.ts:110
 	// methodArgs: [this.app.address]
 	global CurrentApplicationAddress
 	itxn_field ApplicationArgs
 
-	// src/contracts/arc200_swap.algo.ts:103
+	// src/contracts/arc200_swap.algo.ts:111
 	// fee: 1000
 	int 1000
 	itxn_field Fee
@@ -563,7 +602,7 @@ transfer_to:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 2 1
 
-	// src/contracts/arc200_swap.algo.ts:108
+	// src/contracts/arc200_swap.algo.ts:116
 	// sendPayment({
 	//       sender: this.app.address,
 	//       receiver: to,
@@ -574,22 +613,22 @@ transfer_to:
 	int pay
 	itxn_field TypeEnum
 
-	// src/contracts/arc200_swap.algo.ts:109
+	// src/contracts/arc200_swap.algo.ts:117
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/arc200_swap.algo.ts:110
+	// src/contracts/arc200_swap.algo.ts:118
 	// receiver: to
 	frame_dig -1 // to: address
 	itxn_field Receiver
 
-	// src/contracts/arc200_swap.algo.ts:111
+	// src/contracts/arc200_swap.algo.ts:119
 	// amount: amount
 	frame_dig -2 // amount: uint64
 	itxn_field Amount
 
-	// src/contracts/arc200_swap.algo.ts:112
+	// src/contracts/arc200_swap.algo.ts:120
 	// fee: 1000
 	int 1000
 	itxn_field Fee
@@ -597,7 +636,7 @@ transfer_to:
 	// Submit inner transaction
 	itxn_submit
 
-	// src/contracts/arc200_swap.algo.ts:114
+	// src/contracts/arc200_swap.algo.ts:122
 	// return true;
 	int 1
 	retsub
@@ -606,7 +645,7 @@ asa_transfer_to:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 3 1
 
-	// src/contracts/arc200_swap.algo.ts:118
+	// src/contracts/arc200_swap.algo.ts:126
 	// sendAssetTransfer({
 	//       assetReceiver: receiver,
 	//       xferAsset: asset,
@@ -617,22 +656,22 @@ asa_transfer_to:
 	int axfer
 	itxn_field TypeEnum
 
-	// src/contracts/arc200_swap.algo.ts:119
+	// src/contracts/arc200_swap.algo.ts:127
 	// assetReceiver: receiver
 	frame_dig -1 // receiver: account
 	itxn_field AssetReceiver
 
-	// src/contracts/arc200_swap.algo.ts:120
+	// src/contracts/arc200_swap.algo.ts:128
 	// xferAsset: asset
 	frame_dig -2 // asset: asset
 	itxn_field XferAsset
 
-	// src/contracts/arc200_swap.algo.ts:121
+	// src/contracts/arc200_swap.algo.ts:129
 	// assetAmount: amount
 	frame_dig -3 // amount: uint64
 	itxn_field AssetAmount
 
-	// src/contracts/arc200_swap.algo.ts:122
+	// src/contracts/arc200_swap.algo.ts:130
 	// fee: 1000
 	int 1000
 	itxn_field Fee
@@ -640,7 +679,7 @@ asa_transfer_to:
 	// Submit inner transaction
 	itxn_submit
 
-	// src/contracts/arc200_swap.algo.ts:124
+	// src/contracts/arc200_swap.algo.ts:132
 	// return true;
 	int 1
 	retsub
@@ -649,7 +688,7 @@ arc200_transfer_to:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 2 1
 
-	// src/contracts/arc200_swap.algo.ts:128
+	// src/contracts/arc200_swap.algo.ts:136
 	// return sendMethodCall<[Address, uint<256>], boolean>({
 	//       sender: this.app.address,
 	//       name: 'arc200_transfer',
@@ -663,18 +702,18 @@ arc200_transfer_to:
 	method "arc200_transfer(address,uint256)bool"
 	itxn_field ApplicationArgs
 
-	// src/contracts/arc200_swap.algo.ts:129
+	// src/contracts/arc200_swap.algo.ts:137
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/arc200_swap.algo.ts:131
+	// src/contracts/arc200_swap.algo.ts:139
 	// applicationID: this.arc200_token.value
 	byte 0x6172633230305f746f6b656e // "arc200_token"
 	app_global_get
 	itxn_field ApplicationID
 
-	// src/contracts/arc200_swap.algo.ts:132
+	// src/contracts/arc200_swap.algo.ts:140
 	// methodArgs: [to, <uint<256>>amount]
 	frame_dig -1 // to: address
 	itxn_field ApplicationArgs
@@ -689,7 +728,7 @@ arc200_transfer_to:
 	b&
 	itxn_field ApplicationArgs
 
-	// src/contracts/arc200_swap.algo.ts:133
+	// src/contracts/arc200_swap.algo.ts:141
 	// fee: 1000
 	int 1000
 	itxn_field Fee
@@ -709,7 +748,7 @@ arc200_tranfer_from:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 3 1
 
-	// src/contracts/arc200_swap.algo.ts:139
+	// src/contracts/arc200_swap.algo.ts:147
 	// return sendMethodCall<[Address, Address, uint<256>], boolean>({
 	//       sender: this.app.address,
 	//       name: 'arc200_transferFrom',
@@ -723,18 +762,18 @@ arc200_tranfer_from:
 	method "arc200_transferFrom(address,address,uint256)bool"
 	itxn_field ApplicationArgs
 
-	// src/contracts/arc200_swap.algo.ts:140
+	// src/contracts/arc200_swap.algo.ts:148
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/arc200_swap.algo.ts:142
+	// src/contracts/arc200_swap.algo.ts:150
 	// applicationID: this.arc200_token.value
 	byte 0x6172633230305f746f6b656e // "arc200_token"
 	app_global_get
 	itxn_field ApplicationID
 
-	// src/contracts/arc200_swap.algo.ts:143
+	// src/contracts/arc200_swap.algo.ts:151
 	// methodArgs: [from, to, <uint<256>>amount]
 	frame_dig -1 // from: address
 	itxn_field ApplicationArgs
@@ -751,7 +790,7 @@ arc200_tranfer_from:
 	b&
 	itxn_field ApplicationArgs
 
-	// src/contracts/arc200_swap.algo.ts:144
+	// src/contracts/arc200_swap.algo.ts:152
 	// fee: 1000
 	int 1000
 	itxn_field Fee
@@ -799,7 +838,7 @@ mint:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 3 0; byte 0x
 
-	// src/contracts/arc200_swap.algo.ts:151
+	// src/contracts/arc200_swap.algo.ts:159
 	// verifyPayTxn(pay_txn, {
 	//       sender: this.txn.sender,
 	//       receiver: this.app.address,
@@ -826,14 +865,14 @@ mint:
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:157
+	// src/contracts/arc200_swap.algo.ts:165
 	// assert(arc200_amount > 0)
 	frame_dig -2 // arc200_amount: uint64
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:158
+	// src/contracts/arc200_swap.algo.ts:166
 	// assert(pool_token === this.pool_token.value)
 	frame_dig -3 // pool_token: asset
 	byte 0x706f6f6c5f746f6b656e // "pool_token"
@@ -841,27 +880,27 @@ mint:
 	==
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:159
+	// src/contracts/arc200_swap.algo.ts:167
 	// assert(this.get_balance() > 0)
 	callsub get_balance
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:161
+	// src/contracts/arc200_swap.algo.ts:169
 	// this.arc200_tranfer_from(this.txn.sender, this.app.address, arc200_amount)
 	frame_dig -2 // arc200_amount: uint64
 	global CurrentApplicationAddress
 	txn Sender
 	callsub arc200_tranfer_from
 
-	// src/contracts/arc200_swap.algo.ts:163
+	// src/contracts/arc200_swap.algo.ts:171
 	// to_mint = <uint64>0
 	int 0
 	frame_bury 0 // to_mint: uint64
 
 	// if0_condition
-	// src/contracts/arc200_swap.algo.ts:165
+	// src/contracts/arc200_swap.algo.ts:173
 	// !this.initialized.value
 	byte 0x696e697469616c697a6564 // "initialized"
 	app_global_get
@@ -871,7 +910,7 @@ mint:
 	bz if0_else
 
 	// if0_consequent
-	// src/contracts/arc200_swap.algo.ts:166
+	// src/contracts/arc200_swap.algo.ts:174
 	// to_mint = this.tokens_to_mint_intial(pay_txn.amount, arc200_amount)
 	frame_dig -2 // arc200_amount: uint64
 	frame_dig -1 // pay_txn: pay
@@ -879,7 +918,7 @@ mint:
 	callsub tokens_to_mint_intial
 	frame_bury 0 // to_mint: uint64
 
-	// src/contracts/arc200_swap.algo.ts:167
+	// src/contracts/arc200_swap.algo.ts:175
 	// this.initialized.value = true
 	byte 0x696e697469616c697a6564 // "initialized"
 	int 1
@@ -891,7 +930,7 @@ mint:
 	b if0_end
 
 if0_else:
-	// src/contracts/arc200_swap.algo.ts:169
+	// src/contracts/arc200_swap.algo.ts:177
 	// to_mint = this.tokens_to_mint(
 	//         TOTAL_SUPPLY - this.app.address.assetBalance(this.pool_token.value),
 	//         this.get_balance() - pay_txn.amount,
@@ -920,14 +959,14 @@ if0_else:
 	frame_bury 0 // to_mint: uint64
 
 if0_end:
-	// src/contracts/arc200_swap.algo.ts:178
+	// src/contracts/arc200_swap.algo.ts:186
 	// assert(to_mint > 0)
 	frame_dig 0 // to_mint: uint64
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:180
+	// src/contracts/arc200_swap.algo.ts:188
 	// this.asa_transfer_to(this.txn.sender, this.pool_token.value, to_mint)
 	frame_dig 0 // to_mint: uint64
 	byte 0x706f6f6c5f746f6b656e // "pool_token"
@@ -935,7 +974,7 @@ if0_end:
 	txn Sender
 	callsub asa_transfer_to
 
-	// src/contracts/arc200_swap.algo.ts:181
+	// src/contracts/arc200_swap.algo.ts:189
 	// this.set_ratio()
 	callsub set_ratio
 	retsub
@@ -961,7 +1000,7 @@ burn:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 1 0; byte 0x; dupn 2
 
-	// src/contracts/arc200_swap.algo.ts:185
+	// src/contracts/arc200_swap.algo.ts:193
 	// verifyAssetTransferTxn(lpt_pay_txn, {
 	//       sender: this.txn.sender,
 	//       assetAmount: { greaterThan: 0 },
@@ -997,14 +1036,14 @@ burn:
 	==
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:192
+	// src/contracts/arc200_swap.algo.ts:200
 	// assert(this.get_balance() > 0)
 	callsub get_balance
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:194
+	// src/contracts/arc200_swap.algo.ts:202
 	// issued = TOTAL_SUPPLY - (this.app.address.assetBalance(this.pool_token.value) - lpt_pay_txn.assetAmount)
 	int 10_000_000_000_000_000
 	global CurrentApplicationAddress
@@ -1018,7 +1057,7 @@ burn:
 	-
 	frame_bury 0 // issued: uint64
 
-	// src/contracts/arc200_swap.algo.ts:196
+	// src/contracts/arc200_swap.algo.ts:204
 	// withdraw_amount = this.compute_token_withdraw_amount(issued, this.get_balance(), lpt_pay_txn.assetAmount)
 	frame_dig -1 // lpt_pay_txn: axfer
 	gtxns AssetAmount
@@ -1027,7 +1066,7 @@ burn:
 	callsub compute_token_withdraw_amount
 	frame_bury 1 // withdraw_amount: uint64
 
-	// src/contracts/arc200_swap.algo.ts:197
+	// src/contracts/arc200_swap.algo.ts:205
 	// arc200_withdraw_amount = this.compute_token_withdraw_amount(issued, this.get_arc200_balance(), lpt_pay_txn.assetAmount)
 	frame_dig -1 // lpt_pay_txn: axfer
 	gtxns AssetAmount
@@ -1036,19 +1075,19 @@ burn:
 	callsub compute_token_withdraw_amount
 	frame_bury 2 // arc200_withdraw_amount: uint64
 
-	// src/contracts/arc200_swap.algo.ts:199
+	// src/contracts/arc200_swap.algo.ts:207
 	// this.transfer_to(this.txn.sender, withdraw_amount)
 	frame_dig 1 // withdraw_amount: uint64
 	txn Sender
 	callsub transfer_to
 
-	// src/contracts/arc200_swap.algo.ts:200
+	// src/contracts/arc200_swap.algo.ts:208
 	// this.arc200_transfer_to(this.txn.sender, arc200_withdraw_amount)
 	frame_dig 2 // arc200_withdraw_amount: uint64
 	txn Sender
 	callsub arc200_transfer_to
 
-	// src/contracts/arc200_swap.algo.ts:202
+	// src/contracts/arc200_swap.algo.ts:210
 	// this.set_ratio()
 	callsub set_ratio
 	retsub
@@ -1084,9 +1123,9 @@ abi_route_swap_to_arc200:
 
 swap_to_arc200:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 2 1; byte 0x; dupn 2
+	proto 2 1; byte 0x; dupn 3
 
-	// src/contracts/arc200_swap.algo.ts:208
+	// src/contracts/arc200_swap.algo.ts:216
 	// verifyPayTxn(pay_txn, {
 	//       sender: this.txn.sender,
 	//       receiver: this.app.address,
@@ -1113,36 +1152,39 @@ swap_to_arc200:
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:215
+	// src/contracts/arc200_swap.algo.ts:223
 	// arc200_balance = this.get_arc200_balance()
 	callsub get_arc200_balance
 	frame_bury 0 // arc200_balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:216
+	// src/contracts/arc200_swap.algo.ts:224
 	// balance = this.get_balance()
 	callsub get_balance
 	frame_bury 1 // balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:218
+	// src/contracts/arc200_swap.algo.ts:226
 	// assert(balance > 0)
 	frame_dig 1 // balance: uint64
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:219
+	// src/contracts/arc200_swap.algo.ts:227
 	// assert(arc200_balance > 0)
 	frame_dig 0 // arc200_balance: uint64
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:221
+	// src/contracts/arc200_swap.algo.ts:229
 	// to_swap = this.compute_out_tokens(
 	//       pay_txn.amount,
 	//       balance - pay_txn.amount,
-	//       arc200_balance
+	//       arc200_balance,
+	//       this.fee.value
 	//     )
+	byte 0x666565 // "fee"
+	app_global_get
 	frame_dig 0 // arc200_balance: uint64
 	frame_dig 1 // balance: uint64
 	frame_dig -1 // pay_txn: pay
@@ -1153,31 +1195,54 @@ swap_to_arc200:
 	callsub compute_out_tokens
 	frame_bury 2 // to_swap: uint64
 
-	// src/contracts/arc200_swap.algo.ts:227
+	// src/contracts/arc200_swap.algo.ts:236
+	// platform_fee = this.compute_out_tokens_platform_fee(
+	//       pay_txn.amount,
+	//       balance - pay_txn.amount,
+	//       arc200_balance,
+	//     )
+	frame_dig 0 // arc200_balance: uint64
+	frame_dig 1 // balance: uint64
+	frame_dig -1 // pay_txn: pay
+	gtxns Amount
+	-
+	frame_dig -1 // pay_txn: pay
+	gtxns Amount
+	callsub compute_out_tokens_platform_fee
+	frame_bury 3 // platform_fee: uint64
+
+	// src/contracts/arc200_swap.algo.ts:242
 	// assert(to_swap > 0)
 	frame_dig 2 // to_swap: uint64
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:228
+	// src/contracts/arc200_swap.algo.ts:243
 	// assert(to_swap >= min_amount)
 	frame_dig 2 // to_swap: uint64
 	frame_dig -2 // min_amount: uint64
 	>=
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:230
+	// src/contracts/arc200_swap.algo.ts:245
 	// this.arc200_transfer_to(this.txn.sender, to_swap)
 	frame_dig 2 // to_swap: uint64
 	txn Sender
 	callsub arc200_transfer_to
 
-	// src/contracts/arc200_swap.algo.ts:231
+	// src/contracts/arc200_swap.algo.ts:246
+	// this.arc200_transfer_to(this.admin.value, platform_fee)
+	frame_dig 3 // platform_fee: uint64
+	byte 0x61646d696e // "admin"
+	app_global_get
+	callsub arc200_transfer_to
+
+	// src/contracts/arc200_swap.algo.ts:247
 	// this.set_ratio()
 	callsub set_ratio
 
-	// src/contracts/arc200_swap.algo.ts:233
+	// src/contracts/arc200_swap.algo.ts:249
 	// this.Swap.log(
 	//       this.txn.sender,
 	//       pay_txn.amount,
@@ -1198,7 +1263,7 @@ swap_to_arc200:
 	concat
 	log
 
-	// src/contracts/arc200_swap.algo.ts:240
+	// src/contracts/arc200_swap.algo.ts:256
 	// return to_swap;
 	frame_dig 2 // to_swap: uint64
 
@@ -1206,7 +1271,7 @@ swap_to_arc200:
 	frame_bury 0
 
 	// pop all local variables from the stack
-	popn 2
+	popn 3
 	retsub
 
 // swap_from_arc200(uint64,uint64)uint64
@@ -1232,45 +1297,48 @@ abi_route_swap_from_arc200:
 
 swap_from_arc200:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 2 1; byte 0x; dupn 2
+	proto 2 1; byte 0x; dupn 3
 
-	// src/contracts/arc200_swap.algo.ts:244
+	// src/contracts/arc200_swap.algo.ts:260
 	// this.arc200_tranfer_from(this.txn.sender, this.app.address, arc200_amount)
 	frame_dig -1 // arc200_amount: uint64
 	global CurrentApplicationAddress
 	txn Sender
 	callsub arc200_tranfer_from
 
-	// src/contracts/arc200_swap.algo.ts:246
+	// src/contracts/arc200_swap.algo.ts:262
 	// arc200_balance = this.get_arc200_balance()
 	callsub get_arc200_balance
 	frame_bury 0 // arc200_balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:247
+	// src/contracts/arc200_swap.algo.ts:263
 	// balance = this.get_balance()
 	callsub get_balance
 	frame_bury 1 // balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:249
+	// src/contracts/arc200_swap.algo.ts:265
 	// assert(balance > 0)
 	frame_dig 1 // balance: uint64
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:250
+	// src/contracts/arc200_swap.algo.ts:266
 	// assert(arc200_balance > 0)
 	frame_dig 0 // arc200_balance: uint64
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:252
+	// src/contracts/arc200_swap.algo.ts:268
 	// to_swap = this.compute_out_tokens(
 	//       arc200_amount,
 	//       arc200_balance - arc200_amount,
-	//       balance
+	//       balance,
+	//       this.fee.value
 	//     )
+	byte 0x666565 // "fee"
+	app_global_get
 	frame_dig 1 // balance: uint64
 	frame_dig 0 // arc200_balance: uint64
 	frame_dig -1 // arc200_amount: uint64
@@ -1279,31 +1347,52 @@ swap_from_arc200:
 	callsub compute_out_tokens
 	frame_bury 2 // to_swap: uint64
 
-	// src/contracts/arc200_swap.algo.ts:258
+	// src/contracts/arc200_swap.algo.ts:275
+	// platform_fee = this.compute_out_tokens_platform_fee(
+	//       arc200_amount,
+	//       arc200_balance - arc200_amount,
+	//       balance,
+	//     )
+	frame_dig 1 // balance: uint64
+	frame_dig 0 // arc200_balance: uint64
+	frame_dig -1 // arc200_amount: uint64
+	-
+	frame_dig -1 // arc200_amount: uint64
+	callsub compute_out_tokens_platform_fee
+	frame_bury 3 // platform_fee: uint64
+
+	// src/contracts/arc200_swap.algo.ts:281
 	// assert(to_swap > 0)
 	frame_dig 2 // to_swap: uint64
 	int 0
 	>
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:259
+	// src/contracts/arc200_swap.algo.ts:282
 	// assert(to_swap >= min_amount)
 	frame_dig 2 // to_swap: uint64
 	frame_dig -2 // min_amount: uint64
 	>=
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:261
+	// src/contracts/arc200_swap.algo.ts:284
 	// this.transfer_to(this.txn.sender, to_swap)
 	frame_dig 2 // to_swap: uint64
 	txn Sender
 	callsub transfer_to
 
-	// src/contracts/arc200_swap.algo.ts:262
+	// src/contracts/arc200_swap.algo.ts:285
+	// this.transfer_to(this.admin.value, platform_fee)
+	frame_dig 3 // platform_fee: uint64
+	byte 0x61646d696e // "admin"
+	app_global_get
+	callsub transfer_to
+
+	// src/contracts/arc200_swap.algo.ts:286
 	// this.set_ratio()
 	callsub set_ratio
 
-	// src/contracts/arc200_swap.algo.ts:264
+	// src/contracts/arc200_swap.algo.ts:288
 	// this.Swap.log(
 	//       this.txn.sender,
 	//       arc200_amount,
@@ -1323,7 +1412,7 @@ swap_from_arc200:
 	concat
 	log
 
-	// src/contracts/arc200_swap.algo.ts:271
+	// src/contracts/arc200_swap.algo.ts:295
 	// return to_swap;
 	frame_dig 2 // to_swap: uint64
 
@@ -1331,7 +1420,7 @@ swap_from_arc200:
 	frame_bury 0
 
 	// pop all local variables from the stack
-	popn 2
+	popn 3
 	retsub
 
 // create_pool_token(pay)uint64
@@ -1363,7 +1452,7 @@ create_pool_token:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 1 1
 
-	// src/contracts/arc200_swap.algo.ts:277
+	// src/contracts/arc200_swap.algo.ts:301
 	// assert(this.txn.sender === this.admin.value)
 	txn Sender
 	byte 0x61646d696e // "admin"
@@ -1371,7 +1460,7 @@ create_pool_token:
 	==
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:278
+	// src/contracts/arc200_swap.algo.ts:302
 	// verifyPayTxn(seed, { receiver: this.app.address, amount: { greaterThanEqualTo: 1010_000 } })
 	// verify receiver
 	frame_dig -1 // seed: pay
@@ -1387,7 +1476,7 @@ create_pool_token:
 	>=
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:279
+	// src/contracts/arc200_swap.algo.ts:303
 	// assert(!this.pool_token.exists)
 	txna Applications 0
 	byte 0x706f6f6c5f746f6b656e // "pool_token"
@@ -1397,7 +1486,7 @@ create_pool_token:
 	!
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:281
+	// src/contracts/arc200_swap.algo.ts:305
 	// this.pool_token.value = sendAssetCreation({
 	//       configAssetName: POOL_TOKEN_NAME,
 	//       configAssetUnitName: POOL_TOKEN_UNIT,
@@ -1412,37 +1501,37 @@ create_pool_token:
 	int acfg
 	itxn_field TypeEnum
 
-	// src/contracts/arc200_swap.algo.ts:282
+	// src/contracts/arc200_swap.algo.ts:306
 	// configAssetName: POOL_TOKEN_NAME
 	byte 0x564f492d564941204c5054 // "VOI-VIA LPT"
 	itxn_field ConfigAssetName
 
-	// src/contracts/arc200_swap.algo.ts:283
+	// src/contracts/arc200_swap.algo.ts:307
 	// configAssetUnitName: POOL_TOKEN_UNIT
 	byte 0x4c5054 // "LPT"
 	itxn_field ConfigAssetUnitName
 
-	// src/contracts/arc200_swap.algo.ts:284
+	// src/contracts/arc200_swap.algo.ts:308
 	// configAssetTotal: TOTAL_SUPPLY
 	int 10_000_000_000_000_000
 	itxn_field ConfigAssetTotal
 
-	// src/contracts/arc200_swap.algo.ts:285
+	// src/contracts/arc200_swap.algo.ts:309
 	// configAssetDecimals: 6
 	int 6
 	itxn_field ConfigAssetDecimals
 
-	// src/contracts/arc200_swap.algo.ts:286
+	// src/contracts/arc200_swap.algo.ts:310
 	// configAssetManager: this.app.address
 	global CurrentApplicationAddress
 	itxn_field ConfigAssetManager
 
-	// src/contracts/arc200_swap.algo.ts:287
+	// src/contracts/arc200_swap.algo.ts:311
 	// configAssetReserve: this.app.address
 	global CurrentApplicationAddress
 	itxn_field ConfigAssetReserve
 
-	// src/contracts/arc200_swap.algo.ts:288
+	// src/contracts/arc200_swap.algo.ts:312
 	// fee: 1000
 	int 1000
 	itxn_field Fee
@@ -1452,157 +1541,15 @@ create_pool_token:
 	itxn CreatedAssetID
 	app_global_put
 
-	// src/contracts/arc200_swap.algo.ts:291
+	// src/contracts/arc200_swap.algo.ts:315
 	// return this.pool_token.value;
 	byte 0x706f6f6c5f746f6b656e // "pool_token"
 	app_global_get
 	retsub
 
-// register_online(uint64,uint64,uint64,bytes,bytes,bytes)void
-abi_route_register_online:
-	// vote_key_dilution: uint64
-	txna ApplicationArgs 6
-	btoi
-
-	// vote_last: uint64
-	txna ApplicationArgs 5
-	btoi
-
-	// vote_first: uint64
-	txna ApplicationArgs 4
-	btoi
-
-	// vote_pk: byte[]
-	txna ApplicationArgs 3
-	extract 2 0
-
-	// state_proof_pk: byte[]
-	txna ApplicationArgs 2
-	extract 2 0
-
-	// selection_pk: byte[]
-	txna ApplicationArgs 1
-	extract 2 0
-
-	// execute register_online(uint64,uint64,uint64,bytes,bytes,bytes)void
-	callsub register_online
-	int 1
-	return
-
-register_online:
-	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 6 0
-
-	// src/contracts/arc200_swap.algo.ts:295
-	// assert(this.txn.sender === this.admin.value)
-	txn Sender
-	byte 0x61646d696e // "admin"
-	app_global_get
-	==
-	assert
-
-	// src/contracts/arc200_swap.algo.ts:297
-	// sendOnlineKeyRegistration({
-	//       sender: this.app.address,
-	//       selectionPK: selection_pk,
-	//       stateProofPK: state_proof_pk,
-	//       votePK: vote_pk,
-	//       voteFirst: vote_first,
-	//       voteLast: vote_last,
-	//       voteKeyDilution: vote_key_dilution,
-	//       fee: 1000,
-	//     })
-	itxn_begin
-	int keyreg
-	itxn_field TypeEnum
-
-	// src/contracts/arc200_swap.algo.ts:298
-	// sender: this.app.address
-	global CurrentApplicationAddress
-	itxn_field Sender
-
-	// src/contracts/arc200_swap.algo.ts:299
-	// selectionPK: selection_pk
-	frame_dig -1 // selection_pk: bytes
-	itxn_field SelectionPK
-
-	// src/contracts/arc200_swap.algo.ts:300
-	// stateProofPK: state_proof_pk
-	frame_dig -2 // state_proof_pk: bytes
-	itxn_field StateProofPK
-
-	// src/contracts/arc200_swap.algo.ts:301
-	// votePK: vote_pk
-	frame_dig -3 // vote_pk: bytes
-	itxn_field VotePK
-
-	// src/contracts/arc200_swap.algo.ts:302
-	// voteFirst: vote_first
-	frame_dig -4 // vote_first: uint64
-	itxn_field VoteFirst
-
-	// src/contracts/arc200_swap.algo.ts:303
-	// voteLast: vote_last
-	frame_dig -5 // vote_last: uint64
-	itxn_field VoteLast
-
-	// src/contracts/arc200_swap.algo.ts:304
-	// voteKeyDilution: vote_key_dilution
-	frame_dig -6 // vote_key_dilution: uint64
-	itxn_field VoteKeyDilution
-
-	// src/contracts/arc200_swap.algo.ts:305
-	// fee: 1000
-	int 1000
-	itxn_field Fee
-
-	// Submit inner transaction
-	itxn_submit
-	retsub
-
-// register_offline()void
-abi_route_register_offline:
-	// execute register_offline()void
-	callsub register_offline
-	int 1
-	return
-
-register_offline:
-	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
-	proto 0 0
-
-	// src/contracts/arc200_swap.algo.ts:310
-	// assert(this.txn.sender === this.admin.value)
-	txn Sender
-	byte 0x61646d696e // "admin"
-	app_global_get
-	==
-	assert
-
-	// src/contracts/arc200_swap.algo.ts:312
-	// sendOfflineKeyRegistration({
-	//       sender: this.app.address,
-	//       fee: 1000
-	//     })
-	itxn_begin
-	int keyreg
-	itxn_field TypeEnum
-
-	// src/contracts/arc200_swap.algo.ts:313
-	// sender: this.app.address
-	global CurrentApplicationAddress
-	itxn_field Sender
-
-	// src/contracts/arc200_swap.algo.ts:314
-	// fee: 1000
-	int 1000
-	itxn_field Fee
-
-	// Submit inner transaction
-	itxn_submit
-	retsub
-
 // set_fees(uint64)void
+//
+// // }
 abi_route_set_fees:
 	// fee: uint64
 	txna ApplicationArgs 1
@@ -1617,7 +1564,7 @@ set_fees:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 1 0
 
-	// src/contracts/arc200_swap.algo.ts:319
+	// src/contracts/arc200_swap.algo.ts:343
 	// assert(this.txn.sender === this.admin.value)
 	txn Sender
 	byte 0x61646d696e // "admin"
@@ -1625,7 +1572,7 @@ set_fees:
 	==
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:320
+	// src/contracts/arc200_swap.algo.ts:344
 	// this.fee.value = fee
 	byte 0x666565 // "fee"
 	frame_dig -1 // fee: uint64
@@ -1648,7 +1595,7 @@ set_admin:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 1 0
 
-	// src/contracts/arc200_swap.algo.ts:324
+	// src/contracts/arc200_swap.algo.ts:348
 	// assert(this.txn.sender === this.admin.value)
 	txn Sender
 	byte 0x61646d696e // "admin"
@@ -1656,7 +1603,7 @@ set_admin:
 	==
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:325
+	// src/contracts/arc200_swap.algo.ts:349
 	// this.admin.value = admin
 	byte 0x61646d696e // "admin"
 	frame_dig -1 // admin: account
@@ -1674,7 +1621,7 @@ emergency_withdraw:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 0 0; byte 0x
 
-	// src/contracts/arc200_swap.algo.ts:329
+	// src/contracts/arc200_swap.algo.ts:353
 	// assert(this.txn.sender === this.admin.value)
 	txn Sender
 	byte 0x61646d696e // "admin"
@@ -1682,18 +1629,18 @@ emergency_withdraw:
 	==
 	assert
 
-	// src/contracts/arc200_swap.algo.ts:331
+	// src/contracts/arc200_swap.algo.ts:355
 	// arc200_balance = this.get_arc200_balance()
 	callsub get_arc200_balance
 	frame_bury 0 // arc200_balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:333
+	// src/contracts/arc200_swap.algo.ts:357
 	// this.arc200_transfer_to(this.txn.sender, arc200_balance)
 	frame_dig 0 // arc200_balance: uint64
 	txn Sender
 	callsub arc200_transfer_to
 
-	// src/contracts/arc200_swap.algo.ts:334
+	// src/contracts/arc200_swap.algo.ts:358
 	// this.transfer_to(this.txn.sender, this.get_balance())
 	callsub get_balance
 	txn Sender
@@ -1723,13 +1670,15 @@ compute_swap_to_arc200:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 1 1; byte 0x
 
-	// src/contracts/arc200_swap.algo.ts:340
+	// src/contracts/arc200_swap.algo.ts:364
 	// arc200_balance = this.get_arc200_balance()
 	callsub get_arc200_balance
 	frame_bury 0 // arc200_balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:341
-	// return this.compute_out_tokens(amount, this.get_balance(), arc200_balance);
+	// src/contracts/arc200_swap.algo.ts:365
+	// return this.compute_out_tokens(amount, this.get_balance(), arc200_balance, this.fee.value);
+	byte 0x666565 // "fee"
+	app_global_get
 	frame_dig 0 // arc200_balance: uint64
 	callsub get_balance
 	frame_dig -1 // amount: uint64
@@ -1760,12 +1709,12 @@ compute_swap_to_arc200_by_out_tokens:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 1 1; byte 0x
 
-	// src/contracts/arc200_swap.algo.ts:345
+	// src/contracts/arc200_swap.algo.ts:369
 	// arc200_balance = this.get_arc200_balance()
 	callsub get_arc200_balance
 	frame_bury 0 // arc200_balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:346
+	// src/contracts/arc200_swap.algo.ts:370
 	// return this.compute_in_tokens(arc200_amount, this.get_balance(), arc200_balance);
 	frame_dig 0 // arc200_balance: uint64
 	callsub get_balance
@@ -1797,17 +1746,20 @@ compute_swap_from_arc200:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 1 1; byte 0x
 
-	// src/contracts/arc200_swap.algo.ts:350
+	// src/contracts/arc200_swap.algo.ts:374
 	// arc200_balance = this.get_arc200_balance()
 	callsub get_arc200_balance
 	frame_bury 0 // arc200_balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:351
+	// src/contracts/arc200_swap.algo.ts:375
 	// return this.compute_out_tokens(
 	//       arc200_amount,
 	//       arc200_balance,
-	//       this.get_balance()
+	//       this.get_balance(),
+	//       this.fee.value
 	//     );
+	byte 0x666565 // "fee"
+	app_global_get
 	callsub get_balance
 	frame_dig 0 // arc200_balance: uint64
 	frame_dig -1 // arc200_amount: uint64
@@ -1838,12 +1790,12 @@ compute_swap_from_arc200_by_out_amount:
 	// Setup the frame for args and return value. Use empty bytes to create space on the stack for local variables if necessary
 	proto 1 1; byte 0x
 
-	// src/contracts/arc200_swap.algo.ts:359
+	// src/contracts/arc200_swap.algo.ts:384
 	// arc200_balance = this.get_arc200_balance()
 	callsub get_arc200_balance
 	frame_bury 0 // arc200_balance: uint64
 
-	// src/contracts/arc200_swap.algo.ts:360
+	// src/contracts/arc200_swap.algo.ts:385
 	// return this.compute_in_tokens(
 	//       amount,
 	//       arc200_balance,
@@ -1870,8 +1822,6 @@ call_NoOp:
 	method "swap_to_arc200(pay,uint64)uint64"
 	method "swap_from_arc200(uint64,uint64)uint64"
 	method "create_pool_token(pay)uint64"
-	method "register_online(byte[],byte[],byte[],uint64,uint64,uint64)void"
-	method "register_offline()void"
 	method "set_fees(uint64)void"
 	method "set_admin(account)void"
 	method "emergency_withdraw()void"
@@ -1880,7 +1830,7 @@ call_NoOp:
 	method "compute_swap_from_arc200(uint64)uint64"
 	method "compute_swap_from_arc200_by_out_amount(uint64)uint64"
 	txna ApplicationArgs 0
-	match abi_route_mint abi_route_burn abi_route_swap_to_arc200 abi_route_swap_from_arc200 abi_route_create_pool_token abi_route_register_online abi_route_register_offline abi_route_set_fees abi_route_set_admin abi_route_emergency_withdraw abi_route_compute_swap_to_arc200 abi_route_compute_swap_to_arc200_by_out_tokens abi_route_compute_swap_from_arc200 abi_route_compute_swap_from_arc200_by_out_amount
+	match abi_route_mint abi_route_burn abi_route_swap_to_arc200 abi_route_swap_from_arc200 abi_route_create_pool_token abi_route_set_fees abi_route_set_admin abi_route_emergency_withdraw abi_route_compute_swap_to_arc200 abi_route_compute_swap_to_arc200_by_out_tokens abi_route_compute_swap_from_arc200 abi_route_compute_swap_from_arc200_by_out_amount
 	err
 
 call_UpdateApplication:
