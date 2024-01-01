@@ -1,10 +1,10 @@
 import { Contract } from '@algorandfoundation/tealscript';
 
 const TOTAL_SUPPLY = 10_000_000_000_000_000;
-const SCALE = 10000;
+const SCALE = 100_000_000;
+const PLATFORM_FEE = 50_000_000;
 const POOL_TOKEN_NAME = "VOI-VIA LPT";
 const POOL_TOKEN_UNIT = "LPT";
-const PLATFORM_FEE = 5000;
 
 export class Arc200Swap extends Contract {
 
@@ -81,19 +81,6 @@ export class Arc200Swap extends Contract {
     const amount_with_fee = this.compute_out_tokens(in_amount, in_supply, out_supply, this.fee.value);
 
     return ((amount_without_fee - amount_with_fee) * PLATFORM_FEE) / SCALE;
-  }
-
-  private compute_in_tokens(out_amount: uint64, in_supply: uint64, out_supply: uint64): uint64 {
-    const factor = SCALE - this.fee.value;
-
-    const numerator = <uint<256>>(
-      <uint<256>>out_amount * <uint<256>>in_supply * <uint<256>>SCALE
-    );
-    const denominator = <uint<256>>(
-      (<uint<256>>out_supply * <uint<256>>factor) - (<uint<256>>out_amount * <uint<256>>SCALE)
-    );
-
-    return <uint64>(numerator / denominator);
   }
 
   /**************************************************/
