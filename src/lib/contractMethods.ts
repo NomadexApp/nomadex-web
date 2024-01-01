@@ -35,6 +35,18 @@ export default class ContractMethods {
     async swapViaToVoi(viaAmount: number, minVoiAmount: number) {
         const client = getClient(currentAppId);
 
+        const admin = (await nodeClient.getApplicationByID(currentAppId).do())
+            ?.params?.['global-state']
+            ?.find(state => Buffer.from(state.key, 'base64').toString() === 'admin')
+
+        const adminAddressBase64 = admin?.value?.bytes;
+
+        let adminAddress = '';
+        if (adminAddressBase64) {
+            adminAddress = algosdk.encodeAddress(new Uint8Array(Buffer.from(adminAddressBase64, 'base64')))
+        }
+
+
         const approveTxns = await ChainInterface.arc200_approve(
             viaAppId,
             get(connectedAccount),
@@ -60,6 +72,7 @@ export default class ContractMethods {
                         name: getBoxName(algosdk.getApplicationAddress(currentAppId)),
                     },
                 ],
+                accounts: [...opts.accounts, adminAddress]
             })
             .atc();
 
