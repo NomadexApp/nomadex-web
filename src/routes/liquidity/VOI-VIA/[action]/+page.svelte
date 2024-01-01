@@ -12,12 +12,16 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import ContractMethods from '$lib/contractMethods';
+	import { onChainStateWatcher } from '$lib/stores/onchain';
 
 	const { page } = getStores();
 
 	$: action = $page.params.action;
 
 	let tokens: [Token, Token] = [knownTokens[0], knownTokens[1]];
+
+	const connectedUserState = onChainStateWatcher.getAccountWatcher($connectedAccount);
+	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(currentAppId));
 
 	function setSelectedToken(token: Token, index: number) {
 		if (!tokens) return;
@@ -61,15 +65,16 @@
 		inputTokenA = 0;
 		inputTokenB = 0;
 		if (!inputTokenLpt) return;
-		await new Promise((r) => (timeout = setTimeout(r, 1000)));
+		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
-		const appLptBalance = await getASABalance(currentLptAssetId, algosdk.getApplicationAddress(currentAppId));
+		const appLptBalance =
+			($currentPoolState.assets ?? []).find((asset) => asset['asset-id'] === currentLptAssetId)?.amount ?? 0;
 
 		const issued = BigInt(10_000_000_000) * BigInt(1e6) - BigInt(appLptBalance);
 
 		const ratio = (BigInt(inputTokenLpt * 1e6) * BigInt(1e6)) / issued;
-		const voiBalance = await getBalance(algosdk.getApplicationAddress(currentAppId));
-		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
+		const voiBalance = $currentPoolState.amount - 1e6;
+		const viaBalance = $currentPoolState.arc200Balances[viaAppId];
 		loading = false;
 
 		inputTokenA = Number((BigInt(voiBalance) * ratio) / BigInt(1e6)) / 1e6;
@@ -84,10 +89,10 @@
 		disabled = true;
 		inputTokenB = 0;
 		if (!inputTokenA) return;
-		await new Promise((r) => (timeout = setTimeout(r, 1000)));
+		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
-		const voiBalance = (await getBalance(algosdk.getApplicationAddress(currentAppId), false)) - 1e6;
-		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
+		const voiBalance = $currentPoolState.amount - 1e6;
+		const viaBalance = $currentPoolState.arc200Balances[viaAppId];
 		loading = false;
 
 		const ratio = viaBalance / voiBalance;
@@ -103,10 +108,10 @@
 		disabled = true;
 		inputTokenA = 0;
 		if (!inputTokenB) return;
-		await new Promise((r) => (timeout = setTimeout(r, 1000)));
+		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
-		const voiBalance = (await getBalance(algosdk.getApplicationAddress(currentAppId))) - 1e6;
-		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
+		const voiBalance = $currentPoolState.amount - 1e6;
+		const viaBalance = $currentPoolState.arc200Balances[viaAppId];
 		loading = false;
 
 		const ratio = voiBalance / viaBalance;
@@ -129,6 +134,14 @@
 		}
 		disabled = prev;
 	}
+
+	$: maxLptBalanceError =
+		Number(inputTokenLpt) > algosdk.microalgosToAlgos($connectedUserState.asaBalances[currentLptAssetId] ?? 0);
+	$: maxBalanceError = Number(inputTokenA) > algosdk.microalgosToAlgos($connectedUserState.amount);
+	$: maxArc200BalanceError =
+		Number(inputTokenB) > algosdk.microalgosToAlgos($connectedUserState.arc200Balances[tokens[1].id]);
+
+	$: disabled = disabled || (action === 'remove' ? maxLptBalanceError : maxBalanceError || maxArc200BalanceError);
 </script>
 
 {#if tokens}
@@ -136,7 +149,7 @@
 		<div class="flex flex-col items-end gap-2 w-full max-w-[448px] prose pt-20">
 			<span class="text-sm">
 				My Shares:
-				{#await getASABalance(currentLptAssetId, $connectedAccount)}
+				{#await ($connectedUserState.assets ?? []).find((asset) => asset['asset-id'] === currentLptAssetId)?.amount ?? 0}
 					0 LPT
 				{:then balance}
 					{algosdk.microalgosToAlgos(balance).toLocaleString('en')} LPT
@@ -144,10 +157,10 @@
 			</span>
 			<span class="text-sm">
 				Total Shares:
-				{#await getASABalance(currentLptAssetId, algosdk.getApplicationAddress(currentAppId))}
+				{#await ($currentPoolState.assets ?? []).find((asset) => asset['asset-id'] === currentLptAssetId)?.amount ?? 0}
 					0 LPT
 				{:then balance}
-					{(10_000 * 1e6 - balance / 1e6).toLocaleString('en')} LPT
+					{((balance ? 10_000 * 1e6 : 0) - balance / 1e6).toLocaleString('en')} LPT
 				{/await}
 			</span>
 		</div>
@@ -259,24 +272,20 @@
 				{/if}
 			</div>
 
-			<!-- Min Received = {inputTokenB - inputTokenB * slippage}
-			{tokenB.ticker} -->
-
 			<div class="flex flex-col gap-0">
 				<span class="flex justify-between items-center">
-					{#await balanceString(currentAppId, viaAppId)}
+					{#if $currentPoolState.arc200Balances[viaAppId]}
+						<span class="flex gap-4">
+							Liquidity =
+							{($currentPoolState.amount / 1e6).toLocaleString('en')} VOI /
+							{($currentPoolState.arc200Balances[viaAppId] / 1e6).toLocaleString('en')} VIA
+						</span>
+					{:else}
 						<span class="flex gap-4">Liquidity = 0 VOI / 0 VIA</span>
-					{:then balance}
-						Liquidity = {balance}
-					{:catch}
-						<span class="flex gap-4">Liquidity = 0 VOI / 0 VIA</span>
-					{/await}
-					{#if loading}<span class="loading h-4 w-4" />{/if}
+						<span class="loading h-4 w-4" />
+					{/if}
 				</span>
 			</div>
-
-			<!-- <br />
-			Fee: {0.5}% -->
 
 			<div class="flex justify-center mt-2 pr-0">
 				<button
@@ -308,5 +317,17 @@
 	.disabled {
 		@apply btn-outline;
 		pointer-events: none;
+	}
+	form {
+		opacity: 0;
+		animation: fadein 1s forwards;
+	}
+	@keyframes fadein {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 </style>

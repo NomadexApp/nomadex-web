@@ -2,9 +2,12 @@
 	import { type Token, knownTokens } from '$lib';
 	import { currentAppId } from '$lib/_deployed';
 	import { balanceString, getArc200Balance, getBalance, viaAppId } from '$lib/_shared';
+	import { onChainStateWatcher } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
 
 	let pools: [Token, Token][] = [[knownTokens[0], knownTokens[1]]];
+
+	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(currentAppId));
 
 	async function loadLiq(): Promise<[number, number]> {
 		const voiBalance = await getBalance(algosdk.getApplicationAddress(currentAppId));
@@ -19,11 +22,16 @@
 			<div class="w-full flex justify-between items-center py-2 px-4">
 				<span class="text-md font-[500]">{pool[0].ticker} / {pool[1].ticker}</span>
 				<span class="text-sm hidden lg:inline-block">
-					{#await balanceString(currentAppId, viaAppId)}
+					{#if $currentPoolState.arc200Balances[viaAppId]}
+						{($currentPoolState.amount / 1e6).toLocaleString('en')} VOI /
+						{($currentPoolState.arc200Balances[viaAppId] / 1e6).toLocaleString('en')} VIA
+					{:else}
 						<span class="loading w-[1rem]" />
+					{/if}
+					<!-- {#await balanceString(currentAppId, viaAppId)}
 					{:then str}
 						{str}
-					{/await}
+					{/await} -->
 				</span>
 				<div class="flex gap-2">
 					<a href="/swap/{pool[0].ticker}-{pool[1].ticker}" class="btn btn-ghost text-base-content btn-sm">Swap</a>

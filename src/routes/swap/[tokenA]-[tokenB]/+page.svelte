@@ -5,21 +5,28 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { balanceString, getArc200Balance, getBalance, viaAppId } from '$lib/_shared';
+	import { viaAppId } from '$lib/_shared';
 	import { currentAppId } from '$lib/_deployed';
-	import { simulateHowMuch } from '$lib/howMuch';
+	import { calculateInTokens, calculateOutTokens } from '$lib/howMuch';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
 	import ContractMethods from '$lib/contractMethods';
+	import { onChainStateWatcher } from '$lib/stores/onchain';
+	import algosdk from 'algosdk';
 
 	const { page } = getStores();
-	const tokenA = knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = knownTokens.find((token) => token.ticker === $page.params.tokenB);
+	const tokenA = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenA);
+	const tokenB = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenB);
 	const slippage = 0.01;
 
+	const connectedUserState = onChainStateWatcher.getAccountWatcher($connectedAccount);
+	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(currentAppId));
+
 	let tokens: [Token, Token] | undefined = undefined;
+
+	$: loaded = $currentPoolState.arc200Balances[tokenA.ticker === 'VOI' ? tokenB.id : tokenA.id];
 
 	onMount(() => {
 		if (!tokenA || !tokenB) {
@@ -62,14 +69,19 @@
 		if (!inputTokenA || typeof inputTokenA !== 'number') return;
 		let tm: NodeJS.Timeout | undefined;
 		await new Promise((r) => {
-			timeout = setTimeout(r, 1000);
+			timeout = setTimeout(r, 500);
 			tm = timeout;
 		});
 		loading = true;
-		const ret = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenA * 1e6)), false)) / 1e6;
+		const ret = calculateOutTokens(
+			Math.floor(inputTokenA * 1e6),
+			tokenA.ticker === 'VOI' ? $currentPoolState.amount : $currentPoolState.arc200Balances[viaAppId],
+			tokenA.ticker === 'VOI' ? $currentPoolState.arc200Balances[viaAppId] : $currentPoolState.amount,
+			100
+		);
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenB = ret;
+			inputTokenB = Number(ret) / 1e6;
 			disabled = !inputTokenB;
 		}
 	}
@@ -82,14 +94,19 @@
 		if (!inputTokenB || typeof inputTokenB !== 'number') return;
 		let tm: NodeJS.Timeout | undefined;
 		await new Promise((r) => {
-			timeout = setTimeout(r, 1000);
+			timeout = setTimeout(r, 500);
 			tm = timeout;
 		});
 		loading = true;
-		const ret = Number(await simulateHowMuch(tokenA, tokenB, BigInt(Math.floor(inputTokenB * 1e6)), true)) / 1e6;
+		const ret = calculateInTokens(
+			Math.floor(inputTokenB * 1e6),
+			tokenA.ticker === 'VOI' ? $currentPoolState.amount : $currentPoolState.arc200Balances[viaAppId],
+			tokenA.ticker === 'VOI' ? $currentPoolState.arc200Balances[viaAppId] : $currentPoolState.amount,
+			100
+		);
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenA = ret;
+			inputTokenA = (Number(ret) + Number(ret) * 0.0001) / 1e6;
 			disabled = !inputTokenB;
 		}
 	}
@@ -127,19 +144,20 @@
 					placeholder="{tokens[0].ticker} amount"
 					bind:value={inputTokenA}
 					step={1 / 1e6}
+					on:keydown={(e) => !loaded && e.preventDefault()}
 					on:keypress={onNumberKeyPress}
 					on:keyup={onInputTokenA}
 					required
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
-				{#await tokens[0].ticker === 'VIA' ? getArc200Balance(viaAppId, $connectedAccount) : getBalance($connectedAccount) then balance}
+				{#await tokens[0].ticker === 'VIA' ? $connectedUserState.arc200Balances[viaAppId] : $connectedUserState.amount then balance}
 					<span
 						class="absolute right-0 bottom-full cursor-pointer"
 						on:click={() => {
 							inputTokenA = balance / 1e6;
 							onInputTokenA();
 						}}
-						on:keydown={null}>MAX {(balance / 1e6).toFixed(2)}</span
+						on:keydown={null}>MAX {(balance / 1e6).toLocaleString('en')}</span
 					>
 				{/await}
 				<Dropdown
@@ -168,13 +186,14 @@
 					placeholder="{tokens[1].ticker} amount"
 					bind:value={inputTokenB}
 					step={1 / 1e6}
+					on:keydown={(e) => !loaded && e.preventDefault()}
 					on:keypress={onNumberKeyPress}
 					on:keyup={onInputTokenB}
 					required
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
-				{#await tokens[1].ticker === 'VIA' ? getArc200Balance(viaAppId, $connectedAccount) : getBalance($connectedAccount) then balance}
-					<span class="absolute right-0 bottom-full cursor-pointer">{(balance / 1e6).toFixed(2)}</span>
+				{#await tokens[1].ticker === 'VIA' ? $connectedUserState.arc200Balances[viaAppId] : $connectedUserState.amount then balance}
+					<span class="absolute right-0 bottom-full cursor-pointer">{(balance / 1e6).toLocaleString('en')}</span>
 				{/await}
 				<Dropdown
 					class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"
@@ -190,16 +209,18 @@
 					{tokens[1].ticker}
 					{#if loading}<span class="loading h-4 w-4" />{/if}
 				</span>
-				<span class="">
-					{#await balanceString(currentAppId, viaAppId)}
+
+				<span class="flex justify-between">
+					{#if $currentPoolState.arc200Balances[viaAppId]}
+						Liquidity =
+						{($currentPoolState.amount / 1e6).toLocaleString('en')} VOI /
+						{($currentPoolState.arc200Balances[viaAppId] / 1e6).toLocaleString('en')} VIA
+					{:else}
 						Liquidity = 0 VOI / 0 VIA
-					{:then balance}
-						Liquidity = {balance}
-					{/await}
+						<span class="loading w-[1rem]" />
+					{/if}
 				</span>
 			</div>
-			<!-- <br />
-			Fee: {0.5}% -->
 
 			<div class="flex justify-center mt-2 pr-0">
 				<button

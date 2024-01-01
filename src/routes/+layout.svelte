@@ -4,9 +4,9 @@
 	import Sidebar from '$lib/Sidebar.svelte';
 	import { connectedAccount, walletConnect } from '$lib/UseWallet.svelte';
 	import { pageContentRefreshPending } from '$lib/utils';
-	import '../app.css';
-
 	import QRCodeIcon from 'svelte-star/dist/io/IoMdQrScanner.svelte';
+	import '$lib/stores/onchain';
+	import '../app.css';
 </script>
 
 <div class="flex min-h-screen">
