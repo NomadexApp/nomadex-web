@@ -57,43 +57,6 @@
 
 	let priceData: PriceCandleData[] = [];
 
-	let tooltip = [0, 0];
-
-	// function generateData(priceOf: 'VOI/VIA' | 'VIA/VOI') {
-	// 	priceData = [];
-	// 	const events = [...swapEvents];
-
-	// 	let lowest = Number.MAX_SAFE_INTEGER;
-	// 	let highest = 0;
-	// 	let c = 1;
-
-	// 	for (let i = 0; i < events.length; i++) {
-	// 		const event = events[i];
-	// 		const voiAmount = event.direction === 0 ? event.fromAmount : event.toAmount;
-	// 		const viaAmount = event.direction === 0 ? event.toAmount : event.fromAmount;
-
-	// 		const price = priceOf === 'VOI/VIA' ? viaAmount / voiAmount : voiAmount / viaAmount;
-
-	// 		lowest = Math.min(lowest, price);
-	// 		highest = Math.max(highest, price);
-
-	// 		priceData.push({
-	// 			x: event.txn['round-time'] * 1000,
-	// 			o: c,
-	// 			c: price,
-	// 			h: Math.max(c, price),
-	// 			l: Math.min(c, price),
-	// 		});
-	// 		c = price;
-	// 	}
-	// 	priceData = priceData;
-
-	// 	priceData[0].l = lowest * 0.75;
-	// 	priceData[0].h = highest * 1.25;
-
-	// 	console.log({ priceData });
-	// }
-
 	function generateDataByTime(priceOf: 'VOI/VIA' | 'VIA/VOI', duration = timescale) {
 		priceData = [];
 		const events = [...swapEvents];
@@ -162,7 +125,7 @@
 <section class="p-4 flex flex-col items-center gap-2">
 	<br />
 	<br />
-	<div class="flex justify-between w-full max-w-[900px]">
+	<div class="flex flex-wrap gap-4 justify-between w-full max-w-[900px]">
 		<div
 			class="cursor-pointer font-bold text-lg"
 			on:click={() => {
@@ -225,7 +188,7 @@
 			>
 		</div>
 	</div>
-	<div class="chart-container">
+	<div class="chart-container min-w-[350px]">
 		<CandleChart label={pricingDirection} {logarithmic} data={priceData.slice(-80)} />
 	</div>
 	<br />
@@ -234,27 +197,27 @@
 		<h4 class="text-lg font-semibold text-left w-full">Recent Swaps</h4>
 		{#if swapEvents?.length}
 			<div class="event bg-base-300 p-2 px-5 rounded-btn flex justify-start items-center gap-1 max-w-[800px] font-bold">
-				<span class="w-28"> TxId </span>
-				<span class="w-28 hidden lg:flex">Time</span>
-				<span class="w-28 hidden lg:flex">Round</span>
-				<span class="w-28 hidden lg:flex"> Sender </span>
-				<span class="w-32 flex-grow text-right">From Amount</span>
-				<span class="w-32 flex-grow text-right"> To Amount </span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"> Sender </span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right">From</span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right">To</span>
 			</div>
 			{#each [...swapEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']) as event}
 				<div class="event bg-base-300 p-2 px-5 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
-					<a class="w-28" href="https://voi.observer/explorer/transaction/{event.txn.id}" target="_blank">
+					<a class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28" href="https://voi.observer/explorer/transaction/{event.txn.id}" target="_blank">
 						{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 					</a>
-					<span class="w-28 hidden lg:flex">{timeAgo(event.txn['round-time'] * 1000)}</span>
-					<span class="w-28 hidden lg:flex">{event.txn['confirmed-round']}</span>
-					<a class="w-28 hidden lg:flex" href="https://voi.observer/explorer/account/{event.sender}" target="_blank">
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">{timeAgo(event.txn['round-time'] * 1000)}</span>
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">{event.txn['confirmed-round']}</span>
+					<a class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex" href="https://voi.observer/explorer/account/{event.sender}" target="_blank">
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
-					<span class="w-32 flex-grow text-right"
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 flex-grow text-right"
 						>{Number(algosdk.microalgosToAlgos(event.fromAmount).toFixed(3))} {event.direction ? 'VIA' : 'VOI'}</span
 					>
-					<span class="w-32 flex-grow text-right"
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 flex-grow text-right"
 						>{Number(algosdk.microalgosToAlgos(event.toAmount).toFixed(3))} {event.direction ? 'VOI' : 'VIA'}</span
 					>
 				</div>

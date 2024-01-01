@@ -7,15 +7,27 @@
 	import AnalyticsIcon from 'svelte-star/dist/md/MdShowChart.svelte';
 	import MdMenu from 'svelte-star/dist/md/MdMenu.svelte';
 	import { isDarkTheme } from './stores';
+	import { onMount } from 'svelte';
 
 	let sidebarWidth = 0;
 	let sidebarOpen = browser ? JSON.parse(localStorage.getItem('sidebar_open') ?? 'true') : true;
-
 	$: browser && localStorage.setItem('sidebar_open', sidebarOpen);
+
+	let scrollY = 0;
+	let init = false;
+
+	onMount(() => {
+		setTimeout(() => {
+			init = true;
+		});
+	});
 </script>
+
+<svelte:window bind:scrollY />
 
 <div
 	class="sidebar drawer drawer-open max-w-min absolute md:relative bg-black"
+	class:init
 	bind:clientWidth={sidebarWidth}
 	style="margin-left: -{sidebarOpen ? 0 : sidebarWidth}px;"
 >
@@ -23,11 +35,12 @@
 	<div class="drawer-content" />
 	<label
 		for="my-drawer"
-		class="switch-drawer md:hover:bg-base-300 transition-all duration-300 border-none drawer-button flex"
+		class="switch-drawer bg-base-300 border-none drawer-button flex"
+		style="opacity: {(window.innerHeight * 0.5 - scrollY) / (window.innerHeight * 0.5)};"
 		class:theme-dark={$isDarkTheme}
 		class:open={sidebarOpen}
 	>
-		<span class="w-5"> <MdMenu /></span>
+		<span class="w-5 text-base-content scale-125 rotate-90"> <MdMenu /></span>
 	</label>
 	<div class="drawer-side">
 		<label for="my-drawer" aria-label="close sidebar" class="drawer-overlay" />
@@ -45,13 +58,13 @@
 					<span class="h-5"><SwapIcon /></span>
 				</a>
 			</li>
-			<li class="pl-0 hidden sm:block">
+			<li class="pl-0 sm:block">
 				<a class="flex justify-between" href="/pools" tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">POOLS</span>
 					<span class="h-5"><PoolsIcon /></span>
 				</a>
 			</li>
-			<li class="pl-0 hidden sm:block">
+			<li class="pl-0 sm:block">
 				<a class="flex justify-between" href="/analytics" tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">ANALYTICS</span>
 					<span class="h-5"><AnalyticsIcon /></span>
@@ -80,8 +93,10 @@
 	}
 
 	.sidebar {
-		transition: margin-left 400ms ease-in-out;
 		z-index: 10000;
+	}
+	.sidebar.init {
+		transition: margin-left 400ms ease-in-out;
 	}
 
 	.switch-drawer {
@@ -89,15 +104,13 @@
 		height: 6rem;
 		position: absolute;
 		top: calc(50vh - 3rem);
-		left: 100%;
+		left: 18rem;
 		border-top-right-radius: 1rem;
 		border-bottom-right-radius: 1rem;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		cursor: pointer;
-		opacity: 1;
-		background-color: #00000000;
 		@apply text-base-content;
 	}
 </style>
