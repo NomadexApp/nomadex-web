@@ -77,6 +77,8 @@ export class SwapEvents {
             }
         }
 
+        cache.txns = cache.txns.filter((txn, i) => !cache.txns.find((cTxn, index) => cTxn.id === txn.id && i !== index))
+
         SwapEvents.setCache(cache, signature);
 
         return cache.txns.map(txn => {

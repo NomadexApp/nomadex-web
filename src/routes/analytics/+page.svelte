@@ -34,13 +34,14 @@
 	$: browser && localStorage.setItem('price_direction', pricingDirection);
 	$: browser && localStorage.setItem('timescale', JSON.stringify(timescale));
 
-	onMount(async () => {
+	async function loadEvent() {
+		const updatedSwapEvents: typeof swapEvents = [];
 		const txns = await SwapEvents.loadTxnsByEvent(currentAppId, 'Swap(address,uint64,uint64,uint8)');
 		for (const txn of txns) {
 			const events = txn.events['Swap(address,uint64,uint64,uint8)'];
 			if (events instanceof Array) {
 				for (const event of events) {
-					swapEvents.push({
+					updatedSwapEvents.push({
 						sender: event[0],
 						fromAmount: Number(event[1]),
 						toAmount: Number(event[2]),
@@ -50,16 +51,25 @@
 				}
 			}
 		}
-		swapEvents = swapEvents;
-
+		swapEvents = updatedSwapEvents;
 		generateDataByTime(pricingDirection, timescale);
+	}
+
+	onMount(() => {
+		loadEvent();
+		const interval = setInterval(() => loadEvent(), 10_000);
+		return () => {
+			clearInterval(interval);
+		};
 	});
 
 	let priceData: PriceCandleData[] = [];
 
 	function generateDataByTime(priceOf: 'VOI/VIA' | 'VIA/VOI', duration = timescale) {
-		priceData = [];
+		const _priceData: PriceCandleData[] = [];
 		const events = [...swapEvents];
+
+		if (!events.length) return;
 
 		let pricingCurrency = priceOf === 'VOI/VIA' ? 0 : 1;
 
@@ -98,7 +108,7 @@
 				const _open = close;
 				const _close = getPrice(matchingEvents[matchingEvents.length - 1]);
 
-				priceData.push({
+				_priceData.push({
 					x: time * 1000,
 					o: _open,
 					c: _close,
@@ -109,7 +119,7 @@
 				close = _close;
 				price = _close;
 			} else {
-				priceData.push({
+				_priceData.push({
 					x: time * 1000,
 					o: close,
 					c: close,
@@ -118,7 +128,11 @@
 				});
 			}
 		}
-		priceData = priceData;
+		const checksum1 = _priceData.map((d) => `${d.x}:${d.o}:${d.h}:${d.l}:${d.c}`).join(':');
+		const checksum2 = priceData.map((d) => `${d.x}:${d.o}:${d.h}:${d.l}:${d.c}`).join(':');
+		if (checksum1 !== checksum2) {
+			priceData = _priceData;
+		}
 	}
 </script>
 
@@ -189,7 +203,11 @@
 		</div>
 	</div>
 	<div class="chart-container min-w-[350px]">
-		<CandleChart label={`Price of ${pricingDirection.split('/').join(' in ')}`} {logarithmic} data={priceData.slice(-80)} />
+		<CandleChart
+			label={`Price of ${pricingDirection.split('/').join(' in ')}`}
+			{logarithmic}
+			data={priceData.slice(-80)}
+		/>
 	</div>
 	<br />
 	<br />
@@ -206,12 +224,24 @@
 			</div>
 			{#each [...swapEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']) as event}
 				<div class="event bg-base-300 p-2 px-5 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
-					<a class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28" href="https://voi.observer/explorer/transaction/{event.txn.id}" target="_blank">
+					<a
+						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
+						href="https://voi.observer/explorer/transaction/{event.txn.id}"
+						target="_blank"
+					>
 						{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 					</a>
-					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">{timeAgo(event.txn['round-time'] * 1000)}</span>
-					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">{event.txn['confirmed-round']}</span>
-					<a class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex" href="https://voi.observer/explorer/account/{event.sender}" target="_blank">
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
+						>{timeAgo(event.txn['round-time'] * 1000)}</span
+					>
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
+						>{event.txn['confirmed-round']}</span
+					>
+					<a
+						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
+						href="https://voi.observer/explorer/account/{event.sender}"
+						target="_blank"
+					>
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 flex-grow text-right"

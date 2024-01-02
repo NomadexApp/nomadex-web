@@ -140,14 +140,21 @@
 			},
 		};
 	}
+
+	$: initializing = data.length === 0;
+	setTimeout(() => (initializing = false), 1000);
 </script>
 
 <div class="canvas-wrapper relative">
-	{#await updating}
+	{#if initializing}
 		<span class="loading text-primary" />
-	{:then resp}
-		<canvas use:candleChart={resp} />
-	{/await}
+	{:else}
+		{#await updating}
+			<span class="loading text-primary" />
+		{:then resp}
+			<canvas use:candleChart={resp} />
+		{/await}
+	{/if}
 </div>
 
 <style>
