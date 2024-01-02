@@ -174,12 +174,12 @@ export default class ContractMethods {
         const instance = new ContractMethods();
         try {
             const resp = await instance[<string>functionName](...args);
-            addNotification('success', `Success`, 3000);
+            addNotification('success', `Success`, 5000);
             removeNot();
             return resp;
         } catch (error) {
             console.error((<Error>error).message);
-            addNotification('error', (<Error>error).message, 10000);
+            addNotification('error', (<Error>error).message, 15000);
         }
         removeNot();
     }

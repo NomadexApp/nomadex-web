@@ -101,7 +101,7 @@
 
 {#if $notifications.length}
 	<div
-		class="fixed top-10 right-10 min-w-[250px] min-h-[40px] text-primary-content rounded-btn flex flex-col gap-2 items-end"
+		class="fixed top-10 right-10 min-w-[250px] min-h-[40px] text-white rounded-btn flex flex-col gap-2 items-end"
 	>
 		{#each $notifications as notification}
 			<div
@@ -109,7 +109,7 @@
 			>
 				<button
 					on:click={() => notification.remove()}
-					class="close bg-[red] btn-sm w-10 h-10 scale-[0.5] p-0 absolute top-[-5px] right-[-8px]"
+					class="close bg-red-900 btn-sm w-10 h-10 scale-[0.5] p-0 absolute top-[-5px] right-[-8px]"
 				>
 					<CloseIcon />
 				</button>
