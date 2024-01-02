@@ -187,7 +187,7 @@
 								inputTokenLpt = balance / 1e6;
 								onInputTokenLpt();
 							}}
-							on:keydown={null}>MAX {(balance / 1e6).toFixed(2)}</span
+							on:keydown={null}>MAX {(balance / 1e6).toLocaleString('en')}</span
 						>
 					{/await}
 					<Dropdown
@@ -223,7 +223,7 @@
 								inputTokenA = balance / 1e6;
 								onInputTokenA();
 							}}
-							on:keydown={null}>MAX {(balance / 1e6).toFixed(2)}</span
+							on:keydown={null}>MAX {(balance / 1e6).toLocaleString('en')}</span
 						>
 					{/await}
 				{/if}
@@ -258,7 +258,7 @@
 								inputTokenB = balance / 1e6;
 								onInputTokenB();
 							}}
-							on:keydown={null}>MAX {(balance / 1e6).toFixed(2)}</span
+							on:keydown={null}>MAX {(balance / 1e6).toLocaleString('en')}</span
 						>
 					{/await}
 				{/if}
