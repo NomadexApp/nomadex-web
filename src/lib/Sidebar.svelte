@@ -10,7 +10,12 @@
 	import { onMount } from 'svelte';
 
 	let sidebarWidth = 0;
-	let sidebarOpen = browser ? JSON.parse(localStorage.getItem('sidebar_open') ?? 'true') : true;
+
+	let innerWidth = browser ? window.innerWidth : 0;
+
+	$: isMobile = innerWidth < 700;
+
+	let sidebarOpen = browser ? (isMobile ? false : JSON.parse(localStorage.getItem('sidebar_open') ?? 'true')) : true;
 	$: browser && localStorage.setItem('sidebar_open', sidebarOpen);
 
 	let scrollY = 0;
@@ -23,7 +28,7 @@
 	});
 </script>
 
-<svelte:window bind:scrollY />
+<svelte:window bind:scrollY bind:innerWidth />
 
 <div
 	class="sidebar drawer drawer-open max-w-min absolute md:relative bg-black"
@@ -48,24 +53,35 @@
 			<div
 				class="h-32 mx-auto mb-5 cursor-pointer transition-all relative flex justify-center items-center animate-pulse"
 				on:click={() => goto('/')}
+				on:click={() => isMobile && (sidebarOpen = false)}
 				on:keydown
 			>
 				<img class="grayscale" alt="voi logo" src="/logo.png" />
 			</div>
 			<li class="pl-0">
-				<a class="flex justify-between items-center" href="/swap" tabindex="0">
+				<a
+					class="flex justify-between items-center"
+					href="/swap"
+					on:click={() => isMobile && (sidebarOpen = false)}
+					tabindex="0"
+				>
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">SWAP</span>
 					<span class="h-5"><SwapIcon /></span>
 				</a>
 			</li>
 			<li class="pl-0 sm:block">
-				<a class="flex justify-between" href="/pools" tabindex="0">
+				<a class="flex justify-between" href="/pools" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">POOLS</span>
 					<span class="h-5"><PoolsIcon /></span>
 				</a>
 			</li>
 			<li class="pl-0 sm:block">
-				<a class="flex justify-between" href="/analytics" tabindex="0">
+				<a
+					class="flex justify-between"
+					href="/analytics"
+					on:click={() => isMobile && (sidebarOpen = false)}
+					tabindex="0"
+				>
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">ANALYTICS</span>
 					<span class="h-5"><AnalyticsIcon /></span>
 				</a>
