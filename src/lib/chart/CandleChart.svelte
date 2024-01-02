@@ -46,6 +46,7 @@
 		if (!ctx) return;
 
 		Chart.defaults.color = isDarkThemeActive ? '#f0f0f0' : '#222222';
+		const borderColor = isDarkThemeActive ? '#555555' : '#cccccc';
 
 		const chart = new Chart(ctx, {
 			type: <any>'candlestick',
@@ -56,9 +57,24 @@
 				scales: {
 					y: {
 						type: logarithmic ? 'logarithmic' : 'linear',
-						position: 'right', // `axis` is determined by the position as `'y'`
+						position: 'right',
 						ticks: {
 							beginAtZero: true,
+							align: 'center',
+						},
+						border: {
+							display: false,
+						},
+						grid: {
+							display: true,
+							drawOnChartArea: true,
+							drawTicks: true,
+							color: function (context) {
+								if (context.index >= 0) {
+									return `${borderColor}88`;
+								}
+								return '#00000000';
+							},
 						},
 					},
 					x: {
@@ -67,8 +83,19 @@
 							unit: 'minute',
 							displayFormats: { minute: 'hh:mm' },
 						},
-						title: {
-							text: 'Time',
+						ticks: {
+							align: 'center',
+						},
+						border: {
+							display: false,
+						},
+						grid: {
+							display: true,
+							drawOnChartArea: true,
+							drawTicks: true,
+							color: function (context) {
+								return '#00000009';
+							},
 						},
 					},
 				},
@@ -81,7 +108,12 @@
 						color: {
 							up: 'rgba(80, 160, 115, 1)',
 							down: 'rgba(215, 85, 65, 1)',
-							unchanged: 'rgba(90, 90, 90, 1)',
+							unchanged: isDarkThemeActive ? 'rgba(250, 250, 250, 1)' : 'rgba(0, 0, 0, 1)',
+						},
+						borderColor: {
+							up: 'rgba(80, 160, 115, 1)',
+							down: 'rgba(215, 85, 65, 1)',
+							unchanged: isDarkThemeActive ? 'rgba(250, 250, 250, 1)' : 'rgba(0, 0, 0, 1)',
 						},
 					},
 				],

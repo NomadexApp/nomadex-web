@@ -189,7 +189,7 @@
 		</div>
 	</div>
 	<div class="chart-container min-w-[350px]">
-		<CandleChart label={pricingDirection} {logarithmic} data={priceData.slice(-80)} />
+		<CandleChart label={`Price of ${pricingDirection.split('/').join(' in ')}`} {logarithmic} data={priceData.slice(-80)} />
 	</div>
 	<br />
 	<br />

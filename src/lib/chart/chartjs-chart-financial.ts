@@ -1,6 +1,6 @@
 // @ts-ignore
 
-import { LogarithmicScale } from "chart.js";
+import { LineController, LineElement, LogarithmicScale, PointElement } from "chart.js";
 
 export function chartJsChartFinancial(
     { Chart, Element, BarController, defaults, TimeSeriesScale, LinearScale },
@@ -509,6 +509,6 @@ export function chartJsChartFinancial(
         }
     }, Chart.defaults.financial);
 
-    Chart.register(CandlestickController, OhlcController, CandlestickElement, OhlcElement, TimeSeriesScale, LinearScale, LogarithmicScale);
+    Chart.register(CandlestickController, OhlcController, CandlestickElement, OhlcElement, TimeSeriesScale, LinearScale, LogarithmicScale, LineController, PointElement, LineElement);
 
 }
