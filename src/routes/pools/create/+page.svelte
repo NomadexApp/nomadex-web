@@ -16,7 +16,7 @@
 
 		console.log('Created LP Asset:', connector.lptAssetId);
 
-		await connector.addLiquidity(1_000_000, 1_000_000);
+		await connector.addLiquidity(BigInt(1_000_000), BigInt(1_000_000));
 		console.log('added liquidity');
 
 		return;

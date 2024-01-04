@@ -142,10 +142,10 @@
 		);
 
 		if (tokenA.ticker === voiToken.ticker && tokenB.ticker === arc200Token.ticker) {
-			await algoArc200PoolConnector.invoke('swapVoiToArc200', tokenAAmount, minOfTokenB);
+			await algoArc200PoolConnector.invoke('swapVoiToArc200', BigInt(tokenAAmount), BigInt(minOfTokenB));
 			pageContentRefresh(0);
 		} else if (tokenA.ticker === arc200Token.ticker && tokenB.ticker === voiToken.ticker) {
-			await algoArc200PoolConnector.invoke('swapArc200ToVoi', tokenAAmount, minOfTokenB);
+			await algoArc200PoolConnector.invoke('swapArc200ToVoi', BigInt(tokenAAmount), BigInt(minOfTokenB));
 			pageContentRefresh(0);
 		}
 		disabled = prev;

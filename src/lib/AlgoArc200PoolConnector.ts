@@ -103,20 +103,13 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
         return txnResponse.return;
     }
 
-    async addLiquidity(algoAmount: number, arc200Amount: number) {
+    async addLiquidity(algoAmount: bigint, arc200Amount: bigint) {
         if (!this.signer?.addr) throw Error('signer undefined');
 
         const params = await nodeClient.getTransactionParams().do();
 
         const lptBalance = await getASABalance(this.lptAssetId, this.signer.addr);
 
-        console.log({
-            from: this.signer.addr,
-            to: this.signer.addr,
-            amount: 0,
-            assetIndex: this.lptAssetId,
-            suggestedParams: params,
-        })
         const optInTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
             from: this.signer.addr,
             to: this.signer.addr,
@@ -131,23 +124,20 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
             algosdk.getApplicationAddress(this.appId),
             BigInt(arc200Amount)
         );
-        console.log('__approved', approveTxns);
 
         const mintArgs = () => ({
             pay_txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-                amount: algoAmount,
+                amount: BigInt(algoAmount),
                 from: this.signer.addr,
                 to: algosdk.getApplicationAddress(this.appId),
                 suggestedParams: params,
             }),
-            arc200_amount: arc200Amount,
+            arc200_amount: BigInt(arc200Amount),
             lpt_asset: this.lptAssetId,
         });
         const composer = this.compose();
-        console.log('___approved');
 
         const opts = await this.getUnnamedResourcesAccessedFromMethod('mint', mintArgs());
-        console.log('____approved');
 
         const mintTxns = (
             await composer
@@ -181,10 +171,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
     }
 
 
-    /****************/
-
-
-    async swapVoiToArc200(voiAmount: number, minViaAmount: number) {
+    async swapVoiToArc200(voiAmount: bigint, minViaAmount: bigint) {
         const suggestedParams = await nodeClient.getTransactionParams().do();
 
         const admin = (await nodeClient.getApplicationByID(this.appId).do())
@@ -230,7 +217,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
         console.log({ success: true });
     }
 
-    async swapArc200ToVoi(arc200Amount: number, minVoiAmount: number) {
+    async swapArc200ToVoi(arc200Amount: bigint, minVoiAmount: bigint) {
 
         const admin = (await nodeClient.getApplicationByID(this.appId).do())
             ?.params?.['global-state']
@@ -279,7 +266,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
         console.log({ success: true });
     }
 
-    async removeLiquidity(lptAmount: number) {
+    async removeLiquidity(lptAmount: bigint) {
         const suggestedParams = await nodeClient.getTransactionParams().do();
 
         const removeLiqArgs = () => ({

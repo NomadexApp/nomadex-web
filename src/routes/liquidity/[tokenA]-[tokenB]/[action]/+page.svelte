@@ -133,10 +133,14 @@
 			matchedPool.lptId
 		);
 		if (action === 'add') {
-			await algoArc200PoolConnector.invoke('addLiquidity', inputTokenA * tokenA.unit, inputTokenB * tokenB.unit);
+			await algoArc200PoolConnector.invoke(
+				'addLiquidity',
+				BigInt(Math.floor(inputTokenA * tokenA.unit)),
+				BigInt(Math.floor(inputTokenB * tokenB.unit))
+			);
 			pageContentRefresh(0);
 		} else if (action === 'remove') {
-			await algoArc200PoolConnector.invoke('removeLiquidity', algosdk.algosToMicroalgos(inputTokenLpt));
+			await algoArc200PoolConnector.invoke('removeLiquidity', BigInt(Math.floor(inputTokenLpt * 1e6)));
 			pageContentRefresh(0);
 		}
 		disabled = prev;
