@@ -104,7 +104,7 @@
 
 	export function getTransactionSignerAccount(kibisis = get(connectedWallet) === 'kibisis') {
 		const account = get(connectedAccount);
-		if (!account) return;
+		if (!account) return <{ addr: string; signer }>(<unknown>undefined);
 		const signer: algosdk.TransactionSigner = (txnGroup: algosdk.Transaction[], indexesToSign: number[]) => {
 			return signTransactions([txnGroup], kibisis);
 		};

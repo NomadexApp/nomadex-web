@@ -7,7 +7,7 @@ import { ChainInterface } from "./utils";
 import { addNotification } from "./Notify.svelte";
 
 export default class ContractMethods {
-    async swapVoiToVia(voiAmount: number, minViaAmount: number) {
+    async swapVoiToArc200(voiAmount: number, minViaAmount: number) {
         const suggestedParams = await nodeClient.getTransactionParams().do();
         const client = getClient(currentAppId);
 
@@ -32,7 +32,7 @@ export default class ContractMethods {
         console.log({ success: true });
     }
 
-    async swapViaToVoi(viaAmount: number, minVoiAmount: number) {
+    async swapArc200ToVoi(viaAmount: number, minVoiAmount: number) {
         const client = getClient(currentAppId);
 
         const admin = (await nodeClient.getApplicationByID(currentAppId).do())

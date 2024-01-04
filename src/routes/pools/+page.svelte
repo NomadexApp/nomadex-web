@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { type Token, knownTokens } from '$lib';
+	import { type Token, knownTokens, knownPools } from '$lib';
 	import { currentAppId } from '$lib/_deployed';
 	import { balanceString, getArc200Balance, getBalance, viaAppId } from '$lib/_shared';
 	import { onChainStateWatcher } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
-
-	let pools: [Token, Token][] = [[knownTokens[0], knownTokens[1]]];
 
 	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(currentAppId));
 
@@ -21,9 +19,9 @@
 	<br />
 	<h4 class="text-xl font-bold">Liquidity Pools</h4>
 	<div class="flex flex-wrap items-stretch gap-2 pt-6">
-		{#each pools as pool}
+		{#each knownPools as pool}
 			<div class="pool bg-base-300 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px]">
-				<span class="name text-lg font-bold text-bold mb-2">{pool[0].ticker} / {pool[1].ticker}</span>
+				<span class="name text-lg font-bold text-bold mb-2">VOI / {pool.arc200Asset.symbol}</span>
 				<span class="flex justify-between">
 					{#if $currentPoolState.arc200Balances[viaAppId]}
 						<span class="border-r-[1px] pr-3 border-base-content border-opacity-25"
@@ -35,11 +33,11 @@
 					{/if}
 				</span>
 				<span class="flex flex-wrap justify-end">
-					<a href="/swap/{pool[0].ticker}-{pool[1].ticker}" class="btn btn-ghost text-base-content btn-sm">Swap</a>
-					<a href="/liquidity/{pool[0].ticker}-{pool[1].ticker}/add" class="btn btn-ghost text-base-content btn-sm">
+					<a href="/swap/VOI-{pool.arc200Asset.symbol}" class="btn btn-ghost text-base-content btn-sm">Swap</a>
+					<a href="/liquidity/VOI-{pool.arc200Asset.symbol}/add" class="btn btn-ghost text-base-content btn-sm">
 						Add Liq.
 					</a>
-					<a href="/liquidity/{pool[0].ticker}-{pool[1].ticker}/remove" class="btn btn-ghost text-base-content btn-sm">
+					<a href="/liquidity/VOI-{pool.arc200Asset.symbol}/remove" class="btn btn-ghost text-base-content btn-sm">
 						Remove Liq.
 					</a>
 				</span>

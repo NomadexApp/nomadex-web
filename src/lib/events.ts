@@ -26,12 +26,12 @@ interface CacheStructure {
 
 
 export class SwapEvents {
-    static setCache(update: CacheStructure, signature: string) {
-        localStorage.setItem(signature, JSON.stringify(update));
+    static setCache(update: CacheStructure, appId: number, signature: string) {
+        localStorage.setItem(`${appId}-${signature}`, JSON.stringify(update));
     }
 
-    static getCache(signature: string): CacheStructure {
-        const cache = localStorage.getItem(signature);
+    static getCache(appId: number, signature: string): CacheStructure {
+        const cache = localStorage.getItem(`${appId}-${signature}`);
         if (cache) {
             return <CacheStructure>JSON.parse(cache);
         }
@@ -41,7 +41,7 @@ export class SwapEvents {
 
     static async loadTxnsByEvent(appId: number, event: string) {
         const signature = sha512_256(event).slice(0, 8);
-        const cache = SwapEvents.getCache(signature);
+        const cache = SwapEvents.getCache(appId, signature);
 
         const LIMIT = 1000;
         let next: string | undefined;
@@ -79,7 +79,7 @@ export class SwapEvents {
 
         cache.txns = cache.txns.filter((txn, i) => !cache.txns.find((cTxn, index) => cTxn.id === txn.id && i !== index))
 
-        SwapEvents.setCache(cache, signature);
+        SwapEvents.setCache(cache, appId, signature);
 
         return cache.txns.map(txn => {
             const logs = (txn.logs ?? []).map(log => Buffer.from(log, 'base64').toString('hex'));

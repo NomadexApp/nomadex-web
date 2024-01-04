@@ -1,0 +1,298 @@
+{
+  "name": "AlgoArc200Pool",
+  "desc": "",
+  "methods": [
+    {
+      "name": "createApplication",
+      "args": [
+        {
+          "name": "admin",
+          "type": "address",
+          "desc": ""
+        },
+        {
+          "name": "governer",
+          "type": "address",
+          "desc": ""
+        },
+        {
+          "name": "arc200_token",
+          "type": "application",
+          "desc": ""
+        },
+        {
+          "name": "lp_fee",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "initialize values",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "updateApplication",
+      "args": [],
+      "desc": "allows admin to update the application",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "create_pool_token",
+      "args": [
+        {
+          "name": "algo_seed_txn",
+          "type": "pay",
+          "desc": ""
+        },
+        {
+          "name": "lpt_name",
+          "type": "string",
+          "desc": ""
+        },
+        {
+          "name": "lpt_unit",
+          "type": "string",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "uint64",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_admin",
+      "args": [
+        {
+          "name": "admin",
+          "type": "address",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_governer",
+      "args": [
+        {
+          "name": "governer",
+          "type": "address",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_fees",
+      "args": [
+        {
+          "name": "fee",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_mint_enabled",
+      "args": [
+        {
+          "name": "enabled",
+          "type": "bool",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_burn_enabled",
+      "args": [
+        {
+          "name": "enabled",
+          "type": "bool",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_swap_enabled",
+      "args": [
+        {
+          "name": "enabled",
+          "type": "bool",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "register_online",
+      "args": [
+        {
+          "name": "selection_pk",
+          "type": "byte[]",
+          "desc": ""
+        },
+        {
+          "name": "state_proof_pk",
+          "type": "byte[]",
+          "desc": ""
+        },
+        {
+          "name": "vote_pk",
+          "type": "byte[]",
+          "desc": ""
+        },
+        {
+          "name": "vote_first",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "vote_last",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "vote_key_dilution",
+          "type": "uint64",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "register_offline",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "set_ratio",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "mint",
+      "args": [
+        {
+          "name": "pay_txn",
+          "type": "pay",
+          "desc": "pay txn with algos sending to this app account"
+        },
+        {
+          "name": "arc200_amount",
+          "type": "uint64",
+          "desc": "amount of arc200 approved to add to liquidity"
+        },
+        {
+          "name": "lpt_asset",
+          "type": "asset",
+          "desc": "lpt asset needed to mint"
+        }
+      ],
+      "desc": "Add liquidity and mints lpt token",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "burn",
+      "args": [
+        {
+          "name": "lpt_xfer_txn",
+          "type": "axfer",
+          "desc": ""
+        }
+      ],
+      "desc": "Withdraw liquidity",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "swap_to_arc200",
+      "args": [
+        {
+          "name": "pay_txn",
+          "type": "pay",
+          "desc": "Txn with an amount of algos sending to this app account"
+        },
+        {
+          "name": "min_amount",
+          "type": "uint64",
+          "desc": "min arc200 for this swap to be successful"
+        }
+      ],
+      "desc": "Swap from Algos to Arc200",
+      "returns": {
+        "type": "uint64",
+        "desc": "amount of algos returned"
+      }
+    },
+    {
+      "name": "swap_from_arc200",
+      "args": [
+        {
+          "name": "arc200_amount",
+          "type": "uint64",
+          "desc": "amount of arc200 approved"
+        },
+        {
+          "name": "min_amount",
+          "type": "uint64",
+          "desc": "min algo for this swap to be successful"
+        }
+      ],
+      "desc": "Swap tokens from Arc200 to Algos",
+      "returns": {
+        "type": "uint64",
+        "desc": "amount of algos returned"
+      }
+    }
+  ]
+}

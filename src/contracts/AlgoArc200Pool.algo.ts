@@ -24,7 +24,7 @@ export class AlgoArc200Pool extends Contract {
   admin_fee = GlobalStateKey<uint64>({ key: 'admin_fee' });
 
   /** pool token (lpt), given to liquidity providers */
-  lpt_token = GlobalStateKey<Asset>({ key: 'lpt_token' });
+  lpt_asset = GlobalStateKey<Asset>({ key: 'lpt_asset' });
 
   /** arc200 token application */
   arc200_token = GlobalStateKey<Application>({ key: 'arc200_token' });
@@ -35,13 +35,16 @@ export class AlgoArc200Pool extends Contract {
   /** if pool tokens can be burned */
   burn_enabled = GlobalStateKey<boolean>({ key: 'burn_enabled' });
 
+  /** if swapping is enabled */
+  swap_enabled = GlobalStateKey<boolean>({ key: 'swap_enabled' });
+
   /** check if pool has been initialized */
   initialized = GlobalStateKey<boolean>({ key: 'initialized' });
 
   /**
-   * Event Swap(sender, from_amount, to_amount, is_swap_from_arc200_to_algo)
+   * Event Swap(sender, from_amount, to_amount, is_direction_from_arc200_to_algo)
    */
-  Swap = new EventLogger<[Address, uint64, uint64, boolean]>();
+  Swap = new EventLogger<[Address, uint64, uint64, uint<8>]>();
 
   /**
    * Event Mint(sender, algo_amount, arc200_amount, lpt_amount_minted)
@@ -49,7 +52,7 @@ export class AlgoArc200Pool extends Contract {
   Mint = new EventLogger<[Address, uint64, uint64, uint64]>();
 
   /**
-   * Event Burn(sender: lpt_amount_burned, algo_amount, arc200_amount)
+   * Event Burn(sender, lpt_amount_burned, algo_amount, arc200_amount)
    */
   Burn = new EventLogger<[Address, uint64, uint64, uint64]>();
 
@@ -67,6 +70,7 @@ export class AlgoArc200Pool extends Contract {
     this.admin_fee.value = wideRatio([lp_fee, INITIAL_ADMIN_FEE], [SCALE]);
     this.mint_enabled.value = true;
     this.burn_enabled.value = true;
+    this.swap_enabled.value = true;
     this.initialized.value = false;
   }
 
@@ -77,17 +81,14 @@ export class AlgoArc200Pool extends Contract {
 
   create_pool_token(
     algo_seed_txn: PayTxn,
-    arc200_seed_txn: AppCallTxn,
     lpt_name: string,
     lpt_unit: string
   ): Asset {
-    assert(this.txn.sender === this.admin.value);
-    assert(!this.lpt_token.exists);
+    assert(this.txn.sender === this.governer.value || this.txn.sender === this.admin.value);
+    assert(!this.lpt_asset.exists);
     verifyPayTxn(algo_seed_txn, { receiver: this.app.address, amount: { greaterThanEqualTo: MIN_BALANCE + 1000 } });
-    verifyAppCallTxn(arc200_seed_txn, { applicationID: this.arc200_token.value });
 
-
-    this.lpt_token.value = sendAssetCreation({
+    this.lpt_asset.value = sendAssetCreation({
       configAssetName: lpt_name,
       configAssetUnitName: lpt_unit,
       configAssetTotal: LPT_TOTAL_SUPPLY,
@@ -97,7 +98,7 @@ export class AlgoArc200Pool extends Contract {
       fee: 1000
     });
 
-    return this.lpt_token.value;
+    return this.lpt_asset.value;
   }
 
   set_admin(admin: Address): void {
@@ -123,6 +124,11 @@ export class AlgoArc200Pool extends Contract {
   set_burn_enabled(enabled: boolean): void {
     assert(this.txn.sender === this.governer.value || this.txn.sender === this.admin.value);
     this.burn_enabled.value = enabled;
+  }
+
+  set_swap_enabled(enabled: boolean): void {
+    assert(this.txn.sender === this.governer.value || this.txn.sender === this.admin.value);
+    this.swap_enabled.value = enabled;
   }
 
   register_online(selection_pk: bytes, state_proof_pk: bytes, vote_pk: bytes, vote_first: uint64, vote_last: uint64, vote_key_dilution: uint64): void {
@@ -183,7 +189,7 @@ export class AlgoArc200Pool extends Contract {
 
   private asa_transfer_to(receiver: Account, asset: Asset, amount: uint64): boolean {
     sendAssetTransfer({
-      assetSender: this.app.address,
+      sender: this.app.address,
       assetReceiver: receiver,
       xferAsset: asset,
       assetAmount: amount,
@@ -298,9 +304,9 @@ export class AlgoArc200Pool extends Contract {
    * Add liquidity and mints lpt token
    * @param pay_txn pay txn with algos sending to this app account
    * @param arc200_amount amount of arc200 approved to add to liquidity
-   * @param lpt_token lpt asset needed to mint
+   * @param lpt_asset lpt asset needed to mint
    */
-  mint(pay_txn: PayTxn, arc200_amount: uint64, lpt_token: Asset): void {
+  mint(pay_txn: PayTxn, arc200_amount: uint64, lpt_asset: Asset): void {
 
     assert(this.mint_enabled.value);
 
@@ -311,7 +317,7 @@ export class AlgoArc200Pool extends Contract {
     });
 
     assert(arc200_amount > 0);
-    assert(lpt_token === this.lpt_token.value);
+    assert(lpt_asset === this.lpt_asset.value);
     assert(this.get_balance() > 0);
 
     this.arc200_tranfer_from(this.txn.sender, this.app.address, arc200_amount);
@@ -323,7 +329,7 @@ export class AlgoArc200Pool extends Contract {
       this.initialized.value = true;
     } else {
       to_mint = this.tokens_to_mint(
-        LPT_TOTAL_SUPPLY - this.app.address.assetBalance(this.lpt_token.value),
+        LPT_TOTAL_SUPPLY - this.app.address.assetBalance(this.lpt_asset.value),
         this.get_balance() - pay_txn.amount,
         this.get_arc200_balance() - arc200_amount,
         pay_txn.amount,
@@ -333,7 +339,7 @@ export class AlgoArc200Pool extends Contract {
 
     assert(to_mint > 0);
 
-    this.asa_transfer_to(this.txn.sender, this.lpt_token.value, to_mint);
+    this.asa_transfer_to(this.txn.sender, this.lpt_asset.value, to_mint);
 
     this.Mint.log(
       this.txn.sender,
@@ -356,12 +362,12 @@ export class AlgoArc200Pool extends Contract {
       sender: this.txn.sender,
       assetAmount: { greaterThan: 0 },
       assetReceiver: this.app.address,
-      xferAsset: this.lpt_token.value,
+      xferAsset: this.lpt_asset.value,
     });
 
     assert(this.get_balance() > 0);
 
-    const lpt_issues = LPT_TOTAL_SUPPLY - (this.app.address.assetBalance(this.lpt_token.value) - lpt_xfer_txn.assetAmount);
+    const lpt_issues = LPT_TOTAL_SUPPLY - (this.app.address.assetBalance(this.lpt_asset.value) - lpt_xfer_txn.assetAmount);
 
     const withdraw_amount = this.compute_token_return_amount_for_burning_lpt(
       lpt_issues, this.get_balance(), lpt_xfer_txn.assetAmount
@@ -390,6 +396,9 @@ export class AlgoArc200Pool extends Contract {
    * @returns amount of algos returned
    */
   swap_to_arc200(pay_txn: PayTxn, min_amount: uint64): uint64 {
+
+    assert(this.swap_enabled.value);
+
     verifyPayTxn(pay_txn, {
       sender: this.txn.sender,
       receiver: this.app.address,
@@ -427,9 +436,7 @@ export class AlgoArc200Pool extends Contract {
     assert(to_swap >= min_amount);
 
     this.arc200_transfer_to(this.txn.sender, to_swap);
-    if (admin_fee_in_algos > 1000) {
-      this.transfer_to(this.admin.value, admin_fee_in_algos);
-    }
+    this.transfer_to(this.admin.value, admin_fee_in_algos);
 
     this.set_ratio();
 
@@ -437,7 +444,7 @@ export class AlgoArc200Pool extends Contract {
       this.txn.sender,
       pay_txn.amount,
       to_swap,
-      false
+      0
     );
 
     return to_swap;
@@ -450,6 +457,9 @@ export class AlgoArc200Pool extends Contract {
    * @returns amount of algos returned
    */
   swap_from_arc200(arc200_amount: uint64, min_amount: uint64): uint64 {
+
+    assert(this.swap_enabled.value);
+
     this.arc200_tranfer_from(this.txn.sender, this.app.address, arc200_amount);
 
     const arc200_balance = this.get_arc200_balance();
@@ -475,9 +485,7 @@ export class AlgoArc200Pool extends Contract {
     assert(to_swap >= min_amount);
 
     this.transfer_to(this.txn.sender, to_swap);
-    if (admin_fee_in_algos > 1000) {
-      this.transfer_to(this.admin.value, admin_fee_in_algos);
-    }
+    this.transfer_to(this.admin.value, admin_fee_in_algos);
 
     this.set_ratio();
 
@@ -485,7 +493,7 @@ export class AlgoArc200Pool extends Contract {
       this.txn.sender,
       arc200_amount,
       to_swap,
-      true
+      1
     );
 
     return to_swap;

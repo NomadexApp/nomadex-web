@@ -8,6 +8,9 @@
 	import MdMenu from 'svelte-star/dist/md/MdMenu.svelte';
 	import { isDarkTheme } from './stores';
 	import { onMount } from 'svelte';
+	import { knownPools } from '$lib';
+	import { pageContentRefresh } from './utils';
+	import { page } from '$app/stores';
 
 	let sidebarWidth = 0;
 
@@ -58,16 +61,29 @@
 			>
 				<img class="grayscale" alt="voi logo" src="/logo.png" />
 			</div>
-			<li class="pl-0">
-				<a
-					class="flex justify-between items-center"
-					href="/swap"
-					on:click={() => isMobile && (sidebarOpen = false)}
-					tabindex="0"
-				>
+			<li class="pl-0" class:is-open={$page.url.pathname.startsWith('/swap/')}>
+				<a class="flex justify-between items-center" href={null} tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">SWAP</span>
 					<span class="h-5"><SwapIcon /></span>
 				</a>
+				<ul class="children">
+					{#each knownPools as pool}
+						<li class="pl-0 sm:block">
+							<a
+								class="flex justify-between"
+								href="/swap/VOI-{pool.arc200Asset.symbol}"
+								on:click={() => {
+									isMobile && (sidebarOpen = false);
+									pageContentRefresh(0);
+								}}
+								on:click={() => isMobile && (sidebarOpen = false)}
+								tabindex="0"
+							>
+								<span class="flex pt-[1px] justify-start items-end max-w-[100px]">VOI-{pool.arc200Asset.symbol}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
 			</li>
 			<li class="pl-0 sm:block">
 				<a class="flex justify-between" href="/pools" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
@@ -75,16 +91,29 @@
 					<span class="h-5"><PoolsIcon /></span>
 				</a>
 			</li>
-			<li class="pl-0 sm:block">
-				<a
-					class="flex justify-between"
-					href="/analytics"
-					on:click={() => isMobile && (sidebarOpen = false)}
-					tabindex="0"
-				>
+			<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/analytics/')}>
+				<a class="flex justify-between" href={null} tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">ANALYTICS</span>
 					<span class="h-5"><AnalyticsIcon /></span>
 				</a>
+				<ul class="children">
+					{#each knownPools as pool}
+						<li class="pl-0 sm:block">
+							<a
+								class="flex justify-between"
+								href="/analytics/VOI-{pool.arc200Asset.symbol}"
+								on:click={() => {
+									isMobile && (sidebarOpen = false);
+									pageContentRefresh(0);
+								}}
+								on:click={() => isMobile && (sidebarOpen = false)}
+								tabindex="0"
+							>
+								<span class="flex pt-[1px] justify-start items-end max-w-[100px]">VOI-{pool.arc200Asset.symbol}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
 			</li>
 			<div class="h-full flex flex-col grow">&nbsp;</div>
 			<UseWallet />
@@ -128,5 +157,22 @@
 		align-items: center;
 		cursor: pointer;
 		@apply text-base-content;
+	}
+
+	li > .children {
+		display: none;
+	}
+	li:focus-within > .children,
+	li.is-open > .children {
+		display: block;
+		animation: fadein 800ms forwards;
+	}
+	@keyframes fadein {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 </style>

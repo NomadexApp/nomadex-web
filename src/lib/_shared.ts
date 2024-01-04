@@ -4,6 +4,7 @@ import { Buffer } from 'buffer';
 import { connectedAccount, getTransactionSignerAccount } from "./UseWallet.svelte";
 import { get } from "svelte/store";
 import type { SendTransactionFrom } from "@algorandfoundation/algokit-utils/types/transaction";
+import Contract from "arc200js";
 
 export const nodeClient = new algosdk.Algodv2('', 'https://testnet-api.voi.nodly.io', '');
 export const indexerClient = new algosdk.Indexer('', 'https://testnet-idx.voi.nodly.io', '');
@@ -39,7 +40,16 @@ export const getASABalance = async (assetId: number, address: string) => {
 
 export const getArc200Balance = async (appId: number, address: string) => {
     if (!address) return 0;
-    return Number('0x' + Buffer.from(await getBoxValue(appId, address)).toString('hex'));
+    const contract = new Contract(appId, nodeClient, indexerClient);
+    const resp = await contract.arc200_balanceOf(address);
+    if (resp.success) {
+        return Number(resp.returnValue);
+    }
+    try {
+        return Number('0x' + Buffer.from(await getBoxValue(appId, address)).toString('hex'));
+    } catch (err) {
+        return 0;
+    }
 }
 
 export const getSuggestedParams = async () => {
