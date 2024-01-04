@@ -89,14 +89,14 @@
 		});
 		loading = true;
 		const ret = calculateOutTokens(
-			Math.floor(inputTokenA * 1e6),
+			Math.floor(inputTokenA * tokenA.unit),
 			tokenA.ticker === 'VOI' ? $currentPoolState.amount : $currentPoolState.arc200Balances[arc200Token.id],
 			tokenA.ticker === 'VOI' ? $currentPoolState.arc200Balances[arc200Token.id] : $currentPoolState.amount,
 			matchedPool.swapFee
 		);
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenB = Number(ret) / 1e6;
+			inputTokenB = Number(ret) / tokenB.unit;
 			disabled = !inputTokenB;
 		}
 	}
@@ -114,14 +114,14 @@
 		});
 		loading = true;
 		const ret = calculateInTokens(
-			Math.floor(inputTokenB * 1e6),
+			Math.floor(inputTokenB * tokenB.unit),
 			tokenA.ticker === 'VOI' ? $currentPoolState.amount : $currentPoolState.arc200Balances[arc200Token.id],
 			tokenA.ticker === 'VOI' ? $currentPoolState.arc200Balances[arc200Token.id] : $currentPoolState.amount,
 			matchedPool.swapFee
 		);
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenA = (Number(ret) + Number(ret) * 0.0001) / 1e6;
+			inputTokenA = (Number(ret) + Number(ret) * 0.0001) / tokenA.unit;
 			disabled = !inputTokenB;
 		}
 	}
@@ -131,8 +131,8 @@
 		const prev = disabled;
 		disabled = true;
 
-		const tokenAAmount = Math.floor(inputTokenA * 1e6);
-		const tokenBAmount = Math.floor(inputTokenB * 1e6);
+		const tokenAAmount = Math.floor(inputTokenA * tokenA.unit);
+		const tokenBAmount = Math.floor(inputTokenB * tokenB.unit);
 		const minOfTokenB = Math.floor(tokenBAmount - Math.round(tokenBAmount * slippage));
 
 		const algoArc200PoolConnector = new AlgoArc200PoolConnector(
@@ -145,7 +145,7 @@
 			await algoArc200PoolConnector.invoke('swapVoiToArc200', tokenAAmount, minOfTokenB);
 			pageContentRefresh(0);
 		} else if (tokenA.ticker === arc200Token.ticker && tokenB.ticker === voiToken.ticker) {
-			await algoArc200PoolConnector.invoke('swapArc200ToVoi', tokenAAmount, minOfTokenB);
+			await algoArc200PoolConnector.invoke('swapArc200ToVoi', tokenAAmount, 0);
 			pageContentRefresh(0);
 		}
 		disabled = prev;
@@ -170,7 +170,7 @@
 					type="number"
 					placeholder="{tokenA.ticker} amount"
 					bind:value={inputTokenA}
-					step={1 / 1e6}
+					step={0.000001}
 					on:keydown={(e) => !loaded && e.preventDefault()}
 					on:keypress={onNumberKeyPress}
 					on:keyup={onInputTokenA}
@@ -181,10 +181,10 @@
 					<span
 						class="absolute right-0 bottom-full cursor-pointer"
 						on:click={() => {
-							inputTokenA = balance / 1e6;
+							inputTokenA = balance / tokenA.unit;
 							onInputTokenA();
 						}}
-						on:keydown={null}>MAX {(balance / 1e6).toLocaleString('en')}</span
+						on:keydown={null}>MAX {(balance / tokenA.unit).toLocaleString('en')}</span
 					>
 				{/await}
 				<Dropdown
@@ -212,7 +212,7 @@
 					type="number"
 					placeholder="{tokenB.ticker} amount"
 					bind:value={inputTokenB}
-					step={1 / 1e6}
+					step={0.000001}
 					on:keydown={(e) => !loaded && e.preventDefault()}
 					on:keypress={onNumberKeyPress}
 					on:keyup={onInputTokenB}
@@ -220,7 +220,7 @@
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
 				{#await tokenB.ticker === arc200Token.ticker ? $connectedUserState.arc200Balances[arc200Token.id] : $connectedUserState.amount then balance}
-					<span class="absolute right-0 bottom-full cursor-pointer">{(balance / 1e6).toLocaleString('en')}</span>
+					<span class="absolute right-0 bottom-full cursor-pointer">{(balance / tokenB.unit).toLocaleString('en')}</span>
 				{/await}
 				<Dropdown
 					class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"
@@ -240,9 +240,9 @@
 				<span class="flex justify-between">
 					{#if $currentPoolState.arc200Balances[arc200Token.id]}
 						Liquidity =
-						{($currentPoolState.amount / 1e6).toLocaleString('en')}
+						{($currentPoolState.amount / voiToken.unit).toLocaleString('en')}
 						{voiToken.ticker} /
-						{($currentPoolState.arc200Balances[arc200Token.id] / 1e6).toLocaleString('en')}
+						{($currentPoolState.arc200Balances[arc200Token.id] / arc200Token.unit).toLocaleString('en')}
 						{arc200Token.ticker}
 					{:else}
 						Liquidity = 0 {voiToken.ticker} / 0 {arc200Token.ticker}

@@ -24,16 +24,16 @@ export const knownPools = [
         },
         swapFee: 1_000_000,
     },
-    // {
-    //     poolId: 25351179,
-    //     lptId: 25351184,
-    //     arc200Asset: {
-    //         assetId: 6778021,
-    //         symbol: 'VRC200',
-    //         unit: 1e8
-    //     },
-    //     swapFee: 2_500_000,
-    // }
+    {
+        poolId: 25351179,
+        lptId: 25351184,
+        arc200Asset: {
+            assetId: 6778021,
+            symbol: 'VRC200',
+            unit: 1e8
+        },
+        swapFee: 2_500_000,
+    }
 ];
 
 export const knownTokens: Token[] = [

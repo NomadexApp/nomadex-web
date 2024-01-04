@@ -89,6 +89,14 @@
 		};
 	});
 
+	const getFromTokenFromEvent = (event: (typeof swapEvents)[0]) => {
+		return event.direction === 0 ? voiToken : arc200Token;
+	};
+
+	const getToTokenFromEvent = (event: (typeof swapEvents)[0]) => {
+		return event.direction === 0 ? arc200Token : voiToken;
+	};
+
 	let priceData: PriceCandleData[] = [];
 
 	function generateDataByTime(priceOf: string, duration = timescale) {
@@ -103,7 +111,10 @@
 		const getPrice = (event: (typeof events)[0]) => {
 			const voiAmount = event.direction === 0 ? event.fromAmount : event.toAmount;
 			const viaAmount = event.direction === 0 ? event.toAmount : event.fromAmount;
-			return pricingCurrency === 0 ? viaAmount / voiAmount : voiAmount / viaAmount;
+
+			return pricingCurrency === 0
+				? viaAmount / arc200Token.unit / (voiAmount / voiToken.unit)
+				: voiAmount / voiToken.unit / (viaAmount / arc200Token.unit);
 		};
 
 		const getStartOfHour = (ms: number) => {
@@ -270,12 +281,12 @@
 					>
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
-					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right"
-						>{Number(algosdk.microalgosToAlgos(event.fromAmount).toFixed(3))}
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right">
+						{Number((event.fromAmount / getFromTokenFromEvent(event).unit).toFixed(3))}
 						{event.direction ? arc200Token.ticker : 'VOI'}</span
 					>
-					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right"
-						>{Number(algosdk.microalgosToAlgos(event.toAmount).toFixed(3))}
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right">
+						{Number((event.toAmount / getToTokenFromEvent(event).unit).toFixed(3))}
 						{event.direction ? 'VOI' : arc200Token.ticker}</span
 					>
 				</div>
