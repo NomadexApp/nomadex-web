@@ -145,7 +145,7 @@
 			await algoArc200PoolConnector.invoke('swapVoiToArc200', tokenAAmount, minOfTokenB);
 			pageContentRefresh(0);
 		} else if (tokenA.ticker === arc200Token.ticker && tokenB.ticker === voiToken.ticker) {
-			await algoArc200PoolConnector.invoke('swapArc200ToVoi', tokenAAmount, 0);
+			await algoArc200PoolConnector.invoke('swapArc200ToVoi', tokenAAmount, minOfTokenB);
 			pageContentRefresh(0);
 		}
 		disabled = prev;
@@ -220,7 +220,8 @@
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
 				{#await tokenB.ticker === arc200Token.ticker ? $connectedUserState.arc200Balances[arc200Token.id] : $connectedUserState.amount then balance}
-					<span class="absolute right-0 bottom-full cursor-pointer">{(balance / tokenB.unit).toLocaleString('en')}</span>
+					<span class="absolute right-0 bottom-full cursor-pointer">{(balance / tokenB.unit).toLocaleString('en')}</span
+					>
 				{/await}
 				<Dropdown
 					class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"

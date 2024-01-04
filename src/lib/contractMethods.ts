@@ -86,8 +86,8 @@ export default class ContractMethods {
     async mint(amountA: number, amountB: number) {
         const suggestedParams = await nodeClient.getTransactionParams().do();
         const client = getClient(currentAppId);
-        const voiAmount = Math.floor(amountA * 1e6);
-        const viaAmount = Math.floor(amountB * 1e6);
+        const voiAmount = amountA;
+        const viaAmount = amountB;
 
         const lptBalance = await getASABalance(currentLptAssetId, get(connectedAccount));
         console.log({ lptBalance });
@@ -145,7 +145,7 @@ export default class ContractMethods {
         const suggestedParams = await nodeClient.getTransactionParams().do();
         const client = getClient(currentAppId);
 
-        const lptAmount = Math.floor(amount * 1e6);
+        const lptAmount = amount;
 
         const removeLiqArgs = () => ({
             lpt_pay_txn: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({

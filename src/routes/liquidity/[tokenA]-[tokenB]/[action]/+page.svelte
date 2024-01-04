@@ -10,7 +10,6 @@
 	import { onNumberKeyPress } from '$lib/inputs';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import ContractMethods from '$lib/contractMethods';
 	import { onChainStateWatcher } from '$lib/stores/onchain';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 
@@ -80,8 +79,8 @@
 		const viaBalance = $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId];
 		loading = false;
 
-		inputTokenA = Number((BigInt(voiBalance) * ratio) / BigInt(1e6)) / 1e6;
-		inputTokenB = Number((BigInt(viaBalance) * ratio) / BigInt(1e6)) / 1e6;
+		inputTokenA = Number((BigInt(voiBalance) * ratio) / BigInt(1e6)) / voiToken.unit;
+		inputTokenB = Number((BigInt(viaBalance) * ratio) / BigInt(1e6)) / arc200Token.unit;
 
 		disabled = !inputTokenB;
 	}
@@ -94,13 +93,13 @@
 		if (!inputTokenA) return;
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
-		const voiBalance = $currentPoolState.amount - 1e6;
+		const voiBalance = $currentPoolState.amount - voiToken.unit;
 		const viaBalance = $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId];
 		loading = false;
 
-		const ratio = viaBalance / voiBalance;
+		const ratio = viaBalance / arc200Token.unit / (voiBalance / voiToken.unit);
 		if (ratio) {
-			inputTokenB = Math.floor(inputTokenA * 1e6 * ratio) / 1e6;
+			inputTokenB = Math.floor(inputTokenA * tokenA.unit * ratio) / tokenA.unit;
 			disabled = !inputTokenB;
 		}
 	}
@@ -113,14 +112,14 @@
 		if (!inputTokenB) return;
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
-		const voiBalance = $currentPoolState.amount - 1e6;
+		const voiBalance = $currentPoolState.amount - voiToken.unit;
 		const viaBalance = $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId];
 		loading = false;
 
-		const ratio = voiBalance / viaBalance;
+		const ratio = voiBalance / voiToken.unit / (viaBalance / arc200Token.unit);
 
 		if (ratio) {
-			inputTokenA = Math.floor(inputTokenB * 1e6 * ratio) / 1e6;
+			inputTokenA = Math.floor(inputTokenB * tokenB.unit * ratio) / tokenB.unit;
 			disabled = !inputTokenA;
 		}
 	}
@@ -134,11 +133,7 @@
 			matchedPool.lptId
 		);
 		if (action === 'add') {
-			await algoArc200PoolConnector.invoke(
-				'addLiquidity',
-				algosdk.algosToMicroalgos(inputTokenA),
-				algosdk.algosToMicroalgos(inputTokenB)
-			);
+			await algoArc200PoolConnector.invoke('addLiquidity', inputTokenA * tokenA.unit, inputTokenB * tokenB.unit);
 			pageContentRefresh(0);
 		} else if (action === 'remove') {
 			await algoArc200PoolConnector.invoke('removeLiquidity', algosdk.algosToMicroalgos(inputTokenLpt));
@@ -186,7 +181,7 @@
 						type="number"
 						placeholder="{tokenA.ticker} amount"
 						bind:value={inputTokenLpt}
-						step={1 / 1e6}
+						step={0.000001}
 						on:keypress={onNumberKeyPress}
 						required
 						on:keyup={onInputTokenLpt}
@@ -218,7 +213,7 @@
 					type="number"
 					placeholder="{tokenA.ticker} amount"
 					bind:value={inputTokenA}
-					step={1 / 1e6}
+					step={0.000001}
 					on:keypress={onNumberKeyPress}
 					required
 					on:keyup={onInputTokenA}
@@ -231,10 +226,10 @@
 						<span
 							class="absolute right-0 bottom-full z-10 cursor-pointer"
 							on:click={() => {
-								inputTokenA = balance / 1e6;
+								inputTokenA = balance / tokenA.unit;
 								onInputTokenA();
 							}}
-							on:keydown={null}>MAX {(balance / 1e6).toLocaleString('en')}</span
+							on:keydown={null}>MAX {(balance / tokenA.unit).toLocaleString('en')}</span
 						>
 					{/await}
 				{/if}
@@ -252,7 +247,7 @@
 					type="number"
 					placeholder="{tokenB.ticker} amount"
 					bind:value={inputTokenB}
-					step={1 / 1e6}
+					step={0.000001}
 					on:keypress={onNumberKeyPress}
 					required
 					on:keyup={onInputTokenB}
@@ -265,10 +260,10 @@
 						<span
 							class="absolute right-0 bottom-full z-10 cursor-pointer"
 							on:click={() => {
-								inputTokenB = balance / 1e6;
+								inputTokenB = balance / tokenB.unit;
 								onInputTokenB();
 							}}
-							on:keydown={null}>MAX {(balance / 1e6).toLocaleString('en')}</span
+							on:keydown={null}>MAX {(balance / tokenB.unit).toLocaleString('en')}</span
 						>
 					{/await}
 				{/if}
@@ -286,8 +281,10 @@
 					{#if $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId]}
 						<span class="flex gap-4">
 							Liquidity =
-							{($currentPoolState.amount / 1e6).toLocaleString('en')} VOI /
-							{($currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId] / 1e6).toLocaleString('en')}
+							{($currentPoolState.amount / voiToken.unit).toLocaleString('en')} VOI /
+							{(
+								$currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId] / matchedPool.arc200Asset.unit
+							).toLocaleString('en')}
 							{matchedPool.arc200Asset.symbol}
 						</span>
 					{:else}
