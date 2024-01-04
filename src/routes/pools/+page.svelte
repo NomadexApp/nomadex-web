@@ -46,7 +46,9 @@
 							{(poolsState[pool.poolId].amount / 1e6).toLocaleString('en')} VOI
 						</span>
 						<span class="border-0">
-							{(poolsState[pool.poolId].arc200Balances[pool.arc200Asset.assetId] / 1e6).toLocaleString('en')}
+							{(
+								poolsState[pool.poolId].arc200Balances[pool.arc200Asset.assetId] / pool.arc200Asset.unit
+							).toLocaleString('en')}
 							{pool.arc200Asset.symbol}
 						</span>
 					{:else}
