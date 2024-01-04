@@ -279,69 +279,8 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
         console.log({ success: true });
     }
 
-
-    // async mint(amountA: number, amountB: number) {
-    //     const suggestedParams = await nodeClient.getTransactionParams().do();
-    //     const client = getClient(currentAppId);
-    //     const voiAmount = Math.floor(amountA * 1e6);
-    //     const viaAmount = Math.floor(amountB * 1e6);
-
-    //     const lptBalance = await getASABalance(currentLptAssetId, get(connectedAccount));
-    //     console.log({ lptBalance });
-
-    //     const optInTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    //         from: get(connectedAccount),
-    //         to: get(connectedAccount),
-    //         amount: 0,
-    //         assetIndex: currentLptAssetId,
-    //         suggestedParams,
-    //     });
-
-    //     const approveTxns = await ChainInterface.arc200_approve(
-    //         viaAppId,
-    //         get(connectedAccount),
-    //         algosdk.getApplicationAddress(currentAppId),
-    //         BigInt(viaAmount)
-    //     );
-
-    //     const mintArgs = () => ({
-    //         pay_txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    //             amount: voiAmount,
-    //             from: get(connectedAccount),
-    //             to: algosdk.getApplicationAddress(currentAppId),
-    //             suggestedParams: suggestedParams,
-    //         }),
-    //         arc200_amount: viaAmount,
-    //         pool_token: currentLptAssetId,
-    //     });
-    //     const composer = client.compose();
-
-    //     const opts = await getUnnamedResourcesAccessedFromMethod(client, 'mint', mintArgs());
-
-    //     const atc = await composer
-    //         .mint(mintArgs(), {
-    //             ...opts,
-    //             boxes: [
-    //                 ...opts.boxes,
-    //                 {
-    //                     appId: viaAppId,
-    //                     name: getBoxName(algosdk.getApplicationAddress(currentAppId)),
-    //                 },
-    //             ],
-    //         })
-    //         .atc();
-
-    //     const mintTxns = atc.buildGroup().map(({ txn }) => txn);
-
-    //     await signAndSendTransections(nodeClient, [...(lptBalance === -1 ? [[optInTxn]] : []), approveTxns, mintTxns]);
-
-    //     console.log({ success: true });
-    // }
-
-    async removeLiquidity(amount: number) {
+    async removeLiquidity(lptAmount: number) {
         const suggestedParams = await nodeClient.getTransactionParams().do();
-
-        const lptAmount = Math.floor(amount * 1e6);
 
         const removeLiqArgs = () => ({
             lpt_xfer_txn: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
