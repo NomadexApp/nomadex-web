@@ -4,8 +4,8 @@
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { currentAppId, currentLptAssetId } from '$lib/_deployed';
 
-	let appId = currentAppId;
-	let poolToken = currentLptAssetId;
+	let appId = 0;
+	let poolToken = 0;
 	let fee = 0;
 	let admin = '';
 
@@ -17,10 +17,12 @@
 	let vote_key_dilution: number;
 
 	async function deploy() {
+		return;
 		appId = (await deployVoiSwap(0)) ?? appId;
 	}
 
 	async function update() {
+		return;
 		appId = (await deployVoiSwap(appId)) ?? appId;
 	}
 
