@@ -2,16 +2,34 @@
 	import { type Token, knownTokens, knownPools } from '$lib';
 	import { currentAppId } from '$lib/_deployed';
 	import { balanceString, getArc200Balance, getBalance, viaAppId } from '$lib/_shared';
-	import { onChainStateWatcher } from '$lib/stores/onchain';
+	import { onChainStateWatcher, type AccountState } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
+	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(currentAppId));
 
-	async function loadLiq(): Promise<[number, number]> {
-		const voiBalance = await getBalance(algosdk.getApplicationAddress(currentAppId));
-		const viaBalance = await getArc200Balance(viaAppId, algosdk.getApplicationAddress(currentAppId));
-		return [voiBalance, viaBalance];
-	}
+	const poolsState: Record<string, AccountState> = {};
+
+	onMount(() => {
+		const watchers: ReturnType<typeof onChainStateWatcher.getAccountWatcher>[] = [];
+		const subscribers: Function[] = [];
+		for (const pool of knownPools) {
+			const watcher = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(pool.poolId));
+			watchers.push(watcher);
+			subscribers.push(
+				watcher.subscribe((state) => {
+					poolsState[pool.poolId] = state;
+				})
+			);
+		}
+
+		return () => {
+			for (const unsub of subscribers) {
+				unsub?.();
+			}
+		};
+	});
 </script>
 
 <section class="p-4 pl-8 sm:pl-16">
@@ -23,11 +41,14 @@
 			<div class="pool bg-base-300 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px]">
 				<span class="name text-lg font-bold text-bold mb-2">VOI / {pool.arc200Asset.symbol}</span>
 				<span class="flex justify-between">
-					{#if $currentPoolState.arc200Balances[viaAppId]}
-						<span class="border-r-[1px] pr-3 border-base-content border-opacity-25"
-							>{($currentPoolState.amount / 1e6).toLocaleString('en')} VOI</span
-						>
-						<span class="border-0">{($currentPoolState.arc200Balances[viaAppId] / 1e6).toLocaleString('en')} VIA</span>
+					{#if poolsState[pool.poolId]?.arc200Balances[pool.arc200Asset.assetId]}
+						<span class="border-r-[1px] pr-3 border-base-content border-opacity-25">
+							{(poolsState[pool.poolId].amount / 1e6).toLocaleString('en')} VOI
+						</span>
+						<span class="border-0">
+							{(poolsState[pool.poolId].arc200Balances[pool.arc200Asset.assetId] / 1e6).toLocaleString('en')}
+							{pool.arc200Asset.symbol}
+						</span>
 					{:else}
 						<span class="loading w-[1rem]" />
 					{/if}

@@ -7,7 +7,7 @@ type AppState = {
     state: Record<string, any>,
 };
 
-type AccountState = {
+export type AccountState = {
     address: string,
     amount: number,
     "amount-without-pending-rewards"?: number,
