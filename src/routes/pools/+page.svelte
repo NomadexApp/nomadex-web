@@ -30,29 +30,32 @@
 	});
 </script>
 
-<section class="p-4 pl-8 sm:pl-16">
+<section class="p-4">
 	<br />
 	<br />
-	<h4 class="text-xl font-bold">Liquidity Pools</h4>
-	<div class="flex flex-wrap items-stretch gap-2 pt-6">
+	<div class="flex flex-col justify-center items-center gap-2 pt-6">
+		<h4 class="text-xl font-bold prose w-full mb-5">Liquidity Pools</h4>
 		{#each knownPools as pool}
-			<div class="pool bg-base-300 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px]">
-				<span class="name text-lg font-bold text-bold mb-2">VOI / {pool.arc200Asset.symbol}</span>
-				<span class="flex justify-between">
-					{#if poolsState[pool.poolId]?.arc200Balances[pool.arc200Asset.assetId]}
-						<span class="border-r-[1px] pr-3 border-base-content border-opacity-25">
-							{(poolsState[pool.poolId].amount / 1e6).toLocaleString('en')} VOI
-						</span>
-						<span class="border-0">
-							{(
-								poolsState[pool.poolId].arc200Balances[pool.arc200Asset.assetId] / pool.arc200Asset.unit
-							).toLocaleString('en')}
-							{pool.arc200Asset.symbol}
-						</span>
-					{:else}
-						<span class="loading w-[1rem]" />
-					{/if}
-				</span>
+			<div class="pool bg-base-300 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
+				<div class="flex justify-between">
+					<span class="name text-lg font-bold text-bold mb-2">VOI / {pool.arc200Asset.symbol}</span>
+					<span class="">
+						{#if poolsState[pool.poolId]?.arc200Balances[pool.arc200Asset.assetId]}
+							<span class="">
+								{(poolsState[pool.poolId].amount / 1e6).toLocaleString('en')} VOI
+							</span>
+							/
+							<span class="">
+								{(
+									poolsState[pool.poolId].arc200Balances[pool.arc200Asset.assetId] / pool.arc200Asset.unit
+								).toLocaleString('en')}
+								{pool.arc200Asset.symbol}
+							</span>
+						{:else}
+							<span class="loading w-[1rem]" />
+						{/if}
+					</span>
+				</div>
 				<span class="flex flex-wrap justify-end">
 					<a href="/swap/VOI-{pool.arc200Asset.symbol}" class="btn btn-ghost text-base-content btn-sm">Swap</a>
 					<a href="/liquidity/VOI-{pool.arc200Asset.symbol}/add" class="btn btn-ghost text-base-content btn-sm">

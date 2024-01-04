@@ -42,7 +42,24 @@
 
 	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
 
-	const slippage = 0.01;
+	let slippageOptions = [
+		{ name: '0.25 %', value: 0.0025 },
+		{ name: '0.5 %', value: 0.005 },
+		{ name: '0.75 %', value: 0.0075 },
+		{ name: '1.0 %', value: 0.01 },
+		{ name: '2.5 %', value: 0.025 },
+		{ name: '5.0 %', value: 0.05 },
+		{ name: '10.0 %', value: 0.1 },
+		{ name: '15.0 %', value: 0.15 },
+		{ name: '20.0 %', value: 0.2 },
+		{ name: '25.0 %', value: 0.25 },
+		{ name: '30.0 %', value: 0.3 },
+	];
+
+	let slippage = browser ? JSON.parse(localStorage.getItem('slippage') ?? '0.025') : 0.025;
+
+	$: browser && localStorage.setItem('slippage', JSON.stringify(slippage));
+
 	const connectedUserState = onChainStateWatcher.getAccountWatcher($connectedAccount);
 	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(matchedPool.poolId));
 
@@ -159,9 +176,9 @@
 </script>
 
 {#if voiToken && arc200Token}
-	<div class="w-full h-full flex flex-col items-center p-12">
-		<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-40 prose">
-			<h4 class="text-left">Swap {tokenA.ticker} for {tokenB.ticker}</h4>
+	<div class="w-full h-full flex flex-col items-center justify-center p-12">
+		<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] prose">
+			<h4 class="text-lg text-left prose">Swap {tokenA.ticker} for {tokenB.ticker}</h4>
 			<label for="">
 				{tokenA.ticker}
 			</label>
@@ -233,9 +250,11 @@
 
 			<div class="flex flex-col gap-0">
 				<span class="flex justify-between items-center">
-					Min Received = {(inputTokenB - inputTokenB * slippage).toLocaleString('en')}
-					{tokenB.ticker}
-					{#if loading}<span class="loading h-4 w-4" />{/if}
+					<span>
+						Min Received = {(inputTokenB - inputTokenB * slippage).toLocaleString('en')}
+						{tokenB.ticker}
+						{#if loading}<span class="loading h-4 w-4" />{/if}
+					</span>
 				</span>
 
 				<span class="flex justify-between">
@@ -263,6 +282,22 @@
 				</button>
 			</div>
 		</form>
+		<br />
+		<br />
+		<br />
+		<span class="flex justify-between">
+			<span class="text-lg">
+				<Dropdown
+					class="btn-ghost btn-sm border-none hover:border-primary m-0 mx-0 text-base-content prose font-normal"
+					options={slippageOptions}
+					selected={slippageOptions.find((opt) => opt.value === slippage)}
+					displayPrefix="slippage"
+					positon={'top'}
+					bind:selectedValue={slippage}
+					onSelect={(value) => (slippage = value)}
+				/>
+			</span>
+		</span>
 	</div>
 {/if}
 

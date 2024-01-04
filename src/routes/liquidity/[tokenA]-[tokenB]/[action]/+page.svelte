@@ -156,8 +156,8 @@
 </script>
 
 {#if voiToken && arc200Token}
-	<div class="w-full h-full flex flex-col items-center p-12">
-		<div class="flex flex-col items-end gap-2 w-full max-w-[448px] prose pt-20">
+	<div class="w-full h-full flex flex-col items-center justify-center p-12">
+		<div class="flex flex-col items-end gap-2 w-full max-w-[448px] prose mt-[-50px]">
 			<span class="text-sm">
 				My Shares:
 				{#await ($connectedUserState.assets ?? []).find((asset) => asset['asset-id'] === matchedPool.lptId)?.amount ?? 0}
@@ -175,7 +175,8 @@
 				{/await}
 			</span>
 		</div>
-		<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-10 prose">
+		<br>
+		<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] prose">
 			<h4 class="text-left">
 				{action === 'remove' ? 'Remove' : 'Add'} Liquidity
 			</h4>

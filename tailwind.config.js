@@ -10,15 +10,15 @@ const theme = {
   },
   light: {
     "color-scheme": "light",
-    "base-100": "#fafafa",
-    "primary": "#101010",
-    "primary-content": "#fafafa",
+    "base-100": "#f9f9f9",
+    "primary": "#282828",
+    "primary-content": "#f9f9f9",
   },
   dark: {
     "color-scheme": "dark",
-    "base-100": "#222222",
-    "primary": "#fafafa",
-    "primary-content": "#101010",
+    "base-100": "#282828",
+    "primary": "#f9f9f9",
+    "primary-content": "#282828",
   }
 }
 

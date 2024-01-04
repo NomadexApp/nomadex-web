@@ -170,14 +170,18 @@
 			priceData = _priceData;
 		}
 	}
+
+	let innerWidth = browser ? window.innerWidth : 0;
 </script>
+
+<svelte:window bind:innerWidth />
 
 <section class="p-4 flex flex-col items-center gap-2">
 	<br />
 	<br />
 	<div class="flex flex-wrap gap-4 justify-between w-full max-w-[900px]">
 		<div
-			class="cursor-pointer font-bold text-lg"
+			class="cursor-pointer text-lg"
 			on:click={() => {
 				goto(`/analytics/${tokenB.ticker}-${tokenA.ticker}`);
 				pageContentRefresh(0);
@@ -185,9 +189,17 @@
 			}}
 			on:keydown
 		>
-			Price ≈ {price.toLocaleString('en')}
-			{pricingDirection.split('/')[1]}
-			<span class="text-[0.8rem] font-normal">/ 1 {pricingDirection.split('/')[0]} </span>
+			<span class="opacity-90">Current Price</span>
+			<br />
+			<span class="text-sm">
+				<span class="">1</span>
+				{pricingDirection.split('/')[0]} ≈
+			</span>
+			<span class="font-normal prose">
+				{price.toLocaleString('en')}
+				{pricingDirection.split('/')[1]}
+			</span>
+			<!-- <span class="text-[0.8rem] font-normal">/ 1 {pricingDirection.split('/')[0]} </span> -->
 		</div>
 		<div>
 			<button
@@ -248,19 +260,22 @@
 	</div>
 	<br />
 	<br />
-	<div class="events flex flex-col gap-2 justify-center items-center">
-		<h4 class="text-lg font-semibold text-left w-full">Recent Swaps</h4>
+	<div class="events flex flex-col gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)]">
 		{#if swapEvents?.length}
-			<div class="event bg-base-300 p-2 px-5 rounded-btn flex justify-start items-center gap-1 max-w-[800px] font-bold">
+			<div class="w-full event font-bold p-3 px-0 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
+				<h4 class="text-lg text-left w-full mb-2 max-w-[724px]">Recent Txns</h4>
+				<span class="flex-grow"></span>
+			</div>
+			<div class="w-full event bg-base-300 font-bold p-3 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"> Sender </span>
-				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right">From</span>
-				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right">To</span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">From Amt.</span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">To Amt.</span>
 			</div>
 			{#each [...swapEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']) as event}
-				<div class="event bg-base-300 p-2 px-5 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
+				<div class="w-full event bg-base-300 hover:invert-[10%] p-2 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
 					<a
 						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
 						href="https://voi.observer/explorer/transaction/{event.txn.id}"
@@ -281,12 +296,12 @@
 					>
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
-					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right">
-						{Number((event.fromAmount / getFromTokenFromEvent(event).unit).toFixed(3))}
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
+						{Number(event.fromAmount / getFromTokenFromEvent(event).unit).toLocaleString()}
 						{event.direction ? arc200Token.ticker : 'VOI'}</span
 					>
-					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-32 text-right">
-						{Number((event.toAmount / getToTokenFromEvent(event).unit).toFixed(3))}
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
+						{Number(event.toAmount / getToTokenFromEvent(event).unit).toLocaleString()}
 						{event.direction ? 'VOI' : arc200Token.ticker}</span
 					>
 				</div>
@@ -305,5 +320,13 @@
 		justify-content: center;
 		max-height: 500px;
 		max-width: calc(100vw - 400px);
+	}
+	.event * {
+		text-wrap: nowrap;
+		cursor: default;
+	}
+
+	.event a {
+		cursor: pointer;
 	}
 </style>
