@@ -13,8 +13,8 @@
 	import { page } from '$app/stores';
 
 	let sidebarWidth = 0;
-
 	let innerWidth = browser ? window.innerWidth : 0;
+	let isMobile = innerWidth < 700;
 
 	$: isMobile = innerWidth < 700;
 
