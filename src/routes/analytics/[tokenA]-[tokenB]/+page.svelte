@@ -120,7 +120,7 @@
 		const getStartOfHour = (ms: number) => {
 			let date = new Date(ms);
 			while (date.getMinutes() !== 0 || date.getSeconds() !== 0 || date.getMilliseconds() !== 0) {
-				date = new Date(++ms);
+				date = new Date(--ms);
 			}
 			return ms;
 		};
@@ -196,10 +196,9 @@
 				{pricingDirection.split('/')[0]} ≈
 			</span>
 			<span class="font-normal prose">
-				{price.toLocaleString('en')}
+				{price < 0.1 ? Number(price.toFixed(10)) : price.toLocaleString('en')}
 				{pricingDirection.split('/')[1]}
 			</span>
-			<!-- <span class="text-[0.8rem] font-normal">/ 1 {pricingDirection.split('/')[0]} </span> -->
 		</div>
 		<div>
 			<button
@@ -264,9 +263,11 @@
 		{#if swapEvents?.length}
 			<div class="w-full event font-bold p-3 px-0 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
 				<h4 class="text-lg text-left w-full mb-2 max-w-[724px]">Recent Txns</h4>
-				<span class="flex-grow"></span>
+				<span class="flex-grow" />
 			</div>
-			<div class="w-full event bg-base-300 font-bold p-3 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
+			<div
+				class="w-full event bg-base-300 font-bold p-3 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
+			>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
@@ -275,7 +276,9 @@
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">To Amt.</span>
 			</div>
 			{#each [...swapEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']) as event}
-				<div class="w-full event bg-base-300 hover:invert-[10%] p-2 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
+				<div
+					class="w-full event bg-base-300 hover:invert-[10%] p-2 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
+				>
 					<a
 						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
 						href="https://voi.observer/explorer/transaction/{event.txn.id}"

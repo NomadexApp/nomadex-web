@@ -98,8 +98,11 @@
 		loading = false;
 
 		const ratio = viaBalance / arc200Token.unit / (voiBalance / voiToken.unit);
+
+		const SCALE = 100_000_000;
+
 		if (ratio) {
-			inputTokenB = Math.floor(inputTokenA * tokenA.unit * ratio) / tokenA.unit;
+			inputTokenB = Math.floor(inputTokenA * SCALE * ratio) / SCALE;
 			disabled = !inputTokenB;
 		}
 	}
@@ -118,8 +121,10 @@
 
 		const ratio = voiBalance / voiToken.unit / (viaBalance / arc200Token.unit);
 
+		const SCALE = 100_000_000;
+
 		if (ratio) {
-			inputTokenA = Math.floor(inputTokenB * tokenB.unit * ratio) / tokenB.unit;
+			inputTokenA = Math.floor(inputTokenB * SCALE * ratio) / SCALE;
 			disabled = !inputTokenA;
 		}
 	}
@@ -148,11 +153,11 @@
 
 	$: maxLptBalanceError =
 		Number(inputTokenLpt) > algosdk.microalgosToAlgos($connectedUserState.asaBalances[matchedPool.lptId] ?? 0);
-	$: maxBalanceError = Number(inputTokenA) > algosdk.microalgosToAlgos($connectedUserState.amount);
+	$: maxBalanceError = Number(inputTokenA) > Math.floor($connectedUserState.amount / tokenA.unit);
 	$: maxArc200BalanceError =
-		Number(inputTokenB) > algosdk.microalgosToAlgos($connectedUserState.arc200Balances[tokenB.id]);
+		Number(inputTokenB) > Math.floor($connectedUserState.arc200Balances[tokenB.id] / tokenB.unit);
 
-	$: disabled = disabled || (action === 'remove' ? maxLptBalanceError : maxBalanceError || maxArc200BalanceError);
+	$: maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError || maxArc200BalanceError;
 </script>
 
 {#if voiToken && arc200Token}
@@ -175,7 +180,7 @@
 				{/await}
 			</span>
 		</div>
-		<br>
+		<br />
 		<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] prose">
 			<h4 class="text-left">
 				{action === 'remove' ? 'Remove' : 'Add'} Liquidity
@@ -302,8 +307,8 @@
 			<div class="flex justify-center mt-2 pr-0">
 				<button
 					class="btn btn-primary w-full box-border"
-					class:disabled={tokenA.ticker === tokenB.ticker || disabled}
-					{disabled}
+					class:disabled={tokenA.ticker === tokenB.ticker || disabled || maxError}
+					disabled={disabled || maxError}
 					on:click={changeLiquidity}
 				>
 					{action === 'remove' ? 'Remove' : 'Add'} Liquidity

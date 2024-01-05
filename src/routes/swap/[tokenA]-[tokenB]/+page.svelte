@@ -53,7 +53,10 @@
 		{ name: '15.0 %', value: 0.15 },
 		{ name: '20.0 %', value: 0.2 },
 		{ name: '25.0 %', value: 0.25 },
-		{ name: '30.0 %', value: 0.3 },
+		{ name: '35.0 %', value: 0.35 },
+		{ name: '50.0 %', value: 0.5 },
+		{ name: '75.0 %', value: 0.75 },
+		{ name: '95.0 %', value: 0.95 },
 	];
 
 	let slippage = browser ? JSON.parse(localStorage.getItem('slippage') ?? '0.025') : 0.025;

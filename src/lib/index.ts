@@ -33,6 +33,16 @@ export const knownPools = [
             unit: 1e8
         },
         swapFee: 2_500_000,
+    },
+    {
+        poolId: 26167314,
+        lptId: 26167319,
+        arc200Asset: {
+            assetId: 6795477,
+            symbol: 'Tacos',
+            unit: 1
+        },
+        swapFee: 2_500_000
     }
 ];
 

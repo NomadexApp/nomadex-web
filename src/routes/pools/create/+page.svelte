@@ -2,7 +2,7 @@
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 
-	let tokenAppId = 6778021;
+	let tokenAppId = 6795477;
 	let lpFeePercent = 2.5;
 
 	let appId = 0;
@@ -16,7 +16,7 @@
 
 		console.log('Created LP Asset:', connector.lptAssetId);
 
-		await connector.addLiquidity(BigInt(1_000_000), BigInt(1_000_000));
+		await connector.addLiquidity(BigInt(1_000_000), BigInt(100));
 		console.log('added liquidity');
 
 		return;
