@@ -160,7 +160,6 @@
 <style>
 	.canvas-wrapper {
 		width: 100%;
-		aspect-ratio: 4 / 2;
 		margin: 2rem;
 		display: flex;
 		justify-content: center;

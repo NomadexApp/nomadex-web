@@ -250,7 +250,7 @@
 			>
 		</div>
 	</div>
-	<div class="chart-container min-w-[350px]">
+	<div class="chart-container min-w-[350px] overflow-hidden">
 		<CandleChart
 			label={`Price of ${pricingDirection.split('/').join(' in ')}`}
 			{logarithmic}
