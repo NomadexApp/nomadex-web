@@ -171,6 +171,7 @@
 		display: none;
 	}
 	li:focus-within > .children,
+	li:hover > .children,
 	li.is-open > .children {
 		display: block;
 		animation: fadein 800ms forwards;
