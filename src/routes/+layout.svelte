@@ -7,8 +7,9 @@
 	import '$lib/stores/onchain';
 	import '../app.css';
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
-	let hasKibisisWallet = false;
+	let hasKibisisWallet = browser && window['algorand']?.wallets.find((w) => w.id === 'kibisis');
 
 	onMount(() => {
 		hasKibisisWallet = window['algorand']?.wallets.find((w) => w.id === 'kibisis');
