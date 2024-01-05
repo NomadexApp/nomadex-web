@@ -142,7 +142,7 @@
 		<div class="flex justify-between items-center w-full bg-red-">
 			<li on:click={() => walletDisconnect()} on:keydown>
 				<a class="flex items-center text-[1rem] gap-2" href={null} tabindex="0">
-					<span class="block h-6"><LogoutIcon /></span>
+					<span class="block h-6 w-6"><LogoutIcon /></span>
 				</a>
 			</li>
 			<li

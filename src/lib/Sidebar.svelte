@@ -63,8 +63,8 @@
 			</div>
 			<li class="pl-0" class:is-open={$page.url.pathname.startsWith('/swap/')}>
 				<a class="flex justify-between items-center" href={null} tabindex="0">
-					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">SWAP</span>
-					<span class="h-5"><SwapIcon /></span>
+					<span class="flex pt-[1px] justify-start items-end w-full">SWAP</span>
+					<span class="h-5 w-5"><SwapIcon /></span>
 				</a>
 				<ul class="children">
 					{#each knownPools as pool}
@@ -91,14 +91,14 @@
 			</li>
 			<li class="pl-0 sm:block" class:active={$page.url.pathname.startsWith('/pools')}>
 				<a class="flex justify-between" href="/pools" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
-					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">POOLS</span>
-					<span class="h-5"><PoolsIcon /></span>
+					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">POOLS</span>
+					<span class="h-5 w-5"><PoolsIcon /></span>
 				</a>
 			</li>
 			<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/analytics/')}>
 				<a class="flex justify-between" href={null} tabindex="0">
-					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">ANALYTICS</span>
-					<span class="h-5"><AnalyticsIcon /></span>
+					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">ANALYTICS</span>
+					<span class="h-5 w-5"><AnalyticsIcon /></span>
 				</a>
 				<ul class="children">
 					{#each knownPools as pool}
