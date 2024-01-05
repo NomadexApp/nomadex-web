@@ -4,6 +4,7 @@
 	import UseWallet from './UseWallet.svelte';
 	import SwapIcon from 'svelte-star/dist/md/MdAutorenew.svelte';
 	import PoolsIcon from 'svelte-star/dist/md/MdFormatListBulleted.svelte';
+	import HomeIcon from 'svelte-star/dist/md/MdHome.svelte';
 	import AnalyticsIcon from 'svelte-star/dist/md/MdShowChart.svelte';
 	import MdMenu from 'svelte-star/dist/md/MdMenu.svelte';
 	import { isDarkTheme } from './stores';
@@ -61,6 +62,12 @@
 			>
 				<img class="grayscale" alt="voi logo" src="/logo.png" />
 			</div>
+			<li class="pl-0 sm:block" class:active={$page.url.pathname === '/'}>
+				<a class="flex justify-between" href="/" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
+					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">HOME</span>
+					<span class="h-5 w-5"><HomeIcon /></span>
+				</a>
+			</li>
 			<li class="pl-0" class:is-open={$page.url.pathname.startsWith('/swap/')}>
 				<a class="flex justify-between items-center" href={null} tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end w-full">SWAP</span>
