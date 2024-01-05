@@ -168,23 +168,16 @@
 	}
 
 	li > .children {
-		display: none;
+		height: 0;
+		overflow: hidden;
+		transition: height 200ms;
 	}
 	li:focus-within > .children,
 	li:hover > .children,
 	li.is-open > .children {
-		display: block;
-		animation: fadein 800ms forwards;
+		height: 120px;
 	}
 	li.active a {
 		background: var(--fallback-bc, oklch(var(--bc) / 0.1));
-	}
-	@keyframes fadein {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
 	}
 </style>
