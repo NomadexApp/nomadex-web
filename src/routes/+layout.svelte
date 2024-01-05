@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import Notify from '$lib/Notify.svelte';
 	import Sidebar from '$lib/Sidebar.svelte';
 	import { connectedAccount, walletConnect } from '$lib/UseWallet.svelte';
@@ -7,6 +6,18 @@
 	import QRCodeIcon from 'svelte-star/dist/io/IoMdQrScanner.svelte';
 	import '$lib/stores/onchain';
 	import '../app.css';
+	import { onMount } from 'svelte';
+
+	let hasKibisisWallet = false;
+
+	onMount(() => {
+		hasKibisisWallet = window['algorand']?.wallets.find((w) => w.id === 'kibisis');
+		[1000, 2000, 3000].forEach((ms) => {
+			setTimeout(() => {
+				hasKibisisWallet = window['algorand']?.wallets.find((w) => w.id === 'kibisis');
+			}, ms);
+		});
+	});
 </script>
 
 <div class="flex min-h-screen">
@@ -26,7 +37,7 @@
 					<button class="btn btn-ghost" on:click={() => walletConnect()}>
 						<span class="block h-6"><QRCodeIcon /></span> Wallet Connect
 					</button>
-					{#if browser && window['algorand']?.wallets.find((w) => w.id === 'kibisis')}
+					{#if hasKibisisWallet}
 						<button class="btn btn-ghost flex justify-start" on:click={() => walletConnect(true)}>
 							<span class="block h-6">
 								<svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">

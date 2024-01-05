@@ -122,8 +122,6 @@
 	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
 	import { isDarkTheme } from './stores';
 
-	let usingKibisisWallet = false;
-
 	onMount(async () => {
 		if (!$connectedAccount) {
 			const defaultWallet = localStorage.getItem('defaultWallet');
@@ -136,10 +134,6 @@
 				}
 			}
 		}
-
-		setTimeout(() => {
-			usingKibisisWallet = !!window['algorand']?.wallets.find((w) => w.id === 'kibisis');
-		}, 1000);
 	});
 </script>
 
