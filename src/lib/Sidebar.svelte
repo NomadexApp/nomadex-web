@@ -68,7 +68,11 @@
 				</a>
 				<ul class="children">
 					{#each knownPools as pool}
-						<li class="pl-0 sm:block">
+						<li
+							class="pl-0 sm:block"
+							class:active={$page.url.pathname.startsWith(`/swap/VOI-${pool.arc200Asset.symbol}`) ||
+								$page.url.pathname.startsWith(`/swap/${pool.arc200Asset.symbol}-VOI`)}
+						>
 							<a
 								class="flex justify-between"
 								href="/swap/VOI-{pool.arc200Asset.symbol}"
@@ -98,7 +102,11 @@
 				</a>
 				<ul class="children">
 					{#each knownPools as pool}
-						<li class="pl-0 sm:block">
+						<li
+							class="pl-0 sm:block"
+							class:active={$page.url.pathname.startsWith(`/analytics/VOI-${pool.arc200Asset.symbol}`) ||
+								$page.url.pathname.startsWith(`/analytics/${pool.arc200Asset.symbol}-VOI`)}
+						>
 							<a
 								class="flex justify-between"
 								href="/analytics/VOI-{pool.arc200Asset.symbol}"
@@ -166,6 +174,9 @@
 	li.is-open > .children {
 		display: block;
 		animation: fadein 800ms forwards;
+	}
+	li.active a {
+		background: var(--fallback-bc, oklch(var(--bc) / 0.1));
 	}
 	@keyframes fadein {
 		from {
