@@ -89,7 +89,7 @@
 					{/each}
 				</ul>
 			</li>
-			<li class="pl-0 sm:block">
+			<li class="pl-0 sm:block" class:active={$page.url.pathname.startsWith('/pools')}>
 				<a class="flex justify-between" href="/pools" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end max-w-[100px]">POOLS</span>
 					<span class="h-5"><PoolsIcon /></span>
