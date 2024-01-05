@@ -1,8 +1,8 @@
 <script lang="ts" context="module">
-	import { DeflyWalletConnect } from '@blockshake/defly-connect';
+	import { WalletConnector } from '../../packages/wallet-connect';
 	import { get, writable } from 'svelte/store';
 
-	export const deflyWallet = new DeflyWalletConnect({});
+	export const deflyWallet = new WalletConnector({});
 	export const connectedAccount = writable<string>();
 	export const connectedWallet = writable<'wc' | 'kibisis'>();
 
