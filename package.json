@@ -4,7 +4,7 @@
   "devDependencies": {
     "@algorandfoundation/algokit-client-generator": "^2.3.0",
     "@algorandfoundation/algokit-utils": "file:./packages/algokit-utils",
-    "@algorandfoundation/tealscript": "^0.67.3",
+    "@algorandfoundation/tealscript": "0.68.0",
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/adapter-cloudflare": "^3.0.1",
     "@sveltejs/kit": "^1.5.0",
