@@ -4,41 +4,35 @@
   "methods": [
     {
       "name": "createApplication",
+      "desc": "initialize values",
       "args": [
         {
           "name": "admin",
-          "type": "address",
-          "desc": ""
+          "type": "address"
         },
         {
           "name": "governer",
-          "type": "address",
-          "desc": ""
+          "type": "address"
         },
         {
           "name": "arc200_token",
-          "type": "application",
-          "desc": ""
+          "type": "application"
         },
         {
           "name": "lp_fee",
-          "type": "uint64",
-          "desc": ""
+          "type": "uint64"
         }
       ],
-      "desc": "initialize values",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
       "name": "updateApplication",
-      "args": [],
       "desc": "allows admin to update the application",
+      "args": [],
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
@@ -46,24 +40,19 @@
       "args": [
         {
           "name": "algo_seed_txn",
-          "type": "pay",
-          "desc": ""
+          "type": "pay"
         },
         {
           "name": "lpt_name",
-          "type": "string",
-          "desc": ""
+          "type": "string"
         },
         {
           "name": "lpt_unit",
-          "type": "string",
-          "desc": ""
+          "type": "string"
         }
       ],
-      "desc": "",
       "returns": {
-        "type": "uint64",
-        "desc": ""
+        "type": "uint64"
       }
     },
     {
@@ -71,14 +60,11 @@
       "args": [
         {
           "name": "admin",
-          "type": "address",
-          "desc": ""
+          "type": "address"
         }
       ],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
@@ -86,14 +72,11 @@
       "args": [
         {
           "name": "governer",
-          "type": "address",
-          "desc": ""
+          "type": "address"
         }
       ],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
@@ -101,14 +84,11 @@
       "args": [
         {
           "name": "fee",
-          "type": "uint64",
-          "desc": ""
+          "type": "uint64"
         }
       ],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
@@ -116,14 +96,11 @@
       "args": [
         {
           "name": "enabled",
-          "type": "bool",
-          "desc": ""
+          "type": "bool"
         }
       ],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
@@ -131,14 +108,11 @@
       "args": [
         {
           "name": "enabled",
-          "type": "bool",
-          "desc": ""
+          "type": "bool"
         }
       ],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
@@ -146,14 +120,11 @@
       "args": [
         {
           "name": "enabled",
-          "type": "bool",
-          "desc": ""
+          "type": "bool"
         }
       ],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
@@ -161,101 +132,132 @@
       "args": [
         {
           "name": "selection_pk",
-          "type": "byte[]",
-          "desc": ""
+          "type": "byte[]"
         },
         {
           "name": "state_proof_pk",
-          "type": "byte[]",
-          "desc": ""
+          "type": "byte[]"
         },
         {
           "name": "vote_pk",
-          "type": "byte[]",
-          "desc": ""
+          "type": "byte[]"
         },
         {
           "name": "vote_first",
-          "type": "uint64",
-          "desc": ""
+          "type": "uint64"
         },
         {
           "name": "vote_last",
-          "type": "uint64",
-          "desc": ""
+          "type": "uint64"
         },
         {
           "name": "vote_key_dilution",
-          "type": "uint64",
-          "desc": ""
+          "type": "uint64"
         }
       ],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
       "name": "register_offline",
       "args": [],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
       "name": "set_ratio",
       "args": [],
-      "desc": "",
       "returns": {
-        "type": "void",
-        "desc": ""
+        "type": "void"
       }
     },
     {
       "name": "mint",
+      "desc": "*******************************************",
       "args": [
         {
           "name": "pay_txn",
-          "type": "pay",
-          "desc": "pay txn with algos sending to this app account"
+          "type": "pay"
         },
         {
           "name": "arc200_amount",
-          "type": "uint64",
-          "desc": "amount of arc200 approved to add to liquidity"
+          "type": "uint64"
         },
         {
           "name": "lpt_asset",
-          "type": "asset",
-          "desc": "lpt asset needed to mint"
+          "type": "asset"
         }
       ],
-      "desc": "Add liquidity and mints lpt token",
       "returns": {
-        "type": "void",
-        "desc": ""
-      }
+        "type": "void"
+      },
+      "events": [
+        {
+          "name": "Mint",
+          "args": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "algo_amount",
+              "type": "uint64"
+            },
+            {
+              "name": "arc200_amount",
+              "type": "uint64"
+            },
+            {
+              "name": "lpt_amount",
+              "type": "uint64"
+            }
+          ],
+          "desc": "Event Mint(sender, algo_amount, arc200_amount, lpt_amount_minted)"
+        }
+      ]
     },
     {
       "name": "burn",
+      "desc": "Withdraw liquidity",
       "args": [
         {
           "name": "lpt_xfer_txn",
-          "type": "axfer",
-          "desc": ""
+          "type": "axfer"
         }
       ],
-      "desc": "Withdraw liquidity",
       "returns": {
-        "type": "void",
-        "desc": ""
-      }
+        "type": "void"
+      },
+      "events": [
+        {
+          "name": "Burn",
+          "args": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "algo_amount",
+              "type": "uint64"
+            },
+            {
+              "name": "arc200_amount",
+              "type": "uint64"
+            },
+            {
+              "name": "lpt_amount",
+              "type": "uint64"
+            }
+          ],
+          "desc": "Event Burn(sender, lpt_amount_burned, algo_amount, arc200_amount)"
+        }
+      ]
     },
     {
       "name": "swap_to_arc200",
+      "desc": "Swap from Algos to Arc200",
       "args": [
         {
           "name": "pay_txn",
@@ -268,14 +270,38 @@
           "desc": "min arc200 for this swap to be successful"
         }
       ],
-      "desc": "Swap from Algos to Arc200",
       "returns": {
         "type": "uint64",
         "desc": "amount of algos returned"
-      }
+      },
+      "events": [
+        {
+          "name": "Swap",
+          "args": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "from_amount",
+              "type": "uint64"
+            },
+            {
+              "name": "to_amount",
+              "type": "uint64"
+            },
+            {
+              "name": "is_direction_from_arc200_to_algo",
+              "type": "uint8"
+            }
+          ],
+          "desc": "Event Swap(sender, from_amount, to_amount, is_direction_from_arc200_to_algo)"
+        }
+      ]
     },
     {
       "name": "swap_from_arc200",
+      "desc": "Swap tokens from Arc200 to Algos",
       "args": [
         {
           "name": "arc200_amount",
@@ -288,11 +314,102 @@
           "desc": "min algo for this swap to be successful"
         }
       ],
-      "desc": "Swap tokens from Arc200 to Algos",
       "returns": {
         "type": "uint64",
         "desc": "amount of algos returned"
-      }
+      },
+      "events": [
+        {
+          "name": "Swap",
+          "args": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "from_amount",
+              "type": "uint64"
+            },
+            {
+              "name": "to_amount",
+              "type": "uint64"
+            },
+            {
+              "name": "is_direction_from_arc200_to_algo",
+              "type": "uint8"
+            }
+          ],
+          "desc": "Event Swap(sender, from_amount, to_amount, is_direction_from_arc200_to_algo)"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "Swap",
+      "args": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "from_amount",
+          "type": "uint64"
+        },
+        {
+          "name": "to_amount",
+          "type": "uint64"
+        },
+        {
+          "name": "is_direction_from_arc200_to_algo",
+          "type": "uint8"
+        }
+      ],
+      "desc": "Event Swap(sender, from_amount, to_amount, is_direction_from_arc200_to_algo)"
+    },
+    {
+      "name": "Mint",
+      "args": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "algo_amount",
+          "type": "uint64"
+        },
+        {
+          "name": "arc200_amount",
+          "type": "uint64"
+        },
+        {
+          "name": "lpt_amount",
+          "type": "uint64"
+        }
+      ],
+      "desc": "Event Mint(sender, algo_amount, arc200_amount, lpt_amount_minted)"
+    },
+    {
+      "name": "Burn",
+      "args": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "algo_amount",
+          "type": "uint64"
+        },
+        {
+          "name": "arc200_amount",
+          "type": "uint64"
+        },
+        {
+          "name": "lpt_amount",
+          "type": "uint64"
+        }
+      ],
+      "desc": "Event Burn(sender, lpt_amount_burned, algo_amount, arc200_amount)"
     }
   ]
 }

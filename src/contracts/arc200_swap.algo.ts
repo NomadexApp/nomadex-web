@@ -29,7 +29,12 @@ export class Arc200Swap extends Contract {
   // check if pool has been initialized
   initialized = GlobalStateKey<boolean>({ key: 'initialized' });
 
-  Swap = new EventLogger<[Address, uint64, uint64, uint<8>]>();
+  Swap = new EventLogger<{
+    sender: Address,
+    from_amount: uint64,
+    to_amount: uint64,
+    direction: uint<8>
+  }>();
 
   // initialize values
   createApplication(): void {
@@ -66,10 +71,10 @@ export class Arc200Swap extends Contract {
   private compute_out_tokens(in_amount: uint64, in_supply: uint64, out_supply: uint64, fee: uint64): uint64 {
     const factor = SCALE - fee;
 
-    const numerator = <uint<256>>(
+    const numerator = (
       <uint<256>>in_amount * <uint<256>>out_supply * <uint<256>>factor
     );
-    const denominator = <uint<256>>(
+    const denominator = (
       (<uint<256>>in_amount + <uint<256>>in_supply) * <uint<256>>SCALE
     );
 
@@ -234,10 +239,12 @@ export class Arc200Swap extends Contract {
     this.set_ratio();
 
     this.Swap.log(
-      this.txn.sender,
-      pay_txn.amount,
-      to_swap,
-      0
+      {
+        sender: this.txn.sender,
+        from_amount: pay_txn.amount,
+        to_amount: to_swap,
+        direction: 0
+      }
     );
 
     return to_swap;
@@ -273,10 +280,12 @@ export class Arc200Swap extends Contract {
     this.set_ratio();
 
     this.Swap.log(
-      this.txn.sender,
-      arc200_amount,
-      to_swap,
-      1,
+      {
+        sender: this.txn.sender,
+        from_amount: arc200_amount,
+        to_amount: to_swap,
+        direction: 1,
+      }
     );
 
     return to_swap;

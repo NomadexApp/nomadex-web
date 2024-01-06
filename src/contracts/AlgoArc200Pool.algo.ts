@@ -44,17 +44,32 @@ export class AlgoArc200Pool extends Contract {
   /**
    * Event Swap(sender, from_amount, to_amount, is_direction_from_arc200_to_algo)
    */
-  Swap = new EventLogger<[Address, uint64, uint64, uint<8>]>();
+  Swap = new EventLogger<{
+    sender: Address,
+    from_amount: uint64,
+    to_amount: uint64,
+    is_direction_from_arc200_to_algo: uint<8>
+  }>();
 
   /**
    * Event Mint(sender, algo_amount, arc200_amount, lpt_amount_minted)
    */
-  Mint = new EventLogger<[Address, uint64, uint64, uint64]>();
+  Mint = new EventLogger<{
+    sender: Address,
+    algo_amount: uint64,
+    arc200_amount: uint64,
+    lpt_amount: uint64
+  }>();
 
   /**
    * Event Burn(sender, lpt_amount_burned, algo_amount, arc200_amount)
    */
-  Burn = new EventLogger<[Address, uint64, uint64, uint64]>();
+  Burn = new EventLogger<{
+    sender: Address,
+    algo_amount: uint64,
+    arc200_amount: uint64,
+    lpt_amount: uint64
+  }>();
 
   /** initialize values  */
   createApplication(
@@ -272,10 +287,10 @@ export class AlgoArc200Pool extends Contract {
   private compute_out_tokens(in_amount: uint64, in_supply: uint64, out_supply: uint64, fee: uint64): uint64 {
     const factor = SCALE - fee;
 
-    const numerator = <uint<256>>(
+    const numerator = (
       <uint<256>>in_amount * <uint<256>>out_supply * <uint<256>>factor
     );
-    const denominator = <uint<256>>(
+    const denominator = (
       (<uint<256>>in_amount + <uint<256>>in_supply) * <uint<256>>SCALE
     );
 
@@ -342,10 +357,12 @@ export class AlgoArc200Pool extends Contract {
     this.asa_transfer_to(this.txn.sender, this.lpt_asset.value, to_mint);
 
     this.Mint.log(
-      this.txn.sender,
-      pay_txn.amount,
-      arc200_amount,
-      to_mint,
+      {
+        sender: this.txn.sender,
+        algo_amount: pay_txn.amount,
+        arc200_amount: arc200_amount,
+        lpt_amount: to_mint,
+      }
     );
 
     this.set_ratio();
@@ -380,10 +397,12 @@ export class AlgoArc200Pool extends Contract {
     this.arc200_transfer_to(this.txn.sender, arc200_withdraw_amount);
 
     this.Burn.log(
-      this.txn.sender,
-      lpt_xfer_txn.assetAmount,
-      withdraw_amount,
-      arc200_withdraw_amount,
+      {
+        sender: this.txn.sender,
+        lpt_amount: lpt_xfer_txn.assetAmount,
+        algo_amount: withdraw_amount,
+        arc200_amount: arc200_withdraw_amount,
+      }
     );
 
     this.set_ratio();
@@ -441,10 +460,12 @@ export class AlgoArc200Pool extends Contract {
     this.set_ratio();
 
     this.Swap.log(
-      this.txn.sender,
-      pay_txn.amount,
-      to_swap,
-      0
+      {
+        sender: this.txn.sender,
+        from_amount: pay_txn.amount,
+        to_amount: to_swap,
+        is_direction_from_arc200_to_algo: 0
+      }
     );
 
     return to_swap;
@@ -490,10 +511,12 @@ export class AlgoArc200Pool extends Contract {
     this.set_ratio();
 
     this.Swap.log(
-      this.txn.sender,
-      arc200_amount,
-      to_swap,
-      1
+      {
+        sender: this.txn.sender,
+        from_amount: arc200_amount,
+        to_amount: to_swap,
+        is_direction_from_arc200_to_algo: 1
+      }
     );
 
     return to_swap;
