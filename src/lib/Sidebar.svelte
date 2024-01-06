@@ -178,6 +178,7 @@
 		height: 0;
 		overflow: hidden;
 		transition: height 200ms;
+		transition-delay: 100ms;
 	}
 	li:focus-within > .children,
 	li:hover > .children,
