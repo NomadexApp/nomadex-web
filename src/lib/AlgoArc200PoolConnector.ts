@@ -195,6 +195,33 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
             min_amount: minViaAmount
         });
 
+        let arc200OptinTxns: algosdk.Transaction[] = [];
+        try {
+            const boxName = getBoxName(this.signer.addr);
+            await nodeClient.getApplicationBoxByName(this.arc200AssetId, boxName).do();
+        } catch (e) {
+            const contract = new Contract(
+                this.arc200AssetId,
+                nodeClient,
+                indexerClient,
+                {
+                    simulate: true,
+                    acc: {
+                        addr: this.signer.addr,
+                        sk: Uint8Array.from([])
+                    }
+                }
+            );
+
+            const result = await contract.arc200_transfer(this.signer.addr, 0n, true, false);
+
+            if (result.success) {
+                arc200OptinTxns = result.txns.map(
+                    txn => algosdk.decodeUnsignedTransaction(Uint8Array.from(Buffer.from(txn, 'base64')))
+                )
+            }
+        }
+
         const composer = this.compose();
         const opts = await this.getUnnamedResourcesAccessedFromMethod('swapToArc200', swapArgs());
         const atc = await composer
@@ -213,7 +240,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
 
         const swapTxns = atc.buildGroup().map(({ txn }) => txn);
 
-        await signAndSendTransections(nodeClient, [swapTxns]);
+        await signAndSendTransections(nodeClient, [...(arc200OptinTxns?.length ? [arc200OptinTxns] : []), swapTxns]);
         console.log({ success: true });
     }
 
