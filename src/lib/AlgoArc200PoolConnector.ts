@@ -224,7 +224,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
 
         const composer = this.compose();
         const opts = await this.getUnnamedResourcesAccessedFromMethod('swapToArc200', swapArgs());
-        const opts2 = await getUnnamedResourcesAccessed(arc200OptinTxns);
+        const opts2 = arc200OptinTxns?.length ? await getUnnamedResourcesAccessed(arc200OptinTxns) : { boxes: [], accounts: [] };
         const atc = await composer
             .swapToArc200(swapArgs(), {
                 ...opts,
