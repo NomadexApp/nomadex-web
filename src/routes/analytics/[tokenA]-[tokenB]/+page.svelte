@@ -8,6 +8,7 @@
 	import { TokenType, knownPools, type Token, knownTokens } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { getClient } from '$lib/_shared';
 
 	const { page } = getStores();
 	const tokenA = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -99,7 +100,7 @@
 
 	let priceData: PriceCandleData[] = [];
 
-	function generateDataByTime(priceOf: string, duration = timescale) {
+	async function generateDataByTime(priceOf: string, duration = timescale) {
 		const _priceData: PriceCandleData[] = [];
 		const events = [...swapEvents];
 
@@ -163,7 +164,7 @@
 				});
 			}
 		}
-		// console.log(_priceData, events);
+
 		const checksum1 = _priceData.map((d) => `${d.x}:${d.o}:${d.h}:${d.l}:${d.c}`).join(':');
 		const checksum2 = priceData.map((d) => `${d.x}:${d.o}:${d.h}:${d.l}:${d.c}`).join(':');
 		if (checksum1 !== checksum2) {
@@ -172,6 +173,7 @@
 	}
 
 	let innerWidth = browser ? window.innerWidth : 0;
+	let chartWidth = 0;
 </script>
 
 <svelte:window bind:innerWidth />
@@ -250,15 +252,17 @@
 			>
 		</div>
 	</div>
-	<div class="chart-container min-w-[350px] overflow-hidden">
+	<div
+		class="chart-container min-w-[350px] overflow-hidden"
+		bind:clientWidth={chartWidth}
+		style="min-height: {chartWidth / 2.6}px;"
+	>
 		<CandleChart
 			label={`Price of ${pricingDirection.split('/').join(' in ')}`}
 			{logarithmic}
 			data={priceData.slice(-80)}
 		/>
 	</div>
-	<br />
-	<br />
 	<div class="events flex flex-col gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)]">
 		{#if swapEvents?.length}
 			<div class="w-full event font-bold p-3 px-0 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
