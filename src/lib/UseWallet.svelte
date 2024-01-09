@@ -73,6 +73,7 @@
 		txnGroups: algosdk.Transaction[][],
 		kibisis = get(connectedWallet) === 'kibisis'
 	) {
+		console.log('signing and sending txns...');
 		const signed = await signTransactions(txnGroups, kibisis);
 
 		const groups = txnGroups.map((group) => {
@@ -99,6 +100,7 @@
 			}
 		}
 
+		console.log('sent txns...');
 		return true;
 	}
 

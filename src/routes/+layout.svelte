@@ -13,7 +13,7 @@
 
 	onMount(() => {
 		hasKibisisWallet = window['algorand']?.wallets.find((w) => w.id === 'kibisis');
-		[1000, 2000, 3000].forEach((ms) => {
+		[1000, 2000, 3000, 7000].forEach((ms) => {
 			setTimeout(() => {
 				hasKibisisWallet = window['algorand']?.wallets.find((w) => w.id === 'kibisis');
 			}, ms);

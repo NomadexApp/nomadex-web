@@ -55,3 +55,12 @@ export const knownTokens: Token[] = [
         unit: pool.arc200Asset.unit
     }))
 ];
+
+export const contracts = {
+    orderbookLimitOrderApp: 26171479
+};
+
+
+export const contractsConstants = {
+    orderbookLimitOrderAppFeePercent: 1
+};

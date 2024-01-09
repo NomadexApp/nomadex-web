@@ -72,7 +72,11 @@
 		{/each}
 	</div>
 	<br />
-	<div class="flex flex-col justify-center items-center gap-2 pt-6 transition-opacity duration-200 {$positionCount ? 'opacity-100' : 'opacity-0'}">
+	<div
+		class="flex flex-col justify-center items-center gap-2 pt-6 transition-opacity duration-200 {$positionCount
+			? 'opacity-100'
+			: 'opacity-0'}"
+	>
 		<h4 class="text-xl font-bold prose w-full mb-5">Your Positions</h4>
 		{#each knownPools as pool}
 			{#await Promise.all( [getASABalance(pool.lptId, $connectedAccount), getASABalance(pool.lptId, algosdk.getApplicationAddress(pool.poolId))] ) then [lptBalance, poolBalance]}
@@ -83,26 +87,9 @@
 					>
 						<div class="flex justify-between">
 							<span class="name text-lg font-bold text-bold mb-2">VOI / {pool.arc200Asset.symbol}</span>
-							<span class="">
-								<!-- {(lptBalance / 1e6).toLocaleString('en')} Shares / {((1e16 - poolBalance) / 1e6).toLocaleString('en')} Total
-								Shares -->
-								<!-- {#if poolsState[pool.poolId]?.arc200Balances[pool.arc200Asset.assetId]}
-								<span class="">
-									{(poolsState[pool.poolId].amount / 1e6).toLocaleString('en')} VOI
-								</span>
-								/
-								<span class="">
-									{(
-										poolsState[pool.poolId].arc200Balances[pool.arc200Asset.assetId] / pool.arc200Asset.unit
-									).toLocaleString('en')}
-									{pool.arc200Asset.symbol}
-								</span>
-							{:else}
-								<span class="loading w-[1rem]" />
-							{/if} -->
-							</span>
+							<span class="" />
 							<span>
-								{((lptBalance / 1e6 / ((1e16 - poolBalance) / 1e6)) * 100).toLocaleString('en')}% Share of the pool
+								{((lptBalance / 1e6 / ((1e16 - poolBalance) / 1e6)) * 100).toLocaleString('en')}% Share
 							</span>
 						</div>
 						<span class="flex flex-wrap justify-end">

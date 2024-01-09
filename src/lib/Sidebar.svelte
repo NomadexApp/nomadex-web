@@ -4,7 +4,6 @@
 	import UseWallet from './UseWallet.svelte';
 	import SwapIcon from 'svelte-star/dist/md/MdAutorenew.svelte';
 	import PoolsIcon from 'svelte-star/dist/md/MdFormatListBulleted.svelte';
-	import HomeIcon from 'svelte-star/dist/md/MdHome.svelte';
 	import AnalyticsIcon from 'svelte-star/dist/md/MdShowChart.svelte';
 	import MdMenu from 'svelte-star/dist/md/MdMenu.svelte';
 	import { isDarkTheme } from './stores';
@@ -12,6 +11,7 @@
 	import { knownPools } from '$lib';
 	import { pageContentRefresh } from './utils';
 	import { page } from '$app/stores';
+	import MdLink from 'svelte-star/dist/md/MdLink.svelte';
 
 	let sidebarWidth = 0;
 	let innerWidth = browser ? window.innerWidth : 0;
@@ -64,8 +64,8 @@
 			</div>
 			<li class="pl-0 sm:block" class:active={$page.url.pathname === '/'}>
 				<a class="flex justify-between" href="/" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
-					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">HOME</span>
-					<span class="h-5 w-5"><HomeIcon /></span>
+					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">POOLS</span>
+					<span class="h-5 w-5"><PoolsIcon /></span>
 				</a>
 			</li>
 			<li class="pl-0" class:is-open={$page.url.pathname.startsWith('/swap/')}>
@@ -96,10 +96,15 @@
 					{/each}
 				</ul>
 			</li>
-			<li class="pl-0 sm:block" class:active={$page.url.pathname.startsWith('/pools')}>
-				<a class="flex justify-between" href="/pools" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
-					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">POOLS</span>
-					<span class="h-5 w-5"><PoolsIcon /></span>
+			<li class="pl-0 sm:block" class:active={$page.url.pathname.startsWith('/limit-orders/')}>
+				<a
+					class="flex justify-between"
+					href="/limit-orders/"
+					on:click={() => isMobile && (sidebarOpen = false)}
+					tabindex="0"
+				>
+					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">LIMIT ORDERS</span>
+					<span class="h-5 w-5"><MdLink /></span>
 				</a>
 			</li>
 			<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/analytics/')}>
