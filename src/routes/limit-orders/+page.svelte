@@ -139,7 +139,7 @@
 							<span class="w-24">{limitOrder.maker.slice(0, 3)}...{limitOrder.maker.slice(-3)}</span>
 							<span class="w-16">{limitOrder.isDirectionFromArc200ToAlgo ? 'BUY' : 'SELL'}</span>
 
-							<span class="w-24">
+							<span class="w-24 text-nowrap">
 								{algoTokenAmouunt.toLocaleString('en')} VOI
 							</span>
 							<span class="hidden md:block flex-grow max-w-16" />
