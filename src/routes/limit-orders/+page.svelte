@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { contracts, contractsConstants, knownPools, knownTokens, type Token } from '$lib';
-	import type { AccountState } from '$lib/stores/onchain';
-	import { getUnnamedResourcesAccessedFromComposer, indexerClient, nodeClient } from '$lib/_shared';
-	import { writable } from 'svelte/store';
+	import { contracts, contractsConstants, knownTokens, type Token } from '$lib';
+	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { LimitOrders001ClientConnector, LimitOrderType } from '$lib/LimitOrderConnector';
@@ -124,11 +122,12 @@
 							#{limitOrder.orderId}
 							{limitOrder.maker.slice(0, 3)} is selling
 							{#if limitOrder.isDirectionFromArc200ToAlgo}
-								{Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit}
+								{(Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit).toLocaleString('en')}
 								{limitOrder.arc200Token.ticker} for {(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI
 							{:else}
-								{(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI for {Number(limitOrder.arc200Amount) /
-									limitOrder.arc200Token.unit}
+								{(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI for {(
+									Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit
+								).toLocaleString('en')}
 								{limitOrder.arc200Token.ticker}
 							{/if}
 						</span>
