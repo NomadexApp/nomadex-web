@@ -228,11 +228,11 @@ arc200TransferTo:
 	proto 3 1
 
 	// src/contracts/LimitOrders.algo.ts:59
-	// return sendMethodCall<[Address, uint<256>], boolean>({
+	// return sendMethodCall<[Address, uint256], boolean>({
 	//             sender: this.app.address,
 	//             name: 'arc200_transfer',
 	//             applicationID: arc200Id,
-	//             methodArgs: [to, <uint<256>>amount],
+	//             methodArgs: [to, <uint256>amount],
 	//             fee: 1000
 	//         });
 	itxn_begin
@@ -252,10 +252,10 @@ arc200TransferTo:
 	itxn_field ApplicationID
 
 	// src/contracts/LimitOrders.algo.ts:63
-	// methodArgs: [to, <uint<256>>amount]
+	// methodArgs: [to, <uint256>amount]
 	frame_dig -2 // to: Address
 	itxn_field ApplicationArgs
-	frame_dig -3 // amount: uint<256>
+	frame_dig -3 // amount: uint256
 	itxn_field ApplicationArgs
 
 	// src/contracts/LimitOrders.algo.ts:64
@@ -279,7 +279,7 @@ arc200TranferFrom:
 	proto 4 1
 
 	// src/contracts/LimitOrders.algo.ts:69
-	// return sendMethodCall<[Address, Address, uint<256>], boolean>({
+	// return sendMethodCall<[Address, Address, uint256], boolean>({
 	//             sender: this.app.address,
 	//             name: 'arc200_transferFrom',
 	//             applicationID: arc200Id,
@@ -308,7 +308,7 @@ arc200TranferFrom:
 	itxn_field ApplicationArgs
 	frame_dig -3 // to: Address
 	itxn_field ApplicationArgs
-	frame_dig -4 // amount: uint<256>
+	frame_dig -4 // amount: uint256
 	itxn_field ApplicationArgs
 
 	// src/contracts/LimitOrders.algo.ts:74
@@ -440,7 +440,7 @@ createAlgoSellOrder:
 	gtxns Amount
 	itob
 	concat
-	frame_dig -3 // arc200Amount: uint<256>
+	frame_dig -3 // arc200Amount: uint256
 	concat
 	byte 0x00
 	concat
@@ -463,7 +463,7 @@ createAlgoSellOrder:
 	gtxns Amount
 	itob
 	concat
-	frame_dig -3 // arc200Amount: uint<256>
+	frame_dig -3 // arc200Amount: uint256
 	concat
 	byte 0x00
 	concat
@@ -532,7 +532,7 @@ createAlgoBuyOrder:
 	//             this.app.address,
 	//             arc200Amount
 	//         )
-	frame_dig -2 // arc200Amount: uint<256>
+	frame_dig -2 // arc200Amount: uint256
 	global CurrentApplicationAddress
 	txn Sender
 	frame_dig -1 // arc200AppId: Application
@@ -555,7 +555,7 @@ createAlgoBuyOrder:
 	frame_dig -3 // algoAmount: uint64
 	itob
 	concat
-	frame_dig -2 // arc200Amount: uint<256>
+	frame_dig -2 // arc200Amount: uint256
 	concat
 	byte 0x01
 	concat
@@ -578,7 +578,7 @@ createAlgoBuyOrder:
 	frame_dig -3 // algoAmount: uint64
 	itob
 	concat
-	frame_dig -2 // arc200Amount: uint<256>
+	frame_dig -2 // arc200Amount: uint256
 	concat
 	byte 0x01
 	concat
@@ -622,7 +622,7 @@ fillAlgoToArc200Order:
 
 	// src/contracts/LimitOrders.algo.ts:168
 	// assert(arc200Amount > 0)
-	frame_dig -2 // arc200Amount: uint<256>
+	frame_dig -2 // arc200Amount: uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
@@ -659,7 +659,7 @@ fillAlgoToArc200Order:
 	//             boxSnap.maker,
 	//             arc200Amount
 	//         )
-	frame_dig -2 // arc200Amount: uint<256>
+	frame_dig -2 // arc200Amount: uint256
 	frame_dig 0 // storage key//boxSnap
 	box_get
 	assert
@@ -674,9 +674,9 @@ fillAlgoToArc200Order:
 
 	// src/contracts/LimitOrders.algo.ts:181
 	// _amountOfAlgos = (
-	//             (arc200Amount * (<uint<256>>boxSnap.algoAmount)) / boxSnap.arc200Amount
+	//             (arc200Amount * (<uint256>boxSnap.algoAmount)) / boxSnap.arc200Amount
 	//         )
-	frame_dig -2 // arc200Amount: uint<256>
+	frame_dig -2 // arc200Amount: uint256
 	frame_dig 0 // storage key//boxSnap
 	box_get
 	assert
@@ -724,7 +724,7 @@ fillAlgoToArc200Order:
 	box_get
 	assert
 	extract 48 32
-	frame_dig -2 // arc200Amount: uint<256>
+	frame_dig -2 // arc200Amount: uint256
 	b-
 	frame_bury 3 // newArc200Amount: unsafe uint256
 
@@ -740,7 +740,7 @@ fillAlgoToArc200Order:
 	frame_bury 4 // newAlgoAmount: uint64
 
 	// src/contracts/LimitOrders.algo.ts:193
-	// denominator = <uint<256>>amountOfAlgos * <uint<256>>this.fee.value
+	// denominator = <uint256>amountOfAlgos * <uint256>this.fee.value
 	frame_dig 2 // amountOfAlgos: uint64
 	itob
 	dup
@@ -764,7 +764,7 @@ fillAlgoToArc200Order:
 	frame_bury 5 // denominator: unsafe uint256
 
 	// src/contracts/LimitOrders.algo.ts:194
-	// feeUint256 = (denominator / <uint<256>>SCALE)
+	// feeUint256 = (denominator / <uint256>SCALE)
 	frame_dig 5 // denominator: unsafe uint256
 	byte 0x00005af3107a4000
 	dup
@@ -822,7 +822,7 @@ fillAlgoToArc200Order:
 	//             filledAlgoAmount: amountOfAlgos,
 	//             filledArc200Amount: arc200Amount,
 	//             orderDirection: 0,
-	//             fee: <uint<256>>fee
+	//             fee: <uint256>fee
 	//         })
 	byte 0x0db8f73c // FillOrder(uint64,address,address,uint64,uint256,uint8,uint256)
 	frame_dig -1 // orderId: uint64
@@ -838,7 +838,7 @@ fillAlgoToArc200Order:
 	frame_dig 2 // amountOfAlgos: uint64
 	itob
 	concat
-	frame_dig -2 // arc200Amount: uint<256>
+	frame_dig -2 // arc200Amount: uint256
 	concat
 	byte 0x00
 	concat
@@ -1003,7 +1003,7 @@ fillArc200ToAlgoOrder:
 	assert
 
 	// src/contracts/LimitOrders.algo.ts:236
-	// denominator = <uint<256>>algoPayTxn.amount * <uint<256>>this.fee.value
+	// denominator = <uint256>algoPayTxn.amount * <uint256>this.fee.value
 	frame_dig -2 // algoPayTxn: PayTxn
 	gtxns Amount
 	itob
@@ -1028,7 +1028,7 @@ fillArc200ToAlgoOrder:
 	frame_bury 1 // denominator: unsafe uint256
 
 	// src/contracts/LimitOrders.algo.ts:237
-	// feeUint256 = denominator / <uint<256>>SCALE
+	// feeUint256 = denominator / <uint256>SCALE
 	frame_dig 1 // denominator: unsafe uint256
 	byte 0x00005af3107a4000
 	dup
@@ -1088,7 +1088,7 @@ fillArc200ToAlgoOrder:
 	app_global_put
 
 	// src/contracts/LimitOrders.algo.ts:249
-	// algoOutAmountUint256 = <uint<256>>algoOutAmount
+	// algoOutAmountUint256 = <uint256>algoOutAmount
 	frame_dig 4 // algoOutAmount: uint64
 	itob
 	dup
@@ -1101,7 +1101,7 @@ fillArc200ToAlgoOrder:
 	frame_bury 5 // algoOutAmountUint256: uint256
 
 	// src/contracts/LimitOrders.algo.ts:250
-	// boxAlgoAmountUint256 = <uint<256>>(boxSnap.algoAmount)
+	// boxAlgoAmountUint256 = <uint256>(boxSnap.algoAmount)
 	frame_dig 0 // storage key//boxSnap
 	box_get
 	assert
@@ -1130,7 +1130,7 @@ fillArc200ToAlgoOrder:
 	frame_bury 7 // arc200OutAmount: unsafe uint256
 
 	// src/contracts/LimitOrders.algo.ts:253
-	// this.arc200TransferTo(boxSnap.arc200Id, this.txn.sender, <uint<256>>arc200OutAmount)
+	// this.arc200TransferTo(boxSnap.arc200Id, this.txn.sender, <uint256>arc200OutAmount)
 	frame_dig 7 // arc200OutAmount: unsafe uint256
 	dup
 	bitlen
@@ -1183,7 +1183,7 @@ fillArc200ToAlgoOrder:
 	//             filledAlgoAmount: algoOutAmount,
 	//             filledArc200Amount: arc200OutAmount,
 	//             orderDirection: 1,
-	//             fee: <uint<256>>fee
+	//             fee: <uint256>fee
 	//         })
 	byte 0x0db8f73c // FillOrder(uint64,address,address,uint64,uint256,uint8,uint256)
 	frame_dig -1 // orderId: uint64
@@ -1368,7 +1368,7 @@ cancelOrder:
 	// this.CancelOrder.log({
 	//                 maker: boxSnap.maker,
 	//                 orderId: orderId,
-	//                 returnedAmount: <uint<256>>boxSnap.algoAmount,
+	//                 returnedAmount: <uint256>boxSnap.algoAmount,
 	//                 orderDirection: boxSnap.isBuyingAlgo
 	//             })
 	byte 0x29d99bd0 // CancelOrder(uint64,address,uint256,uint8)
