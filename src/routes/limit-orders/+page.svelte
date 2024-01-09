@@ -49,7 +49,7 @@
 	});
 
 	let selcetdOrder: number | undefined;
-	let amount = 0;
+	let amounts: Record<string, number> = {};
 
 	async function sell(amount: number, limitOrder: (typeof limitOrders)[0]) {
 		const connector = new LimitOrders001ClientConnector(contracts.orderbookLimitOrderApp);
@@ -106,16 +106,16 @@
 			<h4 class="text-xl font-bold prose w-full mb-5">Limit Orders</h4>
 			<a href="/limit-orders/create/VOI-VIA" class="btn">Create</a>
 		</div>
-		{#each limitOrders as limitOrder}
-			<div class="w-full flex flex-col pt-6 p-4 bg-base-300">
+		{#each limitOrders.sort((a, b) => b.orderId - a.orderId) as limitOrder}
+			<div class="w-full flex flex-col pt-6 p-4 bg-base-300 relative">
 				<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
 					<div
 						class="flex justify-between cursor-pointer select-none"
 						on:click={() => (selcetdOrder = selcetdOrder === limitOrder.orderId ? undefined : limitOrder.orderId)}
 						on:keydown
 					>
-						<span class="name text-lg font-bold text-bold mb-0">
-							Listed
+						<span class="name mb-0">
+							#{limitOrder.orderId} {limitOrder.maker.slice(0, 3)} is selling
 							{#if limitOrder.isDirectionFromArc200ToAlgo}
 								{Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit}
 								{limitOrder.arc200Token.ticker} for {(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI
@@ -126,7 +126,7 @@
 							{/if}
 						</span>
 						{#if limitOrder.maker === $connectedAccount}
-							<button class="btn btn-sm btn-primary" on:click={(e) => cancelLimitOrder(e, limitOrder)}>Cancel</button>
+							<button class="btn btn-sm btn-ghost" on:click={(e) => cancelLimitOrder(e, limitOrder)}>x</button>
 						{/if}
 					</div>
 					<span class="flex flex-wrap justify-end" />
@@ -144,7 +144,7 @@
 							placeholder="Enter {limitOrder.isDirectionFromArc200ToAlgo
 								? 'VOI'
 								: limitOrder.arc200Token.ticker} amount"
-							bind:value={amount}
+							bind:value={amounts[limitOrder.orderId]}
 							step={0.000001}
 							required
 							class="input input-primary input-bordered w-full focus:outline-none"
@@ -152,21 +152,21 @@
 						<div class="flex justify-center mt-2 pr-0">
 							<button
 								class="btn btn-primary w-full box-border"
-								disabled={!isValid(amount, limitOrder)}
-								class:btn-outline={!isValid(amount, limitOrder)}
-								on:click={() => sell(amount, limitOrder)}
+								disabled={!isValid(amounts[limitOrder.orderId], limitOrder)}
+								class:btn-outline={!isValid(amounts[limitOrder.orderId], limitOrder)}
+								on:click={() => sell(amounts[limitOrder.orderId], limitOrder)}
 							>
 								SELL
 							</button>
 						</div>
 
-						{#if isValid(amount, limitOrder)}
+						{#if isValid(amounts[limitOrder.orderId], limitOrder)}
 							<div class="text-right">
 								You will receive {amountAfterFee(
 									Number(
 										limitOrder.isDirectionFromArc200ToAlgo
-											? (amount * Number(limitOrder.arc200Amount)) / Number(limitOrder.algoAmount)
-											: (amount * Number(limitOrder.algoAmount)) / Number(limitOrder.arc200Amount)
+											? (amounts[limitOrder.orderId] * Number(limitOrder.arc200Amount)) / Number(limitOrder.algoAmount)
+											: (amounts[limitOrder.orderId] * Number(limitOrder.algoAmount)) / Number(limitOrder.arc200Amount)
 									),
 									contractsConstants.orderbookLimitOrderAppFeePercent
 								).toLocaleString('en')}
