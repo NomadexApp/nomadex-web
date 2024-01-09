@@ -13,8 +13,8 @@ export class LimitOrders001 extends Contract {
         maker: Address,
         arc200Id: Application,
         algoAmount: uint64,
-        arc200Amount: uint<256>,
-        isBuyingAlgo: uint<8>
+        arc200Amount: uint256,
+        isBuyingAlgo: uint8
     }>();
 
     createApplication(owner: Address, fee: uint64): void {
@@ -55,18 +55,18 @@ export class LimitOrders001 extends Contract {
         return true;
     }
 
-    private arc200TransferTo(arc200Id: Application, to: Address, amount: uint<256>): boolean {
-        return sendMethodCall<[Address, uint<256>], boolean>({
+    private arc200TransferTo(arc200Id: Application, to: Address, amount: uint256): boolean {
+        return sendMethodCall<[Address, uint256], boolean>({
             sender: this.app.address,
             name: 'arc200_transfer',
             applicationID: arc200Id,
-            methodArgs: [to, <uint<256>>amount],
+            methodArgs: [to, <uint256>amount],
             fee: 1000
         });
     }
 
-    private arc200TranferFrom(arc200Id: Application, from: Address, to: Address, amount: uint<256>): boolean {
-        return sendMethodCall<[Address, Address, uint<256>], boolean>({
+    private arc200TranferFrom(arc200Id: Application, from: Address, to: Address, amount: uint256): boolean {
+        return sendMethodCall<[Address, Address, uint256], boolean>({
             sender: this.app.address,
             name: 'arc200_transferFrom',
             applicationID: arc200Id,
@@ -80,8 +80,8 @@ export class LimitOrders001 extends Contract {
         orderId: uint64,
         maker: Address,
         algoAmount: uint64,
-        arc200Amount: uint<256>,
-        orderDirection: uint<8>,
+        arc200Amount: uint256,
+        orderDirection: uint8,
     }>();
 
     FillOrder = new EventLogger<{
@@ -89,19 +89,19 @@ export class LimitOrders001 extends Contract {
         maker: Address,
         taker: Address,
         filledAlgoAmount: uint64,
-        filledArc200Amount: uint<256>,
-        orderDirection: uint<8>,
-        fee: uint<256>
+        filledArc200Amount: uint256,
+        orderDirection: uint8,
+        fee: uint256
     }>();
 
     CancelOrder = new EventLogger<{
         orderId: uint64,
         maker: Address,
-        returnedAmount: uint<256>,
-        orderDirection: uint<8>,
+        returnedAmount: uint256,
+        orderDirection: uint8,
     }>();
 
-    createAlgoSellOrder(algoPayTxn: PayTxn, arc200Id: Application, arc200Amount: uint<256>): void {
+    createAlgoSellOrder(algoPayTxn: PayTxn, arc200Id: Application, arc200Amount: uint256): void {
         verifyPayTxn(algoPayTxn, {
             amount: { greaterThan: 0 },
             sender: this.txn.sender,
@@ -132,7 +132,7 @@ export class LimitOrders001 extends Contract {
         this.orderCounter.value = orderId + 1;
     }
 
-    createAlgoBuyOrder(arc200AppId: Application, arc200Amount: uint<256>, algoAmount: uint64): void {
+    createAlgoBuyOrder(arc200AppId: Application, arc200Amount: uint256, algoAmount: uint64): void {
 
         const orderId = this.orderCounter.value;
         assert(!this.orderbook(orderId).exists);
@@ -163,7 +163,7 @@ export class LimitOrders001 extends Contract {
         this.orderCounter.value = orderId + 1;
     }
 
-    fillAlgoToArc200Order(orderId: uint64, arc200Amount: uint<256>): void {
+    fillAlgoToArc200Order(orderId: uint64, arc200Amount: uint256): void {
 
         assert(arc200Amount > 0);
         assert(this.orderbook(orderId).exists);
@@ -179,7 +179,7 @@ export class LimitOrders001 extends Contract {
         );
 
         const _amountOfAlgos = (
-            (arc200Amount * (<uint<256>>boxSnap.algoAmount)) / boxSnap.arc200Amount
+            (arc200Amount * (<uint256>boxSnap.algoAmount)) / boxSnap.arc200Amount
         );
 
         const amountOfAlgos = <uint<64>>_amountOfAlgos;
@@ -190,8 +190,8 @@ export class LimitOrders001 extends Contract {
         /** uint64 */
         const newAlgoAmount = boxSnap.algoAmount - amountOfAlgos;
 
-        const denominator = <uint<256>>amountOfAlgos * <uint<256>>this.fee.value;
-        const feeUint256 = (denominator / <uint<256>>SCALE);
+        const denominator = <uint256>amountOfAlgos * <uint256>this.fee.value;
+        const feeUint256 = (denominator / <uint256>SCALE);
         /** uint64 */
         const fee = <uint64>feeUint256;
 
@@ -205,7 +205,7 @@ export class LimitOrders001 extends Contract {
             filledAlgoAmount: amountOfAlgos,
             filledArc200Amount: arc200Amount,
             orderDirection: 0,
-            fee: <uint<256>>fee
+            fee: <uint256>fee
         });
 
         if (newAlgoAmount <= 1000) {
@@ -233,8 +233,8 @@ export class LimitOrders001 extends Contract {
             receiver: this.app.address,
         });
 
-        const denominator = <uint<256>>algoPayTxn.amount * <uint<256>>this.fee.value;
-        const feeUint256 = denominator / <uint<256>>SCALE;
+        const denominator = <uint256>algoPayTxn.amount * <uint256>this.fee.value;
+        const feeUint256 = denominator / <uint256>SCALE;
 
         /** uint64 */
         const fee = <uint64>feeUint256;
@@ -245,12 +245,12 @@ export class LimitOrders001 extends Contract {
         this.transferTo(boxSnap.maker, algoOutAmount);
         this.feeAccumulated.value = this.feeAccumulated.value + fee;
 
-        /** uint<256> */
-        const algoOutAmountUint256 = <uint<256>>algoOutAmount;
-        const boxAlgoAmountUint256 = <uint<256>>(boxSnap.algoAmount);
+        /** uint256 */
+        const algoOutAmountUint256 = <uint256>algoOutAmount;
+        const boxAlgoAmountUint256 = <uint256>(boxSnap.algoAmount);
         const arc200OutAmount = ((algoOutAmountUint256 * boxSnap.arc200Amount) / boxAlgoAmountUint256);
 
-        this.arc200TransferTo(boxSnap.arc200Id, this.txn.sender, <uint<256>>arc200OutAmount);
+        this.arc200TransferTo(boxSnap.arc200Id, this.txn.sender, <uint256>arc200OutAmount);
 
         const newArc200Amount = boxSnap.arc200Amount - arc200OutAmount;
         const newAlgoAmount = boxSnap.algoAmount - algoOutAmount;
@@ -262,7 +262,7 @@ export class LimitOrders001 extends Contract {
             filledAlgoAmount: algoOutAmount,
             filledArc200Amount: arc200OutAmount,
             orderDirection: 1,
-            fee: <uint<256>>fee
+            fee: <uint256>fee
         });
 
         if (newAlgoAmount <= 1000) {
@@ -288,7 +288,7 @@ export class LimitOrders001 extends Contract {
             this.CancelOrder.log({
                 maker: boxSnap.maker,
                 orderId: orderId,
-                returnedAmount: <uint<256>>boxSnap.algoAmount,
+                returnedAmount: <uint256>boxSnap.algoAmount,
                 orderDirection: boxSnap.isBuyingAlgo
             });
         } else {
