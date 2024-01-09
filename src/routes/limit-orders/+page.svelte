@@ -21,7 +21,7 @@
 		isDirectionFromArc200ToAlgo: number;
 	}[] = [];
 
-	onMount(async () => {
+	async function fetchOrders() {
 		const { boxes: boxesNames } = await nodeClient.getApplicationBoxes(contracts.orderbookLimitOrderApp).do();
 
 		const boxes = await Promise.all(
@@ -46,6 +46,12 @@
 				};
 			})
 			.filter((b) => b.arc200Token);
+	}
+
+	onMount(async () => {
+		fetchOrders();
+		const timeout = setInterval(() => fetchOrders(), 15_000);
+		return () => clearTimeout(timeout);
 	});
 
 	let selcetdOrder: number | undefined;
