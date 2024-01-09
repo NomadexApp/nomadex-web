@@ -105,37 +105,60 @@
 <section class="p-4">
 	<br />
 	<br />
-	<div class="flex flex-col justify-center gap-2 pt-6 max-w-[800px] mx-auto">
+	<div class="flex flex-col justify-center gap-1 pt-6 max-w-[800px] mx-auto">
 		<div class="flex justify-center">
 			<h4 class="text-xl font-bold prose w-full mb-5">Limit Orders</h4>
 			<a href="/limit-orders/create/VOI-VIA" class="btn">Create</a>
 		</div>
+		<div class="w-full flex flex-col pt-4 p-4 bg-base-300 relative">
+			<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
+				<div class="flex justify-between cursor-pointer select-none font-bold" on:click={() => {}} on:keydown>
+					<span class="name mb-0 flex justify-start items-center w-full gap-5">
+						<span class="w-24">Maker</span>
+						<span class="w-16">Type</span>
+						<span class="w-24"> Amount </span>
+						<span class="hidden md:block flex-grow max-w-16" />
+
+						<span class="w-24">Price</span>
+					</span>
+					<div class="w-12">&nbsp;</div>
+				</div>
+			</div>
+		</div>
 		{#each limitOrders.sort((a, b) => b.orderId - a.orderId) as limitOrder}
-			<div class="w-full flex flex-col pt-6 p-4 bg-base-300 relative">
+			{@const arc200TokenAmount = Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit}
+			{@const algoTokenAmouunt = Number(limitOrder.algoAmount) / 1e6}
+			<div class="w-full flex flex-col pt-4 p-4 bg-base-300 relative">
 				<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
 					<div
 						class="flex justify-between cursor-pointer select-none"
 						on:click={() => (selcetdOrder = selcetdOrder === limitOrder.orderId ? undefined : limitOrder.orderId)}
 						on:keydown
 					>
-						<span class="name mb-0">
-							#{limitOrder.orderId}
-							{limitOrder.maker.slice(0, 3)} is selling
-							{#if limitOrder.isDirectionFromArc200ToAlgo}
-								{(Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit).toLocaleString('en')}
-								{limitOrder.arc200Token.ticker} for {(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI
-							{:else}
-								{(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI for {(
-									Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit
-								).toLocaleString('en')}
+						<span class="name mb-0 flex justify-start items-center w-full gap-5">
+							<span class="w-24">{limitOrder.maker.slice(0, 3)}...{limitOrder.maker.slice(-3)}</span>
+							<span class="w-16">{limitOrder.isDirectionFromArc200ToAlgo ? 'BUY' : 'SELL'}</span>
+
+							<span class="w-24">
+								{algoTokenAmouunt.toLocaleString('en')} VOI
+							</span>
+							<span class="hidden md:block flex-grow max-w-16" />
+							<span class="text-nowrap">
+								{(arc200TokenAmount / algoTokenAmouunt).toLocaleString('en')}
 								{limitOrder.arc200Token.ticker}
-							{/if}
+								<span class="text-[0.7rem]">
+								<span class="hidden md:inline-block">/ VOI</span>
+								</span>
+							</span>
 						</span>
-						{#if limitOrder.maker === $connectedAccount}
-							<button class="btn btn-sm btn-ghost" on:click={(e) => cancelLimitOrder(e, limitOrder)}>x</button>
-						{/if}
+						<div class="w-12">
+							{#if limitOrder.maker === $connectedAccount}
+								<button class="btn btn-sm btn-ghost" on:click={(e) => cancelLimitOrder(e, limitOrder)}>x</button>
+							{:else}
+								&nbsp;
+							{/if}
+						</div>
 					</div>
-					<span class="flex flex-wrap justify-end" />
 				</div>
 				<div
 					class="pool rounded-btn flex flex-col items-center overflow-hidden gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px] transition-all duration-200"
@@ -162,7 +185,11 @@
 								class:btn-outline={!isValid(amounts[limitOrder.orderId], limitOrder)}
 								on:click={() => sell(amounts[limitOrder.orderId], limitOrder)}
 							>
-								SELL
+								{#if limitOrder.isDirectionFromArc200ToAlgo}
+									SELL
+								{:else}
+									BUY
+								{/if}
 							</button>
 						</div>
 
@@ -170,12 +197,10 @@
 							<div class="text-right">
 								You will receive {amountAfterFee(
 									Number(
-										limitOrder.isDirectionFromArc200ToAlgo
-											? (amounts[limitOrder.orderId] *
-													(Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit)) /
-													(Number(limitOrder.algoAmount) / 1e6)
-											: (amounts[limitOrder.orderId] * (Number(limitOrder.algoAmount) / 1e6)) /
-													(Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit)
+										amounts[limitOrder.orderId] *
+											(limitOrder.isDirectionFromArc200ToAlgo
+												? arc200TokenAmount / algoTokenAmouunt
+												: algoTokenAmouunt / arc200TokenAmount)
 									),
 									contractsConstants.orderbookLimitOrderAppFeePercent
 								).toLocaleString('en')}
