@@ -115,7 +115,8 @@
 						on:keydown
 					>
 						<span class="name mb-0">
-							#{limitOrder.orderId} {limitOrder.maker.slice(0, 3)} is selling
+							#{limitOrder.orderId}
+							{limitOrder.maker.slice(0, 3)} is selling
 							{#if limitOrder.isDirectionFromArc200ToAlgo}
 								{Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit}
 								{limitOrder.arc200Token.ticker} for {(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI
@@ -136,8 +137,8 @@
 					style="height: {selcetdOrder === Number(limitOrder.orderId) ? '200' : '0'}px;"
 				>
 					<div class="flex flex-col pt-4 gap-2 w-full max-w-[448px]">
-						<label for=""
-							>Enter {limitOrder.isDirectionFromArc200ToAlgo ? 'VOI' : limitOrder.arc200Token.ticker} amount</label
+						<label for="">
+							Enter {limitOrder.isDirectionFromArc200ToAlgo ? 'VOI' : limitOrder.arc200Token.ticker} amount</label
 						>
 						<input
 							type="number"
@@ -165,8 +166,11 @@
 								You will receive {amountAfterFee(
 									Number(
 										limitOrder.isDirectionFromArc200ToAlgo
-											? (amounts[limitOrder.orderId] * Number(limitOrder.arc200Amount)) / Number(limitOrder.algoAmount)
-											: (amounts[limitOrder.orderId] * Number(limitOrder.algoAmount)) / Number(limitOrder.arc200Amount)
+											? (amounts[limitOrder.orderId] *
+													(Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit)) /
+													(Number(limitOrder.algoAmount) / 1e6)
+											: (amounts[limitOrder.orderId] * (Number(limitOrder.algoAmount) / 1e6)) /
+													(Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit)
 									),
 									contractsConstants.orderbookLimitOrderAppFeePercent
 								).toLocaleString('en')}
