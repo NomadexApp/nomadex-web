@@ -102,7 +102,7 @@
 
 	async function generateDataByTime(priceOf: string, duration = timescale) {
 		const _priceData: PriceCandleData[] = [];
-		const events = [...swapEvents];
+		const events = [...swapEvents].filter((e) => (e.direction === 0 ? e.fromAmount : e.toAmount) > 10);
 
 		if (!events.length) return;
 
