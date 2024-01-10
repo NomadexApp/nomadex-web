@@ -17,6 +17,7 @@
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
 	let matchedPool: (typeof knownPools)[0] = <any>undefined;
+	let moreEvents = false;
 
 	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
@@ -279,7 +280,9 @@
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">From Amt.</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">To Amt.</span>
 			</div>
-			{#each [...swapEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']) as event}
+			{#each [...swapEvents]
+				.sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
+				.slice(moreEvents ? 0 : -50) as event}
 				{@const fromAmount = Number(event.fromAmount / getFromTokenFromEvent(event).unit)}
 				{@const toAmount = Number(event.toAmount / getToTokenFromEvent(event).unit)}
 				<div
@@ -317,6 +320,9 @@
 					>
 				</div>
 			{/each}
+			{#if !moreEvents}
+				<button class="btn btn-sm btn-ghost mt-4" on:click={() => (moreEvents = true)}>Show More</button>
+			{/if}
 		{/if}
 	</div>
 	<br />
