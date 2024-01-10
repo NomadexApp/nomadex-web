@@ -282,7 +282,7 @@
 			</div>
 			{#each [...swapEvents]
 				.sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
-				.slice(moreEvents ? 0 : -50) as event}
+				.slice(0, moreEvents ? 1_000_000 : 50) as event}
 				{@const fromAmount = Number(event.fromAmount / getFromTokenFromEvent(event).unit)}
 				{@const toAmount = Number(event.toAmount / getToTokenFromEvent(event).unit)}
 				<div
