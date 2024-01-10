@@ -236,7 +236,8 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
                         name: getBoxName(algosdk.getApplicationAddress(this.appId)),
                     },
                 ],
-                accounts: [...opts.accounts, ...opts2.accounts, adminAddress]
+                accounts: [...opts.accounts, ...opts2.accounts, adminAddress],
+                apps: [...opts.apps, this.arc200AssetId],
             })
             .atc();
 
@@ -285,7 +286,8 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolClient {
                         name: getBoxName(algosdk.getApplicationAddress(this.appId)),
                     },
                 ],
-                accounts: [...opts.accounts, adminAddress]
+                accounts: [...opts.accounts, adminAddress],
+                apps: [...opts.apps, this.arc200AssetId],
             })
             .atc();
 
