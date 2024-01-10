@@ -147,7 +147,15 @@
 							on:keydown
 						>
 							<span class="name mb-0 flex justify-start items-center w-full gap-5">
-								<span class="w-24">{limitOrder.maker.slice(0, 3)}...{limitOrder.maker.slice(-3)}</span>
+								<a
+									href="https://voi.observer/explorer/account/{limitOrder.maker}"
+									target="_blank"
+									referrerpolicy="no-referrer"
+									class="w-24"
+									on:click={(e) => e.stopPropagation()}
+								>
+									{limitOrder.maker.slice(0, 3)}...{limitOrder.maker.slice(-3)}
+								</a>
 								<span class="w-16">{limitOrder.isDirectionFromArc200ToAlgo ? 'BUY' : 'SELL'}</span>
 
 								<span class="w-24 text-nowrap">

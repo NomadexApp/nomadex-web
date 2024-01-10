@@ -287,6 +287,7 @@
 						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
 						href="https://voi.observer/explorer/transaction/{event.txn.id}"
 						target="_blank"
+						referrerpolicy="no-referrer"
 					>
 						{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 					</a>
@@ -300,6 +301,7 @@
 						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
 						href="https://voi.observer/explorer/account/{event.sender}"
 						target="_blank"
+						referrerpolicy="no-referrer"
 					>
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
