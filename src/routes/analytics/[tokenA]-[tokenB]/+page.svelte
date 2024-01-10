@@ -280,6 +280,8 @@
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">To Amt.</span>
 			</div>
 			{#each [...swapEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']) as event}
+				{@const fromAmount = Number(event.fromAmount / getFromTokenFromEvent(event).unit)}
+				{@const toAmount = Number(event.toAmount / getToTokenFromEvent(event).unit)}
 				<div
 					class="w-full event bg-base-300 hover:invert-[10%] p-2 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
 				>
@@ -306,11 +308,11 @@
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{Number(event.fromAmount / getFromTokenFromEvent(event).unit).toLocaleString()}
+						{fromAmount < 0.001 ? fromAmount : fromAmount.toLocaleString()}
 						{event.direction ? arc200Token.ticker : 'VOI'}</span
 					>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{Number(event.toAmount / getToTokenFromEvent(event).unit).toLocaleString()}
+						{toAmount < 0.001 ? toAmount : toAmount.toLocaleString()}
 						{event.direction ? 'VOI' : arc200Token.ticker}</span
 					>
 				</div>
