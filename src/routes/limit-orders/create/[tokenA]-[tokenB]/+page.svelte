@@ -18,7 +18,6 @@
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
-	let matchedPool: (typeof knownPools)[0] = <any>undefined;
 
 	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
@@ -30,42 +29,15 @@
 		goto(`/`);
 	}
 
-	if (voiToken && arc200Token) {
-		const match = knownPools.find((pool) => pool.arc200Asset.assetId === arc200Token.id);
-		if (match) matchedPool = match;
-	}
-
-	if (!matchedPool) {
-		throw Error('pool not found');
-	}
-
 	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
-
-	let slippageOptions = [
-		{ name: '0.25 %', value: 0.0025 },
-		{ name: '0.5 %', value: 0.005 },
-		{ name: '0.75 %', value: 0.0075 },
-		{ name: '1.0 %', value: 0.01 },
-		{ name: '2.5 %', value: 0.025 },
-		{ name: '5.0 %', value: 0.05 },
-		{ name: '10.0 %', value: 0.1 },
-		{ name: '15.0 %', value: 0.15 },
-		{ name: '20.0 %', value: 0.2 },
-		{ name: '25.0 %', value: 0.25 },
-		{ name: '35.0 %', value: 0.35 },
-		{ name: '50.0 %', value: 0.5 },
-		{ name: '75.0 %', value: 0.75 },
-		{ name: '95.0 %', value: 0.95 },
-	];
 
 	let slippage = browser ? JSON.parse(localStorage.getItem('slippage') ?? '0.025') : 0.025;
 
 	$: browser && localStorage.setItem('slippage', JSON.stringify(slippage));
 
 	const connectedUserState = onChainStateWatcher.getAccountWatcher($connectedAccount);
-	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(matchedPool.poolId));
 
-	$: loaded = $currentPoolState.arc200Balances[tokenA.ticker === 'VOI' ? tokenB.id : tokenA.id];
+	$: loaded = true;
 
 	function setSelectedToken(token: Token, index: number) {
 		if (index === 0) {

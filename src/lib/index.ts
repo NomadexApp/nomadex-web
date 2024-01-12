@@ -53,7 +53,8 @@ export const knownTokens: Token[] = [
         id: pool.arc200Asset.assetId,
         type: TokenType.ARC200,
         unit: pool.arc200Asset.unit
-    }))
+    })),
+    { ticker: 'TEST', id: 26178395, type: TokenType.ARC200, unit: 1e6 }
 ];
 
 export const contracts = {
