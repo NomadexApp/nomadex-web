@@ -5,6 +5,7 @@
 	import SwapIcon from 'svelte-star/dist/md/MdAutorenew.svelte';
 	import PoolsIcon from 'svelte-star/dist/md/MdFormatListBulleted.svelte';
 	import AnalyticsIcon from 'svelte-star/dist/md/MdShowChart.svelte';
+	import MdMore from 'svelte-star/dist/md/MdMoreHoriz.svelte';
 	import MdMenu from 'svelte-star/dist/md/MdMenu.svelte';
 	import { isDarkTheme } from './stores';
 	import { onMount } from 'svelte';
@@ -133,6 +134,32 @@
 							</a>
 						</li>
 					{/each}
+				</ul>
+			</li>
+			<li class="pl-0 sm:block">
+				<a class="flex justify-between" href={null} tabindex="0">
+					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">More</span>
+					<span class="h-5 w-5"><MdMore /></span>
+				</a>
+				<ul class="children">
+					<li
+						class="pl-0 sm:block"
+						class:active={$page.url.pathname.startsWith(`/tokens/arc200-create`) ||
+							$page.url.pathname.startsWith(`/tokens/arc200-create`)}
+					>
+						<a
+							class="flex justify-between"
+							href="/tokens/arc200-create"
+							on:click={() => {
+								isMobile && (sidebarOpen = false);
+								pageContentRefresh(0);
+							}}
+							on:click={() => isMobile && (sidebarOpen = false)}
+							tabindex="0"
+						>
+							<span class="flex pt-[1px] justify-start items-end max-w-[100px]">Create Token</span>
+						</a>
+					</li>
 				</ul>
 			</li>
 			<div class="h-full flex flex-col grow">&nbsp;</div>
