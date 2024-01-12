@@ -173,7 +173,10 @@
 
 	const getTokenSuggestions = (token: Token) => {
 		if (token.type === TokenType.ARC200) {
-			return knownTokens.slice(1).map((token) => ({ name: token.ticker, value: token }));
+			return knownPools.map((pool) => ({
+				name: pool.arc200Asset.symbol,
+				value: knownTokens.find((token) => token.id === pool.arc200Asset.assetId),
+			}));
 		}
 	};
 </script>
