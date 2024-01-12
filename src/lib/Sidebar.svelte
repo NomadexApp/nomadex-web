@@ -136,7 +136,7 @@
 					{/each}
 				</ul>
 			</li>
-			<li class="pl-0 sm:block">
+			<!-- <li class="pl-0 sm:block">
 				<a class="flex justify-between" href={null} tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">More</span>
 					<span class="h-5 w-5"><MdMore /></span>
@@ -161,7 +161,7 @@
 						</a>
 					</li>
 				</ul>
-			</li>
+			</li> -->
 			<div class="h-full flex flex-col grow">&nbsp;</div>
 			<UseWallet />
 		</ul>
