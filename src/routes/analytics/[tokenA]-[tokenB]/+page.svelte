@@ -5,18 +5,18 @@
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
 	import { browser } from '$app/environment';
 	import { pageContentRefresh, timeAgo } from '$lib/utils';
-	import { TokenType, knownPools, type Token, knownTokens } from '$lib';
+	import { TokenType, knownPools, type Token, knownTokens, type Pool } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { getClient } from '$lib/_shared';
 
 	const { page } = getStores();
-	const tokenA = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenB);
+	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenB);
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
-	let matchedPool: (typeof knownPools)[0] = <any>undefined;
+	let matchedPool: Pool = <any>undefined;
 	let moreEvents = false;
 
 	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
@@ -30,7 +30,7 @@
 	}
 
 	if (voiToken && arc200Token) {
-		const match = knownPools.find((pool) => pool.arc200Asset.assetId === arc200Token.id);
+		const match = $knownPools.find((pool) => pool.arc200Asset.assetId === arc200Token.id);
 		if (match) matchedPool = match;
 	}
 

@@ -1,3 +1,6 @@
+import { writable } from "svelte/store";
+import { getCollection } from "./firebase";
+
 export enum TokenType {
     Default = '',
     ASA = 'asa',
@@ -12,20 +15,32 @@ export type Token = {
     unit: number;
 };
 
+export type Pool = {
+    poolId: number,
+    lptId: number,
+    arc200Asset: {
+        assetId: number,
+        symbol: string,
+        unit: number
+    },
+    swapFee: number,
+}
 
 
-export const knownPools = [
+
+export const knownPools = writable<Pool[]>([]);
+[
     // 26179950
-    {
-        poolId: 26179950,
-        lptId: 26179950,
-        arc200Asset: {
-            assetId: 6779767,
-            symbol: 'VIA',
-            unit: 1e6
-        },
-        swapFee: 1_000_000,
-    }
+    // {
+    //     poolId: 26179950,
+    //     lptId: 26179950,
+    //     arc200Asset: {
+    //         assetId: 6779767,
+    //         symbol: 'VIA',
+    //         unit: 1e6
+    //     },
+    //     swapFee: 1_000_000,
+    // }
     // {
     //     poolId: 24589652,
     //     lptId: 24589656,
@@ -58,13 +73,13 @@ export const knownPools = [
     // }
 ];
 
-export const knownTokens: Token[] = [
+export const knownTokens = writable<Token[]>([
     { ticker: 'VOI', id: 0, type: TokenType.Default, decimals: 6, unit: 1e6 },
-    { ticker: 'VIA', id: 6779767, type: TokenType.ARC200, decimals: 6, unit: 1e6 },
-    { ticker: 'VRC200', id: 6778021, type: TokenType.ARC200, decimals: 8, unit: 1e8 },
-    { ticker: 'Tacos', id: 6795477, type: TokenType.ARC200, decimals: 0, unit: 1 },
-    { ticker: 'TEST', id: 26178395, type: TokenType.ARC200, decimals: 6, unit: 1e6 }
-];
+    // { ticker: 'VIA', id: 6779767, type: TokenType.ARC200, decimals: 6, unit: 1e6 },
+    // { ticker: 'VRC200', id: 6778021, type: TokenType.ARC200, decimals: 8, unit: 1e8 },
+    // { ticker: 'Tacos', id: 6795477, type: TokenType.ARC200, decimals: 0, unit: 1 },
+    // { ticker: 'TEST', id: 26178395, type: TokenType.ARC200, decimals: 6, unit: 1e6 }
+]);
 
 export const contracts = {
     orderbookLimitOrderApp: 26171479
@@ -74,3 +89,56 @@ export const contracts = {
 export const contractsConstants = {
     orderbookLimitOrderAppFeePercent: 1
 };
+
+const network = 'voitest-v1';
+const version = 'v02';
+
+export async function getListOfArc200Tokens() {
+    const tokensSnap = await getCollection(`/networks/${network}/versions/${version}/arc200tokens`);
+    const tokens = tokensSnap.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: data.id,
+            symbol: doc.id,
+            decimals: data.decimals,
+        }
+    });
+    const validTokens: Token[] = tokens
+        .filter(token => 0 <= token.decimals && token.decimals <= 18)
+        .map(token => ({
+            id: token.id,
+            ticker: token.symbol,
+            type: TokenType.ARC200,
+            decimals: token.decimals,
+            unit: 10 ** token.decimals,
+        }));
+
+    console.log('Tokens:', validTokens);
+
+    const poolsSnap = await getCollection(`/networks/${network}/versions/${version}/voiarc200pools`)
+
+    const pools = poolsSnap.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: data.id,
+            arc200Asset: <Token>validTokens.find(token => token.id === data.arc200Id)
+        }
+    });
+    const validPools: Pool[] = pools
+        .filter(pool => pool.arc200Asset)
+        .map(token => ({
+            lptId: token.id,
+            poolId: token.id,
+            swapFee: 1_000_000,
+            arc200Asset: {
+                assetId: token.arc200Asset.id,
+                symbol: token.arc200Asset.ticker,
+                unit: token.arc200Asset.unit
+            },
+        }));
+
+    console.log('Pools:', validPools);
+
+    knownPools.update(pools => pools.concat(validPools));
+    knownTokens.update(toks => toks.concat(validTokens));
+}

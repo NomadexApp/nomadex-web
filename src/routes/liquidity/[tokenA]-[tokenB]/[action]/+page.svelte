@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Token, knownTokens, knownPools, TokenType } from '$lib';
+	import { type Token, knownTokens, knownPools, TokenType, type Pool } from '$lib';
 	import Dropdown from '$lib/Dropdown.svelte';
 	import { getStores } from '$app/stores';
 	import { browser } from '$app/environment';
@@ -16,12 +16,12 @@
 	$: action = $page.params.action;
 
 	const { page } = getStores();
-	const tokenA = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenB);
+	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenB);
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
-	let matchedPool: (typeof knownPools)[0] = <any>undefined;
+	let matchedPool: Pool = <any>undefined;
 
 	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
@@ -31,7 +31,7 @@
 	}
 
 	if (voiToken && arc200Token) {
-		const match = knownPools.find((pool) => pool.arc200Asset.assetId === arc200Token.id);
+		const match = $knownPools.find((pool) => pool.arc200Asset.assetId === arc200Token.id);
 		if (match) matchedPool = match;
 	}
 

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { knownPools } from '$lib';
 	import { onChainStateWatcher, type AccountState } from '$lib/stores/onchain';
-	import algosdk, { getApplicationAddress } from 'algosdk';
+	import algosdk from 'algosdk';
 	import { getASABalance } from '$lib/_shared';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { get, writable } from 'svelte/store';
@@ -12,7 +12,7 @@
 	onMount(() => {
 		const watchers: ReturnType<typeof onChainStateWatcher.getAccountWatcher>[] = [];
 		const subscribers: Function[] = [];
-		for (const pool of knownPools) {
+		for (const pool of $knownPools) {
 			const watcher = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(pool.poolId));
 			watchers.push(watcher);
 			subscribers.push(
@@ -36,7 +36,7 @@
 	<br />
 	<div class="flex flex-col justify-center items-center gap-2 pt-6">
 		<h4 class="text-xl font-bold prose w-full mb-5">Popular Liquidity Pools</h4>
-		{#each knownPools as pool}
+		{#each $knownPools as pool}
 			<div
 				class="pool bg-base-300 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]"
 			>
@@ -78,7 +78,7 @@
 			: 'opacity-0'}"
 	>
 		<h4 class="text-xl font-bold prose w-full mb-5">Your Positions</h4>
-		{#each knownPools as pool}
+		{#each $knownPools as pool}
 			{#await Promise.all( [getASABalance(pool.lptId, $connectedAccount), getASABalance(pool.lptId, algosdk.getApplicationAddress(pool.poolId))] ) then [lptBalance, poolBalance]}
 				{#if lptBalance > 0}
 					{(Boolean(positionCount.set(get(positionCount) + 1)) && '') || ''}

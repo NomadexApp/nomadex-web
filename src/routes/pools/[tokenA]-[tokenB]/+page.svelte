@@ -2,19 +2,18 @@
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 	import { getStores } from '$app/stores';
-	import { knownPools, knownTokens, TokenType, type Token } from '$lib';
+	import { knownPools, knownTokens, TokenType, type Token, type Pool } from '$lib';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import algosdk from 'algosdk';
-	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from '$lib/stores/onchain';
+	import { onChainStateWatcher, watchArc200Balance } from '$lib/stores/onchain';
 
 	const { page } = getStores();
-	const tokenA = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenB);
+	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenB);
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
-	let matchedPool: (typeof knownPools)[0] = <any>undefined;
+	let matchedPool: Pool = <any>undefined;
 
 	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
@@ -27,7 +26,7 @@
 	}
 
 	if (voiToken && arc200Token) {
-		const match = knownPools.find((pool) => pool.arc200Asset.assetId === arc200Token.id);
+		const match = $knownPools.find((pool) => pool.arc200Asset.assetId === arc200Token.id);
 		if (match) matchedPool = match;
 	}
 

@@ -72,7 +72,7 @@ export class OnChainStateWatcher {
     }
 
     static getArc200BalancesFor(address: string, balances: Record<string, number> = {}, fetcher: (appId, addr) => number | Promise<number>, callback: (tokenId: number, balance: number) => void = () => { /**/ }) {
-        for (const token of knownTokens.filter(t => t.type === TokenType.ARC200)) {
+        for (const token of get(knownTokens).filter(t => t.type === TokenType.ARC200)) {
             balances[token.id] = balances[token.id] ?? 0;
             const resp = fetcher(token.id, address);
             if (resp instanceof Promise) {

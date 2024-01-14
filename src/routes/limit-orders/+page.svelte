@@ -39,7 +39,7 @@
 						value: box.value,
 						maker,
 						arc200Id: Number(arc200Id),
-						arc200Token: <Token>knownTokens.find((t) => t.id === Number(arc200Id)),
+						arc200Token: <Token>$knownTokens.find((t) => t.id === Number(arc200Id)),
 						algoAmount: Number(algoAmount),
 						arc200Amount,
 						isDirectionFromArc200ToAlgo: Number(isDirectionFromArc200ToAlgo),

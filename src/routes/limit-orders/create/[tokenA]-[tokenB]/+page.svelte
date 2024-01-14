@@ -13,8 +13,8 @@
 	import { LimitOrderType, LimitOrders001ClientConnector } from '$lib/LimitOrderConnector';
 
 	const { page } = getStores();
-	const tokenA = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>knownTokens.find((token) => token.ticker === $page.params.tokenB);
+	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenB);
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
