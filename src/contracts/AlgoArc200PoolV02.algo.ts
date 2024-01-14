@@ -197,13 +197,13 @@ export class AlgoArc200PoolV02 extends Arc200Token {
 
         const amountX = <uint256>payTxnX.amount;
 
-        assert(amountY > 0);
+        assert(amountY > <uint256>0);
 
         const balanceY = this.getTokenYBalance();
         const balanceX = this.getTokenXBalance();
         const issuedLptBefore = this.totalSupply.value - this.arc200_balanceOf(this.app.address);
 
-        if (balanceY > 0 && balanceX > 0 && issuedLptBefore > <uint256>0) {
+        if (balanceY > <uint256>0 && balanceX > <uint256>0 && issuedLptBefore > <uint256>0) {
             const liqudityRatioBefore = (((balanceX - amountX) * <uint256>SCALE) / balanceY);
             const liqudityRatioOfCurrentTxn = ((amountX * <uint256>SCALE) / amountY);
             const ratioDivergenceAllowed = (liqudityRatioBefore / <uint256>40); // 2.5%
@@ -253,8 +253,8 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         const balanceY = this.getTokenYBalance();
         const balanceX = this.getTokenXBalance();
 
-        assert(balanceX > 0);
-        assert(balanceY > 0);
+        assert(balanceX > <uint256>0);
+        assert(balanceY > <uint256>0);
 
         const issuedLptBefore = this.totalSupply.value - this.arc200_balanceOf(this.app.address);
         const withdrawAmountX = (balanceX * lptAmount) / issuedLptBefore;
@@ -351,8 +351,8 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         const balanceY = this.getTokenYBalance();
         const balanceX = this.getTokenXBalance();
 
-        assert(balanceX > 0, balanceX > minAmountX);
-        assert(balanceY > 0);
+        assert(balanceX > <uint256>0, balanceX > minAmountX);
+        assert(balanceY > <uint256>0);
 
         const amountOut = this.computeOutTokens(
             amountY,
@@ -361,7 +361,7 @@ export class AlgoArc200PoolV02 extends Arc200Token {
             this.fee.value.swapFee
         );
 
-        assert(amountOut > 0, amountOut >= minAmountX, amountOut < balanceX);
+        assert(amountOut > <uint256>0, amountOut >= minAmountX, amountOut < balanceX);
 
         const platformFee = this.computePlatformFee(
             amountY,
