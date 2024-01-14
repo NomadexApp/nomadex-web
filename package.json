@@ -2,9 +2,9 @@
   "name": "voi.nomadex.app",
   "version": "0.0.1",
   "devDependencies": {
-    "@algorandfoundation/algokit-client-generator": "^2.3.0",
+    "@algorandfoundation/algokit-client-generator": "^2.3.1",
     "@algorandfoundation/algokit-utils": "file:./packages/algokit-utils",
-    "@algorandfoundation/tealscript": "0.70.0",
+    "@algorandfoundation/tealscript": "0.71.1",
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/adapter-cloudflare": "^3.0.1",
     "@sveltejs/kit": "^1.5.0",

@@ -1,5 +1,5 @@
 {
-  "name": "Arc200Token",
+  "name": "AlgoArc200PoolV02",
   "desc": "",
   "methods": [
     {
@@ -269,6 +269,265 @@
       "returns": {
         "type": "void"
       }
+    },
+    {
+      "name": "poolInitialize",
+      "args": [
+        {
+          "name": "name",
+          "type": "byte[32]"
+        },
+        {
+          "name": "symbol",
+          "type": "byte[8]"
+        },
+        {
+          "name": "tokenYAppId",
+          "type": "application"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "setFeeController",
+      "args": [
+        {
+          "name": "feeController",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "setFees",
+      "args": [
+        {
+          "name": "fee",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "setPlatformFees",
+      "args": [
+        {
+          "name": "fee",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "registerOnline",
+      "args": [
+        {
+          "name": "selectionPk",
+          "type": "byte[]"
+        },
+        {
+          "name": "stateProofPk",
+          "type": "byte[]"
+        },
+        {
+          "name": "votePk",
+          "type": "byte[]"
+        },
+        {
+          "name": "voteFirst",
+          "type": "uint64"
+        },
+        {
+          "name": "voteLast",
+          "type": "uint64"
+        },
+        {
+          "name": "voteKeyDilution",
+          "type": "uint64"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "registerOffline",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "ratio",
+      "readonly": true,
+      "args": [],
+      "returns": {
+        "type": "uint256"
+      }
+    },
+    {
+      "name": "addLiquidity",
+      "args": [
+        {
+          "name": "payTxnX",
+          "type": "pay"
+        },
+        {
+          "name": "amountY",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      },
+      "events": [
+        {
+          "name": "AddLiquidity",
+          "args": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "amountX",
+              "type": "uint256"
+            },
+            {
+              "name": "amountY",
+              "type": "uint256"
+            },
+            {
+              "name": "lptAmount",
+              "type": "uint256"
+            }
+          ],
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "name": "removeLiquidity",
+      "args": [
+        {
+          "name": "lptAmount",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      },
+      "events": [
+        {
+          "name": "RemoveLiquidity",
+          "args": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "amountX",
+              "type": "uint256"
+            },
+            {
+              "name": "amountY",
+              "type": "uint256"
+            },
+            {
+              "name": "lptAmount",
+              "type": "uint256"
+            }
+          ],
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "name": "swapXtoY",
+      "args": [
+        {
+          "name": "payTxnX",
+          "type": "pay"
+        },
+        {
+          "name": "minAmountY",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "uint256"
+      },
+      "events": [
+        {
+          "name": "Swap",
+          "args": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "amountX",
+              "type": "uint256"
+            },
+            {
+              "name": "amountY",
+              "type": "uint256"
+            },
+            {
+              "name": "directionYtoX",
+              "type": "bool"
+            }
+          ],
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "name": "swapYtoX",
+      "args": [
+        {
+          "name": "amountY",
+          "type": "uint256"
+        },
+        {
+          "name": "minAmountX",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "uint256"
+      },
+      "events": [
+        {
+          "name": "Swap",
+          "args": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "amountX",
+              "type": "uint256"
+            },
+            {
+              "name": "amountY",
+              "type": "uint256"
+            },
+            {
+              "name": "directionYtoX",
+              "type": "bool"
+            }
+          ],
+          "desc": ""
+        }
+      ]
     }
   ],
   "events": [
@@ -307,6 +566,72 @@
         }
       ],
       "desc": "Approval of tokens"
+    },
+    {
+      "name": "Swap",
+      "args": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "amountX",
+          "type": "uint256"
+        },
+        {
+          "name": "amountY",
+          "type": "uint256"
+        },
+        {
+          "name": "directionYtoX",
+          "type": "bool"
+        }
+      ],
+      "desc": ""
+    },
+    {
+      "name": "AddLiquidity",
+      "args": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "amountX",
+          "type": "uint256"
+        },
+        {
+          "name": "amountY",
+          "type": "uint256"
+        },
+        {
+          "name": "lptAmount",
+          "type": "uint256"
+        }
+      ],
+      "desc": ""
+    },
+    {
+      "name": "RemoveLiquidity",
+      "args": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "amountX",
+          "type": "uint256"
+        },
+        {
+          "name": "amountY",
+          "type": "uint256"
+        },
+        {
+          "name": "lptAmount",
+          "type": "uint256"
+        }
+      ],
+      "desc": ""
     }
   ]
 }
