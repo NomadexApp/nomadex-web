@@ -8,6 +8,7 @@ export type Token = {
     ticker: string;
     id: number,
     type: TokenType;
+    decimals: number;
     unit: number;
 };
 
@@ -58,14 +59,11 @@ export const knownPools = [
 ];
 
 export const knownTokens: Token[] = [
-    { ticker: 'VOI', id: 0, type: TokenType.Default, unit: 1e6 },
-    ...knownPools.map(pool => ({
-        ticker: pool.arc200Asset.symbol,
-        id: pool.arc200Asset.assetId,
-        type: TokenType.ARC200,
-        unit: pool.arc200Asset.unit
-    })),
-    { ticker: 'TEST', id: 26178395, type: TokenType.ARC200, unit: 1e6 }
+    { ticker: 'VOI', id: 0, type: TokenType.Default, decimals: 6, unit: 1e6 },
+    { ticker: 'VIA', id: 6779767, type: TokenType.ARC200, decimals: 6, unit: 1e6 },
+    { ticker: 'VRC200', id: 6778021, type: TokenType.ARC200, decimals: 8, unit: 1e8 },
+    { ticker: 'Tacos', id: 6795477, type: TokenType.ARC200, decimals: 0, unit: 1 },
+    { ticker: 'TEST', id: 26178395, type: TokenType.ARC200, decimals: 6, unit: 1e6 }
 ];
 
 export const contracts = {

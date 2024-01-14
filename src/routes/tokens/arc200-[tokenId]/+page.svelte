@@ -1,15 +1,12 @@
 <script lang="ts">
 	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
-	import { getUnnamedResourcesAccessed, nodeClient } from '$lib/_shared';
+	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { Arc200TokenClient } from '../../../contracts/clients/Arc200TokenClient';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import Contract from 'arc200js';
-	import { AlgoArc200PoolV02Client } from '../../../contracts/clients/AlgoArc200PoolV02Client';
-	import { addNotification } from '$lib/Notify.svelte';
-	import { Arc200Interface } from '$lib/utils';
-	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
+	import { goto } from '$app/navigation';
 
 	let appId = Number($page.params.tokenId);
 	let currentManager = '';
@@ -50,124 +47,8 @@
 		}
 	});
 
-	function strToFixedBytes(str: string, length: number) {
-		str = str.slice(0, length);
-		const uint8Array = new TextEncoder().encode(str);
-		const restArray = new Uint8Array(length - uint8Array.length);
-
-		return Uint8Array.from([...uint8Array, ...restArray]);
-	}
-
-	const FIRST_LIQUIDITY = 100;
-
 	async function createVoiPool() {
-		const connector = await AlgoArc200PoolConnector.createPool(appId);
-
-		console.log('Created App:', connector.appId);
-		await connector.invoke('initPool');
-
-		console.log('Created LP Asset:', connector.lptAssetId);
-
-		await connector.invoke('mint', BigInt(FIRST_LIQUIDITY * 1e6), BigInt(FIRST_LIQUIDITY) * 10n ** BigInt(decimals));
-		console.log('added liquidity');
-
-		return;
-		const tokenAppId = appId;
-
-		manager = $connectedAccount;
-		console.log(manager);
-		const tokenInfo = {
-			manager,
-			name: strToFixedBytes(`VOI-${symbol} LPT`, 32),
-			symbol: strToFixedBytes(`LPT`, 8),
-		};
-		const client = new AlgoArc200PoolV02Client(
-			{
-				id: 0,
-				resolveBy: 'id',
-				sender: getTransactionSignerAccount(),
-			},
-			new algosdk.Algodv2('', 'https://testnet-api.voi.nodly.io', '')
-		);
-
-		let remove = () => {};
-		try {
-			remove = addNotification('pending', 'Deploying token contract');
-			console.log('deploying');
-			const result = await client.create.createApplication({ manager: $connectedAccount });
-			console.log('deployed');
-			const poolAppId = Number(result.confirmation?.applicationIndex);
-
-			console.log('Deployed contract:', poolAppId);
-			remove();
-
-			remove = addNotification('pending', 'Initializing token contract');
-
-			const suggestedParams = await nodeClient.getTransactionParams().do();
-
-			const getInitGroup = async (res?: object): Promise<algosdk.Transaction[]> => {
-				console.log(res);
-				const deployed = new AlgoArc200PoolV02Client(
-					{
-						id: poolAppId,
-						resolveBy: 'id',
-						sender: getTransactionSignerAccount(),
-					},
-					nodeClient
-				).compose();
-
-				deployed.addTransaction({
-					txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-						from: $connectedAccount,
-						to: algosdk.getApplicationAddress(poolAppId),
-						amount: 1_000_000,
-						suggestedParams: suggestedParams,
-					}),
-					signer: getTransactionSignerAccount().signer,
-				});
-
-				await deployed.poolInitialize(
-					{
-						name: tokenInfo.name,
-						symbol: tokenInfo.symbol,
-						tokenYAppId: tokenAppId,
-					},
-					...(res ? [res] : [])
-				);
-
-				const txns = (await deployed.atc()).buildGroup().map((a) => a.txn);
-
-				if (res) {
-					return txns;
-				}
-
-				return getInitGroup(await getUnnamedResourcesAccessed(txns));
-			};
-
-			const arc200TransferTxns = await Arc200Interface.arc200_transfer(
-				tokenAppId,
-				$connectedAccount,
-				algosdk.getApplicationAddress(poolAppId),
-				10n ** BigInt(decimals)
-			);
-			const txns = await getInitGroup();
-
-			const allTxns: algosdk.Transaction[] = [];
-
-			for (const txn of [...arc200TransferTxns, ...txns]) {
-				txn.group = undefined;
-				allTxns.push(txn);
-			}
-
-			algosdk.assignGroupID(allTxns);
-
-			await signAndSendTransections(nodeClient, [allTxns]);
-			remove();
-			addNotification('success', `Created pool ${poolAppId}`, 10000);
-		} catch (e) {
-			console.error((<Error>e).message);
-			remove();
-		}
+		goto(`/pools/VOI-${symbol}`);
 	}
 </script>
 
