@@ -1,6 +1,7 @@
 import { TokenType, knownTokens } from "$lib";
 import { getArc200Balance, nodeClient } from "$lib/_shared";
-import { get, writable } from "svelte/store";
+import { get, readable, writable } from "svelte/store";
+import { Arc200Interface } from "$lib/utils";
 
 type AppState = {
     appId: number,
@@ -157,3 +158,62 @@ export class OnChainStateWatcher {
 }
 
 export const onChainStateWatcher = new OnChainStateWatcher(10_000);
+
+
+export function watchArc200Balance(appId: number, address: string, duration = 15_000): ReturnType<typeof readable<bigint>> {
+    const store = writable<bigint>();
+
+    const update = async () => {
+        try {
+            const balance = await Arc200Interface.arc200_balanceOf(appId, address);
+            if (typeof balance === "bigint") {
+                store.set(balance);
+            }
+        } catch (er) {
+            // 
+            console.error(er)
+        }
+    }
+
+    update();
+    const interval = setInterval(update, duration);
+
+    return {
+        subscribe(run) {
+            const unsub = store.subscribe(run);
+            return () => {
+                clearInterval(interval);
+                unsub();
+            }
+        }
+    };
+}
+
+export function watchPoolTotalSupply(appId: number, duration = 15_000): ReturnType<typeof readable<bigint>> {
+    const store = writable<bigint>();
+
+    const update = async () => {
+        try {
+            const supply = await Arc200Interface.arc200_totalSupply(appId);
+            if (typeof supply === "bigint") {
+                store.set(supply);
+            }
+        } catch (er) {
+            // 
+            console.error(er)
+        }
+    }
+
+    update();
+    const interval = setInterval(update, duration);
+
+    return {
+        subscribe(run) {
+            const unsub = store.subscribe(run);
+            return () => {
+                clearInterval(interval);
+                unsub();
+            }
+        }
+    };
+}

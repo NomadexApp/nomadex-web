@@ -84,7 +84,7 @@
 						symbol: tokenInfo.symbol,
 						decimals: tokenInfo.decimals,
 						totalSupply: tokenInfo.totalSupply,
-						initalMintTo: tokenInfo.manager,
+						mintTo: tokenInfo.manager,
 					},
 					...(res ? [res] : [])
 				);
@@ -165,79 +165,7 @@
 				<button class="btn btn-primary btn-sm" on:click={createArc200Token}>Create ARC200 Token</button>
 			</div>
 		{/if}
-		<!-- <div class="w-full max-w-[610px] flex flex-col justify-center">
-			<button class="btn btn-primary btn-sm" on:click={deploy}>DEPLOY</button>
-		</div>
-		{#if appId !== 0 && appId > 100}
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={update}>Update</button>
-			</div>
-
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Pool Token:</div>
-				<input class="input input-primary" type="number" bind:value={poolToken} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={create_pool_token}>Create LPT</button>
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				{#await getInitializetion()}
-					Initialized: ...
-				{:then isInitialized}
-					Initialized: {Boolean(isInitialized?.asByteArray()[0])}
-				{/await}
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Admin:</div>
-				<input class="input input-primary" type="text" bind:value={admin} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={set_admin}>Set Admin</button>
-			</div>
-
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Fee:</div>
-				<input class="input input-primary" type="number" min={0} max={10000} step={1} bind:value={fee} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={update_fee}>Update Fee</button>
-			</div>
-		{/if} -->
 	</div>
-	<!-- <div class="h-full flex flex-col justify-start items-center gap-3 w-full">
-		{#if appId !== 0 && appId > 100}
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Selection PK:</div>
-				<input class="input input-primary" type="text" bind:value={selection_pk} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>State Proof PK:</div>
-				<input class="input input-primary" type="text" bind:value={state_proof_pk} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Vote PK:</div>
-				<input class="input input-primary" type="text" bind:value={vote_pk} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Vote First:</div>
-				<input class="input input-primary" type="number" bind:value={vote_first} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Vote Last:</div>
-				<input class="input input-primary" type="number" bind:value={vote_last} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Vote Key Dilution:</div>
-				<input class="input input-primary" type="number" bind:value={vote_key_dilution} />
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={register_online}>Register Online</button>
-			</div>
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={register_offline}>Register Offline</button>
-			</div>
-		{/if}
-	</div> -->
 </section>
 
 <style>

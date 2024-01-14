@@ -6,7 +6,7 @@ import { get } from "svelte/store";
 import type { SendTransactionFrom } from "@algorandfoundation/algokit-utils/types/transaction";
 import Contract from "arc200js";
 
-// export const nodeClient = new algosdk.Algodv2('', 'https://testnet-api.voi.nodly.io', '');
+export const nodeClientAllowsCompile = new algosdk.Algodv2('', 'https://testnet-api.voi.nodly.io', '');
 export const nodeClient = new algosdk.Algodv2(
     'b14d9ca0ec11a5b80d961d1824e9733f5bac9c833a476b078ff01a9413434347',
     'https://voi-node-api.nomadex.app/',
@@ -92,6 +92,8 @@ export const getClient = (appId: number, signer = <SendTransactionFrom>getTransa
 
 export async function getUnnamedResourcesAccessed(txns: algosdk.Transaction[]) {
     const signer = algosdk.makeEmptyTransactionSigner();
+    txns = txns.map(txn => algosdk.decodeUnsignedTransaction(algosdk.encodeUnsignedTransaction(txn)));
+
     const signed = await signer(txns, txns.map((_, i) => i));
 
     const request = new algosdk.modelsv2.SimulateRequest({

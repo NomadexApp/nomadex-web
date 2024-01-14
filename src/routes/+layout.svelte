@@ -57,6 +57,4 @@
 	</div>
 	<Notify />
 </div>
-<!-- <div class="md:hidden flex w-[calc(100vw)] h-[calc(100vh)] justify-center items-center">
-	This screen size not supported for now
-</div> -->
+

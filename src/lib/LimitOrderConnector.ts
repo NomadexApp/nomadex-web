@@ -4,7 +4,7 @@ import { addNotification } from "./Notify.svelte";
 import { LimitOrders001Client } from "../contracts/clients/LimitOrders001Client";
 import algosdk from "algosdk";
 import { makePaymentTxnWithSuggestedParamsFromObject } from "algosdk";
-import { ChainInterface } from "./utils";
+import { Arc200Interface } from "./utils";
 
 // const ADMIN = 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ';
 
@@ -92,7 +92,7 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
                 arc200Amount: arc200Amount,
             });
 
-            const arc200ApproveTxns = await ChainInterface.arc200_approve(
+            const arc200ApproveTxns = await Arc200Interface.arc200_approve(
                 arc200Id,
                 this.signer.addr,
                 algosdk.getApplicationAddress(this.appId),
@@ -130,7 +130,7 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
     async fillOrder(orderType: LimitOrderType, orderId: number, maker: string, arc200Id: number, amount: bigint,) {
 
         if (orderType === LimitOrderType.SELL_ALGO_FOR_ARC200) {
-            const approveTxns = await ChainInterface.arc200_approve(
+            const approveTxns = await Arc200Interface.arc200_approve(
                 arc200Id,
                 this.signer.addr,
                 algosdk.getApplicationAddress(this.appId),

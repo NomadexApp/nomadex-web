@@ -3,14 +3,14 @@
 	import Dropdown from '$lib/Dropdown.svelte';
 	import { getStores } from '$app/stores';
 	import { browser } from '$app/environment';
-	import { getASABalance, getArc200Balance, getBalance, getClient } from '$lib/_shared';
+	import { getASABalance, getArc200Balance, getBalance, getClient, viaAppId } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { onChainStateWatcher } from '$lib/stores/onchain';
+	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from '$lib/stores/onchain';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 
 	$: action = $page.params.action;
@@ -42,6 +42,10 @@
 	const connectedUserState = onChainStateWatcher.getAccountWatcher($connectedAccount);
 	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(matchedPool.poolId));
 
+	const userLptBalance = watchArc200Balance(matchedPool.poolId, $connectedAccount);
+	const poolIssuedTokens = watchPoolTotalSupply(matchedPool.poolId);
+	const poolArc200Balance = watchArc200Balance(arc200Token.id, algosdk.getApplicationAddress(matchedPool.poolId));
+
 	let inputTokenLpt: number = 0;
 	let inputTokenA: number = 0;
 	let inputTokenB: number = 0;
@@ -51,15 +55,9 @@
 
 	let timeout: NodeJS.Timeout;
 
-	let poolInitialized: boolean;
-
-	onMount(async () => {
-		const client = getClient(matchedPool.poolId);
-		poolInitialized = Boolean((await client.getGlobalState()).initialized?.asByteArray()?.[0]);
-		if (!poolInitialized) {
-			disabled = false;
-		}
-	});
+	$: if (typeof $poolIssuedTokens === 'bigint' && !$poolIssuedTokens) {
+		disabled = false;
+	}
 
 	async function onInputTokenLpt() {
 		clearTimeout(timeout);
@@ -69,14 +67,10 @@
 		if (!inputTokenLpt) return;
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
-		const appLptBalance =
-			($currentPoolState.assets ?? []).find((asset) => asset['asset-id'] === matchedPool.lptId)?.amount ?? 0;
 
-		const issued = BigInt(10_000_000_000) * BigInt(1e6) - BigInt(appLptBalance);
-
-		const ratio = (BigInt(inputTokenLpt * 1e6) * BigInt(1e6)) / issued;
-		const voiBalance = $currentPoolState.amount - 1e6;
-		const viaBalance = $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId];
+		const ratio = (BigInt(inputTokenLpt * 1e6) * BigInt(1e6)) / $poolIssuedTokens;
+		const voiBalance = $currentPoolState.amount - ($currentPoolState['min-balance'] ?? 100_000);
+		const viaBalance = $poolArc200Balance;
 		loading = false;
 
 		inputTokenA = Number((BigInt(voiBalance) * ratio) / BigInt(1e6)) / voiToken.unit;
@@ -86,14 +80,14 @@
 	}
 
 	async function onInputTokenA() {
-		if (!poolInitialized) return;
+		if (!$poolIssuedTokens) return;
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenB = 0;
 		if (!inputTokenA) return;
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
-		const voiBalance = $currentPoolState.amount - voiToken.unit;
+		const voiBalance = $currentPoolState.amount - ($currentPoolState['min-balance'] ?? 100_000);
 		const viaBalance = $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId];
 		loading = false;
 
@@ -108,14 +102,14 @@
 	}
 
 	async function onInputTokenB() {
-		if (!poolInitialized) return;
+		if (!$poolIssuedTokens) return;
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenA = 0;
 		if (!inputTokenB) return;
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
-		const voiBalance = $currentPoolState.amount - voiToken.unit;
+		const voiBalance = $currentPoolState.amount - ($currentPoolState['min-balance'] ?? 100_000);
 		const viaBalance = $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId];
 		loading = false;
 
@@ -139,20 +133,19 @@
 		);
 		if (action === 'add') {
 			await algoArc200PoolConnector.invoke(
-				'addLiquidity',
+				'mint',
 				BigInt(Math.floor(inputTokenA * tokenA.unit)),
 				BigInt(Math.floor(inputTokenB * tokenB.unit))
 			);
 			pageContentRefresh(0);
 		} else if (action === 'remove') {
-			await algoArc200PoolConnector.invoke('removeLiquidity', BigInt(Math.floor(inputTokenLpt * 1e6)));
+			await algoArc200PoolConnector.invoke('burn', BigInt(Math.floor(inputTokenLpt * 1e6)));
 			pageContentRefresh(0);
 		}
 		disabled = prev;
 	}
 
-	$: maxLptBalanceError =
-		Number(inputTokenLpt) > algosdk.microalgosToAlgos($connectedUserState.asaBalances[matchedPool.lptId] ?? 0);
+	$: maxLptBalanceError = Number(inputTokenLpt) > algosdk.microalgosToAlgos(Number($userLptBalance ?? 0));
 	$: maxBalanceError = Number(inputTokenA) > Math.floor($connectedUserState.amount / tokenA.unit);
 	$: maxArc200BalanceError =
 		Number(inputTokenB) > Math.floor($connectedUserState.arc200Balances[tokenB.id] / tokenB.unit);
@@ -165,19 +158,11 @@
 		<div class="flex flex-col items-end gap-2 w-full max-w-[448px] prose mt-[-50px]">
 			<span class="text-sm">
 				My Shares:
-				{#await ($connectedUserState.assets ?? []).find((asset) => asset['asset-id'] === matchedPool.lptId)?.amount ?? 0}
-					0 LPT
-				{:then balance}
-					{algosdk.microalgosToAlgos(balance).toLocaleString('en')} LPT
-				{/await}
+				{algosdk.microalgosToAlgos(Number($userLptBalance ?? 0)).toLocaleString('en')} LPT
 			</span>
 			<span class="text-sm">
 				Total Shares:
-				{#await ($currentPoolState.assets ?? []).find((asset) => asset['asset-id'] === matchedPool.lptId)?.amount ?? 0}
-					0 LPT
-				{:then balance}
-					{((balance ? 10_000 * 1e6 : 0) - balance / 1e6).toLocaleString('en')} LPT
-				{/await}
+				{algosdk.microalgosToAlgos(Number($poolIssuedTokens ?? 0)).toLocaleString('en')} LPT
 			</span>
 		</div>
 		<br />
@@ -197,16 +182,14 @@
 						on:keyup={onInputTokenLpt}
 						class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 					/>
-					{#await getASABalance(matchedPool.lptId, $connectedAccount) then balance}
-						<span
-							class="absolute right-0 bottom-full z-10 cursor-pointer"
-							on:click={() => {
-								inputTokenLpt = balance / 1e6;
-								onInputTokenLpt();
-							}}
-							on:keydown={null}>MAX {(balance / 1e6).toLocaleString('en')}</span
-						>
-					{/await}
+					<span
+						class="absolute right-0 bottom-full z-10 cursor-pointer"
+						on:click={() => {
+							inputTokenLpt = Number($userLptBalance ?? 0) / 1e6;
+							onInputTokenLpt();
+						}}
+						on:keydown={null}>MAX {(Number($userLptBalance ?? 0) / 1e6).toLocaleString('en')}</span
+					>
 					<Dropdown
 						class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"
 						options={[{ name: 'LPT', value: 'LPT' }]}
@@ -288,13 +271,13 @@
 
 			<div class="flex flex-col gap-0">
 				<span class="flex justify-between items-center">
-					{#if $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId]}
+					{#if typeof $poolArc200Balance === 'bigint'}
 						<span class="flex gap-4">
 							Liquidity =
-							{($currentPoolState.amount / voiToken.unit).toLocaleString('en')} VOI /
-							{(
-								$currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId] / matchedPool.arc200Asset.unit
-							).toLocaleString('en')}
+							{(($currentPoolState.amount - ($currentPoolState['min-balance'] ?? 0)) / voiToken.unit).toLocaleString(
+								'en'
+							)} VOI /
+							{(Number($poolArc200Balance) / matchedPool.arc200Asset.unit).toLocaleString('en')}
 							{matchedPool.arc200Asset.symbol}
 						</span>
 					{:else}
