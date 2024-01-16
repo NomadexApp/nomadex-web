@@ -114,7 +114,7 @@
 			const ratio = (event.txn?.['global-state-delta'] ?? []).find(
 				(state) => Buffer.from(state.key, 'base64').toString() === 'ratio'
 			);
-			let viaPrice = (ratio?.value?.uint || 0) / 100_000_000;
+			let viaPrice = ((ratio?.value?.uint || 0) * (arc200Token.unit / voiToken.unit)) / 100_000_000;
 			viaPrice = viaPrice < 0.001 && arc200Token.ticker === 'VIA' ? 0 : viaPrice;
 
 			if (viaPrice) {
