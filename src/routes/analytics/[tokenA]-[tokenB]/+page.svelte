@@ -286,7 +286,7 @@
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
-				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[400px]:flex"> Sender </span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"> Sender </span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">From Amt.</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">To Amt.</span>
 			</div>
@@ -313,7 +313,7 @@
 						>{event.txn['confirmed-round']}</span
 					>
 					<a
-						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[400px]:flex"
+						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"
 						href="https://voi.observer/explorer/account/{event.sender}"
 						target="_blank"
 						referrerpolicy="no-referrer"
