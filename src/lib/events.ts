@@ -26,24 +26,35 @@ interface CacheStructure {
 
 
 export class SwapEvents {
-    static setCache(update: CacheStructure, appId: number, signature: string) {
-        localStorage.removeItem(`${appId}-${signature}`);
-        // localStorage.setItem(`${appId}-${signature}`, JSON.stringify(update));
+    static async setCache(update: CacheStructure, appId: number, signature: string) {
+        const key = `${appId}-${signature}`;
+        localStorage.removeItem(key);
+
+        const cached = await caches.open(key);
+        await cached.put(key, new Response(JSON.stringify(update)));
     }
 
-    static getCache(appId: number, signature: string): CacheStructure {
-        localStorage.removeItem(`${appId}-${signature}`);
-        // const cache = localStorage.getItem(`${appId}-${signature}`);
-        // if (cache) {
-        //     return <CacheStructure>JSON.parse(cache);
-        // }
+    static async getCache(appId: number, signature: string): Promise<CacheStructure> {
+        const key = `${appId}-${signature}`;
+        localStorage.removeItem(key);
+
+        const cached = await caches.open(key);
+        const resp = await cached.match(key);
+        if (resp) {
+            try {
+                const jsonResponse = await resp.json();
+                if (jsonResponse?.txns) {
+                    return <CacheStructure>jsonResponse;
+                }
+            } catch (e) { /**/ }
+        }
         return { lastRound: 2000000, txns: [] };
     }
 
 
     static async loadTxnsByEvent(appId: number, event: string) {
         const signature = sha512_256(event).slice(0, 8);
-        const cache = SwapEvents.getCache(appId, signature);
+        const cache = await SwapEvents.getCache(appId, signature);
 
         const LIMIT = 1000;
         let next: string | undefined;
@@ -81,7 +92,7 @@ export class SwapEvents {
 
         cache.txns = cache.txns.filter((txn, i) => !cache.txns.find((cTxn, index) => cTxn.id === txn.id && i !== index))
 
-        SwapEvents.setCache(cache, appId, signature);
+        await SwapEvents.setCache(cache, appId, signature);
 
         return cache.txns.map(txn => {
             const logs = (txn.logs ?? []).map(log => Buffer.from(log, 'base64').toString('hex'));
