@@ -111,12 +111,22 @@
 
 		const getTime = (event: (typeof events)[0]) => event.txn['round-time'];
 		const getPrice = (event: (typeof events)[0]) => {
-			const voiAmount = event.direction === 0 ? event.fromAmount : event.toAmount;
-			const viaAmount = event.direction === 0 ? event.toAmount : event.fromAmount;
+			const ratio = (event.txn?.['global-state-delta'] ?? []).find(
+				(state) => Buffer.from(state.key, 'base64').toString() === 'ratio'
+			);
+			let viaPrice = (ratio?.value?.uint || 0) / 100_000_000;
+			viaPrice = viaPrice < 0.001 && arc200Token.ticker === 'VIA' ? 0 : viaPrice;
 
-			return pricingCurrency === 0
-				? viaAmount / arc200Token.unit / (voiAmount / voiToken.unit)
-				: voiAmount / voiToken.unit / (viaAmount / arc200Token.unit);
+			if (viaPrice) {
+				return pricingCurrency === 0 ? 1 / viaPrice : viaPrice;
+			} else {
+				const voiAmount = event.direction === 0 ? event.fromAmount : event.toAmount;
+				const viaAmount = event.direction === 0 ? event.toAmount : event.fromAmount;
+
+				return pricingCurrency === 0
+					? viaAmount / arc200Token.unit / (voiAmount / voiToken.unit)
+					: voiAmount / voiToken.unit / (viaAmount / arc200Token.unit);
+			}
 		};
 
 		const getStartOfHour = (ms: number) => {
