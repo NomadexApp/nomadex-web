@@ -27,14 +27,16 @@ interface CacheStructure {
 
 export class SwapEvents {
     static setCache(update: CacheStructure, appId: number, signature: string) {
-        localStorage.setItem(`${appId}-${signature}`, JSON.stringify(update));
+        localStorage.removeItem(`${appId}-${signature}`);
+        // localStorage.setItem(`${appId}-${signature}`, JSON.stringify(update));
     }
 
     static getCache(appId: number, signature: string): CacheStructure {
-        const cache = localStorage.getItem(`${appId}-${signature}`);
-        if (cache) {
-            return <CacheStructure>JSON.parse(cache);
-        }
+        localStorage.removeItem(`${appId}-${signature}`);
+        // const cache = localStorage.getItem(`${appId}-${signature}`);
+        // if (cache) {
+        //     return <CacheStructure>JSON.parse(cache);
+        // }
         return { lastRound: 2000000, txns: [] };
     }
 
