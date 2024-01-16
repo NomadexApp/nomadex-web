@@ -321,13 +321,21 @@
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{fromAmount < 0.1 ? fromAmount : fromAmount.toLocaleString()}
-						{event.direction ? arc200Token.ticker : 'VOI'}</span
-					>
+						{fromAmount < 0.1
+							? fromAmount
+							: fromAmount < 10 || window.innerWidth > 600
+							? fromAmount.toLocaleString()
+							: Math.floor(fromAmount).toLocaleString()}
+						{event.direction ? arc200Token.ticker : 'VOI'}
+					</span>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{toAmount < 0.1 ? toAmount : toAmount.toLocaleString()}
-						{event.direction ? 'VOI' : arc200Token.ticker}</span
-					>
+						{toAmount < 0.1
+							? toAmount
+							: toAmount < 10 || window.innerWidth > 600
+							? toAmount.toLocaleString()
+							: Math.floor(toAmount).toLocaleString()}
+						{event.direction ? 'VOI' : arc200Token.ticker}
+					</span>
 				</div>
 			{/each}
 			{#if !moreEvents}
