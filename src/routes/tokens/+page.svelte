@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { knownPools, knownTokens, TokenType } from '$lib';
 	import { onChainStateWatcher, type AccountState } from '$lib/stores/onchain';
+	import { goto } from '$app/navigation';
 	import algosdk from 'algosdk';
 
 	const poolsState: Record<string, AccountState> = {};
@@ -38,6 +39,9 @@
 		{#each $knownTokens as token}
 			<div
 				class="pool bg-base-300 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]"
+				class:cursor-pointer={token.type === TokenType.ARC200}
+				on:click={() => (token.type === TokenType.ARC200 ? goto(`/tokens/arc200-${token.id}`) : '')}
+				on:keydown
 			>
 				<div class="flex justify-between">
 					<span class="name text-lg font-bold text-bold mb-2">

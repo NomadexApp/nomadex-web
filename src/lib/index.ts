@@ -129,7 +129,7 @@ export async function getListOfArc200Tokens() {
         .map(token => ({
             lptId: token.id,
             poolId: token.id,
-            swapFee: 1_000_000,
+            swapFee: 1_000_000_000_000,
             arc200Asset: {
                 assetId: token.arc200Asset.id,
                 symbol: token.arc200Asset.ticker,

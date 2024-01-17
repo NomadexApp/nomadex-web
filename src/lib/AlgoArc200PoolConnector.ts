@@ -23,18 +23,17 @@ function strToFixedBytes(str: string, length: number) {
 export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 
     appId = 0;
-    lptAssetId = 0;
     arc200AssetId = 0;
     readonly algodClient: algosdk.Algodv2;
     readonly signer: ReturnType<typeof getTransactionSignerAccount>;
 
-    constructor(arc200AssetId: number, appId: number, lptAssetId: number, signer = getTransactionSignerAccount(), algodClient = nodeClient) {
+    constructor(arc200AssetId: number, appId: number, signer = getTransactionSignerAccount(), algodClient = nodeClient) {
+        signer = signer ?? getTransactionSignerAccount();
         super({ id: appId, resolveBy: 'id', sender: signer }, algodClient);
 
         this.algodClient = algodClient;
         this.arc200AssetId = arc200AssetId;
         this.appId = appId;
-        this.lptAssetId = lptAssetId;
         this.signer = signer;
     }
 
@@ -43,7 +42,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 
         let appId: number | bigint | undefined = 0;
         try {
-            const client = new AlgoArc200PoolConnector(0, 0, 0, getTransactionSignerAccount(), nodeClientAllowsCompile);
+            const client = new AlgoArc200PoolConnector(0, 0, getTransactionSignerAccount(), nodeClientAllowsCompile);
 
             const result = await client.create.createApplication({
                 manager: MANAGER,
@@ -53,7 +52,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
             if (!appId) throw Error('Got invalid app id');
 
             addNotification('info', `Created app ${appId}`, 5000);
-            const connector = new AlgoArc200PoolConnector(arc200_token, Number(appId), 0);
+            const connector = new AlgoArc200PoolConnector(arc200_token, Number(appId));
 
             connector.arc200AssetId = arc200_token;
 
@@ -164,8 +163,6 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 
         const opts = await this.getUnnamedResourcesAccessedFromMethod('addLiquidity', mintArgs());
 
-        console.log(opts);
-
         const mintTxns = (
             await composer
                 .addLiquidity(mintArgs(), {
@@ -194,15 +191,15 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
     async swapVoiToArc200(voiAmount: bigint, minViaAmount: bigint) {
         const suggestedParams = await nodeClient.getTransactionParams().do();
 
-        const admin = (await nodeClient.getApplicationByID(this.appId).do())
+        const manager = (await nodeClient.getApplicationByID(this.appId).do())
             ?.params?.['global-state']
-            ?.find(state => Buffer.from(state.key, 'base64').toString() === 'admin')
+            ?.find(state => Buffer.from(state.key, 'base64').toString() === 'manager')
 
-        const adminAddressBase64 = admin?.value?.bytes;
+        const managerAddressBase64 = manager?.value?.bytes;
 
-        let adminAddress = '';
-        if (adminAddressBase64) {
-            adminAddress = algosdk.encodeAddress(new Uint8Array(Buffer.from(adminAddressBase64, 'base64')))
+        let managerAddress = '';
+        if (managerAddressBase64) {
+            managerAddress = algosdk.encodeAddress(new Uint8Array(Buffer.from(managerAddressBase64, 'base64')))
         }
 
         const swapArgs = () => ({
@@ -256,7 +253,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
                         name: getBoxName(algosdk.getApplicationAddress(this.appId)),
                     },
                 ],
-                accounts: [...opts.accounts, ...opts2.accounts, adminAddress],
+                accounts: [...opts.accounts, ...opts2.accounts, managerAddress],
                 apps: [...opts.apps, this.arc200AssetId],
             })
             .atc();
@@ -268,25 +265,13 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
     }
 
     async swapArc200ToVoi(arc200Amount: bigint, minVoiAmount: bigint) {
-
-        const admin = (await nodeClient.getApplicationByID(this.appId).do())
-            ?.params?.['global-state']
-            ?.find(state => Buffer.from(state.key, 'base64').toString() === 'admin')
-
-        const adminAddressBase64 = admin?.value?.bytes;
-
-        let adminAddress = '';
-        if (adminAddressBase64) {
-            adminAddress = algosdk.encodeAddress(new Uint8Array(Buffer.from(adminAddressBase64, 'base64')))
-        }
-
-
         const approveTxns = await Arc200Interface.arc200_approve(
             this.arc200AssetId,
             this.signer.addr,
             algosdk.getApplicationAddress(this.appId),
             BigInt(arc200Amount)
         );
+        await signAndSendTransections(nodeClient, [approveTxns]);
 
         const swapArgs = () => ({
             amountY: arc200Amount,
@@ -297,23 +282,12 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
         const opts = await this.getUnnamedResourcesAccessedFromMethod('swapYtoX', swapArgs());
 
         const atc = await composer
-            .swapYtoX(swapArgs(), {
-                ...opts,
-                boxes: [
-                    ...opts.boxes,
-                    {
-                        appId: this.arc200AssetId,
-                        name: getBoxName(algosdk.getApplicationAddress(this.appId)),
-                    },
-                ],
-                accounts: [...opts.accounts, adminAddress],
-                apps: [...opts.apps, this.arc200AssetId],
-            })
+            .swapYtoX(swapArgs(), opts)
             .atc();
 
         const swapTxns = atc.buildGroup().map(({ txn }) => txn);
 
-        await signAndSendTransections(nodeClient, [approveTxns, swapTxns]);
+        await signAndSendTransections(nodeClient, [swapTxns]);
         console.log({ success: true });
     }
 

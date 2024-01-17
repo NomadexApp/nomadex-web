@@ -179,7 +179,7 @@ export class AlgoArc200PoolV02 extends Arc200Token {
     private getDecimalPlaces(decimals: uint64): uint256 {
         let result: uint256 = 1;
 
-        for (let i = 0; i < decimals; i = i + 1) {
+        for (let i: uint64 = 0; i < decimals; i = i + 1) {
             result = result * <uint256>10;
         }
 
@@ -221,8 +221,8 @@ export class AlgoArc200PoolV02 extends Arc200Token {
             const decimalsOfX = this.getTokenXDecimals();
             const decimalsOfY = this.getTokenYDecimals();
 
-            const amountXNormalized = (amountX * (this.getDecimalPlaces(<uint64>DECIMALS))) / this.getDecimalPlaces(<uint64>decimalsOfX);
-            const amountYNormalized = (amountY * (this.getDecimalPlaces(<uint64>DECIMALS))) / this.getDecimalPlaces(<uint64>decimalsOfY);
+            const amountXNormalized = (amountX * (this.getDecimalPlaces(DECIMALS))) / this.getDecimalPlaces(<uint64>decimalsOfX);
+            const amountYNormalized = (amountY * (this.getDecimalPlaces(DECIMALS))) / this.getDecimalPlaces(<uint64>decimalsOfY);
 
             lptToMint = sqrt(amountXNormalized * amountYNormalized);
 
@@ -293,7 +293,7 @@ export class AlgoArc200PoolV02 extends Arc200Token {
     }
 
     private computePlatformFee(amountA: uint256, supplyA: uint256, supplyB: uint256): uint256 {
-        const amount_without_fee = this.computeOutTokens(amountA, supplyA, supplyB, 0);
+        const amount_without_fee = this.computeOutTokens(amountA, supplyA, supplyB, <uint256>0);
         const amount_with_fee = this.computeOutTokens(amountA, supplyA, supplyB, this.fee.value.swapFee);
 
         return ((amount_without_fee - amount_with_fee) * this.fee.value.platformFee) / <uint256>SCALE;

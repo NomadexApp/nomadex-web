@@ -126,11 +126,7 @@
 	async function changeLiquidity() {
 		const prev = disabled;
 		disabled = true;
-		const algoArc200PoolConnector = new AlgoArc200PoolConnector(
-			matchedPool.arc200Asset.assetId,
-			matchedPool.poolId,
-			matchedPool.lptId
-		);
+		const algoArc200PoolConnector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 		if (action === 'add') {
 			await algoArc200PoolConnector.invoke(
 				'mint',

@@ -63,16 +63,17 @@
 	$: browser && localStorage.setItem('timescale', JSON.stringify(timescale));
 
 	async function loadEvent() {
+		const eventSignature = 'Swap(address,uint256,uint256,bool)';
 		const updatedSwapEvents: typeof swapEvents = [];
-		const txns = await SwapEvents.loadTxnsByEvent(matchedPool.poolId, `Swap(address,uint64,uint64,uint8)`);
+		const txns = await SwapEvents.loadTxnsByEvent(matchedPool.poolId, eventSignature);
 		for (const txn of txns) {
-			const events = txn.events[`Swap(address,uint64,uint64,uint8)`];
+			const events = txn.events[eventSignature];
 			if (events instanceof Array) {
 				for (const event of events) {
 					updatedSwapEvents.push({
 						sender: event[0],
-						fromAmount: Number(event[1]),
-						toAmount: Number(event[2]),
+						fromAmount: Number(event[3]) ? Number(event[2]) : Number(event[1]),
+						toAmount: Number(event[3]) ? Number(event[1]) : Number(event[2]),
 						direction: Number(event[3]),
 						txn: txn,
 					});

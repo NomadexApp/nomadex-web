@@ -5,7 +5,10 @@
 	import { knownPools, knownTokens, TokenType, type Token, type Pool } from '$lib';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { onChainStateWatcher, watchArc200Balance } from '$lib/stores/onchain';
+	import algosdk from 'algosdk';
+	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -33,9 +36,34 @@
 	const connectedUserState = onChainStateWatcher.getAccountWatcher($connectedAccount);
 	const arc200Balance = watchArc200Balance(arc200Token.id, $connectedAccount);
 
+	const SCALE = 100_000_000_000_000;
+	let managerAddress = '';
+	let feeControllerAddress = '';
+	let feePercent = 0;
+	let platformFeePercent = 0;
+
 	// if (!matchedPool) {
 	// 	throw Error('pool not found');
 	// }
+
+	onMount(async () => {
+		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+		const globalState = await connector.getGlobalState();
+		const manager = globalState.manager;
+		const feeController = globalState.fee_controller;
+		if (manager) {
+			managerAddress = algosdk.encodeAddress(manager.asByteArray());
+		}
+		if (feeController) {
+			feeControllerAddress = algosdk.encodeAddress(feeController.asByteArray());
+		}
+
+		const feeBox = await nodeClient.getApplicationBoxByName(matchedPool.poolId, new TextEncoder().encode('fee')).do();
+		const swapFee = Number(algosdk.ABIUintType.from('uint256').decode(feeBox.value.slice(0, 32)));
+		const platformFee = Number(algosdk.ABIUintType.from('uint256').decode(feeBox.value.slice(32)));
+		feePercent = (((100 * swapFee) / SCALE) * platformFee) / SCALE;
+		platformFeePercent = (100 * platformFee) / SCALE;
+	});
 
 	let updating = false;
 
@@ -46,9 +74,11 @@
 			const connector = new AlgoArc200PoolConnector(
 				matchedPool.arc200Asset.assetId,
 				matchedPool.poolId,
-				matchedPool.lptId
+				undefined,
+				nodeClientAllowsCompile
 			);
-			await connector.updatePool();
+			await connector.invoke('updatePool');
+			console.log('updated');
 		} catch (e) {}
 		updating = false;
 
@@ -70,8 +100,6 @@
 		console.log('Created App:', connector.appId);
 		await connector.invoke('initPool');
 
-		console.log('Created LP Asset:', connector.lptAssetId);
-
 		await connector.invoke(
 			'mint',
 			BigInt(FIRST_LIQUIDITY * 1e6),
@@ -81,26 +109,65 @@
 
 		return;
 	}
+
+	async function setPoolFee() {
+		const targetFee = ((feePercent / 100) * SCALE * 100) / platformFeePercent;
+		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+		console.log(await connector.getUnnamedResourcesAccessedFromMethod('setFees', { fee: targetFee }));
+		await connector.invoke(
+			'setFees',
+			{ fee: targetFee },
+			await connector.getUnnamedResourcesAccessedFromMethod('setFees', { fee: targetFee })
+		);
+	}
 </script>
 
 <section class="flex flex-col justify-center items-center h-full">
 	<div class="w-full h-full flex flex-col items-center p-12">
+		<br />
 		{#if matchedPool}
-			<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-40 prose">
-				<h4 class="text-left">Update Liquidity Pool (VOI/{arc200Token.ticker})</h4>
+			{#if $connectedAccount === feeControllerAddress}
+				<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] prose">
+					<h4 class="text-left">LP Fee {feePercent}%</h4>
+					<input
+						type="number"
+						placeholder="Swap fee %"
+						bind:value={feePercent}
+						step={0.000001}
+						required
+						class="input input-primary input-bordered w-full focus:outline-none"
+					/>
 
-				<div class="flex justify-center mt-2 pr-0">
-					<button
-						class="btn btn-primary w-full box-border"
-						class:disabled={updating}
-						disabled={updating}
-						on:click={updatePool}
-					>
-						Update Pool
-					</button>
-				</div>
-				<br />
-			</form>
+					<div class="flex justify-center mt-2 pr-0">
+						<button
+							class="btn btn-primary w-full box-border"
+							class:disabled={updating}
+							disabled={updating}
+							on:click={setPoolFee}
+						>
+							Set LP Fee
+						</button>
+					</div>
+					<br />
+				</form>
+			{/if}
+			{#if $connectedAccount === managerAddress}
+				<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] prose">
+					<h4 class="text-left">Update Pool Contract (VOI/{arc200Token.ticker})</h4>
+
+					<div class="flex justify-center mt-2 pr-0">
+						<button
+							class="btn btn-primary w-full box-border"
+							class:disabled={updating}
+							disabled={updating}
+							on:click={updatePool}
+						>
+							Update Pool Contract
+						</button>
+					</div>
+					<br />
+				</form>
+			{/if}
 		{:else if typeof $arc200Balance !== 'undefined'}
 			<!--  -->
 			{#if (initialLiquidityAmount ?? 0) > 1}

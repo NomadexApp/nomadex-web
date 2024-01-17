@@ -9,7 +9,7 @@
 	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
-	import { onChainStateWatcher } from '$lib/stores/onchain';
+	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 
@@ -66,7 +66,9 @@
 	const connectedUserState = onChainStateWatcher.getAccountWatcher($connectedAccount);
 	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(matchedPool.poolId));
 
-	$: loaded = $currentPoolState.arc200Balances[tokenA.ticker === 'VOI' ? tokenB.id : tokenA.id];
+	const poolArc200Balance = watchArc200Balance(arc200Token.id, algosdk.getApplicationAddress(matchedPool.poolId));
+
+	$: loaded = $poolArc200Balance && $currentPoolState.amount;
 
 	function setSelectedToken(token: Token, index: number) {
 		if (index === 0) {
@@ -108,11 +110,13 @@
 			tm = timeout;
 		});
 		loading = true;
+		const poolVoiBalance = BigInt($currentPoolState.amount) - BigInt($currentPoolState['min-balance'] ?? 0n);
+		const poolViaBalance = $poolArc200Balance ?? 0n;
 		const ret = calculateOutTokens(
-			Math.floor(inputTokenA * tokenA.unit),
-			tokenA.ticker === 'VOI' ? $currentPoolState.amount : $currentPoolState.arc200Balances[arc200Token.id],
-			tokenA.ticker === 'VOI' ? $currentPoolState.arc200Balances[arc200Token.id] : $currentPoolState.amount,
-			matchedPool.swapFee
+			BigInt(Math.floor(inputTokenA * tokenA.unit)),
+			tokenA.ticker === 'VOI' ? poolVoiBalance : poolViaBalance,
+			tokenA.ticker === 'VOI' ? poolViaBalance : poolVoiBalance,
+			BigInt(matchedPool.swapFee)
 		);
 		loading = false;
 		if (tm && tm === timeout) {
@@ -133,15 +137,17 @@
 			tm = timeout;
 		});
 		loading = true;
+		const poolVoiBalance = BigInt($currentPoolState.amount) - BigInt($currentPoolState['min-balance'] ?? 0n);
+		const poolViaBalance = $poolArc200Balance ?? 0n;
 		const ret = calculateInTokens(
-			Math.floor(inputTokenB * tokenB.unit),
-			tokenA.ticker === 'VOI' ? $currentPoolState.amount : $currentPoolState.arc200Balances[arc200Token.id],
-			tokenA.ticker === 'VOI' ? $currentPoolState.arc200Balances[arc200Token.id] : $currentPoolState.amount,
-			matchedPool.swapFee
+			BigInt(Math.floor(inputTokenB * tokenB.unit)),
+			tokenA.ticker === 'VOI' ? poolVoiBalance : poolViaBalance,
+			tokenA.ticker === 'VOI' ? poolViaBalance : poolVoiBalance,
+			BigInt(matchedPool.swapFee)
 		);
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenA = (Number(ret) + Number(ret) * 0.0001) / tokenA.unit;
+			inputTokenA = Number(ret) / tokenA.unit;
 			disabled = !inputTokenB;
 		}
 	}
@@ -155,11 +161,7 @@
 		const tokenBAmount = Math.floor(inputTokenB * tokenB.unit);
 		const minOfTokenB = Math.floor(tokenBAmount - Math.round(tokenBAmount * slippage));
 
-		const algoArc200PoolConnector = new AlgoArc200PoolConnector(
-			matchedPool.arc200Asset.assetId,
-			matchedPool.poolId,
-			matchedPool.lptId
-		);
+		const algoArc200PoolConnector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 
 		if (tokenA.ticker === voiToken.ticker && tokenB.ticker === arc200Token.ticker) {
 			await algoArc200PoolConnector.invoke('swapVoiToArc200', BigInt(tokenAAmount), BigInt(minOfTokenB));
@@ -264,15 +266,18 @@
 				</span>
 
 				<span class="flex justify-between">
-					{#if $currentPoolState.arc200Balances[arc200Token.id]}
-						Liquidity =
-						{($currentPoolState.amount / voiToken.unit).toLocaleString('en')}
-						{voiToken.ticker} /
-						{($currentPoolState.arc200Balances[arc200Token.id] / arc200Token.unit).toLocaleString('en')}
-						{arc200Token.ticker}
+					{#if typeof $poolArc200Balance === 'bigint'}
+						<span class="flex gap-4">
+							Liquidity =
+							{(($currentPoolState.amount - ($currentPoolState['min-balance'] ?? 0)) / voiToken.unit).toLocaleString(
+								'en'
+							)} VOI /
+							{(Number($poolArc200Balance) / matchedPool.arc200Asset.unit).toLocaleString('en')}
+							{matchedPool.arc200Asset.symbol}
+						</span>
 					{:else}
-						Liquidity = 0 {voiToken.ticker} / 0 {arc200Token.ticker}
-						<span class="loading w-[1rem]" />
+						<span class="flex gap-4">Liquidity = 0 VOI / 0 {matchedPool.arc200Asset.symbol}</span>
+						<span class="loading h-4 w-4" />
 					{/if}
 				</span>
 			</div>

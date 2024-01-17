@@ -1,11 +1,15 @@
-export function calculateOutTokens(inAmount: number, inSupply: number, outSupply: number, fee: number) {
-    const SHARES = 100_000_000;
-    const factor = SHARES - fee;
-    return (BigInt(inAmount) * BigInt(outSupply) * BigInt(factor)) / ((BigInt(inAmount) + BigInt(inSupply)) * BigInt(SHARES));
+const SCALE = 100_000_000_000_000n;
+
+export function calculateOutTokens(inAmount: bigint, inSupply: bigint, outSupply: bigint, fee: bigint) {
+    const factor = SCALE - fee;
+    return (inAmount * outSupply * factor) / ((inAmount + inSupply) * SCALE);
 }
 
-export function calculateInTokens(outAmount: number, inSupply: number, outSupply: number, fee: number) {
-    const SHARES = 100_000_000;
-    const factor = SHARES - fee;
-    return (BigInt(outAmount) * BigInt(inSupply) * BigInt(SHARES)) / ((BigInt(factor) * BigInt(outSupply) - BigInt(outAmount)));
+export function calculateInTokens(outAmount: bigint, inSupply: bigint, outSupply: bigint, fee: bigint) {
+    const factor = SCALE - fee;
+    const inAmount = ((SCALE * inSupply * outAmount) / ((outSupply * factor) - (outAmount * SCALE)));
+    if (inAmount > 0n) {
+        return inAmount;
+    }
+    return BigInt(Number.MAX_SAFE_INTEGER) * BigInt(Number.MAX_SAFE_INTEGER);
 }
