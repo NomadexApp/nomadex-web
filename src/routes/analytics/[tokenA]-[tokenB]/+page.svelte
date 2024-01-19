@@ -112,12 +112,22 @@
 
 		const getTime = (event: (typeof events)[0]) => event.txn['round-time'];
 		const getPrice = (event: (typeof events)[0]) => {
-			const voiAmount = event.direction === 0 ? event.fromAmount : event.toAmount;
-			const viaAmount = event.direction === 0 ? event.toAmount : event.fromAmount;
+			const ratio = (event.txn?.['global-state-delta'] ?? []).find(
+				(state) => Buffer.from(state.key, 'base64').toString() === 'ratio'
+			);
+			let viaPrice = ((ratio?.value?.uint || 0) * (arc200Token.unit / voiToken.unit)) / 100_000_000;
+			viaPrice = viaPrice < 0.001 && arc200Token.ticker === 'VIA' ? 0 : viaPrice;
 
-			return pricingCurrency === 0
-				? viaAmount / arc200Token.unit / (voiAmount / voiToken.unit)
-				: voiAmount / voiToken.unit / (viaAmount / arc200Token.unit);
+			if (viaPrice) {
+				return pricingCurrency === 0 ? 1 / viaPrice : viaPrice;
+			} else {
+				const voiAmount = event.direction === 0 ? event.fromAmount : event.toAmount;
+				const viaAmount = event.direction === 0 ? event.toAmount : event.fromAmount;
+
+				return pricingCurrency === 0
+					? viaAmount / arc200Token.unit / (voiAmount / voiToken.unit)
+					: voiAmount / voiToken.unit / (viaAmount / arc200Token.unit);
+			}
 		};
 
 		const getStartOfHour = (ms: number) => {
@@ -277,7 +287,7 @@
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
-				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"> Sender </span>
+				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"> Sender </span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">From Amt.</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">To Amt.</span>
 			</div>
@@ -304,7 +314,7 @@
 						>{event.txn['confirmed-round']}</span
 					>
 					<a
-						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
+						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"
 						href="https://voi.observer/explorer/account/{event.sender}"
 						target="_blank"
 						referrerpolicy="no-referrer"
@@ -312,13 +322,21 @@
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{fromAmount < 0.1 ? fromAmount : fromAmount.toLocaleString()}
-						{event.direction ? arc200Token.ticker : 'VOI'}</span
-					>
+						{fromAmount < 0.1
+							? fromAmount
+							: fromAmount < 10 || window.innerWidth > 600
+							? fromAmount.toLocaleString()
+							: Math.floor(fromAmount).toLocaleString()}
+						{event.direction ? arc200Token.ticker : 'VOI'}
+					</span>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{toAmount < 0.1 ? toAmount : toAmount.toLocaleString()}
-						{event.direction ? 'VOI' : arc200Token.ticker}</span
-					>
+						{toAmount < 0.1
+							? toAmount
+							: toAmount < 10 || window.innerWidth > 600
+							? toAmount.toLocaleString()
+							: Math.floor(toAmount).toLocaleString()}
+						{event.direction ? 'VOI' : arc200Token.ticker}
+					</span>
 				</div>
 			{/each}
 			{#if !moreEvents}
