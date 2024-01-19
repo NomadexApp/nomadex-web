@@ -2,7 +2,7 @@
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 	import { getStores } from '$app/stores';
-	import { knownPools, knownTokens, TokenType, type Token, type Pool } from '$lib';
+	import { knownPools, knownTokens, TokenType, type Token, type Pool, saveVoiArc200PoolToList } from '$lib';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -47,6 +47,7 @@
 	// }
 
 	onMount(async () => {
+		if (!matchedPool) return;
 		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 		const globalState = await connector.getGlobalState();
 		const manager = globalState.manager;
@@ -94,7 +95,7 @@
 	);
 
 	async function createVoiPool() {
-		let FIRST_LIQUIDITY = 0;
+		let FIRST_LIQUIDITY = initialLiquidityAmount;
 		const connector = await AlgoArc200PoolConnector.createPool(arc200Token.id);
 
 		console.log('Created App:', connector.appId);
@@ -106,6 +107,8 @@
 			BigInt(FIRST_LIQUIDITY) * 10n ** BigInt(arc200Token.decimals)
 		);
 		console.log('added liquidity');
+
+		await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id);
 
 		return;
 	}

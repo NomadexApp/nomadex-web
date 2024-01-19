@@ -6,8 +6,7 @@ import { Arc200Interface } from "./utils";
 import { addNotification } from "./Notify.svelte";
 import { AlgoArc200PoolV02Client } from "../contracts/clients/AlgoArc200PoolV02Client";
 
-const MANAGER = 'UBRGDBFLYVGF7UJMY6VSPEHI2HYLYHBCRGGBQC32PPN762DHWZDGTRS3MQ';
-// 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ';
+const MANAGER = 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ';
 
 // const SCALE = 100_000_000_000_000;
 const MIN_BALANCE = 1_000_000;
@@ -137,44 +136,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
         await signAndSendTransections(nodeClient, [allTxns]);
     }
 
-    async mint(algoAmount: bigint, arc200Amount: bigint) {
-        if (!this.signer?.addr) throw Error('signer undefined');
-
-        const params = await nodeClient.getTransactionParams().do();
-
-        const approveTxns = await Arc200Interface.arc200_approve(
-            this.arc200AssetId,
-            this.signer.addr,
-            algosdk.getApplicationAddress(this.appId),
-            BigInt(arc200Amount)
-        );
-
-        const mintArgs = () => ({
-            payTxnX: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-                amount: BigInt(algoAmount),
-                from: this.signer.addr,
-                to: algosdk.getApplicationAddress(this.appId),
-                suggestedParams: params,
-            }),
-            amountY: BigInt(arc200Amount),
-        });
-        const composer = this.compose();
-        await signAndSendTransections(nodeClient, [approveTxns]);
-
-        const opts = await this.getUnnamedResourcesAccessedFromMethod('addLiquidity', mintArgs());
-
-        const mintTxns = (
-            await composer
-                .addLiquidity(mintArgs(), {
-                    ...opts,
-                })
-                .atc()
-        ).buildGroup().map(({ txn }) => txn);
-
-        await signAndSendTransections(nodeClient, [mintTxns]);
-    }
-
-    async getUnnamedResourcesAccessedFromMethod<C extends AlgoArc200PoolConnector>(methodName: keyof ReturnType<C['compose']>, args: any = {}) {
+    async getUnnamedResourcesAccessedFromMethod<C extends AlgoArc200PoolConnector>(methodName: keyof ReturnType<C['compose']>, args: any = {}, txnsBefore: algosdk.Transaction[] = [], txnsAfter: algosdk.Transaction[] = []) {
         const cl: any = new AlgoArc200PoolV02Client({
             id: this.appId,
             resolveBy: 'id',
@@ -182,9 +144,9 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
         }, nodeClient);
 
         const composer = await cl.compose()[methodName](args, {}).atc();
-        const txns = composer.buildGroup().map(({ txn }) => txn)
+        const txns = composer.buildGroup().map(({ txn }) => txn);
 
-        return getUnnamedResourcesAccessed(txns);
+        return getUnnamedResourcesAccessed([...txnsBefore, ...txns, ...txnsAfter]);
     }
 
 
@@ -253,8 +215,8 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
                         name: getBoxName(algosdk.getApplicationAddress(this.appId)),
                     },
                 ],
-                accounts: [...opts.accounts, ...opts2.accounts, managerAddress],
-                apps: [...opts.apps, this.arc200AssetId],
+                accounts: [...new Set([...opts.accounts, ...opts2.accounts, managerAddress])],
+                apps: [...new Set([...opts.apps, this.arc200AssetId])],
             })
             .atc();
 
@@ -271,7 +233,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
             algosdk.getApplicationAddress(this.appId),
             BigInt(arc200Amount)
         );
-        await signAndSendTransections(nodeClient, [approveTxns]);
+        // await signAndSendTransections(nodeClient, [approveTxns]);
 
         const swapArgs = () => ({
             amountY: arc200Amount,
@@ -279,16 +241,63 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
         });
         const composer = this.compose();
 
-        const opts = await this.getUnnamedResourcesAccessedFromMethod('swapYtoX', swapArgs());
+        for (const approveTxn of approveTxns) {
+            approveTxn.group = undefined;
+            composer.addTransaction({ txn: approveTxn, signer: this.signer.signer });
+        }
+        const opts = await this.getUnnamedResourcesAccessedFromMethod('swapYtoX', swapArgs(), approveTxns);
 
         const atc = await composer
-            .swapYtoX(swapArgs(), opts)
+            .swapYtoX(swapArgs(), {
+                ...opts,
+                apps: [...new Set([...opts.apps, this.arc200AssetId])]
+            })
             .atc();
-
         const swapTxns = atc.buildGroup().map(({ txn }) => txn);
 
         await signAndSendTransections(nodeClient, [swapTxns]);
         console.log({ success: true });
+    }
+
+    async mint(algoAmount: bigint, arc200Amount: bigint) {
+        if (!this.signer?.addr) throw Error('signer undefined');
+
+        const params = await nodeClient.getTransactionParams().do();
+
+        const approveTxns = await Arc200Interface.arc200_approve(
+            this.arc200AssetId,
+            this.signer.addr,
+            algosdk.getApplicationAddress(this.appId),
+            BigInt(arc200Amount)
+        );
+
+        const mintArgs = () => ({
+            payTxnX: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+                amount: BigInt(algoAmount),
+                from: this.signer.addr,
+                to: algosdk.getApplicationAddress(this.appId),
+                suggestedParams: params,
+            }),
+            amountY: BigInt(arc200Amount),
+        });
+        const composer = this.compose();
+
+        for (const approveTxn of approveTxns) {
+            approveTxn.group = undefined;
+            composer.addTransaction({ txn: approveTxn, signer: this.signer.signer });
+        }
+        const opts = await this.getUnnamedResourcesAccessedFromMethod('addLiquidity', mintArgs(), approveTxns);
+
+        const mintTxns = (
+            await composer
+                .addLiquidity(mintArgs(), {
+                    ...opts,
+                    apps: [...new Set([...opts.apps, this.arc200AssetId])]
+                })
+                .atc()
+        ).buildGroup().map(({ txn }) => txn);
+
+        await signAndSendTransections(nodeClient, [mintTxns]);
     }
 
     async burn(lptAmount: bigint) {
@@ -317,8 +326,9 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
             return resp;
         } catch (error) {
             console.error((<Error>error).message);
+            removeNot();
             addNotification('error', (<Error>error).message, 15000);
+            throw error;
         }
-        removeNot();
     }
 }

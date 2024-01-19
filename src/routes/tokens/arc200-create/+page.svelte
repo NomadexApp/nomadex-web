@@ -5,6 +5,7 @@
 	import { Arc200TokenClient } from '../../../contracts/clients/Arc200TokenClient';
 	import { goto } from '$app/navigation';
 	import { addNotification } from '$lib/Notify.svelte';
+	import { knownTokens, saveArc200TokenToList } from '$lib';
 
 	let manager = $connectedAccount;
 	let name = '';
@@ -104,6 +105,7 @@
 
 			remove();
 			addNotification('success', `Created token ${appId}`, 10000);
+			await saveArc200TokenToList(symbol, appId, decimals);
 			goto(`/tokens/arc200-${appId}`);
 		} catch (e) {
 			console.error((<Error>e).message);
@@ -121,7 +123,8 @@
 		name.match(/^[\s\w_-]+$/) &&
 		symbol.length > 1 &&
 		symbol.length < 9 &&
-		symbol.match(/^[\w]+$/);
+		symbol.match(/^[\w]+$/) &&
+		!$knownTokens.find((tok) => tok.ticker.toLowerCase() === symbol.toLowerCase());
 </script>
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">

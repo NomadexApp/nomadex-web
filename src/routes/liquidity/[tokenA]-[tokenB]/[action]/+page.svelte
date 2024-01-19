@@ -12,6 +12,7 @@
 	import { goto } from '$app/navigation';
 	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from '$lib/stores/onchain';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
+	import { convertDecimals } from '$lib/numbers';
 
 	$: action = $page.params.action;
 
@@ -45,6 +46,7 @@
 	const userLptBalance = watchArc200Balance(matchedPool.poolId, $connectedAccount);
 	const poolIssuedTokens = watchPoolTotalSupply(matchedPool.poolId);
 	const poolArc200Balance = watchArc200Balance(arc200Token.id, algosdk.getApplicationAddress(matchedPool.poolId));
+	const userArc200Balance = watchArc200Balance(arc200Token.id, $connectedAccount);
 
 	let inputTokenLpt: number = 0;
 	let inputTokenA: number = 0;
@@ -88,10 +90,10 @@
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
 		const voiBalance = $currentPoolState.amount - ($currentPoolState['min-balance'] ?? 100_000);
-		const viaBalance = $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId];
+		const viaBalance = $poolArc200Balance;
 		loading = false;
 
-		const ratio = viaBalance / arc200Token.unit / (voiBalance / voiToken.unit);
+		const ratio = Number(convertDecimals(viaBalance, arc200Token.decimals, 6)) / 1e6 / (voiBalance / voiToken.unit);
 
 		const SCALE = 100_000_000;
 
@@ -110,10 +112,10 @@
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
 		const voiBalance = $currentPoolState.amount - ($currentPoolState['min-balance'] ?? 100_000);
-		const viaBalance = $currentPoolState.arc200Balances[matchedPool.arc200Asset.assetId];
+		const viaBalance = $poolArc200Balance;
 		loading = false;
 
-		const ratio = voiBalance / voiToken.unit / (viaBalance / arc200Token.unit);
+		const ratio = voiBalance / voiToken.unit / (Number(convertDecimals(viaBalance, arc200Token.decimals, 6)) / 1e6);
 
 		const SCALE = 100_000_000;
 
@@ -144,7 +146,7 @@
 	$: maxLptBalanceError = Number(inputTokenLpt) > algosdk.microalgosToAlgos(Number($userLptBalance ?? 0));
 	$: maxBalanceError = Number(inputTokenA) > Math.floor($connectedUserState.amount / tokenA.unit);
 	$: maxArc200BalanceError =
-		Number(inputTokenB) > Math.floor($connectedUserState.arc200Balances[tokenB.id] / tokenB.unit);
+		Number(inputTokenB) > Number(convertDecimals($userArc200Balance ?? 0n, tokenB.decimals, 6)) / 1e6;
 
 	$: maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError || maxArc200BalanceError;
 </script>
@@ -245,16 +247,17 @@
 					class:rounded-r-none={action === 'add'}
 				/>
 				{#if action === 'add'}
-					{#await getArc200Balance(matchedPool.arc200Asset.assetId, $connectedAccount) then balance}
-						<span
-							class="absolute right-0 bottom-full z-10 cursor-pointer"
-							on:click={() => {
-								inputTokenB = balance / tokenB.unit;
-								onInputTokenB();
-							}}
-							on:keydown={null}>MAX {(balance / tokenB.unit).toLocaleString('en')}</span
-						>
-					{/await}
+					<span
+						class="absolute right-0 bottom-full z-10 cursor-pointer"
+						on:click={() => {
+							inputTokenB = Number(convertDecimals($userArc200Balance ?? 0n, tokenB.decimals, 6)) / 1e6;
+							onInputTokenB();
+						}}
+						on:keydown={null}
+						>MAX {(Number(convertDecimals($userArc200Balance ?? 0n, tokenB.decimals, 6)) / 1e6).toLocaleString(
+							'en'
+						)}</span
+					>
 				{/if}
 				{#if action === 'add'}
 					<Dropdown

@@ -12,6 +12,7 @@
 	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
+	import { convertDecimals } from '$lib/numbers';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -66,6 +67,7 @@
 	const connectedUserState = onChainStateWatcher.getAccountWatcher($connectedAccount);
 	const currentPoolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(matchedPool.poolId));
 
+	const userArc200Balance = watchArc200Balance(arc200Token.id, $connectedAccount);
 	const poolArc200Balance = watchArc200Balance(arc200Token.id, algosdk.getApplicationAddress(matchedPool.poolId));
 
 	$: loaded = $poolArc200Balance && $currentPoolState.amount;
@@ -202,15 +204,17 @@
 					required
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
-				{#await tokenA.ticker === arc200Token.ticker ? $connectedUserState.arc200Balances[arc200Token.id] : $connectedUserState.amount then balance}
+				{#await tokenA.ticker === arc200Token.ticker ? $userArc200Balance : BigInt($connectedUserState.amount) then balance}
 					<span
 						class="absolute right-0 bottom-full cursor-pointer"
 						on:click={() => {
-							inputTokenA = balance / tokenA.unit;
+							inputTokenA = Number(convertDecimals(balance, tokenA.decimals, 6)) / 1e6;
 							onInputTokenA();
 						}}
-						on:keydown={null}>MAX {(balance / tokenA.unit).toLocaleString('en')}</span
+						on:keydown={null}
 					>
+						MAX {(Number(convertDecimals(balance ?? 0n, tokenA.decimals, 6)) / 1e6).toLocaleString('en')}
+					</span>
 				{/await}
 				<Dropdown
 					class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"
@@ -244,9 +248,10 @@
 					required
 					class="input input-primary border-r-0 rounded-r-none input-bordered w-full focus:outline-none"
 				/>
-				{#await tokenB.ticker === arc200Token.ticker ? $connectedUserState.arc200Balances[arc200Token.id] : $connectedUserState.amount then balance}
-					<span class="absolute right-0 bottom-full cursor-pointer">{(balance / tokenB.unit).toLocaleString('en')}</span
-					>
+				{#await tokenB.ticker === arc200Token.ticker ? $userArc200Balance : $connectedUserState.amount then balance}
+					<span class="absolute right-0 bottom-full cursor-pointer">
+						{(Number(convertDecimals(balance ?? 0n, tokenB.decimals, 6)) / 1e6).toLocaleString('en')}
+					</span>
 				{/await}
 				<Dropdown
 					class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"

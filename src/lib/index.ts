@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { getCollection } from "./firebase";
+import { getCollection, putDoc } from "./firebase";
 
 export enum TokenType {
     Default = '',
@@ -21,7 +21,8 @@ export type Pool = {
     arc200Asset: {
         assetId: number,
         symbol: string,
-        unit: number
+        decimals: number,
+        unit: number,
     },
     swapFee: number,
 }
@@ -133,12 +134,29 @@ export async function getListOfArc200Tokens() {
             arc200Asset: {
                 assetId: token.arc200Asset.id,
                 symbol: token.arc200Asset.ticker,
-                unit: token.arc200Asset.unit
+                unit: token.arc200Asset.unit,
+                decimals: token.arc200Asset.decimals
             },
         }));
 
     console.log('Pools:', validPools);
 
-    knownPools.update(pools => pools.concat(validPools));
-    knownTokens.update(toks => toks.concat(validTokens));
+    knownPools.update(pools => pools.slice(0, 0).concat(validPools));
+    knownTokens.update(toks => toks.slice(0, 1).concat(validTokens));
+}
+
+export async function saveArc200TokenToList(symbol: string, id: number, decimals: number) {
+    if (typeof symbol !== "string" || typeof id !== "number" || typeof decimals !== "number") {
+        throw Error('Bad arc200 token args, cannot add arc200 to the list');
+    }
+    await putDoc(`/networks/${network}/versions/${version}/arc200tokens/${symbol}`, { id, decimals });
+    await getListOfArc200Tokens();
+}
+
+export async function saveVoiArc200PoolToList(symbol: string, poolId: number, arc200Id: number) {
+    if (typeof symbol !== "string" || typeof poolId !== "number" || typeof arc200Id !== "number") {
+        throw Error('Bad voi-arc200 pool args, cannot add pool to the list');
+    }
+    await putDoc(`/networks/${network}/versions/${version}/voiarc200pools/VOI-${symbol}`, { id: poolId, arc200Id: arc200Id });
+    await getListOfArc200Tokens();
 }

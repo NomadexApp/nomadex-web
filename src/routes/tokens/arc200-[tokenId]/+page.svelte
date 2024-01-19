@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import Contract from 'arc200js';
 	import { goto } from '$app/navigation';
+	import { knownTokens, saveArc200TokenToList } from '$lib';
 
 	let appId = Number($page.params.tokenId);
 	let currentManager = '';
@@ -48,6 +49,10 @@
 	});
 
 	async function createVoiPool() {
+		const token = $knownTokens.find((tok) => tok.id === appId);
+		if (!token) {
+			await saveArc200TokenToList(symbol, appId, decimals);
+		}
 		goto(`/pools/VOI-${symbol}`);
 	}
 </script>

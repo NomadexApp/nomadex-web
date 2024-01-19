@@ -1,6 +1,5 @@
-import { TokenType, knownTokens } from "$lib";
-import { getArc200Balance, nodeClient } from "$lib/_shared";
-import { get, readable, writable } from "svelte/store";
+import { nodeClient } from "$lib/_shared";
+import { readable, writable } from "svelte/store";
 import { Arc200Interface } from "$lib/utils";
 
 type AppState = {
@@ -42,7 +41,6 @@ export type AccountState = {
     "total-assets-opted-in"?: number,
     "total-created-apps"?: number,
     "total-created-assets"?: number,
-    arc200Balances: Record<string, number>,
     asaBalances: Record<string, number>,
     lastUpdateAt: number
 }
@@ -71,25 +69,6 @@ export class OnChainStateWatcher {
         return await nodeClient.accountInformation(address).do();
     }
 
-    static getArc200BalancesFor(address: string, balances: Record<string, number> = {}, fetcher: (appId, addr) => number | Promise<number>, callback: (tokenId: number, balance: number) => void = () => { /**/ }) {
-        for (const token of get(knownTokens).filter(t => t.type === TokenType.ARC200)) {
-            balances[token.id] = balances[token.id] ?? 0;
-            const resp = fetcher(token.id, address);
-            if (resp instanceof Promise) {
-                resp.then(balance => {
-                    callback(token.id, balance);
-                    balances[token.id] = balance;
-                }).catch(error => {
-                    console.error(`Error white fetching ${token.ticker} balance (${address})\n${(<Error>error).message}`);
-                })
-            } else {
-                balances[token.id] = resp;
-            }
-        }
-
-        return balances;
-    }
-
     listen() {
         clearInterval(this.interval);
         this.interval = setInterval(() => this.update(), this.ms);
@@ -107,21 +86,12 @@ export class OnChainStateWatcher {
 
         for (const [address, store] of this.accountMap.entries()) {
             try {
-
-                const { arc200Balances } = get(store);
                 const accountState = <AccountState>await OnChainStateWatcher.getAccountState(address);
 
                 store.set({
                     ...accountState,
                     lastUpdateAt: Date.now(),
-                    arc200Balances: arc200Balances,
                     asaBalances: Object.fromEntries((accountState.assets ?? []).map(asset => [asset["asset-id"], asset.amount]))
-                });
-                await OnChainStateWatcher.getArc200BalancesFor(address, arc200Balances, getArc200Balance, (tokenId, balance) => {
-                    store.update(state => {
-                        state.arc200Balances[tokenId] = balance;
-                        return state;
-                    });
                 });
             } catch (error) {
                 console.error(`Error white fetching account state (${address})\n${(<Error>error).message}`);
@@ -145,7 +115,6 @@ export class OnChainStateWatcher {
         const store = this.accountMap.get(address) ?? writable<AccountState>({
             address,
             amount: 0,
-            arc200Balances: OnChainStateWatcher.getArc200BalancesFor(address, {}, () => 0),
             asaBalances: {},
             lastUpdateAt: 0
         });
@@ -171,7 +140,7 @@ export function watchArc200Balance(appId: number, address: string, duration = 15
             }
         } catch (er) {
             // 
-            console.error(er)
+            // console.error(er)
         }
     }
 

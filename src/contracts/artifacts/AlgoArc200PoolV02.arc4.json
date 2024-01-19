@@ -366,7 +366,7 @@
       }
     },
     {
-      "name": "ratio",
+      "name": "getRatio",
       "readonly": true,
       "args": [],
       "returns": {
@@ -528,36 +528,6 @@
           "desc": ""
         }
       ]
-    },
-    {
-      "name": "balanceX",
-      "args": [],
-      "returns": {
-        "type": "uint256"
-      }
-    },
-    {
-      "name": "balanceY",
-      "args": [],
-      "returns": {
-        "type": "uint256"
-      }
-    },
-    {
-      "name": "testSwap",
-      "args": [
-        {
-          "name": "amountY",
-          "type": "uint256"
-        },
-        {
-          "name": "minAmountX",
-          "type": "uint256"
-        }
-      ],
-      "returns": {
-        "type": "uint256"
-      }
     }
   ],
   "events": [

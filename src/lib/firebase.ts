@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, getDocs, collection } from "firebase/firestore";
+import { getFirestore, getDocs, setDoc, collection, doc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import {
     PUBLIC_API_KEY, PUBLIC_APP_ID,
@@ -27,4 +27,10 @@ export const firebaseAnalytics = getAnalytics(firebaseApp);
 export function getCollection(path: string) {
     const col = collection(firestore, path);
     return getDocs(col);
+}
+
+
+export function putDoc(path: string, data: Record<string, any>) {
+    const docRef = doc(firestore, path);
+    return setDoc(docRef, data);
 }

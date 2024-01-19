@@ -94,6 +94,12 @@ export async function getUnnamedResourcesAccessed(txns: algosdk.Transaction[]) {
     const signer = algosdk.makeEmptyTransactionSigner();
     txns = txns.map(txn => algosdk.decodeUnsignedTransaction(algosdk.encodeUnsignedTransaction(txn)));
 
+    for (const txn of txns) {
+        txn.group = undefined;
+    }
+
+    algosdk.assignGroupID(txns);
+
     const signed = await signer(txns, txns.map((_, i) => i));
 
     const request = new algosdk.modelsv2.SimulateRequest({

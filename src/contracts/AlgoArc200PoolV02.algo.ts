@@ -8,6 +8,7 @@ const DECIMALS = 6;
 export class AlgoArc200PoolV02 extends Arc200Token {
 
     feeController = GlobalStateKey<Address>({ key: 'fee_controller' });
+    ratio = GlobalStateKey<uint256>({ key: 'ratio' });
 
     fee = BoxKey<{
         swapFee: uint256,
@@ -53,6 +54,7 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         );
 
         this.feeController.value = this.txn.sender;
+        this.ratio.value = <uint256>SCALE;
         this.fee.value = {
             swapFee: <uint256>INITIAL_FEE,
             platformFee: <uint256>INITIAL_MANAGER_FEE
@@ -167,16 +169,26 @@ export class AlgoArc200PoolV02 extends Arc200Token {
     }
 
     @abi.readonly
-    ratio(): uint256 {
-        return (this.getTokenXBalance() * <uint256>SCALE) / this.getTokenYBalance();
+    getRatio(): uint256 {
+        const yBalance = this.getTokenYBalance();
+        const xBalance = this.getTokenXBalance();
+        if (yBalance > <uint256>0) {
+            return (xBalance * <uint256>SCALE * <uint256>SCALE) / yBalance;
+        } else {
+            return <uint256>SCALE * <uint256>SCALE;
+        }
+    }
+
+    private updateRatio(): void {
+        this.ratio.value = this.getRatio();
     }
 
     /**
-     * Example: `getDecimalPlaces(6)` returns `1,000,000`
+     * Example: `powOfTen(6)` returns `1,000,000`
      * @param pow number of decimal places
      * @returns 
      */
-    private getDecimalPlaces(decimals: uint64): uint256 {
+    private powOfTen(decimals: uint64): uint256 {
         let result: uint256 = 1;
 
         for (let i: uint64 = 0; i < decimals; i = i + 1) {
@@ -221,8 +233,8 @@ export class AlgoArc200PoolV02 extends Arc200Token {
             const decimalsOfX = this.getTokenXDecimals();
             const decimalsOfY = this.getTokenYDecimals();
 
-            const amountXNormalized = (amountX * (this.getDecimalPlaces(DECIMALS))) / this.getDecimalPlaces(<uint64>decimalsOfX);
-            const amountYNormalized = (amountY * (this.getDecimalPlaces(DECIMALS))) / this.getDecimalPlaces(<uint64>decimalsOfY);
+            const amountXNormalized = (amountX * (this.powOfTen(DECIMALS))) / this.powOfTen(<uint64>decimalsOfX);
+            const amountYNormalized = (amountY * (this.powOfTen(DECIMALS))) / this.powOfTen(<uint64>decimalsOfY);
 
             lptToMint = sqrt(amountXNormalized * amountYNormalized);
 
@@ -245,6 +257,8 @@ export class AlgoArc200PoolV02 extends Arc200Token {
                 lptAmount: lptToMint
             }
         );
+
+        this.updateRatio();
 
         return true;
     }
@@ -275,6 +289,8 @@ export class AlgoArc200PoolV02 extends Arc200Token {
                 lptAmount: lptAmount
             }
         );
+
+        this.updateRatio();
 
         return true;
     }
@@ -342,6 +358,8 @@ export class AlgoArc200PoolV02 extends Arc200Token {
             }
         );
 
+        this.updateRatio();
+
         return amountOut;
     }
 
@@ -380,6 +398,8 @@ export class AlgoArc200PoolV02 extends Arc200Token {
                 directionYtoX: true
             }
         );
+
+        this.updateRatio();
 
         return amountOut;
     }
