@@ -1,6 +1,7 @@
 import { sha512_256 } from "js-sha512";
 import { indexerClient } from "./_shared";
 import algosdk from "algosdk";
+import { browser } from "$app/environment";
 
 export type SwapTxn = {
     "close-rewards": number,
@@ -27,19 +28,24 @@ interface CacheStructure {
 
 export class SwapEvents {
     static async setCache(update: CacheStructure, appId: number, signature: string) {
+        if (!browser) return;
+
         const key = `${appId}-${signature}`;
         localStorage.removeItem(key);
 
         const cached = await caches.open(key);
-        await cached.put(key, new Response(JSON.stringify(update)));
+        await cached.put(`/${key}`, new Response(JSON.stringify(update)));
     }
 
     static async getCache(appId: number, signature: string): Promise<CacheStructure> {
+        const defaultRet = { lastRound: 2000000, txns: [] };
+        if (!browser) return defaultRet;
+
         const key = `${appId}-${signature}`;
         localStorage.removeItem(key);
 
         const cached = await caches.open(key);
-        const resp = await cached.match(key);
+        const resp = await cached.match(`/${key}`);
         if (resp) {
             try {
                 const jsonResponse = await resp.json();
@@ -48,7 +54,7 @@ export class SwapEvents {
                 }
             } catch (e) { /**/ }
         }
-        return { lastRound: 2000000, txns: [] };
+        return defaultRet;
     }
 
 
