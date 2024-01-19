@@ -116,13 +116,13 @@
 			<h4 class="text-xl font-bold prose w-full mb-5">Limit Orders</h4>
 			<a href="/limit-orders/create/VOI-VIA" class="btn">Create</a>
 		</div>
-		<div class="w-full flex flex-col pt-4 p-4 bg-base-300 relative">
+		<div class="w-full flex flex-col pt-4 p-4 bg-base-200 relative">
 			<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
 				<div class="flex justify-between cursor-pointer select-none font-bold" on:click={() => {}} on:keydown>
 					<span class="name mb-0 flex justify-start items-center w-full gap-5">
 						<span class="w-24">Maker</span>
 						<span class="w-16">Type</span>
-						<span class="w-24"> Amount </span>
+						<span class="w-16"> Amount </span>
 						<span class="hidden md:block flex-grow max-w-16" />
 
 						<span class="w-24">Price</span>
@@ -139,7 +139,7 @@
 			{#each limitOrders.sort((a, b) => b.orderId - a.orderId) as limitOrder}
 				{@const arc200TokenAmount = Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit}
 				{@const algoTokenAmouunt = Number(limitOrder.algoAmount) / 1e6}
-				<div class="w-full flex flex-col pt-4 p-4 bg-base-300 relative">
+				<div class="w-full flex flex-col pt-4 p-4 bg-base-200 relative">
 					<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
 						<div
 							class="flex justify-between cursor-pointer select-none"
@@ -158,16 +158,16 @@
 								</a>
 								<span class="w-16">{limitOrder.isDirectionFromArc200ToAlgo ? 'BUY' : 'SELL'}</span>
 
-								<span class="w-24 text-nowrap">
+								<span class="w-16 text-nowrap">
 									{algoTokenAmouunt.toLocaleString('en')} VOI
 								</span>
 								<span class="hidden md:block flex-grow max-w-16" />
 								<span class="text-nowrap">
 									{(arc200TokenAmount / algoTokenAmouunt).toLocaleString('en')}
 									{limitOrder.arc200Token.ticker}
-									<span class="text-[0.7rem]">
+									<!-- <span class="text-[0.7rem] ml-auto">
 										<span class="hidden md:inline-block">/ VOI</span>
-									</span>
+									</span> -->
 								</span>
 							</span>
 							<div class="w-12">
@@ -233,9 +233,3 @@
 		{/if}
 	</div>
 </section>
-
-<style lang="postcss">
-	:global(html) {
-		background-color: theme(colors.gray.100);
-	}
-</style>
