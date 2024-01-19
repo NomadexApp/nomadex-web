@@ -38,7 +38,7 @@
 		</div>
 		{#each $knownTokens as token}
 			<div
-				class="pool bg-base-300 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]"
+				class="pool bg-base-200 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]"
 				class:cursor-pointer={token.type === TokenType.ARC200}
 				on:click={() => (token.type === TokenType.ARC200 ? goto(`/tokens/arc200-${token.id}`) : '')}
 				on:keydown

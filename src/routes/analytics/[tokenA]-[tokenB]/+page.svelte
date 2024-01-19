@@ -290,7 +290,7 @@
 				<span class="flex-grow" />
 			</div>
 			<div
-				class="w-full event bg-base-300 font-bold p-3 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
+				class="w-full event bg-base-200 font-bold p-3 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
 			>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
@@ -305,7 +305,7 @@
 				{@const fromAmount = Number(event.fromAmount / getFromTokenFromEvent(event).unit)}
 				{@const toAmount = Number(event.toAmount / getToTokenFromEvent(event).unit)}
 				<div
-					class="w-full event bg-base-300 hover:invert-[10%] p-2 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
+					class="w-full event bg-base-200 hover:invert-[10%] p-2 px-6 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
 				>
 					<a
 						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
@@ -315,12 +315,17 @@
 					>
 						{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 					</a>
-					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
-						>{timeAgo(event.txn['round-time'] * 1000)}</span
+					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">
+						{timeAgo(event.txn['round-time'] * 1000)}
+					</span>
+					<a
+						href="https://voi.observer/explorer/block/{event.txn['confirmed-round']}"
+						target="_blank"
+						referrerpolicy="no-referrer"
+						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
 					>
-					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
-						>{event.txn['confirmed-round']}</span
-					>
+						{event.txn['confirmed-round']}
+					</a>
 					<a
 						class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"
 						href="https://voi.observer/explorer/account/{event.sender}"
