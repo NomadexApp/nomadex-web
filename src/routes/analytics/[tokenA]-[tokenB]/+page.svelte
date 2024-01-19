@@ -115,7 +115,15 @@
 			const ratio = (event.txn?.['global-state-delta'] ?? []).find(
 				(state) => Buffer.from(state.key, 'base64').toString() === 'ratio'
 			);
-			let viaPrice = ((ratio?.value?.uint || 0) * (arc200Token.unit / voiToken.unit)) / 100_000_000;
+
+			const SCALE = 100_000_000_000_000;
+
+			const ratioBigInt =
+				((Number(BigInt('0x' + Buffer.from(ratio?.value?.bytes || 'AAAAAAAAA', 'base64').toString('hex'))) / SCALE) *
+					(arc200Token.unit / voiToken.unit)) /
+				SCALE;
+
+			let viaPrice = ratioBigInt;
 			viaPrice = viaPrice < 0.001 && arc200Token.ticker === 'VIA' ? 0 : viaPrice;
 
 			if (viaPrice) {
