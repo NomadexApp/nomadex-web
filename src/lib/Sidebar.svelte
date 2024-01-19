@@ -210,11 +210,11 @@
 	li.is-open > .children {
 		height: 120px;
 	}
-	li.active a {
+	li.active > a {
 		background: var(--fallback-bc, oklch(var(--bc) / 0.1));
 		font-weight: bold;
 	}
-	li.is-open a {
+	li.is-open > a {
 		font-weight: bold;
 	}
 </style>

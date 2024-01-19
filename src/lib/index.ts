@@ -82,6 +82,8 @@ export const knownTokens = writable<Token[]>([
     // { ticker: 'TEST', id: 26178395, type: TokenType.ARC200, decimals: 6, unit: 1e6 }
 ]);
 
+export const arePoolsLoaded = writable(false);
+
 export const contracts = {
     orderbookLimitOrderApp: 26171479
 };
@@ -143,6 +145,8 @@ export async function getListOfArc200Tokens() {
 
     knownPools.update(pools => pools.slice(0, 0).concat(validPools));
     knownTokens.update(toks => toks.slice(0, 1).concat(validTokens));
+
+    arePoolsLoaded.set(true);
 }
 
 export async function saveArc200TokenToList(symbol: string, id: number, decimals: number) {

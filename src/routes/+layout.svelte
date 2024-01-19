@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import '$lib/firebase';
-	import { getListOfArc200Tokens, knownTokens } from '$lib/index';
+	import { arePoolsLoaded, getListOfArc200Tokens, knownTokens } from '$lib/index';
 	import { page } from '$app/stores';
 
 	let hasKibisisWallet = browser && window['algorand']?.wallets.find((w) => w.id === 'kibisis');
@@ -28,7 +28,7 @@
 
 {#if browser}
 	<div class="flex min-h-screen">
-		{#if $knownTokens.length > 1}
+		{#if $arePoolsLoaded}
 			<Sidebar />
 			<div class="w-full flex flex-col">
 				{#if $connectedAccount}
@@ -63,13 +63,9 @@
 				{/if}
 			</div>
 			<Notify />
-		{:else if $page.url.pathname.startsWith('/tokens')}
-			<div class="w-full flex flex-col">
-				<slot />
-			</div>
 		{:else}
 			<div class="flex h-screen w-full justify-center items-center">
-				<span class="loading loading-ring" />
+				<span class="loading loading-ring text-base-300 w-[5rem]" />
 			</div>
 		{/if}
 	</div>
