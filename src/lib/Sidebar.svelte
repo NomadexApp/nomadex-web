@@ -71,6 +71,12 @@
 					<span class="h-5 w-5"><MdToll /></span>
 				</a>
 			</li>
+			<li class="pl-0 sm:block" class:active={$page.url.pathname.startsWith('/tokens')}>
+				<a class="flex justify-between" href="/tokens/" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
+					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">TOKENS</span>
+					<span class="h-5 w-5 block rotate-45"><MdAddCircle /></span>
+				</a>
+			</li>
 			<li class="pl-0" class:is-open={$page.url.pathname.startsWith('/swap/')}>
 				<a class="flex justify-between items-center" href={null} tabindex="0">
 					<span class="flex pt-[1px] justify-start items-end w-full">SWAP</span>
@@ -99,13 +105,7 @@
 					{/each}
 				</ul>
 			</li>
-			<li class="pl-0 sm:block" class:active={$page.url.pathname.startsWith('/tokens')}>
-				<a class="flex justify-between" href="/tokens/" on:click={() => isMobile && (sidebarOpen = false)} tabindex="0">
-					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">TOKENS</span>
-					<span class="h-5 w-5 block rotate-45"><MdAddCircle /></span>
-				</a>
-			</li>
-			<li class="pl-0 sm:block" class:active={$page.url.pathname.startsWith('/limit-orders/')}>
+			<li class="pl-0 sm:block" class:active={$page.url.pathname.startsWith('/limit-orders')}>
 				<a
 					class="flex justify-between"
 					href="/limit-orders/"
@@ -212,5 +212,9 @@
 	}
 	li.active a {
 		background: var(--fallback-bc, oklch(var(--bc) / 0.1));
+		font-weight: bold;
+	}
+	li.is-open a {
+		font-weight: bold;
 	}
 </style>

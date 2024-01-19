@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import Contract from 'arc200js';
 	import { goto } from '$app/navigation';
-	import { knownTokens, saveArc200TokenToList } from '$lib';
+	import { knownPools, knownTokens, saveArc200TokenToList } from '$lib';
 
 	let appId = Number($page.params.tokenId);
 	let currentManager = '';
@@ -59,6 +59,7 @@
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
 	<div class="h-full flex flex-col justify-start items-center gap-3 w-full">
+		<br /><br />
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Arc200 Token Id:</div>
 			<input
@@ -104,7 +105,14 @@
 
 		{#if symbol}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={createVoiPool}>Create VOI/{symbol} Pool</button>
+				<button class="btn btn-primary" on:click={createVoiPool}>
+					{#if $knownPools.find((pool) => pool.arc200Asset.assetId === appId)}
+						Configure
+					{:else}
+						Create
+					{/if}
+					VOI/{symbol} Pool
+				</button>
 			</div>
 		{/if}
 	</div>
