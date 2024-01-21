@@ -18,29 +18,53 @@ export class AlgoArc200PoolV02 extends Arc200Token {
     tokenYAppId = BoxKey<Application>({ key: 'token_y_app_id' });
 
     /**
-     * @param directionBtoA false if a -> b and true if b -> a
+     * Swap event logged on swap
+     * @param sender address of txn sender
+     * @param inAmts [x,y] amounts incoming to the pool
+     * @param outAmts [x,y] amounts outgoing from the pool
+     * @param poolBals [x,y] balances of the pool
      */
     Swap = new EventLogger<{
         sender: Address,
-        amountX: uint256,
-        amountY: uint256,
-        directionYtoX: boolean
+        inAmts: [uint256, uint256],
+        outAmts: [uint256, uint256],
+        poolBals: [uint256, uint256],
     }>();
 
-    AddLiquidity = new EventLogger<{
+    /**
+     * Deposit event logged when user adds liquidity
+     * @param sender address of txn sender
+     * @param inAmts [x,y] amounts incoming to the pool
+     * @param outLpt lpt amount outgoing from the pool
+     * @param poolBals [x,y] balances of the pool
+     */
+    Deposit = new EventLogger<{
         sender: Address,
-        amountX: uint256,
-        amountY: uint256,
-        lptAmount: uint256
+        inAmts: [uint256, uint256],
+        outLpt: uint256,
+        poolBals: [uint256, uint256],
     }>();
 
-    RemoveLiquidity = new EventLogger<{
+    /**
+     * Withdraw event logged when user removes liquidity
+     * @param sender address of txn sender
+     * @param inLpt lpt amount incoming to the pool
+     * @param outAmts [x,y] amounts outgoing from the pool
+     * @param poolBals [x,y] balances of the pool
+     */
+    Withdraw = new EventLogger<{
         sender: Address,
-        amountX: uint256,
-        amountY: uint256,
-        lptAmount: uint256
+        inLpt: uint256,
+        outAmts: [uint256, uint256],
+        poolBals: [uint256, uint256],
     }>();
 
+    /**
+     * Initialize the pool
+     * @param name name of the lp token
+     * @param symbol symbol of the lp token
+     * @param tokenYAppId appid (or id) of the y-token
+     */
     poolInitialize(name: StaticArray<byte, 32>, symbol: StaticArray<byte, 8>, tokenYAppId: Application): void {
         assert(this.app.creator === this.txn.sender || this.manager.value === this.txn.sender);
         assert(!this.totalSupply.exists);
@@ -62,12 +86,22 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         this.tokenYAppId.value = tokenYAppId;
     }
 
+    /**
+     * Update fee-controller address
+     * @param feeController new fee-controller address
+     * @returns `true` if success
+     */
     setFeeController(feeController: Address): boolean {
         assert(this.manager.value === this.txn.sender || this.feeController.value === this.txn.sender);
         this.feeController.value = feeController;
         return true;
     }
 
+    /**
+     * Update the swap-fee of the pool
+     * @param fee updated swap-fee
+     * @returns `true` if success
+     */
     setFees(fee: uint256): boolean {
         assert(this.feeController.value === this.txn.sender);
         this.fee.value = {
@@ -77,6 +111,11 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         return true;
     }
 
+    /**
+     * Update the platform-fee of the pool
+     * @param fee updated platform-fee
+     * @returns `true` if success
+     */
     setPlatformFees(fee: uint256): boolean {
         assert(this.manager.value === this.txn.sender);
         this.fee.value = {
@@ -86,8 +125,11 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         return true;
     }
 
+    /**
+     * Bring the pool account online for consensus participation
+     */
     registerOnline(selectionPk: bytes, stateProofPk: bytes, votePk: bytes, voteFirst: uint64, voteLast: uint64, voteKeyDilution: uint64): void {
-        assert(this.txn.sender === this.manager.value);
+        assert(this.txn.sender === this.feeController.value || this.txn.sender === this.manager.value);
 
         sendOnlineKeyRegistration({
             sender: this.app.address,
@@ -101,8 +143,11 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         });
     }
 
+    /**
+     * Bring the pool account offline i.e. stop consensus participation
+     */
     registerOffline(): void {
-        assert(this.txn.sender === this.manager.value);
+        assert(this.txn.sender === this.feeController.value || this.txn.sender === this.manager.value);
 
         sendOfflineKeyRegistration({
             sender: this.app.address,
@@ -198,6 +243,12 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         return result;
     }
 
+    /**
+     * Add liquidity to the pool
+     * @param payTxnX x-token txn
+     * @param amountY amount of y-token approved to the pool
+     * @returns `true` if success
+     */
     addLiquidity(payTxnX: PayTxn, amountY: uint256): boolean {
         verifyPayTxn(payTxnX, {
             sender: this.txn.sender,
@@ -249,12 +300,17 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         assert(lptToMint > <uint256>0);
         assert(this.transfer(this.app.address, this.txn.sender, lptToMint));
 
-        this.AddLiquidity.log(
+        const innerTxnsCount = 2;
+        const innerTxnsFee = innerTxnsCount * globals.minTxnFee;
+        const finalBalanceX = balanceX + amountX - <uint256>innerTxnsFee;
+        const finalBalanceY = balanceY + amountY;
+
+        this.Deposit.log(
             {
                 sender: this.txn.sender,
-                amountX: amountX,
-                amountY: amountY,
-                lptAmount: lptToMint
+                inAmts: [amountX, amountY],
+                outLpt: <uint256>0 + lptToMint,
+                poolBals: [finalBalanceX, finalBalanceY],
             }
         );
 
@@ -263,6 +319,11 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         return true;
     }
 
+    /**
+     * Remove liquidity from the pool
+     * @param lptAmount amount of lp-token to burn
+     * @returns `true` of success
+     */
     removeLiquidity(lptAmount: uint256): boolean {
         const balanceY = this.getTokenYBalance();
         const balanceX = this.getTokenXBalance();
@@ -281,12 +342,18 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         assert(this.transferXTo(this.txn.sender, withdrawAmountX));
         assert(this.transferYTo(this.txn.sender, withdrawAmountY));
 
-        this.RemoveLiquidity.log(
+
+        const innerTxnsCount = 2;
+        const innerTxnsFee = innerTxnsCount * globals.minTxnFee;
+        const finalBalanceX = balanceX - withdrawAmountX - <uint256>(balanceX === withdrawAmountX ? 0 : innerTxnsFee);
+        const finalBalanceY = balanceY - withdrawAmountY;
+
+        this.Withdraw.log(
             {
                 sender: this.txn.sender,
-                amountX: withdrawAmountX,
-                amountY: withdrawAmountY,
-                lptAmount: lptAmount
+                inLpt: lptAmount,
+                outAmts: [withdrawAmountX, withdrawAmountY],
+                poolBals: [finalBalanceX, finalBalanceY],
             }
         );
 
@@ -315,6 +382,12 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         return ((amount_without_fee - amount_with_fee) * this.fee.value.platformFee) / <uint256>SCALE;
     }
 
+    /**
+     * Swap x-token for y-token
+     * @param payTxnX x-token pay txn
+     * @param minAmountY minimum amount of y-token required for this txn to be successful
+     * @returns amount of y-token given out in exchange for x-token
+     */
     swapXtoY(payTxnX: PayTxn, minAmountY: uint256): uint256 {
         verifyPayTxn(payTxnX, {
             sender: this.txn.sender,
@@ -349,12 +422,17 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         assert(this.transferYTo(this.txn.sender, amountOut));
         assert(this.transferYTo(this.manager.value, platformFee));
 
+        const innerTxnsCount = 2;
+        const innerTxnsFee = innerTxnsCount * globals.minTxnFee;
+        const finalBalanceX = balanceX - <uint256>innerTxnsFee;
+        const finalBalanceY = balanceY - amountOut - platformFee;
+
         this.Swap.log(
             {
                 sender: this.txn.sender,
-                amountX: amountX,
-                amountY: amountOut,
-                directionYtoX: false
+                inAmts: [amountX, 0],
+                outAmts: [0, amountOut],
+                poolBals: [finalBalanceX, finalBalanceY],
             }
         );
 
@@ -363,6 +441,12 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         return amountOut;
     }
 
+    /**
+     * Swap y-token for x-token
+     * @param amountY amount of y-token approved for swap
+     * @param minAmountX minimum amount of x-token required for this txn to be successful
+     * @returns amount of x-token given out in exchange for x-token
+     */
     swapYtoX(amountY: uint256, minAmountX: uint256): uint256 {
         assert(this.transferYFrom(this.txn.sender, this.app.address, amountY));
 
@@ -390,12 +474,17 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         assert(this.transferXTo(this.txn.sender, amountOut));
         assert(this.transferXTo(this.manager.value, platformFee));
 
+        const innerTxnsCount = 2;
+        const innerTxnsFee = innerTxnsCount * globals.minTxnFee;
+        const finalBalanceX = balanceX - amountOut - platformFee - <uint256>innerTxnsFee;
+        const finalBalanceY = balanceY;
+
         this.Swap.log(
             {
                 sender: this.txn.sender,
-                amountX: amountOut,
-                amountY: amountY,
-                directionYtoX: true
+                inAmts: [0, amountY],
+                outAmts: [amountOut, 0],
+                poolBals: [finalBalanceX, finalBalanceY],
             }
         );
 

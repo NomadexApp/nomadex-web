@@ -59,9 +59,8 @@ export class SwapEvents {
 
 
     static async loadTxnsByEvent(appId: number, event: string) {
-        const signature = sha512_256(event).slice(0, 8);
-        const cache = await SwapEvents.getCache(appId, signature);
-
+        const selector = sha512_256(event).slice(0, 8);
+        const cache = await SwapEvents.getCache(appId, selector);
         const LIMIT = 1000;
         let next: string | undefined;
 
@@ -80,7 +79,7 @@ export class SwapEvents {
                 const batch: SwapTxn[] = resp['transactions'];
                 const filteredTxns = batch
                     .filter(txn => !cache.txns.find(cTxn => cTxn.id === txn.id))
-                    .filter(txn => txn.logs?.length && txn.logs.find(log => Buffer.from(log, 'base64').toString('hex').startsWith(signature)))
+                    .filter(txn => txn.logs?.length && txn.logs.find(log => Buffer.from(log, 'base64').toString('hex').startsWith(selector)))
                 cache.txns.push(...filteredTxns);
             }
 
@@ -98,15 +97,21 @@ export class SwapEvents {
 
         cache.txns = cache.txns.filter((txn, i) => !cache.txns.find((cTxn, index) => cTxn.id === txn.id && i !== index))
 
-        await SwapEvents.setCache(cache, appId, signature);
+        await SwapEvents.setCache(cache, appId, selector);
 
         return cache.txns.map(txn => {
             const logs = (txn.logs ?? []).map(log => Buffer.from(log, 'base64').toString('hex'));
-            const filteredLogs = logs.filter(log => log.startsWith(signature))
+            const filteredLogs = logs.filter(log => log.startsWith(selector))
             try {
                 const events = filteredLogs.map(log => {
                     const argsAbiType = algosdk.ABITupleType.from(event.replace(/^\w+/, ''));
-                    return argsAbiType.decode(Uint8Array.from(Buffer.from(log.slice(8), 'hex')))
+                    // console.log('decoded', argsAbiType.decode(Uint8Array.from(Buffer.from(log.slice(8), 'hex'))));
+                    try {
+                        return argsAbiType.decode(Uint8Array.from(Buffer.from(log.slice(8), 'hex')))
+                    } catch (e) {
+                        console.log(log);
+                        throw e;
+                    }
                 });
                 return { ...txn, events: { [event]: events } };
             } catch (error) {

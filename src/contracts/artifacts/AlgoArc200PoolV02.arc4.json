@@ -272,18 +272,22 @@
     },
     {
       "name": "poolInitialize",
+      "desc": "Initialize the pool",
       "args": [
         {
           "name": "name",
-          "type": "byte[32]"
+          "type": "byte[32]",
+          "desc": "name of the lp token"
         },
         {
           "name": "symbol",
-          "type": "byte[8]"
+          "type": "byte[8]",
+          "desc": "symbol of the lp token"
         },
         {
           "name": "tokenYAppId",
-          "type": "application"
+          "type": "application",
+          "desc": "appid (or id) of the y-token"
         }
       ],
       "returns": {
@@ -292,42 +296,52 @@
     },
     {
       "name": "setFeeController",
+      "desc": "Update fee-controller address",
       "args": [
         {
           "name": "feeController",
-          "type": "address"
+          "type": "address",
+          "desc": "new fee-controller address"
         }
       ],
       "returns": {
-        "type": "bool"
+        "type": "bool",
+        "desc": "`true`if success"
       }
     },
     {
       "name": "setFees",
+      "desc": "Update the swap-fee of the pool",
       "args": [
         {
           "name": "fee",
-          "type": "uint256"
+          "type": "uint256",
+          "desc": "updated swap-fee"
         }
       ],
       "returns": {
-        "type": "bool"
+        "type": "bool",
+        "desc": "`true`if success"
       }
     },
     {
       "name": "setPlatformFees",
+      "desc": "Update the platform-fee of the pool",
       "args": [
         {
           "name": "fee",
-          "type": "uint256"
+          "type": "uint256",
+          "desc": "updated platform-fee"
         }
       ],
       "returns": {
-        "type": "bool"
+        "type": "bool",
+        "desc": "`true`if success"
       }
     },
     {
       "name": "registerOnline",
+      "desc": "Bring the pool account online for consensus participation",
       "args": [
         {
           "name": "selectionPk",
@@ -360,6 +374,7 @@
     },
     {
       "name": "registerOffline",
+      "desc": "Bring the pool account offline i.e. stop consensus participation",
       "args": [],
       "returns": {
         "type": "void"
@@ -375,94 +390,105 @@
     },
     {
       "name": "addLiquidity",
+      "desc": "Add liquidity to the pool",
       "args": [
         {
           "name": "payTxnX",
-          "type": "pay"
+          "type": "pay",
+          "desc": "x-token txn"
         },
         {
           "name": "amountY",
-          "type": "uint256"
+          "type": "uint256",
+          "desc": "amount of y-token approved to the pool"
         }
       ],
       "returns": {
-        "type": "bool"
+        "type": "bool",
+        "desc": "`true`if success"
       },
       "events": [
         {
-          "name": "AddLiquidity",
+          "name": "Deposit",
           "args": [
             {
               "name": "sender",
               "type": "address"
             },
             {
-              "name": "amountX",
+              "name": "inAmts",
+              "type": "(uint256,uint256)"
+            },
+            {
+              "name": "outLpt",
               "type": "uint256"
             },
             {
-              "name": "amountY",
-              "type": "uint256"
-            },
-            {
-              "name": "lptAmount",
-              "type": "uint256"
+              "name": "poolBals",
+              "type": "(uint256,uint256)"
             }
           ],
-          "desc": ""
+          "desc": "Deposit event logged when user adds liquidity"
         }
       ]
     },
     {
       "name": "removeLiquidity",
+      "desc": "Remove liquidity from the pool",
       "args": [
         {
           "name": "lptAmount",
-          "type": "uint256"
+          "type": "uint256",
+          "desc": "amount of lp-token to burn"
         }
       ],
       "returns": {
-        "type": "bool"
+        "type": "bool",
+        "desc": "`true`of success"
       },
       "events": [
         {
-          "name": "RemoveLiquidity",
+          "name": "Withdraw",
           "args": [
             {
               "name": "sender",
               "type": "address"
             },
             {
-              "name": "amountX",
+              "name": "inLpt",
               "type": "uint256"
             },
             {
-              "name": "amountY",
-              "type": "uint256"
+              "name": "outAmts",
+              "type": "(uint256,uint256)"
             },
             {
-              "name": "lptAmount",
-              "type": "uint256"
+              "name": "poolBals",
+              "type": "(uint256,uint256)"
             }
           ],
-          "desc": ""
+          "desc": "Withdraw event logged when user removes liquidity"
         }
       ]
     },
     {
       "name": "swapXtoY",
+      "desc": "Swap x-token for y-token",
       "args": [
         {
           "name": "payTxnX",
-          "type": "pay"
+          "type": "pay",
+          "desc": "x-token pay txn"
         },
         {
           "name": "minAmountY",
-          "type": "uint256"
+          "type": "uint256",
+          "desc": "minimum amount of y-token required for this txn to be successful"
         }
       ],
       "returns": {
-        "type": "uint256"
+        "type": "uint256",
+        "desc": "amount of y-token given out in exchange for x-token"
       },
       "events": [
         {
@@ -473,36 +499,40 @@
               "type": "address"
             },
             {
-              "name": "amountX",
-              "type": "uint256"
+              "name": "inAmts",
+              "type": "(uint256,uint256)"
             },
             {
-              "name": "amountY",
-              "type": "uint256"
+              "name": "outAmts",
+              "type": "(uint256,uint256)"
             },
             {
-              "name": "directionYtoX",
-              "type": "bool"
+              "name": "poolBals",
+              "type": "(uint256,uint256)"
             }
           ],
-          "desc": ""
+          "desc": "Swap event logged on swap"
         }
       ]
     },
     {
       "name": "swapYtoX",
+      "desc": "Swap y-token for x-token",
       "args": [
         {
           "name": "amountY",
-          "type": "uint256"
+          "type": "uint256",
+          "desc": "amount of y-token approved for swap"
         },
         {
           "name": "minAmountX",
-          "type": "uint256"
+          "type": "uint256",
+          "desc": "minimum amount of x-token required for this txn to be successful"
         }
       ],
       "returns": {
-        "type": "uint256"
+        "type": "uint256",
+        "desc": "amount of x-token given out in exchange for x-token"
       },
       "events": [
         {
@@ -513,19 +543,19 @@
               "type": "address"
             },
             {
-              "name": "amountX",
-              "type": "uint256"
+              "name": "inAmts",
+              "type": "(uint256,uint256)"
             },
             {
-              "name": "amountY",
-              "type": "uint256"
+              "name": "outAmts",
+              "type": "(uint256,uint256)"
             },
             {
-              "name": "directionYtoX",
-              "type": "bool"
+              "name": "poolBals",
+              "type": "(uint256,uint256)"
             }
           ],
-          "desc": ""
+          "desc": "Swap event logged on swap"
         }
       ]
     }
@@ -575,63 +605,63 @@
           "type": "address"
         },
         {
-          "name": "amountX",
-          "type": "uint256"
+          "name": "inAmts",
+          "type": "(uint256,uint256)"
         },
         {
-          "name": "amountY",
-          "type": "uint256"
+          "name": "outAmts",
+          "type": "(uint256,uint256)"
         },
         {
-          "name": "directionYtoX",
-          "type": "bool"
+          "name": "poolBals",
+          "type": "(uint256,uint256)"
         }
       ],
-      "desc": ""
+      "desc": "Swap event logged on swap"
     },
     {
-      "name": "AddLiquidity",
+      "name": "Deposit",
       "args": [
         {
           "name": "sender",
           "type": "address"
         },
         {
-          "name": "amountX",
+          "name": "inAmts",
+          "type": "(uint256,uint256)"
+        },
+        {
+          "name": "outLpt",
           "type": "uint256"
         },
         {
-          "name": "amountY",
-          "type": "uint256"
-        },
-        {
-          "name": "lptAmount",
-          "type": "uint256"
+          "name": "poolBals",
+          "type": "(uint256,uint256)"
         }
       ],
-      "desc": ""
+      "desc": "Deposit event logged when user adds liquidity"
     },
     {
-      "name": "RemoveLiquidity",
+      "name": "Withdraw",
       "args": [
         {
           "name": "sender",
           "type": "address"
         },
         {
-          "name": "amountX",
+          "name": "inLpt",
           "type": "uint256"
         },
         {
-          "name": "amountY",
-          "type": "uint256"
+          "name": "outAmts",
+          "type": "(uint256,uint256)"
         },
         {
-          "name": "lptAmount",
-          "type": "uint256"
+          "name": "poolBals",
+          "type": "(uint256,uint256)"
         }
       ],
-      "desc": ""
+      "desc": "Withdraw event logged when user removes liquidity"
     }
   ]
 }
