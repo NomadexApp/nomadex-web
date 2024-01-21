@@ -14,7 +14,7 @@
 	import { page } from '$app/stores';
 	import MdToll from 'svelte-star/dist/md/MdToll.svelte';
 	import MdAddCircle from 'svelte-star/dist/md/MdToll.svelte';
-	import MdAdd from 'svelte-star/dist/md/MdSwapHoriz.svelte';
+	import IoMdSwap from 'svelte-star/dist/io/IoMdSwap.svelte';
 
 	let sidebarWidth = 0;
 	let innerWidth = browser ? window.innerWidth : 0;
@@ -113,7 +113,7 @@
 					tabindex="0"
 				>
 					<span class="flex pt-[1px] justify-start items-end flex-grow w-full">LIMIT ORDERS</span>
-					<span class="h-5 w-5"><MdAdd /></span>
+					<span class="h-5 w-5"><IoMdSwap /></span>
 				</a>
 			</li>
 			<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/analytics/')}>
