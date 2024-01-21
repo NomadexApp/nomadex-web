@@ -8,8 +8,9 @@
 	import { TokenType, knownPools, type Token, knownTokens, type Pool } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getClient } from '$lib/_shared';
 	import { convertDecimals } from '$lib/numbers';
+	import MdArrowDropDown from 'svelte-star/dist/md/MdArrowDropDown.svelte';
+	import { lastActiveAnalyticsPair } from '$lib/stores';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -39,6 +40,8 @@
 	if (!matchedPool) {
 		throw Error('pool not found');
 	}
+
+	lastActiveAnalyticsPair.set(`${tokenA.ticker}-${tokenB.ticker}`);
 
 	enum Timescale {
 		'15m' = 15 * 60,
@@ -245,6 +248,14 @@
 
 	let innerWidth = browser ? window.innerWidth : 0;
 	let chartWidth = 0;
+
+	const getTargetPair = (arc200Symbol: string) => {
+		if (tokenA.ticker === arc200Token.ticker) {
+			return `${arc200Symbol}-VOI`;
+		} else {
+			return `VOI-${arc200Symbol}`;
+		}
+	};
 </script>
 
 <svelte:window bind:innerWidth />
@@ -252,9 +263,9 @@
 <section class="p-4 flex flex-col items-center gap-2">
 	<br />
 	<br />
-	<div class="flex flex-wrap gap-4 justify-between w-full max-w-[900px]">
+	<div class="flex flex-wrap gap-4 justify-between items-center w-full max-w-[900px]">
 		<div
-			class="cursor-pointer text-lg"
+			class="cursor-pointer"
 			on:click={() => {
 				goto(`/analytics/${tokenB.ticker}-${tokenA.ticker}`);
 				pageContentRefresh(0);
@@ -262,16 +273,38 @@
 			}}
 			on:keydown
 		>
-			<span class="opacity-90">Current Price</span>
-			<br />
-			<span class="text-sm">
+			<span class="">
 				<span class="">1</span>
 				{pricingDirection.split('/')[0]} ≈
 			</span>
-			<span class="font-normal prose">
+			<span class="">
 				{price < 0.1 ? Number(price.toFixed(10)) : price.toLocaleString('en')}
 				{pricingDirection.split('/')[1]}
+				<div class="inline-flex w-10 absolute ml-0 -mt-2">
+					<details class="dropdown dropdown-content dropdown-end">
+						<summary class="m-1 btn btn-sm btn-ghost btn-square scale-75" on:click|stopPropagation>
+							<span class="scale-150"><MdArrowDropDown /></span>
+						</summary>
+						<ul
+							class="p-0 m-0 shadow menu dropdown-content z-[1] bg-base-100 rounded-box max-w-20 border border-gray-500 list-none max-h-64 overflow-auto block"
+						>
+							{#each $knownPools as pool}
+								<li
+									on:click|stopPropagation={() => {
+										goto(getTargetPair(pool.arc200Asset.symbol));
+										pageContentRefresh();
+									}}
+									on:keydown
+									class="border-b border-gray-500 w-full m-0 pl-0"
+								>
+									<span>{pool.arc200Asset.symbol}</span>
+								</li>
+							{/each}
+						</ul>
+					</details>
+				</div>
 			</span>
+			<span />
 		</div>
 		<div>
 			<button

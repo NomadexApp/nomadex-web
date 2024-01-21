@@ -13,6 +13,7 @@
 	import algosdk from 'algosdk';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 	import { convertDecimals } from '$lib/numbers';
+	import { lastActiveSwapPair } from '$lib/stores';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -40,6 +41,8 @@
 	if (!matchedPool) {
 		throw Error('pool not found');
 	}
+
+	lastActiveSwapPair.set(`${tokenA.ticker}-${tokenB.ticker}`);
 
 	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
 
