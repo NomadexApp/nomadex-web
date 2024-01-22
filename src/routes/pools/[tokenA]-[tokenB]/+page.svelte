@@ -9,6 +9,7 @@
 	import { onChainStateWatcher, watchArc200Balance } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
 	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
+	import { convertDecimals } from '$lib/numbers';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -199,7 +200,7 @@
 				Not Enough balance to create liquidity pool
 				<br />
 				Balance: {($connectedUserState.amount / 1e6).toLocaleString('en')} VOI / {(
-					Number(($arc200Balance ?? 0n) / 10n ** BigInt(Math.max(0, arc200Token.decimals - 6))) / 1e6
+					Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6
 				).toLocaleString('en')}
 				{arc200Token.ticker}
 			{/if}
