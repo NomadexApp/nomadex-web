@@ -116,7 +116,7 @@
 			{#if $knownPools.length}
 				<li class="pl-0 sm:block">
 					<a class="flex justify-between" href="https://v01.nomadex.app" target="_blank" tabindex="0">
-						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">Nomadex v0.1</span>
+						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">NOMADEX v0.1</span>
 						<span class="h-5 w-5"><MdLaunch /></span>
 					</a>
 				</li>
