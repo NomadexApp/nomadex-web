@@ -15,6 +15,7 @@
 	import MdToll from 'svelte-star/dist/md/MdToll.svelte';
 	import MdAddCircle from 'svelte-star/dist/md/MdToll.svelte';
 	import IoMdSwap from 'svelte-star/dist/io/IoMdSwap.svelte';
+	import MdLaunch from 'svelte-star/dist/md/MdLaunch.svelte';
 
 	let sidebarWidth = 0;
 	let innerWidth = browser ? window.innerWidth : 0;
@@ -109,6 +110,14 @@
 					>
 						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">ANALYTICS</span>
 						<span class="h-5 w-5"><AnalyticsIcon /></span>
+					</a>
+				</li>
+			{/if}
+			{#if $knownPools.length}
+				<li class="pl-0 sm:block">
+					<a class="flex justify-between" href="https://v01.nomadex.app" target="_blank" tabindex="0">
+						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">Nomadex v0.1</span>
+						<span class="h-5 w-5"><MdLaunch /></span>
 					</a>
 				</li>
 			{/if}
