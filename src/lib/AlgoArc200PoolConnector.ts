@@ -1,15 +1,15 @@
 import algosdk from "algosdk";
+import Contract from "arc200js";
 import { getTransactionSignerAccount, signAndSendTransections } from "./UseWallet.svelte";
 import { getBoxName, getUnnamedResourcesAccessed, indexerClient, nodeClient, nodeClientAllowsCompile } from "./_shared";
-import Contract from "arc200js";
 import { Arc200Interface } from "./utils";
 import { addNotification } from "./Notify.svelte";
 import { AlgoArc200PoolV02Client } from "../contracts/clients/AlgoArc200PoolV02Client";
 
 const MANAGER = 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ';
 
-// const SCALE = 100_000_000_000_000;
-const MIN_BALANCE = 1_000_000;
+const MIN_BALANCE = 250_000;
+const MIN_ARC200_BALANCE = 1;
 
 function strToFixedBytes(str: string, length: number) {
     str = str.slice(0, length);
@@ -120,7 +120,7 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
             this.arc200AssetId,
             this.signer.addr,
             algosdk.getApplicationAddress(this.appId),
-            BigInt(MIN_BALANCE),
+            BigInt(MIN_ARC200_BALANCE),
         );
         const txns = await getInitGroup();
 
