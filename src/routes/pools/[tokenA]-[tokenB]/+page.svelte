@@ -104,8 +104,8 @@
 
 		await connector.invoke(
 			'mint',
-			convertDecimals(FIRST_LIQUIDITY, 0, 6),
-			convertDecimals(FIRST_LIQUIDITY, 0, arc200Token.decimals)
+			convertDecimals(Math.floor(FIRST_LIQUIDITY * 1e6), 6, 6),
+			convertDecimals(Math.floor(FIRST_LIQUIDITY * 1e6), 6, arc200Token.decimals)
 		);
 		console.log('added liquidity');
 
