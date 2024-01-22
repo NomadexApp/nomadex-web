@@ -110,6 +110,8 @@
 
 		await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id);
 
+		goto('/');
+
 		return;
 	}
 
