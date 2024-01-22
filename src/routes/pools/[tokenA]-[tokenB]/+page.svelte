@@ -110,7 +110,7 @@
 
 		await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id);
 
-		goto('/');
+		goto(`/liquidity/VOI-${arc200Token.ticker}/add`);
 
 		return;
 	}
