@@ -89,8 +89,8 @@
 
 	$: initialLiquidityAmount = Math.min(
 		Math.min(
-			Math.floor(Number(($arc200Balance ?? 0n) / 10n ** BigInt(Math.max(0, arc200Token.decimals - 6))) / 1e6),
-			Math.min(Math.floor($connectedUserState.amount), 100)
+			Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6,
+			Math.min(Math.floor($connectedUserState.amount / 1e6), 100)
 		),
 		100
 	);
