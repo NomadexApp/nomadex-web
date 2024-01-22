@@ -16,35 +16,43 @@
 	let symbol = '';
 	let decimals = 0;
 	let totalSupply = 0;
+	let loading = false;
 
 	onMount(async () => {
-		const client = new Arc200TokenClient(
-			{
-				id: appId,
-				resolveBy: 'id',
-				sender: getTransactionSignerAccount(),
-			},
-			nodeClient
-		);
+		loading = true;
+		try {
+			const client = new Arc200TokenClient(
+				{
+					id: appId,
+					resolveBy: 'id',
+					sender: getTransactionSignerAccount(),
+				},
+				nodeClient
+			);
 
-		const contract = new Contract(appId, nodeClient, undefined);
+			const contract = new Contract(appId, nodeClient, undefined);
 
-		const arc200_name = await contract.arc200_name();
-		name = arc200_name.success ? arc200_name.returnValue : '';
+			const arc200_name = await contract.arc200_name();
+			name = arc200_name.success ? arc200_name.returnValue : '';
 
-		const arc200_symbol = await contract.arc200_symbol();
-		symbol = arc200_symbol.success ? arc200_symbol.returnValue : '';
+			const arc200_symbol = await contract.arc200_symbol();
+			symbol = arc200_symbol.success ? arc200_symbol.returnValue : '';
 
-		const arc200_decimals = await contract.arc200_decimals();
-		decimals = arc200_decimals.success ? Number(arc200_decimals.returnValue) : 0;
+			const arc200_decimals = await contract.arc200_decimals();
+			decimals = arc200_decimals.success ? Number(arc200_decimals.returnValue) : 0;
 
-		const arc200_totalSupply = await contract.arc200_totalSupply();
-		totalSupply = arc200_totalSupply.success ? Number(arc200_totalSupply.returnValue / 10n ** BigInt(decimals)) : 0;
+			const arc200_totalSupply = await contract.arc200_totalSupply();
+			totalSupply = arc200_totalSupply.success ? Number(arc200_totalSupply.returnValue / 10n ** BigInt(decimals)) : 0;
 
-		const state = await client.getGlobalState();
-		if (state.manager) {
-			manager = algosdk.encodeAddress(state.manager.asByteArray());
-			currentManager = manager;
+			const state = await client.getGlobalState();
+			if (state.manager) {
+				manager = algosdk.encodeAddress(state.manager.asByteArray());
+				currentManager = manager;
+			}
+		} catch (e) {
+			console.error(e);
+		} finally {
+			loading = false;
 		}
 	});
 
@@ -105,7 +113,7 @@
 
 		{#if symbol}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary" on:click={createVoiPool}>
+				<button class="btn btn-primary" class:btn-outline={loading} disabled={loading} on:click={createVoiPool}>
 					{#if $knownPools.find((pool) => pool.arc200Asset.assetId === appId)}
 						Configure
 					{:else}
