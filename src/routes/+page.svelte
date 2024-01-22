@@ -9,6 +9,13 @@
 <section class="p-4">
 	<br />
 	<br />
+	<div class="flex flex-col justify-center items-center gap-2 pt-6">
+		<h4 class="text-xl font-bold prose w-full mb-5">Popular Liquidity Pools</h4>
+		{#each $knownPools as pool}
+			<PoolInfo {pool} />
+		{/each}
+	</div>
+	<br />
 	<div
 		class="flex flex-col justify-center items-center gap-2 pt-6 transition-opacity duration-200"
 		style={hasPosition ? 'opacity: 1;' : 'opacity: 0;margin-top:-3rem;height: 0 !important;overflow: 0;'}
@@ -16,13 +23,6 @@
 		<h4 class="text-xl font-bold prose w-full mb-5">Your Positions</h4>
 		{#each $knownPools as pool}
 			<PoolPosition {pool} exists={() => (hasPosition = true)} />
-		{/each}
-	</div>
-	<br />
-	<div class="flex flex-col justify-center items-center gap-2 pt-6">
-		<h4 class="text-xl font-bold prose w-full mb-5">Popular Liquidity Pools</h4>
-		{#each $knownPools as pool}
-			<PoolInfo {pool} />
 		{/each}
 	</div>
 </section>

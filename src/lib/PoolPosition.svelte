@@ -15,7 +15,7 @@
 {#if $balance && $totalSupply}
 	<div class="pool bg-base-200 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
 		<div class="flex justify-between">
-			<span class="name text-lg font-bold text-bold mb-2">VOI / {pool.arc200Asset.symbol}</span>
+			<span class="name text-lg">VOI / {pool.arc200Asset.symbol}</span>
 			<span class="" />
 			<span>
 				{(Number(($balance * BigInt(10_000)) / $totalSupply) / 100).toLocaleString('en')}% Share

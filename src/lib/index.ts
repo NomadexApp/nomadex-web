@@ -143,8 +143,8 @@ export async function getListOfArc200Tokens() {
 
     console.log('Pools:', validPools);
 
-    knownPools.update(pools => pools.slice(0, 0).concat(validPools));
-    knownTokens.update(toks => toks.slice(0, 1).concat(validTokens));
+    knownPools.update(pools => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId)));
+    knownTokens.update(toks => toks.slice(0, 1).concat(validTokens.sort((a, b) => a.id - b.id)));
 
     arePoolsLoaded.set(true);
 }

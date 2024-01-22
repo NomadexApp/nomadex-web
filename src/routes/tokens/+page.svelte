@@ -4,6 +4,7 @@
 	import { onChainStateWatcher, type AccountState } from '$lib/stores/onchain';
 	import { goto } from '$app/navigation';
 	import algosdk from 'algosdk';
+	import { Arc200Interface } from '$lib/utils';
 
 	const poolsState: Record<string, AccountState> = {};
 
@@ -44,12 +45,28 @@
 				on:keydown
 			>
 				<div class="flex justify-between">
-					<span class="name text-lg font-bold text-bold mb-2">
-						{token.ticker}
-						{#if token.type === TokenType.ARC200}
-							(arc200)
-						{/if}
+					<span class="flex w-full items-center gap-2">
+						<span class="name text-lg text-bold">
+							{#if token.id}
+								{#await Arc200Interface.arc200_name(token.id)}
+									{token.ticker}
+								{:then name}
+									{name || token.ticker}
+								{:catch}
+									{token.ticker}
+								{/await}
+							{:else}
+								{token.ticker}
+							{/if}
+						</span>
+						<span>({token.ticker})</span>
+						<span class="flex-grow" />
+						<span>{token.type}</span>
 					</span>
+
+					<!-- {#if token.type === TokenType.ARC200}
+							(arc200)
+						{/if} -->
 				</div>
 			</div>
 		{/each}
