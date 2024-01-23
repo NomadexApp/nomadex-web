@@ -290,8 +290,8 @@
 						>
 							{#each $knownPools as pool}
 								<li
-									on:click|stopPropagation={() => {
-										goto(getTargetPair(pool.arc200Asset.symbol));
+									on:click|stopPropagation={async () => {
+										await goto(`/analytics/${getTargetPair(pool.arc200Asset.symbol)}`);
 										pageContentRefresh();
 									}}
 									on:keydown
