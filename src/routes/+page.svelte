@@ -4,16 +4,20 @@
 	import PoolPosition from '$lib/PoolPosition.svelte';
 
 	let hasPosition = false;
+	let showMore = false;
 </script>
 
 <section class="p-4">
 	<br />
 	<br />
 	<div class="flex flex-col justify-center items-center gap-2 pt-6">
-		<h4 class="text-xl font-bold prose w-full mb-5">Popular Liquidity Pools</h4>
-		{#each $knownPools as pool}
+		<h4 class="text-xl font-bold prose w-full mb-5">Liquidity Pools</h4>
+		{#each $knownPools.slice(0, showMore ? 1_000 : 5) as pool}
 			<PoolInfo {pool} />
 		{/each}
+		{#if !showMore}
+			<button class="btn btn-ghost btn-sm" on:click={() => (showMore = !showMore)}>Show More</button>
+		{/if}
 	</div>
 	<br />
 	<div
