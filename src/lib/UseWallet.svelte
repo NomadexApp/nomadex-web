@@ -47,6 +47,7 @@
 					for (const txn of group) {
 						txns.push({ txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64') });
 					}
+					await window['algorand'].enable();
 					const { stxns } = await window['algorand'].signTxns({
 						txns: txns,
 					});
