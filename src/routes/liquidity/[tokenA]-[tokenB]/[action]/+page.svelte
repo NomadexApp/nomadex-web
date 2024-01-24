@@ -95,7 +95,7 @@
 
 		const ratio = Number(convertDecimals(viaBalance, arc200Token.decimals, 6)) / 1e6 / (voiBalance / voiToken.unit);
 
-		const SCALE = 100_000_000;
+		const SCALE = 100_000_000_000_000;
 
 		if (ratio) {
 			inputTokenB = Math.floor(inputTokenA * SCALE * ratio) / SCALE;
@@ -117,7 +117,7 @@
 
 		const ratio = voiBalance / voiToken.unit / (Number(convertDecimals(viaBalance, arc200Token.decimals, 6)) / 1e6);
 
-		const SCALE = 100_000_000;
+		const SCALE = 100_000_000_000_000;
 
 		if (ratio) {
 			inputTokenA = Math.floor(inputTokenB * SCALE * ratio) / SCALE;

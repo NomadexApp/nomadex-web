@@ -43,6 +43,30 @@
 	let feePercent = 0;
 	let platformFeePercent = 0;
 
+	let selectionPk = '';
+	let stateProofPk = '';
+	let votePk = '';
+	let voteFirst = 0;
+	let voteLast = 0;
+	let voteKeyDilution = 0;
+
+	async function registerOnline() {
+		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+		await connector.invoke('registerOnline', {
+			selectionPk: Uint8Array.from(Buffer.from(selectionPk, 'base64')),
+			stateProofPk: Uint8Array.from(Buffer.from(stateProofPk, 'base64')),
+			votePk: Uint8Array.from(Buffer.from(votePk, 'base64')),
+			voteFirst,
+			voteLast,
+			voteKeyDilution,
+		});
+	}
+
+	async function registerOffline() {
+		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+		await connector.invoke('registerOffline', {});
+	}
+
 	// if (!matchedPool) {
 	// 	throw Error('pool not found');
 	// }
@@ -157,21 +181,57 @@
 					<br />
 				</form>
 			{/if}
-			{#if $connectedAccount === managerAddress}
+			{#if [managerAddress, feeControllerAddress].includes($connectedAccount)}
 				<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] prose">
-					<h4 class="text-left">Update Pool Contract (VOI/{arc200Token.ticker})</h4>
-
-					<div class="flex justify-center mt-2 pr-0">
-						<button
-							class="btn btn-primary w-full box-border"
-							class:disabled={updating}
-							disabled={updating}
-							on:click={updatePool}
-						>
-							Update Pool Contract
-						</button>
+					<h4 class="text-left">Consensus</h4>
+					<div class="h-full flex flex-col justify-start items-center gap-3 w-full">
+						<div class="w-full max-w-[610px] flex flex-col justify-center">
+							<div>Selection PK:</div>
+							<input class="input input-primary" type="text" bind:value={selectionPk} />
+						</div>
+						<div class="w-full max-w-[610px] flex flex-col justify-center">
+							<div>State Proof PK:</div>
+							<input class="input input-primary" type="text" bind:value={stateProofPk} />
+						</div>
+						<div class="w-full max-w-[610px] flex flex-col justify-center">
+							<div>Vote PK:</div>
+							<input class="input input-primary" type="text" bind:value={votePk} />
+						</div>
+						<div class="w-full max-w-[610px] flex flex-col justify-center">
+							<div>Vote First:</div>
+							<input class="input input-primary" type="number" bind:value={voteFirst} />
+						</div>
+						<div class="w-full max-w-[610px] flex flex-col justify-center">
+							<div>Vote Last:</div>
+							<input class="input input-primary" type="number" bind:value={voteLast} />
+						</div>
+						<div class="w-full max-w-[610px] flex flex-col justify-center">
+							<div>Vote Key Dilution:</div>
+							<input class="input input-primary" type="number" bind:value={voteKeyDilution} />
+						</div>
+						<div class="w-full max-w-[610px] flex flex-col justify-center">
+							<button class="btn btn-primary btn-sm" on:click={registerOnline}>Register Online</button>
+						</div>
+						<div class="w-full max-w-[610px] flex flex-col justify-center">
+							<button class="btn btn-primary btn-sm" on:click={registerOffline}>Register Offline</button>
+						</div>
 					</div>
 					<br />
+					{#if $connectedAccount === managerAddress}
+						<h4 class="text-left">Update Pool Contract (VOI/{arc200Token.ticker})</h4>
+
+						<div class="flex justify-center mt-2 pr-0">
+							<button
+								class="btn btn-primary w-full box-border"
+								class:disabled={updating}
+								disabled={updating}
+								on:click={updatePool}
+							>
+								Update Pool Contract
+							</button>
+						</div>
+						<br />
+					{/if}
 				</form>
 			{/if}
 		{:else if typeof $arc200Balance !== 'undefined'}
