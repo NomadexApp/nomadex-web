@@ -2313,7 +2313,7 @@ addLiquidity:
 
 	// Push empty bytes after the frame pointer to reserve space for local variables
 	byte 0x
-	dupn 19
+	dupn 16
 
 	// src/contracts/AlgoArc200PoolV02.algo.ts:253
 	// verifyPayTxn(payTxnX, {
@@ -2392,78 +2392,7 @@ addLiquidity:
 	b-
 	frame_bury 3 // issuedLptBefore: unsafe uint256
 
-	// if11_condition
 	// src/contracts/AlgoArc200PoolV02.algo.ts:269
-	// balanceY > <uint256>0 && balanceX > <uint256>0 && issuedLptBefore > <uint256>0
-	frame_dig 1 // balanceY: unsafe uint256
-	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	b>
-	dup
-	bz skip_and0
-	frame_dig 2 // balanceX: unsafe uint256
-	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	b>
-	&&
-
-skip_and0:
-	dup
-	bz skip_and1
-	frame_dig 3 // issuedLptBefore: unsafe uint256
-	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	b>
-	&&
-
-skip_and1:
-	bz if11_end
-
-	// if11_consequent
-	// src/contracts/AlgoArc200PoolV02.algo.ts:270
-	// liqudityRatioBefore = (((balanceX - amountX) * <uint256>SCALE) / balanceY)
-	frame_dig 2 // balanceX: unsafe uint256
-	frame_dig 0 // amountX: unsafe uint256
-	b-
-	byte 0x00005af3107a4000
-	b*
-	frame_dig 1 // balanceY: unsafe uint256
-	b/
-	frame_bury 4 // liqudityRatioBefore: unsafe uint256
-
-	// src/contracts/AlgoArc200PoolV02.algo.ts:271
-	// liqudityRatioOfCurrentTxn = ((amountX * <uint256>SCALE) / amountY)
-	frame_dig 0 // amountX: unsafe uint256
-	byte 0x00005af3107a4000
-	b*
-	frame_dig -2 // amountY: uint256
-	b/
-	frame_bury 5 // liqudityRatioOfCurrentTxn: unsafe uint256
-
-	// src/contracts/AlgoArc200PoolV02.algo.ts:272
-	// ratioDivergenceAllowed = (liqudityRatioBefore / <uint256>40)
-	frame_dig 4 // liqudityRatioBefore: unsafe uint256
-	byte 0x0000000000000000000000000000000000000000000000000000000000000028
-	b/
-	frame_bury 6 // ratioDivergenceAllowed: unsafe uint256
-
-	// src/contracts/AlgoArc200PoolV02.algo.ts:274
-	// assert((liqudityRatioBefore - ratioDivergenceAllowed) < liqudityRatioOfCurrentTxn)
-	frame_dig 4 // liqudityRatioBefore: unsafe uint256
-	frame_dig 6 // ratioDivergenceAllowed: unsafe uint256
-	b-
-	frame_dig 5 // liqudityRatioOfCurrentTxn: unsafe uint256
-	b<
-	assert
-
-	// src/contracts/AlgoArc200PoolV02.algo.ts:275
-	// assert(liqudityRatioOfCurrentTxn < (liqudityRatioBefore + ratioDivergenceAllowed))
-	frame_dig 5 // liqudityRatioOfCurrentTxn: unsafe uint256
-	frame_dig 4 // liqudityRatioBefore: unsafe uint256
-	frame_dig 6 // ratioDivergenceAllowed: unsafe uint256
-	b+
-	b<
-	assert
-
-if11_end:
-	// src/contracts/AlgoArc200PoolV02.algo.ts:278
 	// assert(this.transferYFrom(this.txn.sender, this.app.address, amountY))
 	frame_dig -2 // amountY: uint256
 	global CurrentApplicationAddress
@@ -2471,63 +2400,63 @@ if11_end:
 	callsub transferYFrom
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:280
+	// src/contracts/AlgoArc200PoolV02.algo.ts:271
 	// lptToMint = <uint256>0
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	frame_bury 7 // lptToMint: uint256
+	frame_bury 4 // lptToMint: uint256
 
-	// if12_condition
-	// src/contracts/AlgoArc200PoolV02.algo.ts:282
+	// if11_condition
+	// src/contracts/AlgoArc200PoolV02.algo.ts:273
 	// issuedLptBefore === <uint256>0
 	frame_dig 3 // issuedLptBefore: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b==
-	bz if12_else
+	bz if11_else
 
-	// if12_consequent
-	// src/contracts/AlgoArc200PoolV02.algo.ts:284
+	// if11_consequent
+	// src/contracts/AlgoArc200PoolV02.algo.ts:275
 	// decimalsOfX = this.getTokenXDecimals()
 	callsub getTokenXDecimals
-	frame_bury 8 // decimalsOfX: unsafe uint8
+	frame_bury 5 // decimalsOfX: unsafe uint8
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:285
+	// src/contracts/AlgoArc200PoolV02.algo.ts:276
 	// decimalsOfY = this.getTokenYDecimals()
 	callsub getTokenYDecimals
-	frame_bury 9 // decimalsOfY: unsafe uint8
+	frame_bury 6 // decimalsOfY: unsafe uint8
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:287
+	// src/contracts/AlgoArc200PoolV02.algo.ts:278
 	// amountXNormalized = (amountX * (this.powOfTen(DECIMALS))) / this.powOfTen(<uint64>decimalsOfX)
 	frame_dig 0 // amountX: unsafe uint256
 	int 6
 	callsub powOfTen
 	b*
-	frame_dig 8 // decimalsOfX: unsafe uint8
+	frame_dig 5 // decimalsOfX: unsafe uint8
 	callsub powOfTen
 	b/
-	frame_bury 10 // amountXNormalized: unsafe uint256
+	frame_bury 7 // amountXNormalized: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:288
+	// src/contracts/AlgoArc200PoolV02.algo.ts:279
 	// amountYNormalized = (amountY * (this.powOfTen(DECIMALS))) / this.powOfTen(<uint64>decimalsOfY)
 	frame_dig -2 // amountY: uint256
 	int 6
 	callsub powOfTen
 	b*
-	frame_dig 9 // decimalsOfY: unsafe uint8
+	frame_dig 6 // decimalsOfY: unsafe uint8
 	callsub powOfTen
 	b/
-	frame_bury 11 // amountYNormalized: unsafe uint256
+	frame_bury 8 // amountYNormalized: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:290
+	// src/contracts/AlgoArc200PoolV02.algo.ts:281
 	// lptToMint = sqrt(amountXNormalized * amountYNormalized)
-	frame_dig 10 // amountXNormalized: unsafe uint256
-	frame_dig 11 // amountYNormalized: unsafe uint256
+	frame_dig 7 // amountXNormalized: unsafe uint256
+	frame_dig 8 // amountYNormalized: unsafe uint256
 	b*
 	bsqrt
-	frame_bury 7 // lptToMint: uint256
-	b if12_end
+	frame_bury 4 // lptToMint: uint256
+	b if11_end
 
-if12_else:
-	// src/contracts/AlgoArc200PoolV02.algo.ts:293
+if11_else:
+	// src/contracts/AlgoArc200PoolV02.algo.ts:284
 	// ratioX = (amountX * <uint256>SCALE) / (balanceX - amountX)
 	frame_dig 0 // amountX: unsafe uint256
 	byte 0x00005af3107a4000
@@ -2536,87 +2465,87 @@ if12_else:
 	frame_dig 0 // amountX: unsafe uint256
 	b-
 	b/
-	frame_bury 12 // ratioX: unsafe uint256
+	frame_bury 9 // ratioX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:294
+	// src/contracts/AlgoArc200PoolV02.algo.ts:285
 	// ratioY = (amountY * <uint256>SCALE) / balanceY
 	frame_dig -2 // amountY: uint256
 	byte 0x00005af3107a4000
 	b*
 	frame_dig 1 // balanceY: unsafe uint256
 	b/
-	frame_bury 13 // ratioY: unsafe uint256
+	frame_bury 10 // ratioY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:295
+	// src/contracts/AlgoArc200PoolV02.algo.ts:286
 	// ratio = ratioX < ratioY ? ratioX : ratioY
-	frame_dig 12 // ratioX: unsafe uint256
-	frame_dig 13 // ratioY: unsafe uint256
+	frame_dig 9 // ratioX: unsafe uint256
+	frame_dig 10 // ratioY: unsafe uint256
 	b<
 	bz ternary1_false
-	frame_dig 12 // ratioX: unsafe uint256
+	frame_dig 9 // ratioX: unsafe uint256
 	b ternary1_end
 
 ternary1_false:
-	frame_dig 13 // ratioY: unsafe uint256
+	frame_dig 10 // ratioY: unsafe uint256
 
 ternary1_end:
-	frame_bury 14 // ratio: unsafe uint256
+	frame_bury 11 // ratio: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:297
+	// src/contracts/AlgoArc200PoolV02.algo.ts:288
 	// lptToMint = (issuedLptBefore * ratio) / <uint256>SCALE
 	frame_dig 3 // issuedLptBefore: unsafe uint256
-	frame_dig 14 // ratio: unsafe uint256
+	frame_dig 11 // ratio: unsafe uint256
 	b*
 	byte 0x00005af3107a4000
 	b/
-	frame_bury 7 // lptToMint: uint256
+	frame_bury 4 // lptToMint: uint256
 
-if12_end:
-	// src/contracts/AlgoArc200PoolV02.algo.ts:300
+if11_end:
+	// src/contracts/AlgoArc200PoolV02.algo.ts:291
 	// assert(lptToMint > <uint256>0)
-	frame_dig 7 // lptToMint: uint256
+	frame_dig 4 // lptToMint: uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:301
+	// src/contracts/AlgoArc200PoolV02.algo.ts:292
 	// assert(this.transfer(this.app.address, this.txn.sender, lptToMint))
-	frame_dig 7 // lptToMint: uint256
+	frame_dig 4 // lptToMint: uint256
 	txn Sender
 	global CurrentApplicationAddress
 	callsub transfer
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:303
+	// src/contracts/AlgoArc200PoolV02.algo.ts:294
 	// innerTxnsCount = 2
 	int 2
-	frame_bury 15 // innerTxnsCount: uint64
+	frame_bury 12 // innerTxnsCount: uint64
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:304
+	// src/contracts/AlgoArc200PoolV02.algo.ts:295
 	// innerTxnsFee = innerTxnsCount * globals.minTxnFee
 	int 2 // innerTxnsCount: uint64
 	global MinTxnFee
 	*
-	frame_bury 16 // innerTxnsFee: uint64
+	frame_bury 13 // innerTxnsFee: uint64
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:305
+	// src/contracts/AlgoArc200PoolV02.algo.ts:296
 	// finalBalanceX = balanceX + amountX - <uint256>innerTxnsFee
 	frame_dig 2 // balanceX: unsafe uint256
 	frame_dig 0 // amountX: unsafe uint256
 	b+
-	frame_dig 16 // innerTxnsFee: uint64
+	frame_dig 13 // innerTxnsFee: uint64
 	itob
 	b-
-	frame_bury 17 // finalBalanceX: unsafe uint256
+	frame_bury 14 // finalBalanceX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:306
+	// src/contracts/AlgoArc200PoolV02.algo.ts:297
 	// finalBalanceY = balanceY + amountY
 	frame_dig 1 // balanceY: unsafe uint256
 	frame_dig -2 // amountY: uint256
 	b+
-	frame_bury 18 // finalBalanceY: unsafe uint256
+	frame_bury 15 // finalBalanceY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:308
+	// src/contracts/AlgoArc200PoolV02.algo.ts:299
 	// this.Deposit.log(
 	//             {
 	//                 sender: this.txn.sender,
@@ -2646,7 +2575,7 @@ if12_end:
 	concat
 	concat
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	frame_dig 7 // lptToMint: uint256
+	frame_dig 4 // lptToMint: uint256
 	b+
 	dup
 	bitlen
@@ -2663,7 +2592,7 @@ if12_end:
 	swap
 	substring3
 	concat
-	frame_dig 17 // finalBalanceX: unsafe uint256
+	frame_dig 14 // finalBalanceX: unsafe uint256
 	dup
 	bitlen
 	int 256
@@ -2678,7 +2607,7 @@ if12_end:
 	-
 	swap
 	substring3
-	frame_dig 18 // finalBalanceY: unsafe uint256
+	frame_dig 15 // finalBalanceY: unsafe uint256
 	dup
 	bitlen
 	int 256
@@ -2698,11 +2627,11 @@ if12_end:
 	concat
 	log
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:317
+	// src/contracts/AlgoArc200PoolV02.algo.ts:308
 	// this.updateRatio()
 	callsub updateRatio
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:319
+	// src/contracts/AlgoArc200PoolV02.algo.ts:310
 	// return true;
 	int 1
 
@@ -2710,7 +2639,7 @@ if12_end:
 	frame_bury 0
 
 	// pop all local variables from the stack
-	popn 18
+	popn 15
 	retsub
 
 abi_route_removeLiquidity:
@@ -2748,31 +2677,31 @@ removeLiquidity:
 	byte 0x
 	dupn 9
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:328
+	// src/contracts/AlgoArc200PoolV02.algo.ts:319
 	// balanceY = this.getTokenYBalance()
 	callsub getTokenYBalance
 	frame_bury 0 // balanceY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:329
+	// src/contracts/AlgoArc200PoolV02.algo.ts:320
 	// balanceX = this.getTokenXBalance()
 	callsub getTokenXBalance
 	frame_bury 1 // balanceX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:331
+	// src/contracts/AlgoArc200PoolV02.algo.ts:322
 	// assert(balanceX > <uint256>0)
 	frame_dig 1 // balanceX: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:332
+	// src/contracts/AlgoArc200PoolV02.algo.ts:323
 	// assert(balanceY > <uint256>0)
 	frame_dig 0 // balanceY: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:334
+	// src/contracts/AlgoArc200PoolV02.algo.ts:325
 	// issuedLptBefore = this.totalSupply.value - this.arc200_balanceOf(this.app.address)
 	byte 0x746f74616c537570706c79 // "totalSupply"
 	box_get
@@ -2782,7 +2711,7 @@ removeLiquidity:
 	b-
 	frame_bury 2 // issuedLptBefore: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:335
+	// src/contracts/AlgoArc200PoolV02.algo.ts:326
 	// withdrawAmountX = (balanceX * lptAmount) / issuedLptBefore
 	frame_dig 1 // balanceX: unsafe uint256
 	frame_dig -1 // lptAmount: uint256
@@ -2791,7 +2720,7 @@ removeLiquidity:
 	b/
 	frame_bury 3 // withdrawAmountX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:336
+	// src/contracts/AlgoArc200PoolV02.algo.ts:327
 	// withdrawAmountY = (balanceY * lptAmount) / issuedLptBefore
 	frame_dig 0 // balanceY: unsafe uint256
 	frame_dig -1 // lptAmount: uint256
@@ -2800,21 +2729,21 @@ removeLiquidity:
 	b/
 	frame_bury 4 // withdrawAmountY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:338
+	// src/contracts/AlgoArc200PoolV02.algo.ts:329
 	// assert(withdrawAmountX > <uint256>0)
 	frame_dig 3 // withdrawAmountX: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:339
+	// src/contracts/AlgoArc200PoolV02.algo.ts:330
 	// assert(withdrawAmountY > <uint256>0)
 	frame_dig 4 // withdrawAmountY: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:341
+	// src/contracts/AlgoArc200PoolV02.algo.ts:332
 	// assert(this.transfer(this.txn.sender, this.app.address, lptAmount))
 	frame_dig -1 // lptAmount: uint256
 	global CurrentApplicationAddress
@@ -2822,7 +2751,7 @@ removeLiquidity:
 	callsub transfer
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:342
+	// src/contracts/AlgoArc200PoolV02.algo.ts:333
 	// assert(this.transferXTo(this.txn.sender, withdrawAmountX))
 	frame_dig 3 // withdrawAmountX: unsafe uint256
 	dup
@@ -2843,7 +2772,7 @@ removeLiquidity:
 	callsub transferXTo
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:343
+	// src/contracts/AlgoArc200PoolV02.algo.ts:334
 	// assert(this.transferYTo(this.txn.sender, withdrawAmountY))
 	frame_dig 4 // withdrawAmountY: unsafe uint256
 	dup
@@ -2864,19 +2793,19 @@ removeLiquidity:
 	callsub transferYTo
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:346
+	// src/contracts/AlgoArc200PoolV02.algo.ts:337
 	// innerTxnsCount = 2
 	int 2
 	frame_bury 5 // innerTxnsCount: uint64
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:347
+	// src/contracts/AlgoArc200PoolV02.algo.ts:338
 	// innerTxnsFee = innerTxnsCount * globals.minTxnFee
 	int 2 // innerTxnsCount: uint64
 	global MinTxnFee
 	*
 	frame_bury 6 // innerTxnsFee: uint64
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:348
+	// src/contracts/AlgoArc200PoolV02.algo.ts:339
 	// finalBalanceX = balanceX - withdrawAmountX - <uint256>(balanceX === withdrawAmountX ? 0 : innerTxnsFee)
 	frame_dig 1 // balanceX: unsafe uint256
 	frame_dig 3 // withdrawAmountX: unsafe uint256
@@ -2896,14 +2825,14 @@ ternary5_end:
 	b-
 	frame_bury 7 // finalBalanceX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:349
+	// src/contracts/AlgoArc200PoolV02.algo.ts:340
 	// finalBalanceY = balanceY - withdrawAmountY
 	frame_dig 0 // balanceY: unsafe uint256
 	frame_dig 4 // withdrawAmountY: unsafe uint256
 	b-
 	frame_bury 8 // finalBalanceY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:351
+	// src/contracts/AlgoArc200PoolV02.algo.ts:342
 	// this.Withdraw.log(
 	//             {
 	//                 sender: this.txn.sender,
@@ -2983,11 +2912,11 @@ ternary5_end:
 	concat
 	log
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:360
+	// src/contracts/AlgoArc200PoolV02.algo.ts:351
 	// this.updateRatio()
 	callsub updateRatio
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:362
+	// src/contracts/AlgoArc200PoolV02.algo.ts:353
 	// return true;
 	int 1
 
@@ -3006,14 +2935,14 @@ computeOutTokens:
 	byte 0x
 	dupn 3
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:366
+	// src/contracts/AlgoArc200PoolV02.algo.ts:357
 	// factor = <uint256>SCALE - fee
 	byte 0x00005af3107a4000
 	frame_dig -4 // fee: uint256
 	b-
 	frame_bury 0 // factor: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:368
+	// src/contracts/AlgoArc200PoolV02.algo.ts:359
 	// numerator = (
 	//             <uint<512>>amountA * <uint<512>>supplyB * <uint<512>>factor
 	//         )
@@ -3024,7 +2953,7 @@ computeOutTokens:
 	b*
 	frame_bury 1 // numerator: unsafe uint512
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:371
+	// src/contracts/AlgoArc200PoolV02.algo.ts:362
 	// denominator = (
 	//             (<uint<512>>amountA + <uint<512>>supplyA) * <uint<512>>SCALE
 	//         )
@@ -3035,7 +2964,7 @@ computeOutTokens:
 	b*
 	frame_bury 2 // denominator: unsafe uint512
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:375
+	// src/contracts/AlgoArc200PoolV02.algo.ts:366
 	// return <uint256>(numerator / denominator);
 	frame_dig 1 // numerator: unsafe uint512
 	frame_dig 2 // denominator: unsafe uint512
@@ -3056,7 +2985,7 @@ computePlatformFee:
 	byte 0x
 	dup
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:379
+	// src/contracts/AlgoArc200PoolV02.algo.ts:370
 	// amount_without_fee = this.computeOutTokens(amountA, supplyA, supplyB, <uint256>0)
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	frame_dig -3 // supplyB: uint256
@@ -3065,7 +2994,7 @@ computePlatformFee:
 	callsub computeOutTokens
 	frame_bury 0 // amount_without_fee: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:380
+	// src/contracts/AlgoArc200PoolV02.algo.ts:371
 	// amount_with_fee = this.computeOutTokens(amountA, supplyA, supplyB, this.fee.value.swapFee)
 	byte 0x666565 // "fee"
 	box_get
@@ -3077,7 +3006,7 @@ computePlatformFee:
 	callsub computeOutTokens
 	frame_bury 1 // amount_with_fee: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:382
+	// src/contracts/AlgoArc200PoolV02.algo.ts:373
 	// return ((amount_without_fee - amount_with_fee) * this.fee.value.platformFee) / <uint256>SCALE;
 	frame_dig 0 // amount_without_fee: unsafe uint256
 	frame_dig 1 // amount_with_fee: unsafe uint256
@@ -3153,7 +3082,7 @@ swapXtoY:
 	byte 0x
 	dupn 9
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:392
+	// src/contracts/AlgoArc200PoolV02.algo.ts:383
 	// verifyPayTxn(payTxnX, {
 	//             sender: this.txn.sender,
 	//             receiver: this.app.address,
@@ -3196,31 +3125,31 @@ swapXtoY:
 	==
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:400
+	// src/contracts/AlgoArc200PoolV02.algo.ts:391
 	// amountX = <uint256>payTxnX.amount
 	frame_dig -1 // payTxnX: PayTxn
 	gtxns Amount
 	itob
 	frame_bury 0 // amountX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:401
+	// src/contracts/AlgoArc200PoolV02.algo.ts:392
 	// balanceY = this.getTokenYBalance()
 	callsub getTokenYBalance
 	frame_bury 1 // balanceY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:402
+	// src/contracts/AlgoArc200PoolV02.algo.ts:393
 	// balanceX = this.getTokenXBalance()
 	callsub getTokenXBalance
 	frame_bury 2 // balanceX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:404
+	// src/contracts/AlgoArc200PoolV02.algo.ts:395
 	// assert(balanceX > <uint256>0)
 	frame_dig 2 // balanceX: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:405
+	// src/contracts/AlgoArc200PoolV02.algo.ts:396
 	// assert(balanceY > <uint256>0, balanceY > minAmountY)
 	frame_dig 1 // balanceY: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
@@ -3231,7 +3160,7 @@ swapXtoY:
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:407
+	// src/contracts/AlgoArc200PoolV02.algo.ts:398
 	// amountOut = this.computeOutTokens(
 	//             amountX,
 	//             balanceX - amountX,
@@ -3292,7 +3221,7 @@ swapXtoY:
 	callsub computeOutTokens
 	frame_bury 3 // amountOut: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:414
+	// src/contracts/AlgoArc200PoolV02.algo.ts:405
 	// assert(amountOut > <uint256>0, amountOut >= minAmountY, amountOut < balanceY)
 	frame_dig 3 // amountOut: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
@@ -3307,7 +3236,7 @@ swapXtoY:
 	b<
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:416
+	// src/contracts/AlgoArc200PoolV02.algo.ts:407
 	// platformFee = this.computePlatformFee(
 	//             amountX,
 	//             balanceX - amountX,
@@ -3363,7 +3292,7 @@ swapXtoY:
 	callsub computePlatformFee
 	frame_bury 4 // platformFee: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:422
+	// src/contracts/AlgoArc200PoolV02.algo.ts:413
 	// assert(this.transferYTo(this.txn.sender, amountOut))
 	frame_dig 3 // amountOut: unsafe uint256
 	dup
@@ -3384,7 +3313,7 @@ swapXtoY:
 	callsub transferYTo
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:423
+	// src/contracts/AlgoArc200PoolV02.algo.ts:414
 	// assert(this.transferYTo(this.manager.value, platformFee))
 	frame_dig 4 // platformFee: unsafe uint256
 	dup
@@ -3406,19 +3335,19 @@ swapXtoY:
 	callsub transferYTo
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:425
+	// src/contracts/AlgoArc200PoolV02.algo.ts:416
 	// innerTxnsCount = 2
 	int 2
 	frame_bury 5 // innerTxnsCount: uint64
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:426
+	// src/contracts/AlgoArc200PoolV02.algo.ts:417
 	// innerTxnsFee = innerTxnsCount * globals.minTxnFee
 	int 2 // innerTxnsCount: uint64
 	global MinTxnFee
 	*
 	frame_bury 6 // innerTxnsFee: uint64
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:427
+	// src/contracts/AlgoArc200PoolV02.algo.ts:418
 	// finalBalanceX = balanceX - <uint256>innerTxnsFee
 	frame_dig 2 // balanceX: unsafe uint256
 	frame_dig 6 // innerTxnsFee: uint64
@@ -3426,7 +3355,7 @@ swapXtoY:
 	b-
 	frame_bury 7 // finalBalanceX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:428
+	// src/contracts/AlgoArc200PoolV02.algo.ts:419
 	// finalBalanceY = balanceY - amountOut - platformFee
 	frame_dig 1 // balanceY: unsafe uint256
 	frame_dig 3 // amountOut: unsafe uint256
@@ -3435,7 +3364,7 @@ swapXtoY:
 	b-
 	frame_bury 8 // finalBalanceY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:430
+	// src/contracts/AlgoArc200PoolV02.algo.ts:421
 	// this.Swap.log(
 	//             {
 	//                 sender: this.txn.sender,
@@ -3517,11 +3446,11 @@ swapXtoY:
 	concat
 	log
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:439
+	// src/contracts/AlgoArc200PoolV02.algo.ts:430
 	// this.updateRatio()
 	callsub updateRatio
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:441
+	// src/contracts/AlgoArc200PoolV02.algo.ts:432
 	// return amountOut;
 	frame_dig 3 // amountOut: unsafe uint256
 
@@ -3586,7 +3515,7 @@ swapYtoX:
 	byte 0x
 	dupn 8
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:451
+	// src/contracts/AlgoArc200PoolV02.algo.ts:442
 	// assert(this.transferYFrom(this.txn.sender, this.app.address, amountY))
 	frame_dig -1 // amountY: uint256
 	global CurrentApplicationAddress
@@ -3594,17 +3523,17 @@ swapYtoX:
 	callsub transferYFrom
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:453
+	// src/contracts/AlgoArc200PoolV02.algo.ts:444
 	// balanceY = this.getTokenYBalance()
 	callsub getTokenYBalance
 	frame_bury 0 // balanceY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:454
+	// src/contracts/AlgoArc200PoolV02.algo.ts:445
 	// balanceX = this.getTokenXBalance()
 	callsub getTokenXBalance
 	frame_bury 1 // balanceX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:456
+	// src/contracts/AlgoArc200PoolV02.algo.ts:447
 	// assert(balanceX > <uint256>0, balanceX > minAmountX)
 	frame_dig 1 // balanceX: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
@@ -3615,14 +3544,14 @@ swapYtoX:
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:457
+	// src/contracts/AlgoArc200PoolV02.algo.ts:448
 	// assert(balanceY > <uint256>0)
 	frame_dig 0 // balanceY: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:459
+	// src/contracts/AlgoArc200PoolV02.algo.ts:450
 	// amountOut = this.computeOutTokens(
 	//             amountY,
 	//             balanceY - amountY,
@@ -3669,7 +3598,7 @@ swapYtoX:
 	callsub computeOutTokens
 	frame_bury 2 // amountOut: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:466
+	// src/contracts/AlgoArc200PoolV02.algo.ts:457
 	// assert(amountOut > <uint256>0, amountOut >= minAmountX, amountOut < balanceX)
 	frame_dig 2 // amountOut: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
@@ -3684,7 +3613,7 @@ swapYtoX:
 	b<
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:468
+	// src/contracts/AlgoArc200PoolV02.algo.ts:459
 	// platformFee = this.computePlatformFee(
 	//             amountY,
 	//             balanceY - amountY,
@@ -3726,7 +3655,7 @@ swapYtoX:
 	callsub computePlatformFee
 	frame_bury 3 // platformFee: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:474
+	// src/contracts/AlgoArc200PoolV02.algo.ts:465
 	// assert(this.transferXTo(this.txn.sender, amountOut))
 	frame_dig 2 // amountOut: unsafe uint256
 	dup
@@ -3747,7 +3676,7 @@ swapYtoX:
 	callsub transferXTo
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:475
+	// src/contracts/AlgoArc200PoolV02.algo.ts:466
 	// assert(this.transferXTo(this.manager.value, platformFee))
 	frame_dig 3 // platformFee: unsafe uint256
 	dup
@@ -3769,19 +3698,19 @@ swapYtoX:
 	callsub transferXTo
 	assert
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:477
+	// src/contracts/AlgoArc200PoolV02.algo.ts:468
 	// innerTxnsCount = 2
 	int 2
 	frame_bury 4 // innerTxnsCount: uint64
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:478
+	// src/contracts/AlgoArc200PoolV02.algo.ts:469
 	// innerTxnsFee = innerTxnsCount * globals.minTxnFee
 	int 2 // innerTxnsCount: uint64
 	global MinTxnFee
 	*
 	frame_bury 5 // innerTxnsFee: uint64
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:479
+	// src/contracts/AlgoArc200PoolV02.algo.ts:470
 	// finalBalanceX = balanceX - amountOut - platformFee - <uint256>innerTxnsFee
 	frame_dig 1 // balanceX: unsafe uint256
 	frame_dig 2 // amountOut: unsafe uint256
@@ -3793,12 +3722,12 @@ swapYtoX:
 	b-
 	frame_bury 6 // finalBalanceX: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:480
+	// src/contracts/AlgoArc200PoolV02.algo.ts:471
 	// finalBalanceY = balanceY
 	frame_dig 0 // balanceY: unsafe uint256
 	frame_bury 7 // finalBalanceY: unsafe uint256
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:482
+	// src/contracts/AlgoArc200PoolV02.algo.ts:473
 	// this.Swap.log(
 	//             {
 	//                 sender: this.txn.sender,
@@ -3866,11 +3795,11 @@ swapYtoX:
 	concat
 	log
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:491
+	// src/contracts/AlgoArc200PoolV02.algo.ts:482
 	// this.updateRatio()
 	callsub updateRatio
 
-	// src/contracts/AlgoArc200PoolV02.algo.ts:493
+	// src/contracts/AlgoArc200PoolV02.algo.ts:484
 	// return amountOut;
 	frame_dig 2 // amountOut: unsafe uint256
 

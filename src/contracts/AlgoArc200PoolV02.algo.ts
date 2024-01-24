@@ -266,15 +266,6 @@ export class AlgoArc200PoolV02 extends Arc200Token {
         const balanceX = this.getTokenXBalance();
         const issuedLptBefore = this.totalSupply.value - this.arc200_balanceOf(this.app.address);
 
-        if (balanceY > <uint256>0 && balanceX > <uint256>0 && issuedLptBefore > <uint256>0) {
-            const liqudityRatioBefore = (((balanceX - amountX) * <uint256>SCALE) / balanceY);
-            const liqudityRatioOfCurrentTxn = ((amountX * <uint256>SCALE) / amountY);
-            const ratioDivergenceAllowed = (liqudityRatioBefore / <uint256>40); // 2.5%
-
-            assert((liqudityRatioBefore - ratioDivergenceAllowed) < liqudityRatioOfCurrentTxn);
-            assert(liqudityRatioOfCurrentTxn < (liqudityRatioBefore + ratioDivergenceAllowed));
-        }
-
         assert(this.transferYFrom(this.txn.sender, this.app.address, amountY));
 
         let lptToMint = <uint256>0;
