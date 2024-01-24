@@ -120,7 +120,7 @@ export interface AppClientDeployCallInterfaceParams {
 }
 /** Parameters to pass into ApplicationClient.deploy */
 export interface AppClientDeployParams extends AppClientDeployCoreParams, AppClientDeployCallInterfaceParams {}
-export interface AppClientCallRawArgs extends RawAppCallArgs {}
+export type AppClientCallRawArgs = RawAppCallArgs
 export interface AppClientCallABIArgs extends Omit<ABIAppCallArgs, 'method'> {
 	/** If calling an ABI method then either the name of the method, or the ABI signature */
 	method: string;

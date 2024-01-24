@@ -24,9 +24,9 @@ function generateEmbeddedWalletURL(url: string) {
  * @returns {string} Defly Wallet deeplink
  */
 function generateDeflyWalletConnectDeepLink(uri: string): string {
-	let appDeepLink = generateDeflyWalletAppDeepLink(false);
+	const appDeepLink = generateDeflyWalletAppDeepLink(false);
 
-	let deepLink = `${appDeepLink}wc?uri=${encodeURIComponent(uri)}`;
+	const deepLink = `${appDeepLink}wc?uri=${encodeURIComponent(uri)}`;
 
 	return deepLink;
 }

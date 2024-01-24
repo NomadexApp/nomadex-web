@@ -1,12 +1,10 @@
 import algosdk from 'algosdk';
 import {
 	account,
-	deployVoiSwap,
 	getSuggestedParams,
 	getUnnamedResourcesAccessedFromMethod,
 	indexerClient,
 	nodeClient,
-	optInAsset,
 } from './_shared';
 import { getArc200Balance, getBalance, getClient, viaAppId } from './_shared';
 import { currentAppId, currentLptAssetId } from './_deployed';

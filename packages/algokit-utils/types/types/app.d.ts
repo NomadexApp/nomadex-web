@@ -198,7 +198,7 @@ export interface AppCallTransactionResultOfType<T> extends SendTransactionResult
 	return?: T;
 }
 /** Result from calling an app */
-export interface AppCallTransactionResult extends AppCallTransactionResultOfType<ABIReturn> {}
+export type AppCallTransactionResult = AppCallTransactionResultOfType<ABIReturn>
 /** The return value of an ABI method call */
 export type ABIReturn =
 	| {
