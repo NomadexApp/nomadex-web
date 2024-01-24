@@ -76,8 +76,8 @@
 		const viaBalance = $poolArc200Balance;
 		loading = false;
 
-		inputTokenA = Number(BigInt(voiBalance) * ratio) / voiToken.unit / SCALE;
-		inputTokenB = Number(BigInt(viaBalance) * ratio) / arc200Token.unit / SCALE;
+		inputTokenA = Number((Number(BigInt(voiBalance) * ratio) / voiToken.unit / SCALE).toFixed(6));
+		inputTokenB = Number((Number(BigInt(viaBalance) * ratio) / arc200Token.unit / SCALE).toFixed(6));
 
 		disabled = !inputTokenB;
 	}
@@ -99,7 +99,7 @@
 		const SCALE = 100_000_000_000_000;
 
 		if (ratio) {
-			inputTokenB = Math.floor(inputTokenA * SCALE * ratio) / SCALE;
+			inputTokenB = Number((Math.floor(inputTokenA * SCALE * ratio) / SCALE).toFixed(6));
 			disabled = !inputTokenB;
 		}
 	}
@@ -121,7 +121,7 @@
 		const SCALE = 100_000_000_000_000;
 
 		if (ratio) {
-			inputTokenA = Math.floor(inputTokenB * SCALE * ratio) / SCALE;
+			inputTokenA = Number((Math.floor(inputTokenB * SCALE * ratio) / SCALE).toFixed(6));
 			disabled = !inputTokenA;
 		}
 	}
