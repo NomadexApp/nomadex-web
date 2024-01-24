@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
+	import { connectedAccount, getTransactionSignerAccount } from '$lib/UseWallet.svelte';
 	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { Arc200TokenClient } from '../../../contracts/clients/Arc200TokenClient';

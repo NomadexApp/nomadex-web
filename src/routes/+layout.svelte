@@ -9,8 +9,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import '$lib/firebase';
-	import { arePoolsLoaded, getListOfArc200Tokens, knownTokens } from '$lib/index';
-	import { page } from '$app/stores';
+	import { arePoolsLoaded, getListOfArc200Tokens } from '$lib/index';
 
 	let hasKibisisWallet = browser && window['algorand']?.wallets.find((w) => w.id === 'kibisis');
 

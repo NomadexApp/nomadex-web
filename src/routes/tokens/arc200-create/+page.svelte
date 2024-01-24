@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
 	import { getUnnamedResourcesAccessed, nodeClient } from '$lib/_shared';
-	import algosdk, { isValidAddress } from 'algosdk';
+	import algosdk from 'algosdk';
 	import { Arc200TokenClient } from '../../../contracts/clients/Arc200TokenClient';
 	import { goto } from '$app/navigation';
 	import { addNotification } from '$lib/Notify.svelte';

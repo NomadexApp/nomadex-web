@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import algosdk from 'algosdk';
 	import { SwapEvents, type SwapTxn } from '$lib/events';
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
 	import { browser } from '$app/environment';

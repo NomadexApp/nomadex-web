@@ -9,7 +9,6 @@
 	import { onNumberKeyPress } from '$lib/inputs';
 	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
 	import { onChainStateWatcher } from '$lib/stores/onchain';
-	import algosdk from 'algosdk';
 	import { LimitOrderType, LimitOrders001ClientConnector } from '$lib/LimitOrderConnector';
 
 	const { page } = getStores();

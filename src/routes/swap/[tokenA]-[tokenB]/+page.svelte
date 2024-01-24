@@ -9,7 +9,7 @@
 	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
-	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from '$lib/stores/onchain';
+	import { onChainStateWatcher, watchArc200Balance } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 	import { convertDecimals } from '$lib/numbers';

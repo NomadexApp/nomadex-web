@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { connectedAccount, getTransactionSignerAccount, signTransactions } from '$lib/UseWallet.svelte';
-	import { getUnnamedResourcesAccessedFromComposer, nodeClient, viaAppId } from '$lib/_shared';
-	import algosdk, { makePaymentTxnWithSuggestedParamsFromObject } from 'algosdk';
+	import { getTransactionSignerAccount } from '$lib/UseWallet.svelte';
+	import { nodeClient } from '$lib/_shared';
+	import algosdk from 'algosdk';
 	import { LimitOrders001Client } from '../../../contracts/clients/LimitOrders001Client';
 	import { onMount } from 'svelte';
 	import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';

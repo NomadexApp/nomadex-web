@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { contracts, knownPools, knownTokens, type Token } from '$lib';
+	import { contracts, knownTokens, type Token } from '$lib';
 	import type { AccountState } from '$lib/stores/onchain';
 	import { getUnnamedResourcesAccessedFromComposer, indexerClient, nodeClient } from '$lib/_shared';
 	import { writable } from 'svelte/store';

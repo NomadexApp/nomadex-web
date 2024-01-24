@@ -3,12 +3,11 @@
 	import Dropdown from '$lib/Dropdown.svelte';
 	import { getStores } from '$app/stores';
 	import { browser } from '$app/environment';
-	import { getASABalance, getArc200Balance, getBalance, getClient, viaAppId } from '$lib/_shared';
+	import { getBalance } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from '$lib/stores/onchain';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
