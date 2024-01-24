@@ -125,7 +125,7 @@
 		);
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenB = Number(ret) / tokenB.unit;
+			inputTokenB = Number((Number(ret) / tokenB.unit).toFixed(6));
 			disabled = !inputTokenB;
 		}
 	}
@@ -152,7 +152,7 @@
 		);
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenA = Number(ret) / tokenA.unit;
+			inputTokenA = Number((Number(ret) / tokenA.unit).toFixed(6));
 			disabled = !inputTokenB;
 		}
 	}

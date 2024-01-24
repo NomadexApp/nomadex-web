@@ -1,7 +1,7 @@
 import algosdk from 'algosdk';
 import Contract from 'arc200js';
 import { getTransactionSignerAccount, signAndSendTransections } from './UseWallet.svelte';
-import { getBoxName, getUnnamedResourcesAccessed, indexerClient, nodeClient, nodeClientAllowsCompile } from './_shared';
+import { getBoxName, getUnnamedResourcesAccessed, nodeClient, nodeClientAllowsCompile } from './_shared';
 import { Arc200Interface } from './utils';
 import { addNotification } from './Notify.svelte';
 import { AlgoArc200PoolV02Client } from '../contracts/clients/AlgoArc200PoolV02Client';
@@ -176,52 +176,26 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 			minAmountY: minViaAmount,
 		});
 
-		let arc200OptinTxns: algosdk.Transaction[] = [];
-		try {
-			const boxName = getBoxName(this.signer.addr);
-			await nodeClient.getApplicationBoxByName(this.arc200AssetId, boxName).do();
-		} catch (e) {
-			const contract = new Contract(this.arc200AssetId, nodeClient, indexerClient, {
-				simulate: true,
-				acc: {
-					addr: this.signer.addr,
-					sk: Uint8Array.from([]),
-				},
-			});
-
-			const result = await contract.arc200_transfer(this.signer.addr, 0n, true, false);
-
-			if (result.success) {
-				arc200OptinTxns = result.txns.map((txn) =>
-					algosdk.decodeUnsignedTransaction(Uint8Array.from(Buffer.from(txn, 'base64')))
-				);
-			}
-		}
-
 		const composer = this.compose();
 		const opts = await this.getUnnamedResourcesAccessedFromMethod('swapXtoY', swapArgs());
-		const opts2 = arc200OptinTxns?.length
-			? await getUnnamedResourcesAccessed(arc200OptinTxns)
-			: { boxes: [], accounts: [] };
 		const atc = await composer
 			.swapXtoY(swapArgs(), {
 				...opts,
 				boxes: [
 					...opts.boxes,
-					...opts2.boxes,
 					{
 						appId: this.arc200AssetId,
 						name: getBoxName(algosdk.getApplicationAddress(this.appId)),
 					},
 				],
-				accounts: [...new Set([...opts.accounts, ...opts2.accounts, managerAddress])],
+				accounts: [...new Set([...opts.accounts, managerAddress])],
 				apps: [...new Set([...opts.apps, this.arc200AssetId])],
 			})
 			.atc();
 
 		const swapTxns = atc.buildGroup().map(({ txn }) => txn);
 
-		await signAndSendTransections(nodeClient, [...(arc200OptinTxns?.length ? [arc200OptinTxns] : []), swapTxns]);
+		await signAndSendTransections(nodeClient, [swapTxns]);
 		console.log({ success: true });
 	}
 
@@ -232,7 +206,6 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 			algosdk.getApplicationAddress(this.appId),
 			BigInt(arc200Amount)
 		);
-		// await signAndSendTransections(nodeClient, [approveTxns]);
 
 		const swapArgs = () => ({
 			amountY: arc200Amount,
