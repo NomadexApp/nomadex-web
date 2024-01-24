@@ -1,63 +1,76 @@
-import algosdk from "algosdk";
-import { account, deployVoiSwap, getSuggestedParams, getUnnamedResourcesAccessedFromMethod, indexerClient, nodeClient, optInAsset } from "./_shared";
-import { getArc200Balance, getBalance, getClient, viaAppId } from "./_shared";
-import { currentAppId, currentLptAssetId } from "./_deployed";
-import Contract from "arc200js";
+import algosdk from 'algosdk';
+import {
+	account,
+	deployVoiSwap,
+	getSuggestedParams,
+	getUnnamedResourcesAccessedFromMethod,
+	indexerClient,
+	nodeClient,
+	optInAsset,
+} from './_shared';
+import { getArc200Balance, getBalance, getClient, viaAppId } from './_shared';
+import { currentAppId, currentLptAssetId } from './_deployed';
+import Contract from 'arc200js';
 
 async function main() {
+	const appId = currentAppId;
+	const appAddress = algosdk.getApplicationAddress(appId);
 
-    const appId = currentAppId;
-    const appAddress = algosdk.getApplicationAddress(appId);
+	console.log('Signer Voi Balance:', (await getBalance(account.addr)) / 1e6);
+	console.log(`Signer Via Balance:`, (await getArc200Balance(viaAppId, account.addr)) / 1e6);
 
-    console.log('Signer Voi Balance:', (await getBalance(account.addr)) / 1e6);
-    console.log(`Signer Via Balance:`, (await getArc200Balance(viaAppId, account.addr)) / 1e6);
+	console.log('App Voi Balance:', (await getBalance(appAddress)) / 1e6);
+	console.log(`App Via Balance:`, (await getArc200Balance(viaAppId, appAddress)) / 1e6);
 
+	const suggestedParams = await getSuggestedParams();
 
-    console.log('App Voi Balance:', (await getBalance(appAddress)) / 1e6);
-    console.log(`App Via Balance:`, (await getArc200Balance(viaAppId, appAddress)) / 1e6);
+	// Add liquidity
 
-    const suggestedParams = await getSuggestedParams();
+	const voiAmount = 1_300_000;
+	const viaAmount = 1_000_000;
 
-    // Add liquidity
+	// appId = await deployVoiSwap(appId);
+	// console.log('AppId:', appId);
+	// if (!appId) return;
 
-    const voiAmount = 1_300_000;
-    const viaAmount = 1_000_000;
+	// console.log('OptIn:', await optInAsset(currentLptAssetId));
 
-    // appId = await deployVoiSwap(appId);
-    // console.log('AppId:', appId);
-    // if (!appId) return;
+	const contract = new Contract(viaAppId, nodeClient, indexerClient, { acc: account, waitForConfirmation: true });
 
-    // console.log('OptIn:', await optInAsset(currentLptAssetId));
+	// Approve VIA
+	const { success } = await contract.arc200_approve(
+		algosdk.getApplicationAddress(appId),
+		BigInt(viaAmount),
+		false,
+		true
+	);
+	console.log('Approve VIA:', success);
+	if (!success) return;
 
-    const contract = new Contract(viaAppId, nodeClient, indexerClient, { acc: account, waitForConfirmation: true });
+	const client = getClient(appId);
 
-    // Approve VIA
-    const { success } = await contract.arc200_approve(algosdk.getApplicationAddress(appId), BigInt(viaAmount), false, true);
-    console.log('Approve VIA:', success);
-    if (!success) return;
+	const addLiqArgs = () => ({
+		voiPayTxn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+			amount: voiAmount,
+			from: account.addr,
+			to: algosdk.getApplicationAddress(appId),
+			suggestedParams: suggestedParams,
+		}),
+		viaAmount,
+		poolAsset: currentLptAssetId,
+	});
 
-    const client = getClient(appId);
+	const res = await client.mint(
+		addLiqArgs(),
+		await getUnnamedResourcesAccessedFromMethod(client, 'mint', addLiqArgs())
+	);
+	console.log('Mint:', res.return);
 
-    const addLiqArgs = () => ({
-        voiPayTxn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-            amount: voiAmount,
-            from: account.addr,
-            to: algosdk.getApplicationAddress(appId),
-            suggestedParams: suggestedParams
-        }),
-        viaAmount,
-        poolAsset: currentLptAssetId,
-    });
+	console.log('App Voi Balance:', (await getBalance(appAddress)) / 1e6);
+	console.log(`App Via Balance:`, (await getArc200Balance(viaAppId, appAddress)) / 1e6);
 
-    const res = await client.mint(addLiqArgs(), await getUnnamedResourcesAccessedFromMethod(client, 'mint', addLiqArgs()));
-    console.log('Mint:', res.return);
-
-
-    console.log('App Voi Balance:', (await getBalance(appAddress)) / 1e6);
-    console.log(`App Via Balance:`, (await getArc200Balance(viaAppId, appAddress)) / 1e6);
-
-    console.log('Signer Voi Balance:', (await getBalance(account.addr)) / 1e6);
-    console.log(`Signer Via Balance:`, (await getArc200Balance(viaAppId, account.addr)) / 1e6);
+	console.log('Signer Voi Balance:', (await getBalance(account.addr)) / 1e6);
+	console.log(`Signer Via Balance:`, (await getArc200Balance(viaAppId, account.addr)) / 1e6);
 }
 
 main();

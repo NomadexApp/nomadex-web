@@ -1,10 +1,7 @@
-import {
-  DEFLY_WALLET_MODAL_CLASSNAME,
-  DEFLY_WALLET_SIGN_TXN_MODAL_ID
-} from "../deflyWalletConnectModalUtils";
-import styles from "./_defly-wallet-sign-txn-modal.scss?inline";
+import { DEFLY_WALLET_MODAL_CLASSNAME, DEFLY_WALLET_SIGN_TXN_MODAL_ID } from '../deflyWalletConnectModalUtils';
+import styles from './_defly-wallet-sign-txn-modal.scss?inline';
 
-const deflyWalletSignTxnModal = document.createElement("template");
+const deflyWalletSignTxnModal = document.createElement('template');
 
 deflyWalletSignTxnModal.innerHTML = `
   <div class="${DEFLY_WALLET_MODAL_CLASSNAME} defly-wallet-sign-txn-modal">
@@ -17,16 +14,16 @@ deflyWalletSignTxnModal.innerHTML = `
 `;
 
 export class DeflyWalletSignTxnModal extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({mode: "open"});
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
 
-    if (this.shadowRoot) {
-      const styleSheet = document.createElement("style");
+		if (this.shadowRoot) {
+			const styleSheet = document.createElement('style');
 
-      styleSheet.textContent = styles;
+			styleSheet.textContent = styles;
 
-      this.shadowRoot.append(deflyWalletSignTxnModal.content.cloneNode(true), styleSheet);
-    }
-  }
+			this.shadowRoot.append(deflyWalletSignTxnModal.content.cloneNode(true), styleSheet);
+		}
+	}
 }

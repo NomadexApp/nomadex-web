@@ -100,9 +100,7 @@
 </script>
 
 {#if $notifications.length}
-	<div
-		class="fixed top-10 right-10 min-w-[250px] min-h-[40px] text-white rounded-btn flex flex-col gap-2 items-end"
-	>
+	<div class="fixed top-10 right-10 min-w-[250px] min-h-[40px] text-white rounded-btn flex flex-col gap-2 items-end">
 		{#each $notifications as notification}
 			<div
 				class="notification items-start justify-between relative bg-primary rounded-btn p-2 text-wrap max-w-[250px] {notification.type}"

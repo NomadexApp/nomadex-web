@@ -1,13 +1,13 @@
 export interface DispenserFundResponse {
-    txId: string;
-    amount: number;
+	txId: string;
+	amount: number;
 }
 export interface DispenserLimitResponse {
-    amount: number;
+	amount: number;
 }
 export interface TestNetDispenserApiClientParams {
-    authToken: string;
-    requestTimeout: number | null;
+	authToken: string;
+	requestTimeout: number | null;
 }
 /**
  * `TestNetDispenserApiClient` is a class that provides methods to interact with the [Algorand TestNet Dispenser API](https://github.com/algorandfoundation/algokit/blob/main/docs/testnet_api.md).
@@ -36,42 +36,42 @@ export interface TestNetDispenserApiClientParams {
  * @throws {Error} If neither the environment variable 'ALGOKIT_DISPENSER_ACCESS_TOKEN' nor the authToken parameter were provided.
  */
 export declare class TestNetDispenserApiClient {
-    private _authToken;
-    private _requestTimeout;
-    constructor(params: TestNetDispenserApiClientParams | null);
-    get authToken(): string;
-    get requestTimeout(): number;
-    /**
-     * Processes a dispenser API request.
-     *
-     * @param authToken - The authentication token.
-     * @param urlSuffix - The URL suffix for the API request.
-     * @param body - The request body.
-     * @param method - The HTTP method.
-     *
-     * @returns The API response.
-     */
-    private processDispenserRequest;
-    /**
-     * Sends a funding request to the dispenser API to fund the specified address with the given amount of Algo.
-     *
-     * @param address - The address to fund.
-     * @param amount - The amount of Algo to fund.
-     *
-     * @returns DispenserFundResponse: An object containing the transaction ID and funded amount.
-     */
-    fund(address: string, amount: number): Promise<DispenserFundResponse>;
-    /**
-     * Sends a refund request to the dispenser API for the specified refundTxnId.
-     *
-     * @param refundTxnId - The transaction ID to refund.
-     */
-    refund(refundTxnId: string): Promise<void>;
-    /**
-     * Sends a request to the dispenser API to get the funding limit for the Algo asset.
-     *
-     * @returns DispenserLimitResponse: An object containing the funding limit amount.
-     */
-    getLimit(): Promise<DispenserLimitResponse>;
+	private _authToken;
+	private _requestTimeout;
+	constructor(params: TestNetDispenserApiClientParams | null);
+	get authToken(): string;
+	get requestTimeout(): number;
+	/**
+	 * Processes a dispenser API request.
+	 *
+	 * @param authToken - The authentication token.
+	 * @param urlSuffix - The URL suffix for the API request.
+	 * @param body - The request body.
+	 * @param method - The HTTP method.
+	 *
+	 * @returns The API response.
+	 */
+	private processDispenserRequest;
+	/**
+	 * Sends a funding request to the dispenser API to fund the specified address with the given amount of Algo.
+	 *
+	 * @param address - The address to fund.
+	 * @param amount - The amount of Algo to fund.
+	 *
+	 * @returns DispenserFundResponse: An object containing the transaction ID and funded amount.
+	 */
+	fund(address: string, amount: number): Promise<DispenserFundResponse>;
+	/**
+	 * Sends a refund request to the dispenser API for the specified refundTxnId.
+	 *
+	 * @param refundTxnId - The transaction ID to refund.
+	 */
+	refund(refundTxnId: string): Promise<void>;
+	/**
+	 * Sends a request to the dispenser API to get the funding limit for the Algo asset.
+	 *
+	 * @returns DispenserLimitResponse: An object containing the funding limit amount.
+	 */
+	getLimit(): Promise<DispenserLimitResponse>;
 }
 //# sourceMappingURL=dispenser-client.d.ts.map

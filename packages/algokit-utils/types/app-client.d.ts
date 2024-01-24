@@ -1,5 +1,10 @@
 import algosdk from 'algosdk';
-import { AppSpecAppDetails, AppSpecAppDetailsByCreatorAndName, AppSpecAppDetailsById, ApplicationClient } from './types/app-client';
+import {
+	AppSpecAppDetails,
+	AppSpecAppDetailsByCreatorAndName,
+	AppSpecAppDetailsById,
+	ApplicationClient,
+} from './types/app-client';
 import Algodv2 = algosdk.Algodv2;
 /**
  * Create a new ApplicationClient instance
@@ -68,5 +73,8 @@ export declare function getAppClientById(appDetails: AppSpecAppDetailsById, algo
  *
  * @returns The application client
  */
-export declare function getAppClientByCreatorAndName(appDetails: AppSpecAppDetailsByCreatorAndName, algod: Algodv2): ApplicationClient;
+export declare function getAppClientByCreatorAndName(
+	appDetails: AppSpecAppDetailsByCreatorAndName,
+	algod: Algodv2
+): ApplicationClient;
 //# sourceMappingURL=app-client.d.ts.map

@@ -1,7 +1,7 @@
-import { generateDeflyWalletConnectDeepLink } from "../../../util/deflyWalletUtils";
-import styles from "./_defly-wallet-modal-touch-screen-mode.scss?inline";
+import { generateDeflyWalletConnectDeepLink } from '../../../util/deflyWalletUtils';
+import styles from './_defly-wallet-modal-touch-screen-mode.scss?inline';
 
-const deflyWalletModalTouchScreenMode = document.createElement("template");
+const deflyWalletModalTouchScreenMode = document.createElement('template');
 
 const touchScreenDefaultMode = `
   <div class="defly-wallet-connect-modal-touch-screen-mode">
@@ -35,56 +35,50 @@ const touchScreenDefaultMode = `
 `;
 
 export class DeflyWalletModalTouchScreenMode extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({mode: "open"});
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
 
-    deflyWalletModalTouchScreenMode.innerHTML = touchScreenDefaultMode;
+		deflyWalletModalTouchScreenMode.innerHTML = touchScreenDefaultMode;
 
-    if (this.shadowRoot) {
-      const styleSheet = document.createElement("style");
+		if (this.shadowRoot) {
+			const styleSheet = document.createElement('style');
 
-      styleSheet.textContent = styles;
+			styleSheet.textContent = styles;
 
-      this.shadowRoot.append(
-        deflyWalletModalTouchScreenMode.content.cloneNode(true),
-        styleSheet
-      );
+			this.shadowRoot.append(deflyWalletModalTouchScreenMode.content.cloneNode(true), styleSheet);
 
-      const launchDeflyLink = this.shadowRoot?.getElementById(
-        "defly-wallet-connect-modal-touch-screen-mode-launch-defly-wallet-button"
-      );
-      const URI = this.getAttribute("uri");
+			const launchDeflyLink = this.shadowRoot?.getElementById(
+				'defly-wallet-connect-modal-touch-screen-mode-launch-defly-wallet-button'
+			);
+			const URI = this.getAttribute('uri');
 
-      if (launchDeflyLink && URI) {
-        launchDeflyLink.setAttribute("href", generateDeflyWalletConnectDeepLink(URI));
-        launchDeflyLink.addEventListener("click", () => {
-          this.onClickLaunch();
-        });
-      }
-    }
-  }
+			if (launchDeflyLink && URI) {
+				launchDeflyLink.setAttribute('href', generateDeflyWalletConnectDeepLink(URI));
+				launchDeflyLink.addEventListener('click', () => {
+					this.onClickLaunch();
+				});
+			}
+		}
+	}
 
-  onClickLaunch() {
-    deflyWalletModalTouchScreenMode.innerHTML = `
+	onClickLaunch() {
+		deflyWalletModalTouchScreenMode.innerHTML = `
     <div class="defly-wallet-connect-modal-touch-screen-mode defly-wallet-connect-modal-touch-screen-mode--pending-message-view">
       <defly-wallet-connect-modal-pending-message-section should-use-sound="${this.getAttribute(
-        "should-use-sound"
-      )}"></defly-wallet-connect-modal-pending-message-section>
+				'should-use-sound'
+			)}"></defly-wallet-connect-modal-pending-message-section>
     </div>
   `;
 
-    if (this.shadowRoot) {
-      const styleSheet = document.createElement("style");
+		if (this.shadowRoot) {
+			const styleSheet = document.createElement('style');
 
-      styleSheet.textContent = styles;
+			styleSheet.textContent = styles;
 
-      this.shadowRoot.innerHTML = "";
+			this.shadowRoot.innerHTML = '';
 
-      this.shadowRoot.append(
-        deflyWalletModalTouchScreenMode.content.cloneNode(true),
-        styleSheet
-      );
-    }
-  }
+			this.shadowRoot.append(deflyWalletModalTouchScreenMode.content.cloneNode(true), styleSheet);
+		}
+	}
 }

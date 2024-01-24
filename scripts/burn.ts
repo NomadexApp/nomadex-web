@@ -1,52 +1,52 @@
-import algosdk from "algosdk";
-import { account, deployVoiSwap, getSuggestedParams, getUnnamedResourcesAccessedFromMethod } from "./_shared";
-import { getArc200Balance, getBalance, getClient, viaAppId } from "./_shared";
-import { currentAppId, currentLptAssetId } from "./_deployed";
+import algosdk from 'algosdk';
+import { account, deployVoiSwap, getSuggestedParams, getUnnamedResourcesAccessedFromMethod } from './_shared';
+import { getArc200Balance, getBalance, getClient, viaAppId } from './_shared';
+import { currentAppId, currentLptAssetId } from './_deployed';
 
 async function main() {
+	let appId = currentAppId;
+	const appAddress = algosdk.getApplicationAddress(appId);
 
-    let appId = currentAppId;
-    const appAddress = algosdk.getApplicationAddress(appId);
+	console.log('Signer Voi Balance:', (await getBalance(account.addr)) / 1e6);
+	console.log(`Signer Via Balance:`, (await getArc200Balance(viaAppId, account.addr)) / 1e6);
 
-    console.log('Signer Voi Balance:', (await getBalance(account.addr)) / 1e6);
-    console.log(`Signer Via Balance:`, (await getArc200Balance(viaAppId, account.addr)) / 1e6);
+	console.log('App Voi Balance:', (await getBalance(appAddress)) / 1e6);
+	console.log(`App Via Balance:`, (await getArc200Balance(viaAppId, appAddress)) / 1e6);
 
+	const suggestedParams = await getSuggestedParams();
 
-    console.log('App Voi Balance:', (await getBalance(appAddress)) / 1e6);
-    console.log(`App Via Balance:`, (await getArc200Balance(viaAppId, appAddress)) / 1e6);
+	// Add liquidity
 
-    const suggestedParams = await getSuggestedParams();
+	const burnAmount = 1_000_000;
 
-    // Add liquidity
+	appId = await deployVoiSwap(appId);
+	console.log('AppId:', appId);
+	if (!appId) return;
 
-    const burnAmount = 1_000_000;
+	const client = getClient(appId);
 
-    appId = await deployVoiSwap(appId);
-    console.log('AppId:', appId);
-    if (!appId) return;
+	const removeLiqArgs = () => ({
+		poolXfer: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+			assetIndex: currentLptAssetId,
+			amount: burnAmount,
+			from: account.addr,
+			to: algosdk.getApplicationAddress(appId),
+			suggestedParams: suggestedParams,
+		}),
+		poolAsset: currentLptAssetId,
+	});
 
-    const client = getClient(appId);
+	const res = await client.burn(
+		removeLiqArgs(),
+		await getUnnamedResourcesAccessedFromMethod(client, 'burn', removeLiqArgs())
+	);
+	console.log('Burn:', res.return);
 
-    const removeLiqArgs = () => ({
-        poolXfer: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-            assetIndex: currentLptAssetId,
-            amount: burnAmount,
-            from: account.addr,
-            to: algosdk.getApplicationAddress(appId),
-            suggestedParams: suggestedParams
-        }),
-        poolAsset: currentLptAssetId,
-    });
+	console.log('App Voi Balance:', (await getBalance(appAddress)) / 1e6);
+	console.log(`App Via Balance:`, (await getArc200Balance(viaAppId, appAddress)) / 1e6);
 
-    const res = await client.burn(removeLiqArgs(), await getUnnamedResourcesAccessedFromMethod(client, 'burn', removeLiqArgs()));
-    console.log('Burn:', res.return);
-
-
-    console.log('App Voi Balance:', (await getBalance(appAddress)) / 1e6);
-    console.log(`App Via Balance:`, (await getArc200Balance(viaAppId, appAddress)) / 1e6);
-
-    console.log('Signer Voi Balance:', (await getBalance(account.addr)) / 1e6);
-    console.log(`Signer Via Balance:`, (await getArc200Balance(viaAppId, account.addr)) / 1e6);
+	console.log('Signer Voi Balance:', (await getBalance(account.addr)) / 1e6);
+	console.log(`Signer Via Balance:`, (await getArc200Balance(viaAppId, account.addr)) / 1e6);
 }
 
 main();

@@ -10,7 +10,7 @@ import { DISPENSER_ACCOUNT, MultisigAccount, SigningAccount } from './types/acco
  * @returns A multisig account wrapper
  */
 export function multisigAccount(multisigParams, signingAccounts) {
-    return new MultisigAccount(multisigParams, signingAccounts);
+	return new MultisigAccount(multisigParams, signingAccounts);
 }
 /**
  * Returns an account wrapper that supports a rekeyed account.
@@ -19,7 +19,7 @@ export function multisigAccount(multisigParams, signingAccounts) {
  * @returns The SigningAccount wrapper
  */
 export function rekeyedAccount(signer, sender) {
-    return new SigningAccount(signer, sender);
+	return new SigningAccount(signer, sender);
 }
 /**
  * Returns an account wrapper that supports a transaction signer with associated sender address.
@@ -28,7 +28,7 @@ export function rekeyedAccount(signer, sender) {
  * @returns The SigningAccount wrapper
  */
 export function transactionSignerAccount(signer, sender) {
-    return { addr: sender, signer };
+	return { addr: sender, signer };
 }
 /** Returns an Algorand account with secret key loaded (i.e. that can sign transactions) by taking the mnemonic secret.
  *
@@ -38,8 +38,8 @@ export function transactionSignerAccount(signer, sender) {
  *  never commit it into source control and ideally load it from the environment (ideally via a secret storage service) rather than the file system.
  */
 export function mnemonicAccount(mnemonicSecret) {
-    // This method is confusingly named, so this function provides a more dev friendly "wrapper" name
-    return algosdk.mnemonicToSecretKey(mnemonicSecret);
+	// This method is confusingly named, so this function provides a more dev friendly "wrapper" name
+	return algosdk.mnemonicToSecretKey(mnemonicSecret);
 }
 /** Returns a new, random Algorand account with secret key loaded.
  *
@@ -47,8 +47,8 @@ export function mnemonicAccount(mnemonicSecret) {
  *
  */
 export function randomAccount() {
-    // This method is confusingly named, so this function provides a more dev friendly "wrapper" name
-    return algosdk.generateAccount();
+	// This method is confusingly named, so this function provides a more dev friendly "wrapper" name
+	return algosdk.generateAccount();
 }
 /**  @deprecated use mnemonicAccountFromEnvironment instead
  * Returns an Algorand account with private key loaded by convention based on the given name identifier.
@@ -82,42 +82,38 @@ export function randomAccount() {
  * @returns The requested account with private key loaded from the environment variables or when targeting LocalNet from KMD (idempotently creating and funding the account)
  */
 export async function getAccount(account, algod, kmdClient) {
-    let name;
-    let fundWith = undefined;
-    let config;
-    if (typeof account === 'string') {
-        name = account;
-        config = getAccountConfigFromEnvironment(name);
-    }
-    else if ('name' in account) {
-        name = account.name;
-        config = getAccountConfigFromEnvironment(name);
-        fundWith = account.fundWith;
-    }
-    else if ('config' in account) {
-        config = account.config;
-        name = config.accountName;
-        fundWith = account.fundWith;
-    }
-    else {
-        throw new Error('Missing name or account config');
-    }
-    if (config.accountMnemonic) {
-        const signer = mnemonicAccount(config.accountMnemonic);
-        const sender = config.senderAddress || config.senderMnemonic;
-        if (sender) {
-            return new SigningAccount(signer, sender);
-        }
-        else {
-            return signer;
-        }
-    }
-    if (await isLocalNet(algod)) {
-        const account = await getOrCreateKmdWalletAccount({ name, fundWith }, algod, kmdClient);
-        config.accountMnemonic = algosdk.secretKeyToMnemonic(account.sk);
-        return account;
-    }
-    throw new Error(`Missing environment variable ${name.toUpperCase()}_MNEMONIC when looking for account ${name}`);
+	let name;
+	let fundWith = undefined;
+	let config;
+	if (typeof account === 'string') {
+		name = account;
+		config = getAccountConfigFromEnvironment(name);
+	} else if ('name' in account) {
+		name = account.name;
+		config = getAccountConfigFromEnvironment(name);
+		fundWith = account.fundWith;
+	} else if ('config' in account) {
+		config = account.config;
+		name = config.accountName;
+		fundWith = account.fundWith;
+	} else {
+		throw new Error('Missing name or account config');
+	}
+	if (config.accountMnemonic) {
+		const signer = mnemonicAccount(config.accountMnemonic);
+		const sender = config.senderAddress || config.senderMnemonic;
+		if (sender) {
+			return new SigningAccount(signer, sender);
+		} else {
+			return signer;
+		}
+	}
+	if (await isLocalNet(algod)) {
+		const account = await getOrCreateKmdWalletAccount({ name, fundWith }, algod, kmdClient);
+		config.accountMnemonic = algosdk.secretKeyToMnemonic(account.sk);
+		return account;
+	}
+	throw new Error(`Missing environment variable ${name.toUpperCase()}_MNEMONIC when looking for account ${name}`);
 }
 /**
  * Returns an Algorand account with private key loaded by convention from environment variables based on the given name identifier.
@@ -150,37 +146,36 @@ export async function getAccount(account, algod, kmdClient) {
  * @returns The requested account with private key loaded from the environment variables or when targeting LocalNet from KMD (idempotently creating and funding the account)
  */
 export async function mnemonicAccountFromEnvironment(account, algod, kmdClient) {
-    const { name, fundWith } = typeof account === 'string' ? { name: account, fundWith: undefined } : account;
-    // todo: When eventually removing this method, inline it here
-    const config = getAccountConfigFromEnvironment(name);
-    if (config.accountMnemonic) {
-        const signer = mnemonicAccount(config.accountMnemonic);
-        const sender = config.senderAddress;
-        if (sender) {
-            return new SigningAccount(signer, sender);
-        }
-        else {
-            return signer;
-        }
-    }
-    if (await isLocalNet(algod)) {
-        return await getOrCreateKmdWalletAccount({ name, fundWith }, algod, kmdClient);
-    }
-    throw new Error(`Missing environment variable ${name.toUpperCase()}_MNEMONIC when looking for account ${name}`);
+	const { name, fundWith } = typeof account === 'string' ? { name: account, fundWith: undefined } : account;
+	// todo: When eventually removing this method, inline it here
+	const config = getAccountConfigFromEnvironment(name);
+	if (config.accountMnemonic) {
+		const signer = mnemonicAccount(config.accountMnemonic);
+		const sender = config.senderAddress;
+		if (sender) {
+			return new SigningAccount(signer, sender);
+		} else {
+			return signer;
+		}
+	}
+	if (await isLocalNet(algod)) {
+		return await getOrCreateKmdWalletAccount({ name, fundWith }, algod, kmdClient);
+	}
+	throw new Error(`Missing environment variable ${name.toUpperCase()}_MNEMONIC when looking for account ${name}`);
 }
 /** Returns an account's address as a byte array
  *
  * @param account Either an account (with private key loaded) or the string address of an account
  */
 export function getAccountAddressAsUint8Array(account) {
-    return algosdk.decodeAddress(typeof account === 'string' ? account : getSenderAddress(account)).publicKey;
+	return algosdk.decodeAddress(typeof account === 'string' ? account : getSenderAddress(account)).publicKey;
 }
 /** Returns the string address of an Algorand account from a base64 encoded version of the underlying byte array of the address public key
  *
  * @param addressEncodedInB64 The base64 encoded version of the underlying byte array of the address public key
  */
 export function getAccountAddressAsString(addressEncodedInB64) {
-    return algosdk.encodeAddress(Buffer.from(addressEncodedInB64, 'base64'));
+	return algosdk.encodeAddress(Buffer.from(addressEncodedInB64, 'base64'));
 }
 /** Returns an account (with private key loaded) that can act as a dispenser
  *
@@ -191,9 +186,11 @@ export function getAccountAddressAsString(addressEncodedInB64) {
  * @param kmd A KMD client, if not specified then a default KMD client will be loaded from environment variables
  */
 export async function getDispenserAccount(algod, kmd) {
-    // If we are running against LocalNet we can use the default account within it, otherwise use an automation account specified via environment variables and ensure it's populated with ALGOs
-    const canFundFromDefaultAccount = await isLocalNet(algod);
-    return canFundFromDefaultAccount ? await getLocalNetDispenserAccount(algod, kmd) : await getAccount(DISPENSER_ACCOUNT, algod);
+	// If we are running against LocalNet we can use the default account within it, otherwise use an automation account specified via environment variables and ensure it's populated with ALGOs
+	const canFundFromDefaultAccount = await isLocalNet(algod);
+	return canFundFromDefaultAccount
+		? await getLocalNetDispenserAccount(algod, kmd)
+		: await getAccount(DISPENSER_ACCOUNT, algod);
 }
 /**  @deprecated Use algokit.mnemonicAccountFromEnvironment, which doesn't need this function
  * Returns the Account configuration from environment variables
@@ -206,13 +203,13 @@ export async function getDispenserAccount(algod, kmd) {
  *
  */
 export function getAccountConfigFromEnvironment(accountName) {
-    if (!process || !process.env) {
-        throw new Error('Attempt to get account with private key from a non Node.js context; not supported!');
-    }
-    return {
-        accountMnemonic: process.env[`${accountName.toUpperCase()}_MNEMONIC`] || '',
-        senderAddress: process.env[`${accountName.toUpperCase()}_SENDER`],
-        accountName,
-    };
+	if (!process || !process.env) {
+		throw new Error('Attempt to get account with private key from a non Node.js context; not supported!');
+	}
+	return {
+		accountMnemonic: process.env[`${accountName.toUpperCase()}_MNEMONIC`] || '',
+		senderAddress: process.env[`${accountName.toUpperCase()}_SENDER`],
+		accountName,
+	};
 }
 //# sourceMappingURL=account.js.map

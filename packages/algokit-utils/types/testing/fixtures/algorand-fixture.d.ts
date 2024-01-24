@@ -46,5 +46,8 @@ export declare function algorandFixture(fixtureConfig?: AlgorandFixtureConfig): 
  * @param config The algo configuration
  * @returns The fixture
  */
-export declare function algorandFixture(fixtureConfig: AlgorandFixtureConfig | undefined, config: AlgoConfig): AlgorandFixture;
+export declare function algorandFixture(
+	fixtureConfig: AlgorandFixtureConfig | undefined,
+	config: AlgoConfig
+): AlgorandFixture;
 //# sourceMappingURL=algorand-fixture.d.ts.map

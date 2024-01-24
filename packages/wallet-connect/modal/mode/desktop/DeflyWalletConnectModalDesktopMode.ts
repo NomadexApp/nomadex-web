@@ -30,188 +30,172 @@ const deflyWalletConnectModalDesktopModeDefaultView = `
     </div>
   `;
 
-deflyWalletConnectModalDesktopMode.innerHTML =
-  deflyWalletConnectModalDesktopModeDefaultView;
+deflyWalletConnectModalDesktopMode.innerHTML = deflyWalletConnectModalDesktopModeDefaultView;
 
 export class DeflyWalletModalDesktopMode extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
 
-    if (this.shadowRoot) {
-      this.shadowRoot.append(
-        deflyWalletConnectModalDesktopMode.content.cloneNode(true),
-        styleSheet,
-        accordionStyleSheet
-      );
+		if (this.shadowRoot) {
+			this.shadowRoot.append(
+				deflyWalletConnectModalDesktopMode.content.cloneNode(true),
+				styleSheet,
+				accordionStyleSheet
+			);
 
-      this.shadowRoot.addEventListener('click', (event) => {
-        this.handleAccordion(event as MouseEvent);
-      });
-    }
-  }
+			this.shadowRoot.addEventListener('click', (event) => {
+				this.handleAccordion(event as MouseEvent);
+			});
+		}
+	}
 
-  connectedCallback() {
-    this.handleChangeView();
-  }
+	connectedCallback() {
+		this.handleChangeView();
+	}
 
-  handleChangeView() {
-    const downloadDeflyButton = this.shadowRoot?.getElementById(
-      'defly-wallet-connect-modal-desktop-mode-download-defly-button'
-    );
+	handleChangeView() {
+		const downloadDeflyButton = this.shadowRoot?.getElementById(
+			'defly-wallet-connect-modal-desktop-mode-download-defly-button'
+		);
 
-    const backButton = this.shadowRoot?.getElementById(
-      'defly-wallet-connect-modal-download-defly-view-back-button'
-    );
+		const backButton = this.shadowRoot?.getElementById('defly-wallet-connect-modal-download-defly-view-back-button');
 
-    const copyButtons = this.shadowRoot?.querySelectorAll('.f_copy-button');
+		const copyButtons = this.shadowRoot?.querySelectorAll('.f_copy-button');
 
-    if (downloadDeflyButton) {
-      downloadDeflyButton.addEventListener('click', () => {
-        this.onClickDownload();
-      });
-    }
+		if (downloadDeflyButton) {
+			downloadDeflyButton.addEventListener('click', () => {
+				this.onClickDownload();
+			});
+		}
 
-    if (backButton) {
-      backButton.addEventListener('click', () => {
-        this.onClickBack();
-      });
-    }
+		if (backButton) {
+			backButton.addEventListener('click', () => {
+				this.onClickBack();
+			});
+		}
 
-    if (copyButtons && copyButtons.length) {
-      copyButtons.forEach((button) => {
-        button.addEventListener('click', (e) => {
-          this.onClickCopy(e);
-        });
-      });
-    }
+		if (copyButtons && copyButtons.length) {
+			copyButtons.forEach((button) => {
+				button.addEventListener('click', (e) => {
+					this.onClickCopy(e);
+				});
+			});
+		}
 
-    this.renderQRCode();
-  }
+		this.renderQRCode();
+	}
 
-  handleAccordion(event: MouseEvent) {
-    if (event.target instanceof Element) {
-      if (!event.target.classList.contains('defly-wallet-accordion-toggle__button')) {
-        return;
-      }
+	handleAccordion(event: MouseEvent) {
+		if (event.target instanceof Element) {
+			if (!event.target.classList.contains('defly-wallet-accordion-toggle__button')) {
+				return;
+			}
 
-      if (this.shadowRoot && event.target.parentElement?.parentElement) {
-        const accordionItem = event.target.parentElement?.parentElement;
+			if (this.shadowRoot && event.target.parentElement?.parentElement) {
+				const accordionItem = event.target.parentElement?.parentElement;
 
-        if (!accordionItem) {
-          return;
-        }
+				if (!accordionItem) {
+					return;
+				}
 
-        if (accordionItem.classList.contains('defly-wallet-accordion-item--active')) {
-          return;
-        }
+				if (accordionItem.classList.contains('defly-wallet-accordion-item--active')) {
+					return;
+				}
 
-        const accordionItems = this.shadowRoot.querySelectorAll(
-          '.defly-wallet-accordion-item.defly-wallet-accordion-item--active'
-        );
+				const accordionItems = this.shadowRoot.querySelectorAll(
+					'.defly-wallet-accordion-item.defly-wallet-accordion-item--active'
+				);
 
-        for (let i = 0; i < accordionItems.length; i++) {
-          accordionItems[i].classList.remove('defly-wallet-accordion-item--active');
-        }
+				for (let i = 0; i < accordionItems.length; i++) {
+					accordionItems[i].classList.remove('defly-wallet-accordion-item--active');
+				}
 
-        accordionItem.classList.toggle('defly-wallet-accordion-item--active');
-      }
-    }
-  }
+				accordionItem.classList.toggle('defly-wallet-accordion-item--active');
+			}
+		}
+	}
 
-  renderQRCode() {
-    const URI = this.getAttribute('uri');
+	renderQRCode() {
+		const URI = this.getAttribute('uri');
 
-    const size = Math.min(window.innerWidth / 1.5, 330);
+		const size = Math.min(window.innerWidth / 1.5, 330);
 
-    if (URI) {
-      const qrCode = new QRCodeStyling({
-        width: size,
-        height: size,
-        type: 'svg',
-        data: URI,
-        image: undefined,
-        dotsOptions: {
-          color: '#000',
-          type: 'dots'
-        },
-        imageOptions: {
-          imageSize: .21,
-          crossOrigin: 'anonymous',
-        },
-        cornersSquareOptions: { type: 'extra-rounded' },
-        cornersDotOptions: {
-          type: 'dot'
-        }
-      });
+		if (URI) {
+			const qrCode = new QRCodeStyling({
+				width: size,
+				height: size,
+				type: 'svg',
+				data: URI,
+				image: undefined,
+				dotsOptions: {
+					color: '#000',
+					type: 'dots',
+				},
+				imageOptions: {
+					imageSize: 0.21,
+					crossOrigin: 'anonymous',
+				},
+				cornersSquareOptions: { type: 'extra-rounded' },
+				cornersDotOptions: {
+					type: 'dot',
+				},
+			});
 
-      const qrWrapper = this.shadowRoot?.getElementById(
-        'defly-wallet-connect-modal-connect-qr-code'
-      );
+			const qrWrapper = this.shadowRoot?.getElementById('defly-wallet-connect-modal-connect-qr-code');
 
-      if (qrWrapper) {
-        qrCode.append(qrWrapper);
-      }
-    }
-  }
+			if (qrWrapper) {
+				qrCode.append(qrWrapper);
+			}
+		}
+	}
 
-  onClickDownload() {
-    if (this.shadowRoot) {
-      const modalDesktopMode = this.shadowRoot.getElementById(
-        'defly-wallet-connect-modal-desktop-mode'
-      );
+	onClickDownload() {
+		if (this.shadowRoot) {
+			const modalDesktopMode = this.shadowRoot.getElementById('defly-wallet-connect-modal-desktop-mode');
 
-      if (modalDesktopMode) {
-        modalDesktopMode.classList.remove(
-          'defly-wallet-connect-modal-desktop-mode--default'
-        );
+			if (modalDesktopMode) {
+				modalDesktopMode.classList.remove('defly-wallet-connect-modal-desktop-mode--default');
 
-        modalDesktopMode.classList.add(
-          'defly-wallet-connect-modal-desktop-mode--download'
-        );
-      }
-    }
-  }
+				modalDesktopMode.classList.add('defly-wallet-connect-modal-desktop-mode--download');
+			}
+		}
+	}
 
-  onClickCopy(e) {
-    e.stopPropagation();
-    if (this.shadowRoot) {
-      const URI = this.getAttribute('uri');
+	onClickCopy(e) {
+		e.stopPropagation();
+		if (this.shadowRoot) {
+			const URI = this.getAttribute('uri');
 
-      if (URI) {
-        const textarea = document.createElement('textarea');
+			if (URI) {
+				const textarea = document.createElement('textarea');
 
-        textarea.style.position = 'fixed';
-        textarea.style.left = '0';
-        textarea.style.top = '0';
-        textarea.style.opacity = '0';
-        textarea.value = URI;
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        /* eslint-disable */
-        document.execCommand('copy'); // copy passed value
-        /* eslint-enable */
-        document.body.removeChild(textarea);
-      }
-    }
-  }
+				textarea.style.position = 'fixed';
+				textarea.style.left = '0';
+				textarea.style.top = '0';
+				textarea.style.opacity = '0';
+				textarea.value = URI;
+				document.body.appendChild(textarea);
+				textarea.focus();
+				textarea.select();
+				/* eslint-disable */
+				document.execCommand('copy'); // copy passed value
+				/* eslint-enable */
+				document.body.removeChild(textarea);
+			}
+		}
+	}
 
-  onClickBack() {
-    console.log('back clicked');
-    if (this.shadowRoot) {
-      const modalDesktopMode = this.shadowRoot.getElementById(
-        'defly-wallet-connect-modal-desktop-mode'
-      );
+	onClickBack() {
+		console.log('back clicked');
+		if (this.shadowRoot) {
+			const modalDesktopMode = this.shadowRoot.getElementById('defly-wallet-connect-modal-desktop-mode');
 
-      if (modalDesktopMode) {
-        modalDesktopMode.classList.add('defly-wallet-connect-modal-desktop-mode--default');
+			if (modalDesktopMode) {
+				modalDesktopMode.classList.add('defly-wallet-connect-modal-desktop-mode--default');
 
-        modalDesktopMode.classList.remove(
-          'defly-wallet-connect-modal-desktop-mode--download'
-        );
-      }
-    }
-  }
-
+				modalDesktopMode.classList.remove('defly-wallet-connect-modal-desktop-mode--download');
+			}
+		}
+	}
 }

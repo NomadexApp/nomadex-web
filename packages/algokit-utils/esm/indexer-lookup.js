@@ -6,7 +6,7 @@ const DEFAULT_INDEXER_MAX_API_RESOURCES_PER_ACCOUNT = 1000; //MaxAPIResourcesPer
  * @returns The result of the look-up
  */
 export async function lookupTransactionById(transactionId, indexer) {
-    return (await indexer.lookupTransactionByID(transactionId).do());
+	return await indexer.lookupTransactionByID(transactionId).do();
 }
 /**
  * Looks up an account by address using Indexer.
@@ -15,7 +15,7 @@ export async function lookupTransactionById(transactionId, indexer) {
  * @returns The result of the look-up
  */
 export async function lookupAccountByAddress(accountAddress, indexer) {
-    return (await indexer.lookupAccountByID(accountAddress).do());
+	return await indexer.lookupAccountByID(accountAddress).do();
 }
 /**
  * Looks up applications that were created by the given address.
@@ -26,21 +26,24 @@ export async function lookupAccountByAddress(accountAddress, indexer) {
  * @returns The list of application results
  */
 export async function lookupAccountCreatedApplicationByAddress(indexer, address, getAll = undefined, paginationLimit) {
-    return await executePaginatedRequest((response) => {
-        if ('message' in response) {
-            throw { status: 404, ...response };
-        }
-        return response.applications;
-    }, (nextToken) => {
-        let s = indexer
-            .lookupAccountCreatedApplications(address)
-            .includeAll(getAll)
-            .limit(paginationLimit ?? DEFAULT_INDEXER_MAX_API_RESOURCES_PER_ACCOUNT);
-        if (nextToken) {
-            s = s.nextToken(nextToken);
-        }
-        return s;
-    });
+	return await executePaginatedRequest(
+		(response) => {
+			if ('message' in response) {
+				throw { status: 404, ...response };
+			}
+			return response.applications;
+		},
+		(nextToken) => {
+			let s = indexer
+				.lookupAccountCreatedApplications(address)
+				.includeAll(getAll)
+				.limit(paginationLimit ?? DEFAULT_INDEXER_MAX_API_RESOURCES_PER_ACCOUNT);
+			if (nextToken) {
+				s = s.nextToken(nextToken);
+			}
+			return s;
+		}
+	);
 }
 /**
  * Allows transactions to be searched for the given criteria.
@@ -50,49 +53,56 @@ export async function lookupAccountCreatedApplicationByAddress(indexer, address,
  * @returns The search results
  */
 export async function searchTransactions(indexer, searchCriteria, paginationLimit) {
-    let currentRound = 0;
-    const transactions = await executePaginatedRequest((response) => {
-        if ('message' in response) {
-            throw { status: 404, ...response };
-        }
-        if (response['current-round'] > currentRound) {
-            currentRound = response['current-round'];
-        }
-        return response.transactions;
-    }, (nextToken) => {
-        let s = searchCriteria(indexer.searchForTransactions()).limit(paginationLimit ?? DEFAULT_INDEXER_MAX_API_RESOURCES_PER_ACCOUNT);
-        if (nextToken) {
-            s = s.nextToken(nextToken);
-        }
-        return s;
-    });
-    return {
-        'current-round': currentRound,
-        'next-token': '',
-        transactions: transactions,
-    };
+	let currentRound = 0;
+	const transactions = await executePaginatedRequest(
+		(response) => {
+			if ('message' in response) {
+				throw { status: 404, ...response };
+			}
+			if (response['current-round'] > currentRound) {
+				currentRound = response['current-round'];
+			}
+			return response.transactions;
+		},
+		(nextToken) => {
+			let s = searchCriteria(indexer.searchForTransactions()).limit(
+				paginationLimit ?? DEFAULT_INDEXER_MAX_API_RESOURCES_PER_ACCOUNT
+			);
+			if (nextToken) {
+				s = s.nextToken(nextToken);
+			}
+			return s;
+		}
+	);
+	return {
+		'current-round': currentRound,
+		'next-token': '',
+		transactions: transactions,
+	};
 }
 // https://developer.algorand.org/docs/get-details/indexer/#paginated-results
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function executePaginatedRequest(
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-extractItems, buildRequest) {
-    const results = [];
-    let nextToken = undefined;
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-        const request = buildRequest(nextToken);
-        const response = await request.do();
-        const items = extractItems(response);
-        if (items == null || items.length === 0) {
-            break;
-        }
-        results.push(...items);
-        nextToken = response['next-token'];
-        if (!nextToken) {
-            break;
-        }
-    }
-    return results;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	extractItems,
+	buildRequest
+) {
+	const results = [];
+	let nextToken = undefined;
+	// eslint-disable-next-line no-constant-condition
+	while (true) {
+		const request = buildRequest(nextToken);
+		const response = await request.do();
+		const items = extractItems(response);
+		if (items == null || items.length === 0) {
+			break;
+		}
+		results.push(...items);
+		nextToken = response['next-token'];
+		if (!nextToken) {
+			break;
+		}
+	}
+	return results;
 }
 //# sourceMappingURL=indexer-lookup.js.map

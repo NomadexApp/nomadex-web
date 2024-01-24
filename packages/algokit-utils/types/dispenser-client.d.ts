@@ -15,5 +15,7 @@ import { TestNetDispenserApiClient, TestNetDispenserApiClientParams } from './ty
  *
  * @returns An instance of the TestNetDispenserApiClient class.
  */
-export declare function getTestNetDispenserApiClient(params?: TestNetDispenserApiClientParams | null): TestNetDispenserApiClient;
+export declare function getTestNetDispenserApiClient(
+	params?: TestNetDispenserApiClientParams | null
+): TestNetDispenserApiClient;
 //# sourceMappingURL=dispenser-client.d.ts.map

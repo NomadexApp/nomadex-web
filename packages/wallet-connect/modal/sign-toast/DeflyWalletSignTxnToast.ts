@@ -1,14 +1,11 @@
-import animationData from "./lotties/Animation.json";
+import animationData from './lotties/Animation.json';
 
-import lottie from "lottie-web";
+import lottie from 'lottie-web';
 
-import styles from "./_defly-wallet-sign-txn-toast.scss?inline";
-import {
-  DEFLY_WALLET_SIGN_TXN_TOAST_ID,
-  removeModalWrapperFromDOM
-} from "../deflyWalletConnectModalUtils";
+import styles from './_defly-wallet-sign-txn-toast.scss?inline';
+import { DEFLY_WALLET_SIGN_TXN_TOAST_ID, removeModalWrapperFromDOM } from '../deflyWalletConnectModalUtils';
 
-const deflyWalletSignTxnToastTemplate = document.createElement("template");
+const deflyWalletSignTxnToastTemplate = document.createElement('template');
 
 deflyWalletSignTxnToastTemplate.innerHTML = `
   <div class="defly-wallet-sign-txn-toast">
@@ -28,45 +25,38 @@ deflyWalletSignTxnToastTemplate.innerHTML = `
 `;
 
 export class DeflyWalletSignTxnToast extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({mode: "open"});
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
 
-    if (this.shadowRoot) {
-      const styleSheet = document.createElement("style");
+		if (this.shadowRoot) {
+			const styleSheet = document.createElement('style');
 
-      styleSheet.textContent = styles;
+			styleSheet.textContent = styles;
 
-      this.shadowRoot.append(
-        deflyWalletSignTxnToastTemplate.content.cloneNode(true),
-        styleSheet
-      );
+			this.shadowRoot.append(deflyWalletSignTxnToastTemplate.content.cloneNode(true), styleSheet);
 
-      const closeButton = this.shadowRoot.getElementById(
-        "defly-wallet-sign-txn-toast-close-button"
-      );
+			const closeButton = this.shadowRoot.getElementById('defly-wallet-sign-txn-toast-close-button');
 
-      closeButton?.addEventListener("click", () => {
-        removeModalWrapperFromDOM(DEFLY_WALLET_SIGN_TXN_TOAST_ID);
-      });
+			closeButton?.addEventListener('click', () => {
+				removeModalWrapperFromDOM(DEFLY_WALLET_SIGN_TXN_TOAST_ID);
+			});
 
-      this.renderLottieAnimation();
-    }
-  }
+			this.renderLottieAnimation();
+		}
+	}
 
-  renderLottieAnimation() {
-    const lottieWrapper = this.shadowRoot?.getElementById(
-      "defly-wallet-sign-txn-toast-lottie-animation"
-    );
+	renderLottieAnimation() {
+		const lottieWrapper = this.shadowRoot?.getElementById('defly-wallet-sign-txn-toast-lottie-animation');
 
-    if (lottieWrapper) {
-      lottie.loadAnimation({
-        container: lottieWrapper,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-        animationData
-      });
-    }
-  }
+		if (lottieWrapper) {
+			lottie.loadAnimation({
+				container: lottieWrapper,
+				renderer: 'svg',
+				loop: true,
+				autoplay: true,
+				animationData,
+			});
+		}
+	}
 }

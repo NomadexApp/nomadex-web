@@ -4,54 +4,61 @@ var Indexer = algosdk.Indexer;
 var Kmd = algosdk.Kmd;
 /** Retrieve configurations from environment variables when defined or get defaults (expects to be called from a Node.js environment not algod-side) */
 export function getConfigFromEnvOrDefaults() {
-    if (!process || !process.env) {
-        throw new Error('Attempt to get default algod configuration from a non Node.js context; supply the config instead');
-    }
-    const algodConfig = !process.env.ALGOD_SERVER
-        ? getDefaultLocalNetConfig('algod')
-        : { server: process.env.ALGOD_SERVER, port: process.env.ALGOD_PORT, token: process.env.ALGOD_TOKEN };
-    const indexerConfig = !process.env.INDEXER_SERVER
-        ? getDefaultLocalNetConfig('indexer')
-        : {
-            server: process.env.INDEXER_SERVER,
-            port: process.env.INDEXER_PORT,
-            token: process.env.INDEXER_TOKEN,
-        };
-    return {
-        algodConfig,
-        indexerConfig,
-        kmdConfig: process && process.env && process.env.ALGOD_SERVER
-            ? { ...algodConfig, port: process?.env?.KMD_PORT ?? '4002' }
-            : getDefaultLocalNetConfig('kmd'),
-    };
+	if (!process || !process.env) {
+		throw new Error('Attempt to get default algod configuration from a non Node.js context; supply the config instead');
+	}
+	const algodConfig = !process.env.ALGOD_SERVER
+		? getDefaultLocalNetConfig('algod')
+		: { server: process.env.ALGOD_SERVER, port: process.env.ALGOD_PORT, token: process.env.ALGOD_TOKEN };
+	const indexerConfig = !process.env.INDEXER_SERVER
+		? getDefaultLocalNetConfig('indexer')
+		: {
+				server: process.env.INDEXER_SERVER,
+				port: process.env.INDEXER_PORT,
+				token: process.env.INDEXER_TOKEN,
+		  };
+	return {
+		algodConfig,
+		indexerConfig,
+		kmdConfig:
+			process && process.env && process.env.ALGOD_SERVER
+				? { ...algodConfig, port: process?.env?.KMD_PORT ?? '4002' }
+				: getDefaultLocalNetConfig('kmd'),
+	};
 }
 /** Retrieve the algod configuration from environment variables (expects to be called from a Node.js environment not algod-side) */
 export function getAlgodConfigFromEnvironment() {
-    if (!process || !process.env) {
-        throw new Error('Attempt to get default algod configuration from a non Node.js context; supply the config instead');
-    }
-    if (!process.env.ALGOD_SERVER) {
-        throw new Error('Attempt to get default algod configuration without specifying ALGOD_SERVER in the environment variables');
-    }
-    return {
-        server: process.env.ALGOD_SERVER,
-        port: process.env.ALGOD_PORT,
-        token: process.env.ALGOD_TOKEN,
-    };
+	if (!process || !process.env) {
+		throw new Error('Attempt to get default algod configuration from a non Node.js context; supply the config instead');
+	}
+	if (!process.env.ALGOD_SERVER) {
+		throw new Error(
+			'Attempt to get default algod configuration without specifying ALGOD_SERVER in the environment variables'
+		);
+	}
+	return {
+		server: process.env.ALGOD_SERVER,
+		port: process.env.ALGOD_PORT,
+		token: process.env.ALGOD_TOKEN,
+	};
 }
 /** Retrieve the indexer configuration from environment variables (expects to be called from a Node.js environment not algod-side) */
 export function getIndexerConfigFromEnvironment() {
-    if (!process || !process.env) {
-        throw new Error('Attempt to get default indexer configuration from a non Node.js context; supply the config instead');
-    }
-    if (!process.env.INDEXER_SERVER) {
-        throw new Error('Attempt to get default indexer configuration without specifying INDEXER_SERVER in the environment variables');
-    }
-    return {
-        server: process.env.INDEXER_SERVER,
-        port: process.env.INDEXER_PORT,
-        token: process.env.INDEXER_TOKEN,
-    };
+	if (!process || !process.env) {
+		throw new Error(
+			'Attempt to get default indexer configuration from a non Node.js context; supply the config instead'
+		);
+	}
+	if (!process.env.INDEXER_SERVER) {
+		throw new Error(
+			'Attempt to get default indexer configuration without specifying INDEXER_SERVER in the environment variables'
+		);
+	}
+	return {
+		server: process.env.INDEXER_SERVER,
+		port: process.env.INDEXER_PORT,
+		token: process.env.INDEXER_TOKEN,
+	};
 }
 /** Returns the Algorand configuration to point to the AlgoNode service
  *
@@ -59,28 +66,34 @@ export function getIndexerConfigFromEnvironment() {
  * @param config Which algod config to return - Algod or Indexer
  */
 export function getAlgoNodeConfig(network, config) {
-    return {
-        server: `https://${network}-${config === 'algod' ? 'api' : 'idx'}.algonode.cloud/`,
-        port: 443,
-    };
+	return {
+		server: `https://${network}-${config === 'algod' ? 'api' : 'idx'}.algonode.cloud/`,
+		port: 443,
+	};
 }
 /** Returns the Algorand configuration to point to the default LocalNet
  *
  * @param configOrPort Which algod config to return - algod, kmd, or indexer OR a port number
  */
 export function getDefaultLocalNetConfig(configOrPort) {
-    return {
-        server: `http://localhost`,
-        port: configOrPort === 'algod' ? 4001 : configOrPort === 'indexer' ? 8980 : configOrPort === 'kmd' ? 4002 : configOrPort,
-        token: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-    };
+	return {
+		server: `http://localhost`,
+		port:
+			configOrPort === 'algod'
+				? 4001
+				: configOrPort === 'indexer'
+				? 8980
+				: configOrPort === 'kmd'
+				? 4002
+				: configOrPort,
+		token: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+	};
 }
 function getAlgoTokenHeader(server, token, defaultHeader) {
-    // Purestake uses a slightly different API key header than the default
-    if (server.includes('purestake.io') && typeof token === 'string')
-        return { 'X-API-Key': token };
-    // Because we override the default HTTP Client construction (to get retries) we need to put a string token into the standard header ourselves
-    return typeof token === 'string' ? { [defaultHeader ?? 'X-Algo-API-Token']: token } : token ?? {};
+	// Purestake uses a slightly different API key header than the default
+	if (server.includes('purestake.io') && typeof token === 'string') return { 'X-API-Key': token };
+	// Because we override the default HTTP Client construction (to get retries) we need to put a string token into the standard header ourselves
+	return typeof token === 'string' ? { [defaultHeader ?? 'X-Algo-API-Token']: token } : token ?? {};
 }
 /** Returns an algod SDK client that automatically retries on idempotent calls
  *
@@ -110,9 +123,9 @@ function getAlgoTokenHeader(server, token, defaultHeader) {
  * ```
  */
 export function getAlgoClient(config) {
-    const { token, server, port } = config ?? getAlgodConfigFromEnvironment();
-    const httpClientWithRetry = new AlgoHttpClientWithRetry(getAlgoTokenHeader(server, token), server, port);
-    return new algosdk.Algodv2(httpClientWithRetry, server);
+	const { token, server, port } = config ?? getAlgodConfigFromEnvironment();
+	const httpClientWithRetry = new AlgoHttpClientWithRetry(getAlgoTokenHeader(server, token), server, port);
+	return new algosdk.Algodv2(httpClientWithRetry, server);
 }
 /** Returns an indexer SDK client that automatically retries on idempotent calls
  *
@@ -142,9 +155,13 @@ export function getAlgoClient(config) {
  * ```
  */
 export function getAlgoIndexerClient(config) {
-    const { token, server, port } = config ?? getIndexerConfigFromEnvironment();
-    const httpClientWithRetry = new AlgoHttpClientWithRetry(getAlgoTokenHeader(server, token, 'X-Indexer-API-Token'), server, port);
-    return new Indexer(httpClientWithRetry);
+	const { token, server, port } = config ?? getIndexerConfigFromEnvironment();
+	const httpClientWithRetry = new AlgoHttpClientWithRetry(
+		getAlgoTokenHeader(server, token, 'X-Indexer-API-Token'),
+		server,
+		port
+	);
+	return new Indexer(httpClientWithRetry);
 }
 /**
  * Returns a KMD SDK client that automatically retries on idempotent calls
@@ -164,18 +181,18 @@ export function getAlgoIndexerClient(config) {
  * ```
  */
 export function getAlgoKmdClient(config) {
-    const { token, server } = config ?? getAlgodConfigFromEnvironment();
-    // We can only use Kmd on the LocalNet otherwise it's not exposed so this makes some assumptions
-    // (e.g. same token and server as algod and port 4002 by default)
-    return new Kmd(token, server, process?.env?.KMD_PORT ?? '4002');
+	const { token, server } = config ?? getAlgodConfigFromEnvironment();
+	// We can only use Kmd on the LocalNet otherwise it's not exposed so this makes some assumptions
+	// (e.g. same token and server as algod and port 4002 by default)
+	return new Kmd(token, server, process?.env?.KMD_PORT ?? '4002');
 }
 export async function isTestNet(algod) {
-    const params = await algod.getTransactionParams().do();
-    return ['testnet-v1.0', 'testnet-v1', 'testnet'].includes(params.genesisID);
+	const params = await algod.getTransactionParams().do();
+	return ['testnet-v1.0', 'testnet-v1', 'testnet'].includes(params.genesisID);
 }
 export async function isMainNet(algod) {
-    const params = await algod.getTransactionParams().do();
-    return ['mainnet-v1.0', 'mainnet-v1', 'mainnet'].includes(params.genesisID);
+	const params = await algod.getTransactionParams().do();
+	return ['mainnet-v1.0', 'mainnet-v1', 'mainnet'].includes(params.genesisID);
 }
 export { isLocalNet } from './localnet.js';
 //# sourceMappingURL=network-client.js.map

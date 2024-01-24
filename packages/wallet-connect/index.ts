@@ -1,10 +1,10 @@
-if (typeof window !== "undefined") {
-  // Pollyfill for Buffer
-  (window as any).global = window;
+if (typeof window !== 'undefined') {
+	// Pollyfill for Buffer
+	(window as any).global = window;
 
-  import("./App");
+	import('./App');
 }
 
-import WalletConnector from "./WalletConnector";
+import WalletConnector from './WalletConnector';
 
 export { WalletConnector };

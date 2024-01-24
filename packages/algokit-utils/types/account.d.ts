@@ -13,7 +13,10 @@ import TransactionSigner = algosdk.TransactionSigner;
  * @param signingAccounts The signers that are currently present
  * @returns A multisig account wrapper
  */
-export declare function multisigAccount(multisigParams: MultisigMetadata, signingAccounts: (Account | SigningAccount)[]): MultisigAccount;
+export declare function multisigAccount(
+	multisigParams: MultisigMetadata,
+	signingAccounts: (Account | SigningAccount)[]
+): MultisigAccount;
 /**
  * Returns an account wrapper that supports a rekeyed account.
  * @param signer The account, with private key loaded, that is signing
@@ -72,10 +75,16 @@ export declare function randomAccount(): Account;
  * @param kmdClient An optional KMD client to use to create an account (when targeting LocalNet), if not specified then a default KMD client will be loaded from environment variables
  * @returns The requested account with private key loaded from the environment variables or when targeting LocalNet from KMD (idempotently creating and funding the account)
  */
-export declare function getAccount(account: {
-    name: string;
-    fundWith?: AlgoAmount;
-} | string, algod: Algodv2, kmdClient?: Kmd): Promise<Account | SigningAccount>;
+export declare function getAccount(
+	account:
+		| {
+				name: string;
+				fundWith?: AlgoAmount;
+		  }
+		| string,
+	algod: Algodv2,
+	kmdClient?: Kmd
+): Promise<Account | SigningAccount>;
 /**  @deprecated use mnemonicAccountFromEnvironment instead
  * Returns an Algorand account with private key loaded by convention based on the given name identifier.
  *
@@ -97,10 +106,14 @@ export declare function getAccount(account: {
  * @param kmdClient An optional KMD client to use to create an account (when targeting LocalNet), if not specified then a default KMD client will be loaded from environment variables
  * @returns The requested account with private key loaded from the environment variables or when targeting LocalNet from KMD (idempotently creating and funding the account)
  */
-export declare function getAccount(account: {
-    config: AccountConfig;
-    fundWith?: AlgoAmount;
-}, algod: Algodv2, kmdClient?: Kmd): Promise<Account | SigningAccount>;
+export declare function getAccount(
+	account: {
+		config: AccountConfig;
+		fundWith?: AlgoAmount;
+	},
+	algod: Algodv2,
+	kmdClient?: Kmd
+): Promise<Account | SigningAccount>;
 /**
  * Returns an Algorand account with private key loaded by convention from environment variables based on the given name identifier.
  *
@@ -131,10 +144,16 @@ export declare function getAccount(account: {
  * @param kmdClient An optional KMD client to use to create an account (when targeting LocalNet), if not specified then a default KMD client will be loaded from environment variables
  * @returns The requested account with private key loaded from the environment variables or when targeting LocalNet from KMD (idempotently creating and funding the account)
  */
-export declare function mnemonicAccountFromEnvironment(account: string | {
-    name: string;
-    fundWith?: AlgoAmount;
-}, algod: Algodv2, kmdClient?: Kmd): Promise<Account | SigningAccount>;
+export declare function mnemonicAccountFromEnvironment(
+	account:
+		| string
+		| {
+				name: string;
+				fundWith?: AlgoAmount;
+		  },
+	algod: Algodv2,
+	kmdClient?: Kmd
+): Promise<Account | SigningAccount>;
 /** Returns an account's address as a byte array
  *
  * @param account Either an account (with private key loaded) or the string address of an account

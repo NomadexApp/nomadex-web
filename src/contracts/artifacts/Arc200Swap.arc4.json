@@ -1,234 +1,234 @@
 {
-  "name": "Arc200Swap",
-  "desc": "",
-  "methods": [
-    {
-      "name": "createApplication",
-      "args": [],
-      "returns": {
-        "type": "void"
-      }
-    },
-    {
-      "name": "updateApplication",
-      "args": [],
-      "returns": {
-        "type": "void"
-      }
-    },
-    {
-      "name": "mint",
-      "desc": "***********************************************",
-      "args": [
-        {
-          "name": "pay_txn",
-          "type": "pay"
-        },
-        {
-          "name": "arc200_amount",
-          "type": "uint64"
-        },
-        {
-          "name": "pool_token",
-          "type": "asset"
-        }
-      ],
-      "returns": {
-        "type": "void"
-      }
-    },
-    {
-      "name": "burn",
-      "args": [
-        {
-          "name": "lpt_pay_txn",
-          "type": "axfer"
-        }
-      ],
-      "returns": {
-        "type": "void"
-      }
-    },
-    {
-      "name": "swap_to_arc200",
-      "desc": "***********************************************",
-      "args": [
-        {
-          "name": "pay_txn",
-          "type": "pay"
-        },
-        {
-          "name": "min_amount",
-          "type": "uint64"
-        }
-      ],
-      "returns": {
-        "type": "uint64"
-      },
-      "events": [
-        {
-          "name": "Swap",
-          "args": [
-            {
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "name": "from_amount",
-              "type": "uint64"
-            },
-            {
-              "name": "to_amount",
-              "type": "uint64"
-            },
-            {
-              "name": "direction",
-              "type": "uint8"
-            }
-          ],
-          "desc": ""
-        }
-      ]
-    },
-    {
-      "name": "swap_from_arc200",
-      "args": [
-        {
-          "name": "arc200_amount",
-          "type": "uint64"
-        },
-        {
-          "name": "min_amount",
-          "type": "uint64"
-        }
-      ],
-      "returns": {
-        "type": "uint64"
-      },
-      "events": [
-        {
-          "name": "Swap",
-          "args": [
-            {
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "name": "from_amount",
-              "type": "uint64"
-            },
-            {
-              "name": "to_amount",
-              "type": "uint64"
-            },
-            {
-              "name": "direction",
-              "type": "uint8"
-            }
-          ],
-          "desc": ""
-        }
-      ]
-    },
-    {
-      "name": "create_pool_token",
-      "desc": "***********************************************",
-      "args": [
-        {
-          "name": "seed",
-          "type": "pay"
-        }
-      ],
-      "returns": {
-        "type": "uint64"
-      }
-    },
-    {
-      "name": "register_online",
-      "args": [
-        {
-          "name": "selection_pk",
-          "type": "byte[]"
-        },
-        {
-          "name": "state_proof_pk",
-          "type": "byte[]"
-        },
-        {
-          "name": "vote_pk",
-          "type": "byte[]"
-        },
-        {
-          "name": "vote_first",
-          "type": "uint64"
-        },
-        {
-          "name": "vote_last",
-          "type": "uint64"
-        },
-        {
-          "name": "vote_key_dilution",
-          "type": "uint64"
-        }
-      ],
-      "returns": {
-        "type": "void"
-      }
-    },
-    {
-      "name": "register_offline",
-      "args": [],
-      "returns": {
-        "type": "void"
-      }
-    },
-    {
-      "name": "set_fees",
-      "args": [
-        {
-          "name": "fee",
-          "type": "uint64"
-        }
-      ],
-      "returns": {
-        "type": "void"
-      }
-    },
-    {
-      "name": "set_admin",
-      "args": [
-        {
-          "name": "admin",
-          "type": "account"
-        }
-      ],
-      "returns": {
-        "type": "void"
-      }
-    }
-  ],
-  "events": [
-    {
-      "name": "Swap",
-      "args": [
-        {
-          "name": "sender",
-          "type": "address"
-        },
-        {
-          "name": "from_amount",
-          "type": "uint64"
-        },
-        {
-          "name": "to_amount",
-          "type": "uint64"
-        },
-        {
-          "name": "direction",
-          "type": "uint8"
-        }
-      ],
-      "desc": ""
-    }
-  ]
+	"name": "Arc200Swap",
+	"desc": "",
+	"methods": [
+		{
+			"name": "createApplication",
+			"args": [],
+			"returns": {
+				"type": "void"
+			}
+		},
+		{
+			"name": "updateApplication",
+			"args": [],
+			"returns": {
+				"type": "void"
+			}
+		},
+		{
+			"name": "mint",
+			"desc": "***********************************************",
+			"args": [
+				{
+					"name": "pay_txn",
+					"type": "pay"
+				},
+				{
+					"name": "arc200_amount",
+					"type": "uint64"
+				},
+				{
+					"name": "pool_token",
+					"type": "asset"
+				}
+			],
+			"returns": {
+				"type": "void"
+			}
+		},
+		{
+			"name": "burn",
+			"args": [
+				{
+					"name": "lpt_pay_txn",
+					"type": "axfer"
+				}
+			],
+			"returns": {
+				"type": "void"
+			}
+		},
+		{
+			"name": "swap_to_arc200",
+			"desc": "***********************************************",
+			"args": [
+				{
+					"name": "pay_txn",
+					"type": "pay"
+				},
+				{
+					"name": "min_amount",
+					"type": "uint64"
+				}
+			],
+			"returns": {
+				"type": "uint64"
+			},
+			"events": [
+				{
+					"name": "Swap",
+					"args": [
+						{
+							"name": "sender",
+							"type": "address"
+						},
+						{
+							"name": "from_amount",
+							"type": "uint64"
+						},
+						{
+							"name": "to_amount",
+							"type": "uint64"
+						},
+						{
+							"name": "direction",
+							"type": "uint8"
+						}
+					],
+					"desc": ""
+				}
+			]
+		},
+		{
+			"name": "swap_from_arc200",
+			"args": [
+				{
+					"name": "arc200_amount",
+					"type": "uint64"
+				},
+				{
+					"name": "min_amount",
+					"type": "uint64"
+				}
+			],
+			"returns": {
+				"type": "uint64"
+			},
+			"events": [
+				{
+					"name": "Swap",
+					"args": [
+						{
+							"name": "sender",
+							"type": "address"
+						},
+						{
+							"name": "from_amount",
+							"type": "uint64"
+						},
+						{
+							"name": "to_amount",
+							"type": "uint64"
+						},
+						{
+							"name": "direction",
+							"type": "uint8"
+						}
+					],
+					"desc": ""
+				}
+			]
+		},
+		{
+			"name": "create_pool_token",
+			"desc": "***********************************************",
+			"args": [
+				{
+					"name": "seed",
+					"type": "pay"
+				}
+			],
+			"returns": {
+				"type": "uint64"
+			}
+		},
+		{
+			"name": "register_online",
+			"args": [
+				{
+					"name": "selection_pk",
+					"type": "byte[]"
+				},
+				{
+					"name": "state_proof_pk",
+					"type": "byte[]"
+				},
+				{
+					"name": "vote_pk",
+					"type": "byte[]"
+				},
+				{
+					"name": "vote_first",
+					"type": "uint64"
+				},
+				{
+					"name": "vote_last",
+					"type": "uint64"
+				},
+				{
+					"name": "vote_key_dilution",
+					"type": "uint64"
+				}
+			],
+			"returns": {
+				"type": "void"
+			}
+		},
+		{
+			"name": "register_offline",
+			"args": [],
+			"returns": {
+				"type": "void"
+			}
+		},
+		{
+			"name": "set_fees",
+			"args": [
+				{
+					"name": "fee",
+					"type": "uint64"
+				}
+			],
+			"returns": {
+				"type": "void"
+			}
+		},
+		{
+			"name": "set_admin",
+			"args": [
+				{
+					"name": "admin",
+					"type": "account"
+				}
+			],
+			"returns": {
+				"type": "void"
+			}
+		}
+	],
+	"events": [
+		{
+			"name": "Swap",
+			"args": [
+				{
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"name": "from_amount",
+					"type": "uint64"
+				},
+				{
+					"name": "to_amount",
+					"type": "uint64"
+				},
+				{
+					"name": "direction",
+					"type": "uint8"
+				}
+			],
+			"desc": ""
+		}
+	]
 }

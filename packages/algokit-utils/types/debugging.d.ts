@@ -10,7 +10,12 @@ import { PersistSourceMapsParams, SimulateAndPersistResponseParams } from './typ
  *
  * @returns A promise that resolves when the source maps have been persisted.
  */
-export declare function persistSourceMaps({ sources, projectRoot, client, withSources }: PersistSourceMapsParams): Promise<void>;
+export declare function persistSourceMaps({
+	sources,
+	projectRoot,
+	client,
+	withSources,
+}: PersistSourceMapsParams): Promise<void>;
 /**
  * This function simulates the atomic transactions using the provided `AtomicTransactionComposer` object and `Algodv2` object,
  * and persists the simulation response to an AlgoKit AVM Debugger compliant JSON file.
@@ -31,5 +36,10 @@ export declare function persistSourceMaps({ sources, projectRoot, client, withSo
  * const result = await simulateAndPersistResponse({ atc, projectRoot, algod, bufferSizeMb });
  * console.log(result);
  */
-export declare function simulateAndPersistResponse({ atc, projectRoot, algod, bufferSizeMb }: SimulateAndPersistResponseParams): Promise<algosdk.modelsv2.SimulateResponse>;
+export declare function simulateAndPersistResponse({
+	atc,
+	projectRoot,
+	algod,
+	bufferSizeMb,
+}: SimulateAndPersistResponseParams): Promise<algosdk.modelsv2.SimulateResponse>;
 //# sourceMappingURL=debugging.d.ts.map

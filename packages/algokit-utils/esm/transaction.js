@@ -18,22 +18,21 @@ export const MAX_TRANSACTION_GROUP_SIZE = 16;
  *   * Else: The object/value converted into a JSON string representation
  */
 export function encodeTransactionNote(note) {
-    if (note == null || typeof note === 'undefined') {
-        return undefined;
-    }
-    else if (typeof note === 'object' && note.constructor === Uint8Array) {
-        return note;
-    }
-    else if (typeof note === 'object' && 'dAppName' in note) {
-        const arc2Payload = `${note.dAppName}:${note.format}${typeof note.data === 'string' ? note.data : JSON.stringify(note.data)}`;
-        const encoder = new TextEncoder();
-        return encoder.encode(arc2Payload);
-    }
-    else {
-        const n = typeof note === 'string' ? note : JSON.stringify(note);
-        const encoder = new TextEncoder();
-        return encoder.encode(n);
-    }
+	if (note == null || typeof note === 'undefined') {
+		return undefined;
+	} else if (typeof note === 'object' && note.constructor === Uint8Array) {
+		return note;
+	} else if (typeof note === 'object' && 'dAppName' in note) {
+		const arc2Payload = `${note.dAppName}:${note.format}${
+			typeof note.data === 'string' ? note.data : JSON.stringify(note.data)
+		}`;
+		const encoder = new TextEncoder();
+		return encoder.encode(arc2Payload);
+	} else {
+		const n = typeof note === 'string' ? note : JSON.stringify(note);
+		const encoder = new TextEncoder();
+		return encoder.encode(n);
+	}
 }
 /** Encodes a transaction lease into a 32-byte array ready to be included in an Algorand transaction.
  *
@@ -44,31 +43,31 @@ export function encodeTransactionNote(note) {
  * @example algokit.encodeLease(new Uint8Array([1, 2, 3]))
  */
 export function encodeLease(lease) {
-    if (lease === null || typeof lease === 'undefined') {
-        return undefined;
-    }
-    else if (typeof lease === 'object' && lease.constructor === Uint8Array) {
-        if (lease.length === 0 || lease.length > 32) {
-            throw new Error(`Received invalid lease; expected something with length between 1 and 32, but received bytes with length ${lease.length}`);
-        }
-        if (lease.length === 32)
-            return lease;
-        const lease32 = new Uint8Array(32);
-        lease32.set(lease, 0);
-        return lease32;
-    }
-    else if (typeof lease === 'string') {
-        if (lease.length === 0 || lease.length > 32) {
-            throw new Error(`Received invalid lease; expected something with length between 1 and 32, but received '${lease}' with length ${lease.length}`);
-        }
-        const encoder = new TextEncoder();
-        const lease32 = new Uint8Array(32);
-        lease32.set(encoder.encode(lease), 0);
-        return lease32;
-    }
-    else {
-        throw new Error(`Unknown lease type received of ${typeof lease}`);
-    }
+	if (lease === null || typeof lease === 'undefined') {
+		return undefined;
+	} else if (typeof lease === 'object' && lease.constructor === Uint8Array) {
+		if (lease.length === 0 || lease.length > 32) {
+			throw new Error(
+				`Received invalid lease; expected something with length between 1 and 32, but received bytes with length ${lease.length}`
+			);
+		}
+		if (lease.length === 32) return lease;
+		const lease32 = new Uint8Array(32);
+		lease32.set(lease, 0);
+		return lease32;
+	} else if (typeof lease === 'string') {
+		if (lease.length === 0 || lease.length > 32) {
+			throw new Error(
+				`Received invalid lease; expected something with length between 1 and 32, but received '${lease}' with length ${lease.length}`
+			);
+		}
+		const encoder = new TextEncoder();
+		const lease32 = new Uint8Array(32);
+		lease32.set(encoder.encode(lease), 0);
+		return lease32;
+	} else {
+		throw new Error(`Unknown lease type received of ${typeof lease}`);
+	}
 }
 /**
  * Returns the public address of the given transaction sender.
@@ -76,15 +75,15 @@ export function encodeLease(lease) {
  * @returns The public address
  */
 export const getSenderAddress = function (sender) {
-    return typeof sender === 'string' ? sender : 'addr' in sender ? sender.addr : sender.address();
+	return typeof sender === 'string' ? sender : 'addr' in sender ? sender.addr : sender.address();
 };
 const memoize = (fn) => {
-    const cache = new Map();
-    const cached = function (val) {
-        return cache.has(val) ? cache.get(val) : cache.set(val, fn.call(this, val)) && cache.get(val);
-    };
-    cached.cache = cache;
-    return cached;
+	const cache = new Map();
+	const cached = function (val) {
+		return cache.has(val) ? cache.get(val) : cache.set(val, fn.call(this, val)) && cache.get(val);
+	};
+	cached.cache = cache;
+	return cached;
 };
 /**
  * Given a transaction in a variety of supported formats, returns a TransactionWithSigner object ready to be passed to an
@@ -97,24 +96,25 @@ const memoize = (fn) => {
  * @returns A TransactionWithSigner object.
  */
 export const getTransactionWithSigner = async (transaction, defaultSender) => {
-    if ('txn' in transaction)
-        return transaction;
-    if (defaultSender === undefined)
-        throw new Error('Default sender must be provided when passing in a transaction object that does not contain its own signer');
-    return transaction instanceof Promise
-        ? {
-            txn: (await transaction).transaction,
-            signer: getSenderTransactionSigner(defaultSender),
-        }
-        : 'transaction' in transaction
-            ? {
-                txn: transaction.transaction,
-                signer: getSenderTransactionSigner(transaction.signer),
-            }
-            : {
-                txn: transaction,
-                signer: getSenderTransactionSigner(defaultSender),
-            };
+	if ('txn' in transaction) return transaction;
+	if (defaultSender === undefined)
+		throw new Error(
+			'Default sender must be provided when passing in a transaction object that does not contain its own signer'
+		);
+	return transaction instanceof Promise
+		? {
+				txn: (await transaction).transaction,
+				signer: getSenderTransactionSigner(defaultSender),
+		  }
+		: 'transaction' in transaction
+		? {
+				txn: transaction.transaction,
+				signer: getSenderTransactionSigner(transaction.signer),
+		  }
+		: {
+				txn: transaction,
+				signer: getSenderTransactionSigner(defaultSender),
+		  };
 };
 /**
  * Returns a `TransactionSigner` for the given transaction sender.
@@ -123,11 +123,11 @@ export const getTransactionWithSigner = async (transaction, defaultSender) => {
  * @returns A transaction signer
  */
 export const getSenderTransactionSigner = memoize(function (sender) {
-    return 'signer' in sender
-        ? sender.signer
-        : 'lsig' in sender
-            ? algosdk.makeLogicSigAccountTransactionSigner(sender)
-            : algosdk.makeBasicAccountTransactionSigner(sender);
+	return 'signer' in sender
+		? sender.signer
+		: 'lsig' in sender
+		? algosdk.makeLogicSigAccountTransactionSigner(sender)
+		: algosdk.makeBasicAccountTransactionSigner(sender);
 });
 /**
  * Signs a single transaction by the given signer.
@@ -136,13 +136,13 @@ export const getSenderTransactionSigner = memoize(function (sender) {
  * @returns The signed transaction as a `Uint8Array`
  */
 export const signTransaction = async (transaction, signer) => {
-    return 'sk' in signer
-        ? transaction.signTxn(signer.sk)
-        : 'lsig' in signer
-            ? algosdk.signLogicSigTransactionObject(transaction, signer).blob
-            : 'sign' in signer
-                ? signer.sign(transaction)
-                : (await signer.signer([transaction], [0]))[0];
+	return 'sk' in signer
+		? transaction.signTxn(signer.sk)
+		: 'lsig' in signer
+		? algosdk.signLogicSigTransactionObject(transaction, signer).blob
+		: 'sign' in signer
+		? signer.sign(transaction)
+		: (await signer.signer([transaction], [0]))[0];
 };
 /** Prepares a transaction for sending and then (if instructed) signs and sends the given transaction to the chain.
  *
@@ -155,23 +155,23 @@ export const signTransaction = async (transaction, signer) => {
  * @returns An object with transaction (`transaction`) and (if `skipWaiting` is `false` or `undefined`) confirmation (`confirmation`)
  */
 export const sendTransaction = async function (send, algod) {
-    const { transaction, from, sendParams } = send;
-    const { skipSending, skipWaiting, fee, maxFee, suppressLog, maxRoundsToWaitForConfirmation, atc } = sendParams ?? {};
-    controlFees(transaction, { fee, maxFee });
-    if (atc) {
-        atc.addTransaction({ txn: transaction, signer: getSenderTransactionSigner(from) });
-        return { transaction };
-    }
-    if (skipSending) {
-        return { transaction };
-    }
-    const signedTransaction = await signTransaction(transaction, from);
-    await algod.sendRawTransaction(signedTransaction).do();
-    let confirmation = undefined;
-    if (!skipWaiting) {
-        confirmation = await waitForConfirmation(transaction.txID(), maxRoundsToWaitForConfirmation ?? 5, algod);
-    }
-    return { transaction, confirmation };
+	const { transaction, from, sendParams } = send;
+	const { skipSending, skipWaiting, fee, maxFee, suppressLog, maxRoundsToWaitForConfirmation, atc } = sendParams ?? {};
+	controlFees(transaction, { fee, maxFee });
+	if (atc) {
+		atc.addTransaction({ txn: transaction, signer: getSenderTransactionSigner(from) });
+		return { transaction };
+	}
+	if (skipSending) {
+		return { transaction };
+	}
+	const signedTransaction = await signTransaction(transaction, from);
+	await algod.sendRawTransaction(signedTransaction).do();
+	let confirmation = undefined;
+	if (!skipWaiting) {
+		confirmation = await waitForConfirmation(transaction.txID(), maxRoundsToWaitForConfirmation ?? 5, algod);
+	}
+	return { transaction, confirmation };
 };
 /**
  * Signs and sends transactions that have been collected by an `AtomicTransactionComposer`.
@@ -182,64 +182,67 @@ export const sendTransaction = async function (send, algod) {
  * @returns An object with transaction IDs, transactions, group transaction ID (`groupTransactionId`) if more than 1 transaction sent, and (if `skipWaiting` is `false` or unset) confirmation (`confirmation`)
  */
 export const sendAtomicTransactionComposer = async function (atcSend, algod) {
-    const { atc, sendParams } = atcSend;
-    const transactionsWithSigner = atc.buildGroup();
-    const transactionsToSend = transactionsWithSigner.map((t) => {
-        return t.txn;
-    });
-    let groupId = undefined;
-    if (transactionsToSend.length > 1) {
-        groupId = transactionsToSend[0].group ? Buffer.from(transactionsToSend[0].group).toString('base64') : '';
-    }
-    try {
-        const result = await atc.execute(algod, sendParams?.maxRoundsToWaitForConfirmation ?? 5);
-        if (transactionsToSend.length > 1) {
-        }
-        else {
-        }
-        let confirmations = undefined;
-        if (!sendParams?.skipWaiting) {
-            confirmations = await Promise.all(transactionsToSend.map(async (t) => modelsv2.PendingTransactionResponse.from_obj_for_encoding(await algod.pendingTransactionInformation(t.txID()).do())));
-        }
-        return {
-            groupId,
-            confirmations,
-            txIds: transactionsToSend.map((t) => t.txID()),
-            transactions: transactionsToSend,
-            returns: result.methodResults.map((r) => ({
-                decodeError: r.decodeError,
-                returnValue: r.returnValue,
-                rawReturnValue: r.rawReturnValue,
-            })),
-        };
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }
-    catch (e) {
-        if (false && typeof e === 'object') {
-            e.traces = [];
-            let simulate = undefined;
-            if (false) {
-                // Dump the traces to a file for use with AlgoKit AVM debugger
-                // Checks for false on traceAll because it should have been already
-                // executed above
-            }
-            else {
-                simulate = await performAtomicTransactionComposerSimulate(atc, algod);
-            }
-            if (simulate && simulate.txnGroups[0].failedAt) {
-                for (const txn of simulate.txnGroups[0].txnResults) {
-                    e.traces.push({
-                        trace: txn.execTrace?.get_obj_for_encoding(),
-                        appBudget: txn.appBudgetConsumed,
-                        logicSigBudget: txn.logicSigBudgetConsumed,
-                        logs: txn.txnResult.logs,
-                        message: simulate.txnGroups[0].failureMessage,
-                    });
-                }
-            }
-        }
-        throw e;
-    }
+	const { atc, sendParams } = atcSend;
+	const transactionsWithSigner = atc.buildGroup();
+	const transactionsToSend = transactionsWithSigner.map((t) => {
+		return t.txn;
+	});
+	let groupId = undefined;
+	if (transactionsToSend.length > 1) {
+		groupId = transactionsToSend[0].group ? Buffer.from(transactionsToSend[0].group).toString('base64') : '';
+	}
+	try {
+		const result = await atc.execute(algod, sendParams?.maxRoundsToWaitForConfirmation ?? 5);
+		if (transactionsToSend.length > 1) {
+		} else {
+		}
+		let confirmations = undefined;
+		if (!sendParams?.skipWaiting) {
+			confirmations = await Promise.all(
+				transactionsToSend.map(async (t) =>
+					modelsv2.PendingTransactionResponse.from_obj_for_encoding(
+						await algod.pendingTransactionInformation(t.txID()).do()
+					)
+				)
+			);
+		}
+		return {
+			groupId,
+			confirmations,
+			txIds: transactionsToSend.map((t) => t.txID()),
+			transactions: transactionsToSend,
+			returns: result.methodResults.map((r) => ({
+				decodeError: r.decodeError,
+				returnValue: r.returnValue,
+				rawReturnValue: r.rawReturnValue,
+			})),
+		};
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (e) {
+		if (false && typeof e === 'object') {
+			e.traces = [];
+			let simulate = undefined;
+			if (false) {
+				// Dump the traces to a file for use with AlgoKit AVM debugger
+				// Checks for false on traceAll because it should have been already
+				// executed above
+			} else {
+				simulate = await performAtomicTransactionComposerSimulate(atc, algod);
+			}
+			if (simulate && simulate.txnGroups[0].failedAt) {
+				for (const txn of simulate.txnGroups[0].txnResults) {
+					e.traces.push({
+						trace: txn.execTrace?.get_obj_for_encoding(),
+						appBudget: txn.appBudgetConsumed,
+						logicSigBudget: txn.logicSigBudgetConsumed,
+						logs: txn.txnResult.logs,
+						message: simulate.txnGroups[0].failureMessage,
+					});
+				}
+			}
+		}
+		throw e;
+	}
 };
 /**
  * Performs a dry run of the transactions loaded into the given AtomicTransactionComposer`
@@ -248,12 +251,12 @@ export const sendAtomicTransactionComposer = async function (atcSend, algod) {
  * @returns The dryrun result
  */
 export async function performAtomicTransactionComposerDryrun(atc, algod) {
-    const signedTransactions = await atc.gatherSignatures();
-    const txns = signedTransactions.map((t) => {
-        return algosdk.decodeSignedTransaction(t);
-    });
-    const dryrun = await algosdk.createDryrun({ client: algod, txns });
-    return new algosdk.DryrunResult(await algod.dryrun(dryrun).do());
+	const signedTransactions = await atc.gatherSignatures();
+	const txns = signedTransactions.map((t) => {
+		return algosdk.decodeSignedTransaction(t);
+	});
+	const dryrun = await algosdk.createDryrun({ client: algod, txns });
+	return new algosdk.DryrunResult(await algod.dryrun(dryrun).do());
 }
 /**
  * Performs a simulation of the transactions loaded into the given AtomicTransactionComposer.
@@ -262,25 +265,27 @@ export async function performAtomicTransactionComposerDryrun(atc, algod) {
  * @returns The simulation result, which includes various details about how the transactions would be processed.
  */
 export async function performAtomicTransactionComposerSimulate(atc, algod) {
-    const unsignedTransactionsSigners = atc.buildGroup();
-    const decodedSignedTransactions = unsignedTransactionsSigners.map((ts) => algosdk.encodeUnsignedSimulateTransaction(ts.txn));
-    const simulateRequest = new modelsv2.SimulateRequest({
-        allowEmptySignatures: true,
-        allowMoreLogging: true,
-        execTraceConfig: new modelsv2.SimulateTraceConfig({
-            enable: true,
-            scratchChange: true,
-            stackChange: true,
-            stateChange: true,
-        }),
-        txnGroups: [
-            new modelsv2.SimulateRequestTransactionGroup({
-                txns: decodedSignedTransactions.map((txn) => algosdk.decodeObj(txn)),
-            }),
-        ],
-    });
-    const simulateResult = await algod.simulateTransactions(simulateRequest).do();
-    return simulateResult;
+	const unsignedTransactionsSigners = atc.buildGroup();
+	const decodedSignedTransactions = unsignedTransactionsSigners.map((ts) =>
+		algosdk.encodeUnsignedSimulateTransaction(ts.txn)
+	);
+	const simulateRequest = new modelsv2.SimulateRequest({
+		allowEmptySignatures: true,
+		allowMoreLogging: true,
+		execTraceConfig: new modelsv2.SimulateTraceConfig({
+			enable: true,
+			scratchChange: true,
+			stackChange: true,
+			stateChange: true,
+		}),
+		txnGroups: [
+			new modelsv2.SimulateRequestTransactionGroup({
+				txns: decodedSignedTransactions.map((txn) => algosdk.decodeObj(txn)),
+			}),
+		],
+	});
+	const simulateResult = await algod.simulateTransactions(simulateRequest).do();
+	return simulateResult;
 }
 /**
  * Signs and sends a group of [up to 16](https://developer.algorand.org/docs/get-details/atomic_transfers/#create-transactions) transactions to the chain
@@ -292,29 +297,33 @@ export async function performAtomicTransactionComposerSimulate(atc, algod) {
  * @returns An object with transaction IDs, transactions, group transaction ID (`groupTransactionId`) if more than 1 transaction sent, and (if `skipWaiting` is `false` or unset) confirmation (`confirmation`)
  */
 export const sendGroupOfTransactions = async function (groupSend, algod) {
-    const { transactions, signer, sendParams } = groupSend;
-    const defaultTransactionSigner = signer ? getSenderTransactionSigner(signer) : undefined;
-    const transactionsWithSigner = await Promise.all(transactions.map(async (t) => {
-        if ('signer' in t)
-            return {
-                txn: t.transaction,
-                signer: getSenderTransactionSigner(t.signer),
-                sender: t.signer,
-            };
-        const txn = 'then' in t ? (await t).transaction : t;
-        if (!signer) {
-            throw new Error(`Attempt to send transaction ${txn.txID()} as part of a group transaction, but no signer parameter was provided.`);
-        }
-        return {
-            txn,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            signer: defaultTransactionSigner,
-            sender: signer,
-        };
-    }));
-    const atc = new AtomicTransactionComposer();
-    transactionsWithSigner.forEach((txn) => atc.addTransaction(txn));
-    return (await sendAtomicTransactionComposer({ atc, sendParams }, algod));
+	const { transactions, signer, sendParams } = groupSend;
+	const defaultTransactionSigner = signer ? getSenderTransactionSigner(signer) : undefined;
+	const transactionsWithSigner = await Promise.all(
+		transactions.map(async (t) => {
+			if ('signer' in t)
+				return {
+					txn: t.transaction,
+					signer: getSenderTransactionSigner(t.signer),
+					sender: t.signer,
+				};
+			const txn = 'then' in t ? (await t).transaction : t;
+			if (!signer) {
+				throw new Error(
+					`Attempt to send transaction ${txn.txID()} as part of a group transaction, but no signer parameter was provided.`
+				);
+			}
+			return {
+				txn,
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				signer: defaultTransactionSigner,
+				sender: signer,
+			};
+		})
+	);
+	const atc = new AtomicTransactionComposer();
+	transactionsWithSigner.forEach((txn) => atc.addTransaction(txn));
+	return await sendAtomicTransactionComposer({ atc, sendParams }, algod);
 };
 /**
  * Wait until the transaction is confirmed or rejected, or until `timeout`
@@ -328,45 +337,45 @@ export const sendGroupOfTransactions = async function (groupSend, algod) {
  * @throws Throws an error if the transaction is not confirmed or rejected in the next `timeout` rounds
  */
 export const waitForConfirmation = async function (transactionId, maxRoundsToWait, algod) {
-    if (maxRoundsToWait < 0) {
-        throw new Error(`Invalid timeout, received ${maxRoundsToWait}, expected > 0`);
-    }
-    // Get current round
-    const status = modelsv2.NodeStatusResponse.from_obj_for_encoding(await algod.status().do());
-    if (status === undefined) {
-        throw new Error('Unable to get node status');
-    }
-    // Loop for up to `timeout` rounds looking for a confirmed transaction
-    const startRound = BigInt(status.lastRound) + 1n;
-    let currentRound = startRound;
-    while (currentRound < startRound + BigInt(maxRoundsToWait)) {
-        try {
-            const pendingInfo = modelsv2.PendingTransactionResponse.from_obj_for_encoding(await algod.pendingTransactionInformation(transactionId).do());
-            if (pendingInfo !== undefined) {
-                const confirmedRound = pendingInfo.confirmedRound;
-                if (confirmedRound && confirmedRound > 0) {
-                    return pendingInfo;
-                }
-                else {
-                    const poolError = pendingInfo.poolError;
-                    if (poolError != null && poolError.length > 0) {
-                        // If there was a pool error, then the transaction has been rejected!
-                        throw new Error(`Transaction ${transactionId} was rejected; pool error: ${poolError}`);
-                    }
-                }
-            }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        }
-        catch (e) {
-            if (e.name === 'URLTokenBaseHTTPError') {
-                currentRound++;
-                continue;
-            }
-        }
-        await algod.statusAfterBlock(toNumber(currentRound)).do();
-        currentRound++;
-    }
-    throw new Error(`Transaction ${transactionId} not confirmed after ${maxRoundsToWait} rounds`);
+	if (maxRoundsToWait < 0) {
+		throw new Error(`Invalid timeout, received ${maxRoundsToWait}, expected > 0`);
+	}
+	// Get current round
+	const status = modelsv2.NodeStatusResponse.from_obj_for_encoding(await algod.status().do());
+	if (status === undefined) {
+		throw new Error('Unable to get node status');
+	}
+	// Loop for up to `timeout` rounds looking for a confirmed transaction
+	const startRound = BigInt(status.lastRound) + 1n;
+	let currentRound = startRound;
+	while (currentRound < startRound + BigInt(maxRoundsToWait)) {
+		try {
+			const pendingInfo = modelsv2.PendingTransactionResponse.from_obj_for_encoding(
+				await algod.pendingTransactionInformation(transactionId).do()
+			);
+			if (pendingInfo !== undefined) {
+				const confirmedRound = pendingInfo.confirmedRound;
+				if (confirmedRound && confirmedRound > 0) {
+					return pendingInfo;
+				} else {
+					const poolError = pendingInfo.poolError;
+					if (poolError != null && poolError.length > 0) {
+						// If there was a pool error, then the transaction has been rejected!
+						throw new Error(`Transaction ${transactionId} was rejected; pool error: ${poolError}`);
+					}
+				}
+			}
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (e) {
+			if (e.name === 'URLTokenBaseHTTPError') {
+				currentRound++;
+				continue;
+			}
+		}
+		await algod.statusAfterBlock(toNumber(currentRound)).do();
+		currentRound++;
+	}
+	throw new Error(`Transaction ${transactionId} not confirmed after ${maxRoundsToWait} rounds`);
 };
 /**
  * Limit the acceptable fee to a defined amount of µALGOs.
@@ -376,18 +385,19 @@ export const waitForConfirmation = async function (transactionId, maxRoundsToWai
  * @param maxAcceptableFee The maximum acceptable fee to pay
  */
 export function capTransactionFee(transaction, maxAcceptableFee) {
-    // If a flat fee hasn't already been defined
-    if (!transaction.flatFee) {
-        // Once a transaction has been constructed by algosdk, transaction.fee indicates what the total transaction fee
-        // Will be based on the current suggested fee-per-byte value.
-        if (transaction.fee > maxAcceptableFee.microAlgos) {
-            throw new Error(`Cancelled transaction due to high network congestion fees. Algorand suggested fees would cause this transaction to cost ${transaction.fee} µALGOs. Cap for this transaction is ${maxAcceptableFee.microAlgos} µALGOs.`);
-        }
-        else if (transaction.fee > algosdk.ALGORAND_MIN_TX_FEE) {
-        }
-        // Now set the flat on the transaction. Otherwise the network may increase the fee above our cap and perform the transaction.
-        transaction.flatFee = true;
-    }
+	// If a flat fee hasn't already been defined
+	if (!transaction.flatFee) {
+		// Once a transaction has been constructed by algosdk, transaction.fee indicates what the total transaction fee
+		// Will be based on the current suggested fee-per-byte value.
+		if (transaction.fee > maxAcceptableFee.microAlgos) {
+			throw new Error(
+				`Cancelled transaction due to high network congestion fees. Algorand suggested fees would cause this transaction to cost ${transaction.fee} µALGOs. Cap for this transaction is ${maxAcceptableFee.microAlgos} µALGOs.`
+			);
+		} else if (transaction.fee > algosdk.ALGORAND_MIN_TX_FEE) {
+		}
+		// Now set the flat on the transaction. Otherwise the network may increase the fee above our cap and perform the transaction.
+		transaction.flatFee = true;
+	}
 }
 /**
  * Allows for control of fees on a `Transaction` or `SuggestedParams` object
@@ -395,15 +405,15 @@ export function capTransactionFee(transaction, maxAcceptableFee) {
  * @param feeControl The fee control parameters
  */
 export function controlFees(transaction, feeControl) {
-    const { fee, maxFee } = feeControl;
-    if (fee) {
-        transaction.fee = fee.microAlgos;
-        transaction.flatFee = true;
-    }
-    if (maxFee !== undefined) {
-        capTransactionFee(transaction, maxFee);
-    }
-    return transaction;
+	const { fee, maxFee } = feeControl;
+	if (fee) {
+		transaction.fee = fee.microAlgos;
+		transaction.flatFee = true;
+	}
+	if (maxFee !== undefined) {
+		capTransactionFee(transaction, maxFee);
+	}
+	return transaction;
 }
 /**
  * Returns suggested transaction parameters from algod unless some are already provided.
@@ -412,7 +422,7 @@ export function controlFees(transaction, feeControl) {
  * @returns The suggested transaction parameters
  */
 export async function getTransactionParams(params, algod) {
-    return params ? { ...params } : await algod.getTransactionParams().do();
+	return params ? { ...params } : await algod.getTransactionParams().do();
 }
 /**
  * Returns the array of transactions currently present in the given `AtomicTransactionComposer`
@@ -420,11 +430,10 @@ export async function getTransactionParams(params, algod) {
  * @returns The array of transactions with signers
  */
 export function getAtomicTransactionComposerTransactions(atc) {
-    try {
-        return atc.clone().buildGroup();
-    }
-    catch {
-        return [];
-    }
+	try {
+		return atc.clone().buildGroup();
+	} catch {
+		return [];
+	}
 }
 //# sourceMappingURL=transaction.js.map

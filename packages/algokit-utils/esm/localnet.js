@@ -6,8 +6,8 @@ import { transferAlgos } from './transfer.js';
 import { AlgoAmount } from './types/amount.js';
 /** Returns true if the algod client is pointing to a LocalNet Algorand network */
 export async function isLocalNet(algod) {
-    const params = await algod.getTransactionParams().do();
-    return params.genesisID === 'devnet-v1' || params.genesisID === 'sandnet-v1' || params.genesisID === 'dockernet-v1';
+	const params = await algod.getTransactionParams().do();
+	return params.genesisID === 'devnet-v1' || params.genesisID === 'sandnet-v1' || params.genesisID === 'dockernet-v1';
 }
 /**
  * Gets an account with private key loaded from a KMD wallet of the given name, or alternatively creates one with funds in it via a KMD wallet of the given name.
@@ -27,26 +27,29 @@ export async function isLocalNet(algod) {
  * @returns An Algorand account with private key loaded - either one that already existed in the given KMD wallet, or a new one that is funded for you
  */
 export async function getOrCreateKmdWalletAccount(walletAccount, algod, kmdClient) {
-    const kmd = kmdClient ?? getAlgoKmdClient();
-    // Get an existing account from the KMD wallet
-    const existing = await getKmdWalletAccount(walletAccount, algod, kmd);
-    if (existing) {
-        return existing;
-    }
-    // None existed: create the KMD wallet instead
-    const walletId = (await kmd.createWallet(walletAccount.name, '')).wallet.id;
-    const walletHandle = (await kmd.initWalletHandle(walletId, '')).wallet_handle_token;
-    await kmd.generateKey(walletHandle);
-    // Get the account from the new KMD wallet
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const account = (await getKmdWalletAccount(walletAccount, algod, kmd));
-    // Fund the account from the dispenser
-    await transferAlgos({
-        amount: walletAccount.fundWith ?? AlgoAmount.Algos(1000),
-        from: await getDispenserAccount(algod, kmd),
-        to: account.addr,
-    }, algod);
-    return account;
+	const kmd = kmdClient ?? getAlgoKmdClient();
+	// Get an existing account from the KMD wallet
+	const existing = await getKmdWalletAccount(walletAccount, algod, kmd);
+	if (existing) {
+		return existing;
+	}
+	// None existed: create the KMD wallet instead
+	const walletId = (await kmd.createWallet(walletAccount.name, '')).wallet.id;
+	const walletHandle = (await kmd.initWalletHandle(walletId, '')).wallet_handle_token;
+	await kmd.generateKey(walletHandle);
+	// Get the account from the new KMD wallet
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const account = await getKmdWalletAccount(walletAccount, algod, kmd);
+	// Fund the account from the dispenser
+	await transferAlgos(
+		{
+			amount: walletAccount.fundWith ?? AlgoAmount.Algos(1000),
+			from: await getDispenserAccount(algod, kmd),
+			to: account.addr,
+		},
+		algod
+	);
+	return account;
 }
 /**
  * Returns an Algorand account with private key loaded from the given KMD wallet (identified by name).
@@ -66,33 +69,33 @@ export async function getOrCreateKmdWalletAccount(walletAccount, algod, kmdClien
  * ```
  */
 export async function getKmdWalletAccount(walletAccount, algod, kmdClient) {
-    const { name, predicate } = walletAccount;
-    const kmd = kmdClient ?? getAlgoKmdClient();
-    const wallets = await kmd.listWallets();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const wallet = wallets.wallets.filter((w) => w.name === name);
-    if (wallet.length === 0) {
-        return undefined;
-    }
-    const walletId = wallet[0].id;
-    const walletHandle = (await kmd.initWalletHandle(walletId, '')).wallet_handle_token;
-    const keyIds = (await kmd.listKeys(walletHandle)).addresses;
-    let i = 0;
-    if (predicate) {
-        for (i = 0; i < keyIds.length; i++) {
-            const key = keyIds[i];
-            const account = await algod.accountInformation(key).do();
-            if (predicate(account)) {
-                break;
-            }
-        }
-    }
-    if (i >= keyIds.length) {
-        return undefined;
-    }
-    const accountKey = (await kmd.exportKey(walletHandle, '', keyIds[i])).private_key;
-    const accountMnemonic = algosdk.secretKeyToMnemonic(accountKey);
-    return mnemonicAccount(accountMnemonic);
+	const { name, predicate } = walletAccount;
+	const kmd = kmdClient ?? getAlgoKmdClient();
+	const wallets = await kmd.listWallets();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const wallet = wallets.wallets.filter((w) => w.name === name);
+	if (wallet.length === 0) {
+		return undefined;
+	}
+	const walletId = wallet[0].id;
+	const walletHandle = (await kmd.initWalletHandle(walletId, '')).wallet_handle_token;
+	const keyIds = (await kmd.listKeys(walletHandle)).addresses;
+	let i = 0;
+	if (predicate) {
+		for (i = 0; i < keyIds.length; i++) {
+			const key = keyIds[i];
+			const account = await algod.accountInformation(key).do();
+			if (predicate(account)) {
+				break;
+			}
+		}
+	}
+	if (i >= keyIds.length) {
+		return undefined;
+	}
+	const accountKey = (await kmd.exportKey(walletHandle, '', keyIds[i])).private_key;
+	const accountMnemonic = algosdk.secretKeyToMnemonic(accountKey);
+	return mnemonicAccount(accountMnemonic);
 }
 /**
  * Returns an Algorand account with private key loaded for the default LocalNet dispenser account (that can be used to fund other accounts)
@@ -101,10 +104,14 @@ export async function getKmdWalletAccount(walletAccount, algod, kmdClient) {
  * @param kmd A KMD client, if not specified then a default KMD client will be loaded from environment variables
  */
 export async function getLocalNetDispenserAccount(algod, kmd) {
-    if (!(await isLocalNet(algod))) {
-        throw "Can't get default account from non LocalNet network";
-    }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return (await getKmdWalletAccount({ name: 'unencrypted-default-wallet', predicate: (a) => a.status !== 'Offline' && a.amount > 1_000_000_000 }, algod, kmd));
+	if (!(await isLocalNet(algod))) {
+		throw "Can't get default account from non LocalNet network";
+	}
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	return await getKmdWalletAccount(
+		{ name: 'unencrypted-default-wallet', predicate: (a) => a.status !== 'Offline' && a.amount > 1_000_000_000 },
+		algod,
+		kmd
+	);
 }
 //# sourceMappingURL=localnet.js.map

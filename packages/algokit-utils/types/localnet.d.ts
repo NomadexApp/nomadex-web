@@ -22,10 +22,14 @@ export declare function isLocalNet(algod: Algodv2): Promise<boolean>;
  *
  * @returns An Algorand account with private key loaded - either one that already existed in the given KMD wallet, or a new one that is funded for you
  */
-export declare function getOrCreateKmdWalletAccount(walletAccount: {
-    name: string;
-    fundWith?: AlgoAmount;
-}, algod: Algodv2, kmdClient?: Kmd): Promise<Account>;
+export declare function getOrCreateKmdWalletAccount(
+	walletAccount: {
+		name: string;
+		fundWith?: AlgoAmount;
+	},
+	algod: Algodv2,
+	kmdClient?: Kmd
+): Promise<Account>;
 /**
  * Returns an Algorand account with private key loaded from the given KMD wallet (identified by name).
  *
@@ -43,10 +47,14 @@ export declare function getOrCreateKmdWalletAccount(walletAccount: {
  * )
  * ```
  */
-export declare function getKmdWalletAccount(walletAccount: {
-    name: string;
-    predicate?: (account: Record<string, any>) => boolean;
-}, algod: Algodv2, kmdClient?: Kmd): Promise<Account | undefined>;
+export declare function getKmdWalletAccount(
+	walletAccount: {
+		name: string;
+		predicate?: (account: Record<string, any>) => boolean;
+	},
+	algod: Algodv2,
+	kmdClient?: Kmd
+): Promise<Account | undefined>;
 /**
  * Returns an Algorand account with private key loaded for the default LocalNet dispenser account (that can be used to fund other accounts)
  *

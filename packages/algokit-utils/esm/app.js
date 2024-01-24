@@ -1,8 +1,18 @@
 import algosdk from 'algosdk';
 import { Buffer } from 'buffer';
 
-import { controlFees, encodeLease, encodeTransactionNote, getAtomicTransactionComposerTransactions, getSenderAddress, getSenderTransactionSigner, getTransactionParams, sendAtomicTransactionComposer, sendTransaction, } from './transaction.js';
-import { APP_PAGE_MAX_SIZE, } from './types/app.js';
+import {
+	controlFees,
+	encodeLease,
+	encodeTransactionNote,
+	getAtomicTransactionComposerTransactions,
+	getSenderAddress,
+	getSenderTransactionSigner,
+	getTransactionParams,
+	sendAtomicTransactionComposer,
+	sendTransaction,
+} from './transaction.js';
+import { APP_PAGE_MAX_SIZE } from './types/app.js';
 import { toNumber } from './util.js';
 var ABIMethod = algosdk.ABIMethod;
 var AtomicTransactionComposer = algosdk.AtomicTransactionComposer;
@@ -16,106 +26,117 @@ var SourceMap = algosdk.SourceMap;
  * @returns The details of the created app, or the transaction to create it if `skipSending` and the compilation result
  */
 export async function createApp(create, algod) {
-    const { from, approvalProgram: approval, clearStateProgram: clear, schema, note, transactionParams, args, onCompleteAction, ...sendParams } = create;
-    const compiledApproval = typeof approval === 'string' ? await compileTeal(approval, algod) : undefined;
-    const approvalProgram = compiledApproval ? compiledApproval.compiledBase64ToBytes : approval;
-    const compiledClear = typeof clear === 'string' ? await compileTeal(clear, algod) : undefined;
-    const clearProgram = compiledClear ? compiledClear.compiledBase64ToBytes : clear;
-    if (args && args.method) {
-        const atc = attachATC(sendParams);
-        const before = getAtomicTransactionComposerTransactions(atc);
-        atc.addMethodCall({
-            appID: 0,
-            approvalProgram: approvalProgram,
-            clearProgram: clearProgram,
-            numLocalInts: schema.localInts,
-            numLocalByteSlices: schema.localByteSlices,
-            numGlobalInts: schema.globalInts,
-            numGlobalByteSlices: schema.globalByteSlices,
-            extraPages: schema.extraPages ?? Math.floor((approvalProgram.length + clearProgram.length) / APP_PAGE_MAX_SIZE),
-            onComplete: getAppOnCompleteAction(onCompleteAction),
-            suggestedParams: controlFees(await getTransactionParams(transactionParams, algod), sendParams),
-            note: encodeTransactionNote(note),
-            ...(await getAppArgsForABICall(args, from)),
-        });
-        if (sendParams.skipSending) {
-            const after = atc.clone().buildGroup();
-            return {
-                transaction: after[after.length - 1].txn,
-                transactions: after.slice(before.length).map((t) => t.txn),
-                appId: 0,
-                appAddress: '',
-                compiledApproval,
-                compiledClear,
-            };
-        }
-        const result = await sendAtomicTransactionComposer({ atc, sendParams }, algod);
-        const confirmation = result.confirmations ? result.confirmations[result.confirmations?.length - 1] : undefined;
-        if (confirmation) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const appId = confirmation.applicationIndex;
-            return {
-                transactions: result.transactions,
-                confirmations: result.confirmations,
-                return: confirmation ? getABIReturn(args, confirmation) : undefined,
-                transaction: result.transactions[result.transactions.length - 1],
-                confirmation: confirmation,
-                appId,
-                appAddress: algosdk.getApplicationAddress(appId),
-                compiledApproval,
-                compiledClear,
-            };
-        }
-        else {
-            return {
-                transactions: result.transactions,
-                confirmations: result.confirmations,
-                return: confirmation ? getABIReturn(args, confirmation) : undefined,
-                transaction: result.transactions[result.transactions.length - 1],
-                confirmation: confirmation,
-                appId: 0,
-                appAddress: '',
-                compiledApproval,
-                compiledClear,
-            };
-        }
-    }
-    else {
-        const transaction = algosdk.makeApplicationCreateTxnFromObject({
-            approvalProgram: approvalProgram,
-            clearProgram: clearProgram,
-            numLocalInts: schema.localInts,
-            numLocalByteSlices: schema.localByteSlices,
-            numGlobalInts: schema.globalInts,
-            numGlobalByteSlices: schema.globalByteSlices,
-            extraPages: schema.extraPages ?? Math.floor((approvalProgram.length + clearProgram.length) / APP_PAGE_MAX_SIZE),
-            onComplete: getAppOnCompleteAction(onCompleteAction),
-            suggestedParams: await getTransactionParams(transactionParams, algod),
-            from: getSenderAddress(from),
-            note: encodeTransactionNote(note),
-            ...getAppArgsForTransaction(args),
-            rekeyTo: args?.rekeyTo ? (typeof args.rekeyTo === 'string' ? args.rekeyTo : getSenderAddress(args.rekeyTo)) : undefined,
-        });
-        const { confirmation } = await sendTransaction({ transaction, from, sendParams }, algod);
-        if (confirmation) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const appId = confirmation.applicationIndex;
-            return {
-                transaction,
-                transactions: [transaction],
-                confirmation,
-                confirmations: confirmation ? [confirmation] : undefined,
-                appId,
-                appAddress: algosdk.getApplicationAddress(appId),
-                return: getABIReturn(args, confirmation),
-                compiledApproval,
-                compiledClear,
-            };
-        }
-        else {
-            return { transaction, transactions: [transaction], appId: 0, appAddress: '', compiledApproval, compiledClear };
-        }
-    }
+	const {
+		from,
+		approvalProgram: approval,
+		clearStateProgram: clear,
+		schema,
+		note,
+		transactionParams,
+		args,
+		onCompleteAction,
+		...sendParams
+	} = create;
+	const compiledApproval = typeof approval === 'string' ? await compileTeal(approval, algod) : undefined;
+	const approvalProgram = compiledApproval ? compiledApproval.compiledBase64ToBytes : approval;
+	const compiledClear = typeof clear === 'string' ? await compileTeal(clear, algod) : undefined;
+	const clearProgram = compiledClear ? compiledClear.compiledBase64ToBytes : clear;
+	if (args && args.method) {
+		const atc = attachATC(sendParams);
+		const before = getAtomicTransactionComposerTransactions(atc);
+		atc.addMethodCall({
+			appID: 0,
+			approvalProgram: approvalProgram,
+			clearProgram: clearProgram,
+			numLocalInts: schema.localInts,
+			numLocalByteSlices: schema.localByteSlices,
+			numGlobalInts: schema.globalInts,
+			numGlobalByteSlices: schema.globalByteSlices,
+			extraPages: schema.extraPages ?? Math.floor((approvalProgram.length + clearProgram.length) / APP_PAGE_MAX_SIZE),
+			onComplete: getAppOnCompleteAction(onCompleteAction),
+			suggestedParams: controlFees(await getTransactionParams(transactionParams, algod), sendParams),
+			note: encodeTransactionNote(note),
+			...(await getAppArgsForABICall(args, from)),
+		});
+		if (sendParams.skipSending) {
+			const after = atc.clone().buildGroup();
+			return {
+				transaction: after[after.length - 1].txn,
+				transactions: after.slice(before.length).map((t) => t.txn),
+				appId: 0,
+				appAddress: '',
+				compiledApproval,
+				compiledClear,
+			};
+		}
+		const result = await sendAtomicTransactionComposer({ atc, sendParams }, algod);
+		const confirmation = result.confirmations ? result.confirmations[result.confirmations?.length - 1] : undefined;
+		if (confirmation) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			const appId = confirmation.applicationIndex;
+			return {
+				transactions: result.transactions,
+				confirmations: result.confirmations,
+				return: confirmation ? getABIReturn(args, confirmation) : undefined,
+				transaction: result.transactions[result.transactions.length - 1],
+				confirmation: confirmation,
+				appId,
+				appAddress: algosdk.getApplicationAddress(appId),
+				compiledApproval,
+				compiledClear,
+			};
+		} else {
+			return {
+				transactions: result.transactions,
+				confirmations: result.confirmations,
+				return: confirmation ? getABIReturn(args, confirmation) : undefined,
+				transaction: result.transactions[result.transactions.length - 1],
+				confirmation: confirmation,
+				appId: 0,
+				appAddress: '',
+				compiledApproval,
+				compiledClear,
+			};
+		}
+	} else {
+		const transaction = algosdk.makeApplicationCreateTxnFromObject({
+			approvalProgram: approvalProgram,
+			clearProgram: clearProgram,
+			numLocalInts: schema.localInts,
+			numLocalByteSlices: schema.localByteSlices,
+			numGlobalInts: schema.globalInts,
+			numGlobalByteSlices: schema.globalByteSlices,
+			extraPages: schema.extraPages ?? Math.floor((approvalProgram.length + clearProgram.length) / APP_PAGE_MAX_SIZE),
+			onComplete: getAppOnCompleteAction(onCompleteAction),
+			suggestedParams: await getTransactionParams(transactionParams, algod),
+			from: getSenderAddress(from),
+			note: encodeTransactionNote(note),
+			...getAppArgsForTransaction(args),
+			rekeyTo: args?.rekeyTo
+				? typeof args.rekeyTo === 'string'
+					? args.rekeyTo
+					: getSenderAddress(args.rekeyTo)
+				: undefined,
+		});
+		const { confirmation } = await sendTransaction({ transaction, from, sendParams }, algod);
+		if (confirmation) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			const appId = confirmation.applicationIndex;
+			return {
+				transaction,
+				transactions: [transaction],
+				confirmation,
+				confirmations: confirmation ? [confirmation] : undefined,
+				appId,
+				appAddress: algosdk.getApplicationAddress(appId),
+				return: getABIReturn(args, confirmation),
+				compiledApproval,
+				compiledClear,
+			};
+		} else {
+			return { transaction, transactions: [transaction], appId: 0, appAddress: '', compiledApproval, compiledClear };
+		}
+	}
 }
 /**
  * Updates a smart contract app.
@@ -124,68 +145,80 @@ export async function createApp(create, algod) {
  * @returns The transaction send result and the compilation result
  */
 export async function updateApp(update, algod) {
-    const { appId, from, approvalProgram: approval, clearStateProgram: clear, note, transactionParams, args, ...sendParams } = update;
-    const compiledApproval = typeof approval === 'string' ? await compileTeal(approval, algod) : undefined;
-    const approvalProgram = compiledApproval ? compiledApproval.compiledBase64ToBytes : approval;
-    const compiledClear = typeof clear === 'string' ? await compileTeal(clear, algod) : undefined;
-    const clearProgram = compiledClear ? compiledClear.compiledBase64ToBytes : clear;
-    if (args && args.method) {
-        const atc = attachATC(sendParams);
-        const before = getAtomicTransactionComposerTransactions(atc);
-        atc.addMethodCall({
-            appID: toNumber(appId),
-            onComplete: OnApplicationComplete.UpdateApplicationOC,
-            approvalProgram: approvalProgram,
-            clearProgram: clearProgram,
-            suggestedParams: controlFees(await getTransactionParams(transactionParams, algod), sendParams),
-            note: encodeTransactionNote(note),
-            ...(await getAppArgsForABICall(args, from)),
-        });
-        if (sendParams.skipSending) {
-            const after = atc.clone().buildGroup();
-            return {
-                transaction: after[after.length - 1].txn,
-                transactions: after.slice(before.length).map((t) => t.txn),
-            };
-        }
-        const result = await sendAtomicTransactionComposer({ atc, sendParams }, algod);
-        const confirmation = result.confirmations ? result.confirmations[result.confirmations?.length - 1] : undefined;
-        return {
-            transactions: result.transactions,
-            confirmations: result.confirmations,
-            return: confirmation ? getABIReturn(args, confirmation) : undefined,
-            transaction: result.transactions[result.transactions.length - 1],
-            confirmation: confirmation,
-        };
-    }
-    else {
-        const transaction = algosdk.makeApplicationUpdateTxnFromObject({
-            appIndex: toNumber(appId),
-            approvalProgram: approvalProgram,
-            clearProgram: clearProgram,
-            suggestedParams: await getTransactionParams(transactionParams, algod),
-            from: getSenderAddress(from),
-            note: encodeTransactionNote(note),
-            ...getAppArgsForTransaction(args),
-            rekeyTo: args?.rekeyTo ? (typeof args.rekeyTo === 'string' ? args.rekeyTo : getSenderAddress(args.rekeyTo)) : undefined,
-        });
-        const result = await sendTransaction({ transaction, from, sendParams }, algod);
-        return {
-            ...result,
-            transactions: [result.transaction],
-            confirmations: result.confirmation ? [result.confirmation] : undefined,
-            return: getABIReturn(args, result.confirmation),
-            compiledApproval,
-            compiledClear,
-        };
-    }
+	const {
+		appId,
+		from,
+		approvalProgram: approval,
+		clearStateProgram: clear,
+		note,
+		transactionParams,
+		args,
+		...sendParams
+	} = update;
+	const compiledApproval = typeof approval === 'string' ? await compileTeal(approval, algod) : undefined;
+	const approvalProgram = compiledApproval ? compiledApproval.compiledBase64ToBytes : approval;
+	const compiledClear = typeof clear === 'string' ? await compileTeal(clear, algod) : undefined;
+	const clearProgram = compiledClear ? compiledClear.compiledBase64ToBytes : clear;
+	if (args && args.method) {
+		const atc = attachATC(sendParams);
+		const before = getAtomicTransactionComposerTransactions(atc);
+		atc.addMethodCall({
+			appID: toNumber(appId),
+			onComplete: OnApplicationComplete.UpdateApplicationOC,
+			approvalProgram: approvalProgram,
+			clearProgram: clearProgram,
+			suggestedParams: controlFees(await getTransactionParams(transactionParams, algod), sendParams),
+			note: encodeTransactionNote(note),
+			...(await getAppArgsForABICall(args, from)),
+		});
+		if (sendParams.skipSending) {
+			const after = atc.clone().buildGroup();
+			return {
+				transaction: after[after.length - 1].txn,
+				transactions: after.slice(before.length).map((t) => t.txn),
+			};
+		}
+		const result = await sendAtomicTransactionComposer({ atc, sendParams }, algod);
+		const confirmation = result.confirmations ? result.confirmations[result.confirmations?.length - 1] : undefined;
+		return {
+			transactions: result.transactions,
+			confirmations: result.confirmations,
+			return: confirmation ? getABIReturn(args, confirmation) : undefined,
+			transaction: result.transactions[result.transactions.length - 1],
+			confirmation: confirmation,
+		};
+	} else {
+		const transaction = algosdk.makeApplicationUpdateTxnFromObject({
+			appIndex: toNumber(appId),
+			approvalProgram: approvalProgram,
+			clearProgram: clearProgram,
+			suggestedParams: await getTransactionParams(transactionParams, algod),
+			from: getSenderAddress(from),
+			note: encodeTransactionNote(note),
+			...getAppArgsForTransaction(args),
+			rekeyTo: args?.rekeyTo
+				? typeof args.rekeyTo === 'string'
+					? args.rekeyTo
+					: getSenderAddress(args.rekeyTo)
+				: undefined,
+		});
+		const result = await sendTransaction({ transaction, from, sendParams }, algod);
+		return {
+			...result,
+			transactions: [result.transaction],
+			confirmations: result.confirmation ? [result.confirmation] : undefined,
+			return: getABIReturn(args, result.confirmation),
+			compiledApproval,
+			compiledClear,
+		};
+	}
 }
 function attachATC(sendParams) {
-    if (sendParams.atc) {
-        sendParams.skipSending = true;
-    }
-    sendParams.atc = sendParams.atc ?? new AtomicTransactionComposer();
-    return sendParams.atc;
+	if (sendParams.atc) {
+		sendParams.skipSending = true;
+	}
+	sendParams.atc = sendParams.atc ?? new AtomicTransactionComposer();
+	return sendParams.atc;
 }
 /** Returns an `algosdk.OnApplicationComplete` for the given onCompleteAction.
  *
@@ -197,27 +230,27 @@ function attachATC(sendParams) {
  * @returns The `algosdk.OnApplicationComplete`
  */
 export function getAppOnCompleteAction(onCompletionAction) {
-    switch (onCompletionAction) {
-        case undefined:
-        case 'no_op':
-        case OnApplicationComplete.NoOpOC:
-            return OnApplicationComplete.NoOpOC;
-        case 'opt_in':
-        case OnApplicationComplete.OptInOC:
-            return OnApplicationComplete.OptInOC;
-        case 'close_out':
-        case OnApplicationComplete.CloseOutOC:
-            return OnApplicationComplete.CloseOutOC;
-        case 'clear_state':
-        case OnApplicationComplete.ClearStateOC:
-            return OnApplicationComplete.ClearStateOC;
-        case 'update_application':
-        case OnApplicationComplete.UpdateApplicationOC:
-            return OnApplicationComplete.UpdateApplicationOC;
-        case 'delete_application':
-        case OnApplicationComplete.DeleteApplicationOC:
-            return OnApplicationComplete.DeleteApplicationOC;
-    }
+	switch (onCompletionAction) {
+		case undefined:
+		case 'no_op':
+		case OnApplicationComplete.NoOpOC:
+			return OnApplicationComplete.NoOpOC;
+		case 'opt_in':
+		case OnApplicationComplete.OptInOC:
+			return OnApplicationComplete.OptInOC;
+		case 'close_out':
+		case OnApplicationComplete.CloseOutOC:
+			return OnApplicationComplete.CloseOutOC;
+		case 'clear_state':
+		case OnApplicationComplete.ClearStateOC:
+			return OnApplicationComplete.ClearStateOC;
+		case 'update_application':
+		case OnApplicationComplete.UpdateApplicationOC:
+			return OnApplicationComplete.UpdateApplicationOC;
+		case 'delete_application':
+		case OnApplicationComplete.DeleteApplicationOC:
+			return OnApplicationComplete.DeleteApplicationOC;
+	}
 }
 /**
  * Issues a call to a given app.
@@ -226,69 +259,73 @@ export function getAppOnCompleteAction(onCompletionAction) {
  * @returns The result of the call
  */
 export async function callApp(call, algod) {
-    const { appId, callType, from, args, note, transactionParams, ...sendParams } = call;
-    if (args && args.method) {
-        const atc = attachATC(sendParams);
-        const before = getAtomicTransactionComposerTransactions(atc);
-        atc.addMethodCall({
-            appID: toNumber(appId),
-            suggestedParams: controlFees(await getTransactionParams(transactionParams, algod), sendParams),
-            note: encodeTransactionNote(note),
-            onComplete: getAppOnCompleteAction(callType),
-            ...(await getAppArgsForABICall(args, from)),
-        });
-        if (sendParams.skipSending) {
-            const after = atc.clone().buildGroup();
-            return {
-                transaction: after[after.length - 1].txn,
-                transactions: after.slice(before.length).map((t) => t.txn),
-            };
-        }
-        const result = await sendAtomicTransactionComposer({ atc, sendParams }, algod);
-        const confirmation = result.confirmations ? result.confirmations[result.confirmations?.length - 1] : undefined;
-        return {
-            transactions: result.transactions,
-            confirmations: result.confirmations,
-            return: confirmation ? getABIReturn(args, confirmation) : undefined,
-            transaction: result.transactions[result.transactions.length - 1],
-            confirmation: confirmation,
-        };
-    }
-    const appCallParams = {
-        appIndex: toNumber(appId),
-        from: getSenderAddress(from),
-        suggestedParams: await getTransactionParams(transactionParams, algod),
-        ...getAppArgsForTransaction(args),
-        note: encodeTransactionNote(note),
-        rekeyTo: args?.rekeyTo ? (typeof args.rekeyTo === 'string' ? args.rekeyTo : getSenderAddress(args.rekeyTo)) : undefined,
-    };
-    let transaction;
-    switch (getAppOnCompleteAction(callType)) {
-        case OnApplicationComplete.OptInOC:
-            transaction = algosdk.makeApplicationOptInTxnFromObject(appCallParams);
-            break;
-        case OnApplicationComplete.ClearStateOC:
-            transaction = algosdk.makeApplicationClearStateTxnFromObject(appCallParams);
-            break;
-        case OnApplicationComplete.CloseOutOC:
-            transaction = algosdk.makeApplicationCloseOutTxnFromObject(appCallParams);
-            break;
-        case OnApplicationComplete.DeleteApplicationOC:
-            transaction = algosdk.makeApplicationDeleteTxnFromObject(appCallParams);
-            break;
-        case OnApplicationComplete.NoOpOC:
-            transaction = algosdk.makeApplicationNoOpTxnFromObject(appCallParams);
-            break;
-        default:
-            throw new Error(`Received unexpected call type ${callType}`);
-    }
-    const result = await sendTransaction({ transaction, from, sendParams }, algod);
-    return {
-        ...result,
-        transactions: [result.transaction],
-        confirmations: result.confirmation ? [result.confirmation] : undefined,
-        return: getABIReturn(args, result.confirmation),
-    };
+	const { appId, callType, from, args, note, transactionParams, ...sendParams } = call;
+	if (args && args.method) {
+		const atc = attachATC(sendParams);
+		const before = getAtomicTransactionComposerTransactions(atc);
+		atc.addMethodCall({
+			appID: toNumber(appId),
+			suggestedParams: controlFees(await getTransactionParams(transactionParams, algod), sendParams),
+			note: encodeTransactionNote(note),
+			onComplete: getAppOnCompleteAction(callType),
+			...(await getAppArgsForABICall(args, from)),
+		});
+		if (sendParams.skipSending) {
+			const after = atc.clone().buildGroup();
+			return {
+				transaction: after[after.length - 1].txn,
+				transactions: after.slice(before.length).map((t) => t.txn),
+			};
+		}
+		const result = await sendAtomicTransactionComposer({ atc, sendParams }, algod);
+		const confirmation = result.confirmations ? result.confirmations[result.confirmations?.length - 1] : undefined;
+		return {
+			transactions: result.transactions,
+			confirmations: result.confirmations,
+			return: confirmation ? getABIReturn(args, confirmation) : undefined,
+			transaction: result.transactions[result.transactions.length - 1],
+			confirmation: confirmation,
+		};
+	}
+	const appCallParams = {
+		appIndex: toNumber(appId),
+		from: getSenderAddress(from),
+		suggestedParams: await getTransactionParams(transactionParams, algod),
+		...getAppArgsForTransaction(args),
+		note: encodeTransactionNote(note),
+		rekeyTo: args?.rekeyTo
+			? typeof args.rekeyTo === 'string'
+				? args.rekeyTo
+				: getSenderAddress(args.rekeyTo)
+			: undefined,
+	};
+	let transaction;
+	switch (getAppOnCompleteAction(callType)) {
+		case OnApplicationComplete.OptInOC:
+			transaction = algosdk.makeApplicationOptInTxnFromObject(appCallParams);
+			break;
+		case OnApplicationComplete.ClearStateOC:
+			transaction = algosdk.makeApplicationClearStateTxnFromObject(appCallParams);
+			break;
+		case OnApplicationComplete.CloseOutOC:
+			transaction = algosdk.makeApplicationCloseOutTxnFromObject(appCallParams);
+			break;
+		case OnApplicationComplete.DeleteApplicationOC:
+			transaction = algosdk.makeApplicationDeleteTxnFromObject(appCallParams);
+			break;
+		case OnApplicationComplete.NoOpOC:
+			transaction = algosdk.makeApplicationNoOpTxnFromObject(appCallParams);
+			break;
+		default:
+			throw new Error(`Received unexpected call type ${callType}`);
+	}
+	const result = await sendTransaction({ transaction, from, sendParams }, algod);
+	return {
+		...result,
+		transactions: [result.transaction],
+		confirmations: result.confirmation ? [result.confirmation] : undefined,
+		return: getABIReturn(args, result.confirmation),
+	};
 }
 /**
  * Returns any ABI return values for the given app call arguments and transaction confirmation.
@@ -297,32 +334,32 @@ export async function callApp(call, algod) {
  * @returns The return value for the method call
  */
 export function getABIReturn(args, confirmation) {
-    if (!args || !args.method) {
-        return undefined;
-    }
-    const method = 'txnCount' in args.method ? args.method : new ABIMethod(args.method);
-    if (method.returns.type !== 'void' && confirmation) {
-        // The parseMethodResponse method mutates the second parameter :(
-        const resultDummy = {
-            txID: '',
-            method,
-            rawReturnValue: new Uint8Array(),
-        };
-        const response = AtomicTransactionComposer.parseMethodResponse(method, resultDummy, confirmation);
-        return !response.decodeError
-            ? {
-                rawReturnValue: response.rawReturnValue,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                returnValue: response.returnValue,
-                decodeError: undefined,
-            }
-            : {
-                rawReturnValue: undefined,
-                returnValue: undefined,
-                decodeError: response.decodeError,
-            };
-    }
-    return undefined;
+	if (!args || !args.method) {
+		return undefined;
+	}
+	const method = 'txnCount' in args.method ? args.method : new ABIMethod(args.method);
+	if (method.returns.type !== 'void' && confirmation) {
+		// The parseMethodResponse method mutates the second parameter :(
+		const resultDummy = {
+			txID: '',
+			method,
+			rawReturnValue: new Uint8Array(),
+		};
+		const response = AtomicTransactionComposer.parseMethodResponse(method, resultDummy, confirmation);
+		return !response.decodeError
+			? {
+					rawReturnValue: response.rawReturnValue,
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					returnValue: response.returnValue,
+					decodeError: undefined,
+			  }
+			: {
+					rawReturnValue: undefined,
+					returnValue: undefined,
+					decodeError: response.decodeError,
+			  };
+	}
+	return undefined;
 }
 /**
  * Returns the current global state values for the given app ID
@@ -331,11 +368,11 @@ export function getABIReturn(args, confirmation) {
  * @returns The current global state
  */
 export async function getAppGlobalState(appId, algod) {
-    const appInfo = await getAppById(appId, algod);
-    if (!appInfo.params || !appInfo.params.globalState) {
-        throw new Error("Couldn't find global state");
-    }
-    return decodeAppState(appInfo.params.globalState);
+	const appInfo = await getAppById(appId, algod);
+	if (!appInfo.params || !appInfo.params.globalState) {
+		throw new Error("Couldn't find global state");
+	}
+	return decodeAppState(appInfo.params.globalState);
 }
 /**
  * Returns the current global state values for the given app ID and account
@@ -345,12 +382,14 @@ export async function getAppGlobalState(appId, algod) {
  * @returns The current local state for the given (app, account) combination
  */
 export async function getAppLocalState(appId, account, algod) {
-    const accountAddress = typeof account === 'string' ? account : getSenderAddress(account);
-    const appInfo = modelsv2.AccountApplicationResponse.from_obj_for_encoding(await algod.accountApplicationInformation(accountAddress, toNumber(appId)).do());
-    if (!appInfo.appLocalState?.keyValue) {
-        throw new Error("Couldn't find local state");
-    }
-    return decodeAppState(appInfo.appLocalState.keyValue);
+	const accountAddress = typeof account === 'string' ? account : getSenderAddress(account);
+	const appInfo = modelsv2.AccountApplicationResponse.from_obj_for_encoding(
+		await algod.accountApplicationInformation(accountAddress, toNumber(appId)).do()
+	);
+	if (!appInfo.appLocalState?.keyValue) {
+		throw new Error("Couldn't find local state");
+	}
+	return decodeAppState(appInfo.appLocalState.keyValue);
 }
 /**
  * Returns the names of the boxes for the given app.
@@ -359,14 +398,14 @@ export async function getAppLocalState(appId, account, algod) {
  * @returns The current box names
  */
 export async function getAppBoxNames(appId, algod) {
-    const boxResult = await algod.getApplicationBoxes(toNumber(appId)).do();
-    return boxResult.boxes.map((b) => {
-        return {
-            nameRaw: b.name,
-            nameBase64: Buffer.from(b.name).toString('base64'),
-            name: Buffer.from(b.name).toString('utf-8'),
-        };
-    });
+	const boxResult = await algod.getApplicationBoxes(toNumber(appId)).do();
+	return boxResult.boxes.map((b) => {
+		return {
+			nameRaw: b.name,
+			nameBase64: Buffer.from(b.name).toString('base64'),
+			name: Buffer.from(b.name).toString('utf-8'),
+		};
+	});
 }
 /**
  * Returns the value of the given box name for the given app.
@@ -376,9 +415,14 @@ export async function getAppBoxNames(appId, algod) {
  * @returns The current box value as a byte array
  */
 export async function getAppBoxValue(appId, boxName, algod) {
-    const name = typeof boxName === 'string' ? new Uint8Array(Buffer.from(boxName, 'utf-8')) : 'name' in boxName ? boxName.nameRaw : boxName;
-    const boxResult = await algod.getApplicationBoxByName(toNumber(appId), name).do();
-    return boxResult.value;
+	const name =
+		typeof boxName === 'string'
+			? new Uint8Array(Buffer.from(boxName, 'utf-8'))
+			: 'name' in boxName
+			? boxName.nameRaw
+			: boxName;
+	const boxResult = await algod.getApplicationBoxByName(toNumber(appId), name).do();
+	return boxResult.value;
 }
 /**
  * Returns the value of the given box names for the given app.
@@ -388,7 +432,7 @@ export async function getAppBoxValue(appId, boxName, algod) {
  * @returns The current box values as a byte array in the same order as the passed in box names
  */
 export async function getAppBoxValues(appId, boxNames, algod) {
-    return await Promise.all(boxNames.map(async (boxName) => await getAppBoxValue(appId, boxName, algod)));
+	return await Promise.all(boxNames.map(async (boxName) => await getAppBoxValue(appId, boxName, algod)));
 }
 /**
  * Returns the value of the given box name for the given app decoded based on the given ABI type.
@@ -397,9 +441,9 @@ export async function getAppBoxValues(appId, boxNames, algod) {
  * @returns The current box value as an ABI value
  */
 export async function getAppBoxValueFromABIType(request, algod) {
-    const { appId, boxName, type } = request;
-    const value = await getAppBoxValue(appId, boxName, algod);
-    return type.decode(value);
+	const { appId, boxName, type } = request;
+	const value = await getAppBoxValue(appId, boxName, algod);
+	return type.decode(value);
 }
 /**
  * Returns the value of the given box names for the given app decoded based on the given ABI type.
@@ -408,8 +452,10 @@ export async function getAppBoxValueFromABIType(request, algod) {
  * @returns The current box values as an ABI value in the same order as the passed in box names
  */
 export async function getAppBoxValuesFromABIType(request, algod) {
-    const { appId, boxNames, type } = request;
-    return await Promise.all(boxNames.map(async (boxName) => await getAppBoxValueFromABIType({ appId, boxName, type }, algod)));
+	const { appId, boxNames, type } = request;
+	return await Promise.all(
+		boxNames.map(async (boxName) => await getAppBoxValueFromABIType({ appId, boxName, type }, algod))
+	);
 }
 /**
  * Converts an array of global/local state values from the algod api to a more friendly
@@ -418,42 +464,42 @@ export async function getAppBoxValuesFromABIType(request, algod) {
  * @returns An object keyeed by the UTF-8 representation of the key with various parsings of the values
  */
 export function decodeAppState(state) {
-    const stateValues = {};
-    // Start with empty set
-    for (const stateVal of state) {
-        const keyBase64 = stateVal.key;
-        const keyRaw = Buffer.from(keyBase64, 'base64');
-        const key = keyRaw.toString('utf-8');
-        const tealValue = stateVal.value;
-        const dataTypeFlag = 'action' in tealValue ? tealValue.action : tealValue.type;
-        let valueBase64;
-        let valueRaw;
-        switch (dataTypeFlag) {
-            case 1:
-                valueBase64 = tealValue.bytes ?? '';
-                valueRaw = Buffer.from(valueBase64, 'base64');
-                stateValues[key] = {
-                    keyRaw,
-                    keyBase64,
-                    valueRaw: new Uint8Array(valueRaw),
-                    valueBase64: valueBase64,
-                    value: valueRaw.toString('utf-8'),
-                };
-                break;
-            case 2: {
-                const value = tealValue.uint ?? 0;
-                stateValues[key] = {
-                    keyRaw,
-                    keyBase64,
-                    value,
-                };
-                break;
-            }
-            default:
-                throw new Error(`Received unknown state data type of ${dataTypeFlag}`);
-        }
-    }
-    return stateValues;
+	const stateValues = {};
+	// Start with empty set
+	for (const stateVal of state) {
+		const keyBase64 = stateVal.key;
+		const keyRaw = Buffer.from(keyBase64, 'base64');
+		const key = keyRaw.toString('utf-8');
+		const tealValue = stateVal.value;
+		const dataTypeFlag = 'action' in tealValue ? tealValue.action : tealValue.type;
+		let valueBase64;
+		let valueRaw;
+		switch (dataTypeFlag) {
+			case 1:
+				valueBase64 = tealValue.bytes ?? '';
+				valueRaw = Buffer.from(valueBase64, 'base64');
+				stateValues[key] = {
+					keyRaw,
+					keyBase64,
+					valueRaw: new Uint8Array(valueRaw),
+					valueBase64: valueBase64,
+					value: valueRaw.toString('utf-8'),
+				};
+				break;
+			case 2: {
+				const value = tealValue.uint ?? 0;
+				stateValues[key] = {
+					keyRaw,
+					keyBase64,
+					value,
+				};
+				break;
+			}
+			default:
+				throw new Error(`Received unknown state data type of ${dataTypeFlag}`);
+		}
+	}
+	return stateValues;
 }
 /**
  * Returns the app args ready to load onto an app `Transaction` object
@@ -461,17 +507,16 @@ export function decodeAppState(state) {
  * @returns The args ready to load into a `Transaction`
  */
 export function getAppArgsForTransaction(args) {
-    if (!args)
-        return undefined;
-    const encoder = new TextEncoder();
-    return {
-        accounts: args?.accounts?.map(_getAccountAddress),
-        appArgs: args?.appArgs?.map((a) => (typeof a === 'string' ? encoder.encode(a) : a)),
-        boxes: args.boxes?.map(getBoxReference),
-        foreignApps: args?.apps,
-        foreignAssets: args?.assets,
-        lease: encodeLease(args?.lease),
-    };
+	if (!args) return undefined;
+	const encoder = new TextEncoder();
+	return {
+		accounts: args?.accounts?.map(_getAccountAddress),
+		appArgs: args?.appArgs?.map((a) => (typeof a === 'string' ? encoder.encode(a) : a)),
+		boxes: args.boxes?.map(getBoxReference),
+		foreignApps: args?.apps,
+		foreignAssets: args?.assets,
+		lease: encodeLease(args?.lease),
+	};
 }
 /**
  * Returns the app args ready to load onto an ABI method call in `AtomicTransactionComposer`
@@ -480,37 +525,43 @@ export function getAppArgsForTransaction(args) {
  * @returns The parameters ready to pass into `addMethodCall` within AtomicTransactionComposer
  */
 export async function getAppArgsForABICall(args, from) {
-    const signer = getSenderTransactionSigner(from);
-    const methodArgs = await Promise.all(('methodArgs' in args ? args.methodArgs : args)?.map(async (a, index) => {
-        if (a === undefined) {
-            throw new Error(`Argument at position ${index} does not have a value`);
-        }
-        if (typeof a !== 'object') {
-            return a;
-        }
-        // Handle the various forms of transactions to wrangle them for ATC
-        return 'txn' in a
-            ? a
-            : a instanceof Promise
-                ? { txn: (await a).transaction, signer }
-                : 'transaction' in a
-                    ? { txn: a.transaction, signer: 'signer' in a ? getSenderTransactionSigner(a.signer) : signer }
-                    : 'txID' in a
-                        ? { txn: a, signer }
-                        : a;
-    }));
-    return {
-        method: 'txnCount' in args.method ? args.method : new ABIMethod(args.method),
-        sender: getSenderAddress(from),
-        signer: signer,
-        boxes: args.boxes?.map(getBoxReference),
-        lease: encodeLease(args.lease),
-        appForeignApps: args.apps,
-        appForeignAssets: args.assets,
-        appAccounts: args.accounts?.map(_getAccountAddress),
-        methodArgs: methodArgs,
-        rekeyTo: args?.rekeyTo ? (typeof args.rekeyTo === 'string' ? args.rekeyTo : getSenderAddress(args.rekeyTo)) : undefined,
-    };
+	const signer = getSenderTransactionSigner(from);
+	const methodArgs = await Promise.all(
+		('methodArgs' in args ? args.methodArgs : args)?.map(async (a, index) => {
+			if (a === undefined) {
+				throw new Error(`Argument at position ${index} does not have a value`);
+			}
+			if (typeof a !== 'object') {
+				return a;
+			}
+			// Handle the various forms of transactions to wrangle them for ATC
+			return 'txn' in a
+				? a
+				: a instanceof Promise
+				? { txn: (await a).transaction, signer }
+				: 'transaction' in a
+				? { txn: a.transaction, signer: 'signer' in a ? getSenderTransactionSigner(a.signer) : signer }
+				: 'txID' in a
+				? { txn: a, signer }
+				: a;
+		})
+	);
+	return {
+		method: 'txnCount' in args.method ? args.method : new ABIMethod(args.method),
+		sender: getSenderAddress(from),
+		signer: signer,
+		boxes: args.boxes?.map(getBoxReference),
+		lease: encodeLease(args.lease),
+		appForeignApps: args.apps,
+		appForeignAssets: args.assets,
+		appAccounts: args.accounts?.map(_getAccountAddress),
+		methodArgs: methodArgs,
+		rekeyTo: args?.rekeyTo
+			? typeof args.rekeyTo === 'string'
+				? args.rekeyTo
+				: getSenderAddress(args.rekeyTo)
+			: undefined,
+	};
 }
 /**
  * Returns a `algosdk.BoxReference` given a `BoxIdentifier` or `BoxReference`.
@@ -518,22 +569,23 @@ export async function getAppArgsForABICall(args, from) {
  * @returns The box reference ready to pass into a `Transaction`
  */
 export function getBoxReference(box) {
-    const encoder = new TextEncoder();
-    if (typeof box === 'object' && 'appIndex' in box) {
-        return box;
-    }
-    const ref = typeof box === 'object' && 'appId' in box ? box : { appId: 0, name: box };
-    return {
-        appIndex: ref.appId,
-        name: typeof ref.name === 'string'
-            ? encoder.encode(ref.name)
-            : 'length' in ref.name
-                ? ref.name
-                : algosdk.decodeAddress(getSenderAddress(ref.name)).publicKey,
-    };
+	const encoder = new TextEncoder();
+	if (typeof box === 'object' && 'appIndex' in box) {
+		return box;
+	}
+	const ref = typeof box === 'object' && 'appId' in box ? box : { appId: 0, name: box };
+	return {
+		appIndex: ref.appId,
+		name:
+			typeof ref.name === 'string'
+				? encoder.encode(ref.name)
+				: 'length' in ref.name
+				? ref.name
+				: algosdk.decodeAddress(getSenderAddress(ref.name)).publicKey,
+	};
 }
 function _getAccountAddress(account) {
-    return typeof account === 'string' ? account : algosdk.encodeAddress(account.publicKey);
+	return typeof account === 'string' ? account : algosdk.encodeAddress(account.publicKey);
 }
 /**
  * Gets the current data for the given app from algod.
@@ -543,7 +595,7 @@ function _getAccountAddress(account) {
  * @returns The data about the app
  */
 export async function getAppById(appId, algod) {
-    return modelsv2.Application.from_obj_for_encoding(await algod.getApplicationByID(toNumber(appId)).do());
+	return modelsv2.Application.from_obj_for_encoding(await algod.getApplicationByID(toNumber(appId)).do());
 }
 /**
  * Compiles the given TEAL using algod and returns the result, including source map.
@@ -553,14 +605,14 @@ export async function getAppById(appId, algod) {
  * @returns The information about the compiled file
  */
 export async function compileTeal(tealCode, algod) {
-    const compiled = await algod.compile(tealCode).sourcemap(true).do();
-    return {
-        teal: tealCode,
-        compiled: compiled.result,
-        compiledHash: compiled.hash,
-        compiledBase64ToBytes: new Uint8Array(Buffer.from(compiled.result, 'base64')),
-        sourceMap: new SourceMap(compiled['sourcemap']),
-    };
+	const compiled = await algod.compile(tealCode).sourcemap(true).do();
+	return {
+		teal: tealCode,
+		compiled: compiled.result,
+		compiledHash: compiled.hash,
+		compiledBase64ToBytes: new Uint8Array(Buffer.from(compiled.result, 'base64')),
+		sourceMap: new SourceMap(compiled['sourcemap']),
+	};
 }
 /**
  * Returns the encoded ABI spec for a given ABI Method
@@ -568,6 +620,6 @@ export async function compileTeal(tealCode, algod) {
  * @returns The encoded ABI method spec e.g. `method_name(uint64,string)string`
  */
 export const getABIMethodSignature = (method) => {
-    return 'getSignature' in method ? method.getSignature() : new ABIMethod(method).getSignature();
+	return 'getSignature' in method ? method.getSignature() : new ABIMethod(method).getSignature();
 };
 //# sourceMappingURL=app.js.map

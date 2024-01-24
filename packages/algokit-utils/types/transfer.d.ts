@@ -1,6 +1,12 @@
 import algosdk from 'algosdk';
 import { SendTransactionResult } from './types/transaction';
-import { AlgoRekeyParams, AlgoTransferParams, EnsureFundedParams, EnsureFundedReturnType, TransferAssetParams } from './types/transfer';
+import {
+	AlgoRekeyParams,
+	AlgoTransferParams,
+	EnsureFundedParams,
+	EnsureFundedReturnType,
+	TransferAssetParams,
+} from './types/transfer';
 import Algodv2 = algosdk.Algodv2;
 import Kmd = algosdk.Kmd;
 /**
@@ -27,7 +33,11 @@ export declare function transferAlgos(transfer: AlgoTransferParams, algod: Algod
  * - `EnsureFundedReturnType` if funds were transferred.
  * - `undefined` if no funds were needed.
  */
-export declare function ensureFunded<T extends EnsureFundedParams>(funding: T, algod: Algodv2, kmd?: Kmd): Promise<EnsureFundedReturnType | undefined>;
+export declare function ensureFunded<T extends EnsureFundedParams>(
+	funding: T,
+	algod: Algodv2,
+	kmd?: Kmd
+): Promise<EnsureFundedReturnType | undefined>;
 /**
  * Transfer asset between two accounts.
  * @param transfer The transfer definition

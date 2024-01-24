@@ -16,6 +16,6 @@ import { TestNetDispenserApiClient } from './types/dispenser-client.js';
  * @returns An instance of the TestNetDispenserApiClient class.
  */
 export function getTestNetDispenserApiClient(params = null) {
-    return new TestNetDispenserApiClient(params);
+	return new TestNetDispenserApiClient(params);
 }
 //# sourceMappingURL=dispenser-client.js.map

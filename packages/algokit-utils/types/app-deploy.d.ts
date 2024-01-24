@@ -1,6 +1,20 @@
 import algosdk from 'algosdk';
-import { ABIReturn, AppCompilationResult, AppDeployMetadata, AppDeploymentParams, AppLookup, AppMetadata, CompiledTeal, TealTemplateParams } from './types/app';
-import { Arc2TransactionNote, ConfirmedTransactionResult, ConfirmedTransactionResults, SendTransactionFrom } from './types/transaction';
+import {
+	ABIReturn,
+	AppCompilationResult,
+	AppDeployMetadata,
+	AppDeploymentParams,
+	AppLookup,
+	AppMetadata,
+	CompiledTeal,
+	TealTemplateParams,
+} from './types/app';
+import {
+	Arc2TransactionNote,
+	ConfirmedTransactionResult,
+	ConfirmedTransactionResults,
+	SendTransactionFrom,
+} from './types/transaction';
 import Algodv2 = algosdk.Algodv2;
 import Indexer = algosdk.Indexer;
 import modelsv2 = algosdk.modelsv2;
@@ -19,17 +33,30 @@ import modelsv2 = algosdk.modelsv2;
  * @param indexer An indexer client, needed if `existingDeployments` not passed in
  * @returns The app reference of the new/existing app
  */
-export declare function deployApp(deployment: AppDeploymentParams, algod: Algodv2, indexer?: Indexer): Promise<Partial<AppCompilationResult> & ((ConfirmedTransactionResults & AppMetadata & {
-    return?: ABIReturn;
-    operationPerformed: 'create' | 'update';
-}) | (ConfirmedTransactionResults & AppMetadata & {
-    return?: ABIReturn;
-    deleteReturn?: ABIReturn;
-    deleteResult: ConfirmedTransactionResult;
-    operationPerformed: 'replace';
-}) | (AppMetadata & {
-    operationPerformed: 'nothing';
-}))>;
+export declare function deployApp(
+	deployment: AppDeploymentParams,
+	algod: Algodv2,
+	indexer?: Indexer
+): Promise<
+	Partial<AppCompilationResult> &
+		(
+			| (ConfirmedTransactionResults &
+					AppMetadata & {
+						return?: ABIReturn;
+						operationPerformed: 'create' | 'update';
+					})
+			| (ConfirmedTransactionResults &
+					AppMetadata & {
+						return?: ABIReturn;
+						deleteReturn?: ABIReturn;
+						deleteResult: ConfirmedTransactionResult;
+						operationPerformed: 'replace';
+					})
+			| (AppMetadata & {
+					operationPerformed: 'nothing';
+			  })
+		)
+>;
 /** Returns true is there is a breaking change in the application state schema from before to after.
  *  i.e. if the schema becomes larger, since applications can't ask for more schema after creation.
  *  Otherwise, there is no error, the app just doesn't store data in the extra schema :(
@@ -38,7 +65,10 @@ export declare function deployApp(deployment: AppDeploymentParams, algod: Algodv
  * @param after The new schema
  * @returns Whether or not there is a breaking change
  */
-export declare function isSchemaIsBroken(before: modelsv2.ApplicationStateSchema, after: modelsv2.ApplicationStateSchema): boolean;
+export declare function isSchemaIsBroken(
+	before: modelsv2.ApplicationStateSchema,
+	after: modelsv2.ApplicationStateSchema
+): boolean;
 /**
  * Returns a lookup of name => app metadata (id, address, ...metadata) for all apps created by the given account that have an `AppDeployNote` in the transaction note of the creation transaction.
  *
@@ -48,7 +78,10 @@ export declare function isSchemaIsBroken(before: modelsv2.ApplicationStateSchema
  * @param indexer An indexer client
  * @returns A name-based lookup of the app information (id, address)
  */
-export declare function getCreatorAppsByName(creatorAccount: SendTransactionFrom | string, indexer: Indexer): Promise<AppLookup>;
+export declare function getCreatorAppsByName(
+	creatorAccount: SendTransactionFrom | string,
+	indexer: Indexer
+): Promise<AppLookup>;
 /**
  * Return the transaction note for an app deployment.
  * @param metadata The metadata of the deployment
@@ -68,10 +101,13 @@ export declare function getAppDeploymentTransactionNote(metadata: AppDeployMetad
  * @param params The deploy-time deployment control parameter value to replace
  * @returns The replaced TEAL code
  */
-export declare function replaceDeployTimeControlParams(tealCode: string, params: {
-    updatable?: boolean;
-    deletable?: boolean;
-}): string;
+export declare function replaceDeployTimeControlParams(
+	tealCode: string,
+	params: {
+		updatable?: boolean;
+		deletable?: boolean;
+	}
+): string;
 /**
  * Performs template substitution of a teal file.
  *
@@ -93,7 +129,12 @@ export declare function performTemplateSubstitution(tealCode: string, templatePa
  * @param deploymentMetadata The deployment metadata the app will be deployed with
  * @returns The information about the compiled code
  */
-export declare function performTemplateSubstitutionAndCompile(tealCode: string, algod: Algodv2, templateParams?: TealTemplateParams, deploymentMetadata?: AppDeployMetadata): Promise<CompiledTeal>;
+export declare function performTemplateSubstitutionAndCompile(
+	tealCode: string,
+	algod: Algodv2,
+	templateParams?: TealTemplateParams,
+	deploymentMetadata?: AppDeployMetadata
+): Promise<CompiledTeal>;
 /**
  * Remove comments from TEAL Code
  *

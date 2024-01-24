@@ -14,7 +14,10 @@ export declare function getIndexerConfigFromEnvironment(): AlgoClientConfig;
  * @param network Which network to connect to - TestNet or MainNet
  * @param config Which algod config to return - Algod or Indexer
  */
-export declare function getAlgoNodeConfig(network: 'testnet' | 'mainnet', config: 'algod' | 'indexer'): AlgoClientConfig;
+export declare function getAlgoNodeConfig(
+	network: 'testnet' | 'mainnet',
+	config: 'algod' | 'indexer'
+): AlgoClientConfig;
 /** Returns the Algorand configuration to point to the default LocalNet
  *
  * @param configOrPort Which algod config to return - algod, kmd, or indexer OR a port number

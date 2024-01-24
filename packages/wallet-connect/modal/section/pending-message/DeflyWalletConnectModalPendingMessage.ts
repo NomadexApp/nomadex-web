@@ -1,12 +1,6 @@
-import {
-  DEFLY_WALLET_CONNECT_MODAL_ID,
-  removeModalWrapperFromDOM
-} from '../../deflyWalletConnectModalUtils';
+import { DEFLY_WALLET_CONNECT_MODAL_ID, removeModalWrapperFromDOM } from '../../deflyWalletConnectModalUtils';
 import styles from './_defly-wallet-connect-modal-pending-message.scss?inline';
-import {
-  CONNECT_AUDIO_URL,
-  CONNECT_TIMEOUT_INTERVAL
-} from './util/deflyWalletConnectModalPendingMessageConstants';
+import { CONNECT_AUDIO_URL, CONNECT_TIMEOUT_INTERVAL } from './util/deflyWalletConnectModalPendingMessageConstants';
 
 const deflyWalletConnectModalPendingMessageTemplate = document.createElement('template');
 
@@ -74,80 +68,70 @@ const deflyWalletConnectTryAgainView = `
   `;
 
 export class DeflyWalletConnectModalPendingMessageSection extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
 
-    if (this.shadowRoot) {
-      const styleSheet = document.createElement('style');
+		if (this.shadowRoot) {
+			const styleSheet = document.createElement('style');
 
-      styleSheet.textContent = styles;
+			styleSheet.textContent = styles;
 
-      this.shadowRoot.append(
-        deflyWalletConnectModalPendingMessageTemplate.content.cloneNode(true),
-        styleSheet
-      );
-    }
-  }
+			this.shadowRoot.append(deflyWalletConnectModalPendingMessageTemplate.content.cloneNode(true), styleSheet);
+		}
+	}
 
-  connectedCallback() {
-    const cancelButton = this.shadowRoot?.getElementById(
-      'defly-wallet-connect-modal-pending-message-cancel-button'
-    );
+	connectedCallback() {
+		const cancelButton = this.shadowRoot?.getElementById('defly-wallet-connect-modal-pending-message-cancel-button');
 
-    cancelButton?.addEventListener('click', () => {
-      this.onClose();
-    });
+		cancelButton?.addEventListener('click', () => {
+			this.onClose();
+		});
 
-    this.addAudioForConnection();
+		this.addAudioForConnection();
 
-    setTimeout(() => {
-      deflyWalletConnectModalPendingMessageTemplate.innerHTML =
-        deflyWalletConnectTryAgainView;
+		setTimeout(() => {
+			deflyWalletConnectModalPendingMessageTemplate.innerHTML = deflyWalletConnectTryAgainView;
 
-      if (this.shadowRoot) {
-        const styleSheet = document.createElement('style');
+			if (this.shadowRoot) {
+				const styleSheet = document.createElement('style');
 
-        styleSheet.textContent = styles;
+				styleSheet.textContent = styles;
 
-        this.shadowRoot.innerHTML = '';
+				this.shadowRoot.innerHTML = '';
 
-        this.shadowRoot.append(
-          deflyWalletConnectModalPendingMessageTemplate.content.cloneNode(true),
-          styleSheet
-        );
+				this.shadowRoot.append(deflyWalletConnectModalPendingMessageTemplate.content.cloneNode(true), styleSheet);
 
-        const tryAgainButton = this.shadowRoot?.getElementById(
-          'defly-wallet-connect-modal-pending-message-try-again-button'
-        );
+				const tryAgainButton = this.shadowRoot?.getElementById(
+					'defly-wallet-connect-modal-pending-message-try-again-button'
+				);
 
-        tryAgainButton?.addEventListener('click', () => {
-          this.onClose();
-        });
-      }
-    }, CONNECT_TIMEOUT_INTERVAL);
-  }
+				tryAgainButton?.addEventListener('click', () => {
+					this.onClose();
+				});
+			}
+		}, CONNECT_TIMEOUT_INTERVAL);
+	}
 
-  onClose() {
-    removeModalWrapperFromDOM(DEFLY_WALLET_CONNECT_MODAL_ID);
-  }
+	onClose() {
+		removeModalWrapperFromDOM(DEFLY_WALLET_CONNECT_MODAL_ID);
+	}
 
-  addAudioForConnection() {
-    const shouldUseSound = this.getAttribute('should-use-sound');
+	addAudioForConnection() {
+		const shouldUseSound = this.getAttribute('should-use-sound');
 
-    if (shouldUseSound === 'true') {
-      const connectAudioWrapper = this.shadowRoot?.getElementById(
-        'defly-wallet-connect-modal-pending-message-audio-wrapper'
-      );
+		if (shouldUseSound === 'true') {
+			const connectAudioWrapper = this.shadowRoot?.getElementById(
+				'defly-wallet-connect-modal-pending-message-audio-wrapper'
+			);
 
-      const audio = document.createElement('audio');
+			const audio = document.createElement('audio');
 
-      audio.src = CONNECT_AUDIO_URL;
-      audio.autoplay = true;
-      audio.loop = true;
+			audio.src = CONNECT_AUDIO_URL;
+			audio.autoplay = true;
+			audio.loop = true;
 
-      connectAudioWrapper?.appendChild(audio);
-    }
-  }
-
+			connectAudioWrapper?.appendChild(audio);
+		}
+	}
 }

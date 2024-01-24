@@ -1,11 +1,8 @@
-import {generateDeflyWalletAppDeepLink} from "../../util/deflyWalletUtils";
-import {
-  DEFLY_WALLET_REDIRECT_MODAL_ID,
-  removeModalWrapperFromDOM
-} from "../deflyWalletConnectModalUtils";
-import styles from "./_defly-wallet-redirect-modal.scss?inline";
+import { generateDeflyWalletAppDeepLink } from '../../util/deflyWalletUtils';
+import { DEFLY_WALLET_REDIRECT_MODAL_ID, removeModalWrapperFromDOM } from '../deflyWalletConnectModalUtils';
+import styles from './_defly-wallet-redirect-modal.scss?inline';
 
-const deflyWalletRedirectModalTemplate = document.createElement("template");
+const deflyWalletRedirectModalTemplate = document.createElement('template');
 
 deflyWalletRedirectModalTemplate.innerHTML = `
   <div class="defly-wallet-modal defly-wallet-modal--mobile">
@@ -50,49 +47,41 @@ deflyWalletRedirectModalTemplate.innerHTML = `
 `;
 
 export class DeflyWalletRedirectModal extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({mode: "open"});
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
 
-    if (this.shadowRoot) {
-      const styleSheet = document.createElement("style");
+		if (this.shadowRoot) {
+			const styleSheet = document.createElement('style');
 
-      styleSheet.textContent = styles;
+			styleSheet.textContent = styles;
 
-      this.shadowRoot.append(
-        deflyWalletRedirectModalTemplate.content.cloneNode(true),
-        styleSheet
-      );
+			this.shadowRoot.append(deflyWalletRedirectModalTemplate.content.cloneNode(true), styleSheet);
 
-      const downloadDeflyLink = this.shadowRoot?.getElementById(
-        "defly-wallet-redirect-modal-download-defly-link"
-      );
+			const downloadDeflyLink = this.shadowRoot?.getElementById('defly-wallet-redirect-modal-download-defly-link');
 
-      downloadDeflyLink?.addEventListener("click", () => {
-        this.onClose();
-      });
+			downloadDeflyLink?.addEventListener('click', () => {
+				this.onClose();
+			});
 
-      const launchDeflyLink = this.shadowRoot?.getElementById(
-        "defly-wallet-redirect-modal-launch-defly-link"
-      );
+			const launchDeflyLink = this.shadowRoot?.getElementById('defly-wallet-redirect-modal-launch-defly-link');
 
-      launchDeflyLink?.addEventListener("click", () => {
-        this.onClose();
-        window.open(generateDeflyWalletAppDeepLink(), "_blank");
-      });
-    }
-  }
+			launchDeflyLink?.addEventListener('click', () => {
+				this.onClose();
+				window.open(generateDeflyWalletAppDeepLink(), '_blank');
+			});
+		}
+	}
 
-  connectedCallback() {
-    const deflyWalletDeepLink = window.open(generateDeflyWalletAppDeepLink(), "_blank");
+	connectedCallback() {
+		const deflyWalletDeepLink = window.open(generateDeflyWalletAppDeepLink(), '_blank');
 
-    if (deflyWalletDeepLink && !deflyWalletDeepLink.closed) {
-      this.onClose();
-    }
+		if (deflyWalletDeepLink && !deflyWalletDeepLink.closed) {
+			this.onClose();
+		}
+	}
 
-  }
-
-  onClose() {
-    removeModalWrapperFromDOM(DEFLY_WALLET_REDIRECT_MODAL_ID);
-  }
+	onClose() {
+		removeModalWrapperFromDOM(DEFLY_WALLET_REDIRECT_MODAL_ID);
+	}
 }

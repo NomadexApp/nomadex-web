@@ -45,5 +45,8 @@ export declare function assetBulkOptIn(optIn: AssetBulkOptInOutParams, algod: Al
  * @throws If there is an error during the opt-out process.
  * @example algokit.bulkOptOut({ account: account, assetIds: [12345, 67890] }, algod)
  */
-export declare function assetBulkOptOut(optOut: AssetBulkOptInOutParams, algod: Algodv2): Promise<Record<number, string>>;
+export declare function assetBulkOptOut(
+	optOut: AssetBulkOptInOutParams,
+	algod: Algodv2
+): Promise<Record<number, string>>;
 //# sourceMappingURL=asset.d.ts.map

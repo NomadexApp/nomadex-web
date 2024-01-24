@@ -1,22 +1,22 @@
-import {DEFLY_WALLET_APP_DEEP_LINK} from "./deflyWalletConstants";
+import { DEFLY_WALLET_APP_DEEP_LINK } from './deflyWalletConstants';
 
 function generateDeflyWalletAppDeepLink(shouldAddBrowserName = true): string {
-  let appDeepLink = DEFLY_WALLET_APP_DEEP_LINK;
-  const browserName = detectBrowser();
+	let appDeepLink = DEFLY_WALLET_APP_DEEP_LINK;
+	const browserName = detectBrowser();
 
-  if (shouldAddBrowserName && browserName) {
-    appDeepLink = `${appDeepLink}?browser=${encodeURIComponent(browserName)}`;
-  }
+	if (shouldAddBrowserName && browserName) {
+		appDeepLink = `${appDeepLink}?browser=${encodeURIComponent(browserName)}`;
+	}
 
-  return appDeepLink;
+	return appDeepLink;
 }
 
 function generateEmbeddedWalletURL(url: string) {
-  const newURL = new URL(url);
+	const newURL = new URL(url);
 
-  newURL.searchParams.append("embedded", "true");
+	newURL.searchParams.append('embedded', 'true');
 
-  return newURL.toString();
+	return newURL.toString();
 }
 
 /**
@@ -24,15 +24,11 @@ function generateEmbeddedWalletURL(url: string) {
  * @returns {string} Defly Wallet deeplink
  */
 function generateDeflyWalletConnectDeepLink(uri: string): string {
-  let appDeepLink = generateDeflyWalletAppDeepLink(false);
+	let appDeepLink = generateDeflyWalletAppDeepLink(false);
 
-  let deepLink = `${appDeepLink}wc?uri=${encodeURIComponent(uri)}`;
+	let deepLink = `${appDeepLink}wc?uri=${encodeURIComponent(uri)}`;
 
-  return deepLink;
+	return deepLink;
 }
 
-export {
-  generateDeflyWalletAppDeepLink,
-  generateDeflyWalletConnectDeepLink,
-  generateEmbeddedWalletURL
-};
+export { generateDeflyWalletAppDeepLink, generateDeflyWalletConnectDeepLink, generateEmbeddedWalletURL };

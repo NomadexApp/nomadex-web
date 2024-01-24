@@ -13,5 +13,9 @@ import Kmd = algosdk.Kmd;
  * @param kmd A KMD client, if not specified then a default KMD client will be loaded from environment variables
  * @returns The account, with private key loaded
  */
-export declare function getTestAccount({ suppressLog, initialFunds }: GetTestAccountParams, algod: Algodv2, kmd?: Kmd): Promise<Account>;
+export declare function getTestAccount(
+	{ suppressLog, initialFunds }: GetTestAccountParams,
+	algod: Algodv2,
+	kmd?: Kmd
+): Promise<Account>;
 //# sourceMappingURL=account.d.ts.map

@@ -1,6 +1,15 @@
 import algosdk from 'algosdk';
 import { AlgoAmount } from './types/amount';
-import { AtomicTransactionComposerToSend, SendAtomicTransactionComposerResults, SendTransactionFrom, SendTransactionParams, SendTransactionResult, TransactionGroupToSend, TransactionNote, TransactionToSign } from './types/transaction';
+import {
+	AtomicTransactionComposerToSend,
+	SendAtomicTransactionComposerResults,
+	SendTransactionFrom,
+	SendTransactionParams,
+	SendTransactionResult,
+	TransactionGroupToSend,
+	TransactionNote,
+	TransactionToSign,
+} from './types/transaction';
 import Algodv2 = algosdk.Algodv2;
 import AtomicTransactionComposer = algosdk.AtomicTransactionComposer;
 import modelsv2 = algosdk.modelsv2;
@@ -46,7 +55,10 @@ export declare const getSenderAddress: (sender: string | SendTransactionFrom) =>
  * include a signer.
  * @returns A TransactionWithSigner object.
  */
-export declare const getTransactionWithSigner: (transaction: TransactionWithSigner | TransactionToSign | Transaction | Promise<SendTransactionResult>, defaultSender?: SendTransactionFrom) => Promise<TransactionWithSigner>;
+export declare const getTransactionWithSigner: (
+	transaction: TransactionWithSigner | TransactionToSign | Transaction | Promise<SendTransactionResult>,
+	defaultSender?: SendTransactionFrom
+) => Promise<TransactionWithSigner>;
 /**
  * Returns a `TransactionSigner` for the given transaction sender.
  * This function has memoization, so will return the same transaction signer for a given sender.
@@ -71,11 +83,14 @@ export declare const signTransaction: (transaction: Transaction, signer: SendTra
  *
  * @returns An object with transaction (`transaction`) and (if `skipWaiting` is `false` or `undefined`) confirmation (`confirmation`)
  */
-export declare const sendTransaction: (send: {
-    transaction: Transaction;
-    from: SendTransactionFrom;
-    sendParams?: SendTransactionParams;
-}, algod: Algodv2) => Promise<SendTransactionResult>;
+export declare const sendTransaction: (
+	send: {
+		transaction: Transaction;
+		from: SendTransactionFrom;
+		sendParams?: SendTransactionParams;
+	},
+	algod: Algodv2
+) => Promise<SendTransactionResult>;
 /**
  * Signs and sends transactions that have been collected by an `AtomicTransactionComposer`.
  * @param atcSend The parameters controlling the send, including:
@@ -84,21 +99,30 @@ export declare const sendTransaction: (send: {
  * @param algod An algod client
  * @returns An object with transaction IDs, transactions, group transaction ID (`groupTransactionId`) if more than 1 transaction sent, and (if `skipWaiting` is `false` or unset) confirmation (`confirmation`)
  */
-export declare const sendAtomicTransactionComposer: (atcSend: AtomicTransactionComposerToSend, algod: Algodv2) => Promise<SendAtomicTransactionComposerResults>;
+export declare const sendAtomicTransactionComposer: (
+	atcSend: AtomicTransactionComposerToSend,
+	algod: Algodv2
+) => Promise<SendAtomicTransactionComposerResults>;
 /**
  * Performs a dry run of the transactions loaded into the given AtomicTransactionComposer`
  * @param atc The AtomicTransactionComposer` with transaction(s) loaded
  * @param algod An Algod client
  * @returns The dryrun result
  */
-export declare function performAtomicTransactionComposerDryrun(atc: AtomicTransactionComposer, algod: Algodv2): Promise<algosdk.DryrunResult>;
+export declare function performAtomicTransactionComposerDryrun(
+	atc: AtomicTransactionComposer,
+	algod: Algodv2
+): Promise<algosdk.DryrunResult>;
 /**
  * Performs a simulation of the transactions loaded into the given AtomicTransactionComposer.
  * @param atc The AtomicTransactionComposer with transaction(s) loaded.
  * @param algod An Algod client to perform the simulation.
  * @returns The simulation result, which includes various details about how the transactions would be processed.
  */
-export declare function performAtomicTransactionComposerSimulate(atc: AtomicTransactionComposer, algod: Algodv2): Promise<algosdk.modelsv2.SimulateResponse>;
+export declare function performAtomicTransactionComposerSimulate(
+	atc: AtomicTransactionComposer,
+	algod: Algodv2
+): Promise<algosdk.modelsv2.SimulateResponse>;
 /**
  * Signs and sends a group of [up to 16](https://developer.algorand.org/docs/get-details/atomic_transfers/#create-transactions) transactions to the chain
  *
@@ -108,7 +132,10 @@ export declare function performAtomicTransactionComposerSimulate(atc: AtomicTran
  * @param algod An algod client
  * @returns An object with transaction IDs, transactions, group transaction ID (`groupTransactionId`) if more than 1 transaction sent, and (if `skipWaiting` is `false` or unset) confirmation (`confirmation`)
  */
-export declare const sendGroupOfTransactions: (groupSend: TransactionGroupToSend, algod: Algodv2) => Promise<Omit<SendAtomicTransactionComposerResults, "returns">>;
+export declare const sendGroupOfTransactions: (
+	groupSend: TransactionGroupToSend,
+	algod: Algodv2
+) => Promise<Omit<SendAtomicTransactionComposerResults, 'returns'>>;
 /**
  * Wait until the transaction is confirmed or rejected, or until `timeout`
  * number of rounds have passed.
@@ -120,7 +147,11 @@ export declare const sendGroupOfTransactions: (groupSend: TransactionGroupToSend
  * @return Pending transaction information
  * @throws Throws an error if the transaction is not confirmed or rejected in the next `timeout` rounds
  */
-export declare const waitForConfirmation: (transactionId: string, maxRoundsToWait: number | bigint, algod: Algodv2) => Promise<modelsv2.PendingTransactionResponse>;
+export declare const waitForConfirmation: (
+	transactionId: string,
+	maxRoundsToWait: number | bigint,
+	algod: Algodv2
+) => Promise<modelsv2.PendingTransactionResponse>;
 /**
  * Limit the acceptable fee to a defined amount of µALGOs.
  * This also sets the transaction to be flatFee to ensure the transaction only succeeds at
@@ -128,34 +159,48 @@ export declare const waitForConfirmation: (transactionId: string, maxRoundsToWai
  * @param transaction The transaction to cap or suggested params object about to be used to create a transaction
  * @param maxAcceptableFee The maximum acceptable fee to pay
  */
-export declare function capTransactionFee(transaction: algosdk.Transaction | SuggestedParams, maxAcceptableFee: AlgoAmount): void;
+export declare function capTransactionFee(
+	transaction: algosdk.Transaction | SuggestedParams,
+	maxAcceptableFee: AlgoAmount
+): void;
 /**
  * Allows for control of fees on a `Transaction` or `SuggestedParams` object
  * @param transaction The transaction or suggested params
  * @param feeControl The fee control parameters
  */
-export declare function controlFees<T extends SuggestedParams | Transaction>(transaction: T, feeControl: {
-    fee?: AlgoAmount;
-    maxFee?: AlgoAmount;
-}): T;
+export declare function controlFees<T extends SuggestedParams | Transaction>(
+	transaction: T,
+	feeControl: {
+		fee?: AlgoAmount;
+		maxFee?: AlgoAmount;
+	}
+): T;
 /**
  * Returns suggested transaction parameters from algod unless some are already provided.
  * @param params Optionally provide parameters to use
  * @param algod Algod algod
  * @returns The suggested transaction parameters
  */
-export declare function getTransactionParams(params: SuggestedParams | undefined, algod: Algodv2): Promise<import("algosdk/dist/types/types/transactions/base").SuggestedParamsWithMinFee | {
-    flatFee?: boolean | undefined;
-    fee: number;
-    firstRound: number;
-    lastRound: number;
-    genesisID: string;
-    genesisHash: string;
-}>;
+export declare function getTransactionParams(
+	params: SuggestedParams | undefined,
+	algod: Algodv2
+): Promise<
+	| import('algosdk/dist/types/types/transactions/base').SuggestedParamsWithMinFee
+	| {
+			flatFee?: boolean | undefined;
+			fee: number;
+			firstRound: number;
+			lastRound: number;
+			genesisID: string;
+			genesisHash: string;
+	  }
+>;
 /**
  * Returns the array of transactions currently present in the given `AtomicTransactionComposer`
  * @param atc The atomic transaction composer
  * @returns The array of transactions with signers
  */
-export declare function getAtomicTransactionComposerTransactions(atc: AtomicTransactionComposer): algosdk.TransactionWithSigner[];
+export declare function getAtomicTransactionComposerTransactions(
+	atc: AtomicTransactionComposer
+): algosdk.TransactionWithSigner[];
 //# sourceMappingURL=transaction.d.ts.map

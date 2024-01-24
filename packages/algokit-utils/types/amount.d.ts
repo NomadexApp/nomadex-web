@@ -1,9 +1,9 @@
 import { AlgoAmount } from './types/amount';
 declare global {
-    interface Number {
-        microAlgos(this: number): AlgoAmount;
-        algos(this: number): AlgoAmount;
-    }
+	interface Number {
+		microAlgos(this: number): AlgoAmount;
+		algos(this: number): AlgoAmount;
+	}
 }
 /** Returns an amount of Algos using AlgoAmount
  * @param algos The amount in Algos

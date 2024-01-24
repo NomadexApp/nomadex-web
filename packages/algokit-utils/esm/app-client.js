@@ -30,7 +30,7 @@ import { ApplicationClient } from './types/app-client.js';
  * @returns The application client
  */
 export function getAppClient(appDetails, algod) {
-    return new ApplicationClient(appDetails, algod);
+	return new ApplicationClient(appDetails, algod);
 }
 /**
  * Create a new ApplicationClient instance by id
@@ -50,7 +50,7 @@ export function getAppClient(appDetails, algod) {
  * @returns The application client
  */
 export function getAppClientById(appDetails, algod) {
-    return new ApplicationClient({ ...appDetails, resolveBy: 'id' }, algod);
+	return new ApplicationClient({ ...appDetails, resolveBy: 'id' }, algod);
 }
 /**
  * Create a new ApplicationClient instance by creator and name
@@ -71,6 +71,6 @@ export function getAppClientById(appDetails, algod) {
  * @returns The application client
  */
 export function getAppClientByCreatorAndName(appDetails, algod) {
-    return new ApplicationClient({ ...appDetails, resolveBy: 'creatorAndName' }, algod);
+	return new ApplicationClient({ ...appDetails, resolveBy: 'creatorAndName' }, algod);
 }
 //# sourceMappingURL=app-client.js.map

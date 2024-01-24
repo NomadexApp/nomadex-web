@@ -1,11 +1,11 @@
-import {setVhVariable} from "./screenSizeUtils";
+import { setVhVariable } from './screenSizeUtils';
 
 (function setDynamicVhValue() {
-  window.addEventListener("DOMContentLoaded", () => {
-    setVhVariable();
-  });
+	window.addEventListener('DOMContentLoaded', () => {
+		setVhVariable();
+	});
 
-  window.addEventListener("resize", () => {
-    setVhVariable();
-  });
+	window.addEventListener('resize', () => {
+		setVhVariable();
+	});
 })();
