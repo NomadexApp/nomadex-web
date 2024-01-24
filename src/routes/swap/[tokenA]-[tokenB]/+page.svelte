@@ -292,10 +292,8 @@
 
 			<div class="flex justify-center mt-2 pr-0">
 				<button
-					class="btn btn-primary w-full box-border"
-					class:disabled={tokenA.ticker === tokenB.ticker || disabled}
-					{disabled}
-					on:click={swap}
+					class="btn btn-primary w-full box-border {tokenA.ticker === tokenB.ticker || disabled ? 'disabled btn-outline' : ''}"
+					on:click={disabled ? () => {} : swap}
 				>
 					Swap
 				</button>
@@ -320,9 +318,8 @@
 	</div>
 {/if}
 
-<style lang="postcss">
+<style>
 	.disabled {
-		@apply btn-outline;
 		pointer-events: none;
 	}
 	form {

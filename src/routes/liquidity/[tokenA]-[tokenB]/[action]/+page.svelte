@@ -69,13 +69,15 @@
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = true;
 
-		const ratio = (BigInt(inputTokenLpt * 1e6) * BigInt(1e6)) / $poolIssuedTokens;
+		const SCALE = 100_000_000_000_000;
+
+		const ratio = (BigInt(inputTokenLpt * 1e6) * BigInt(SCALE)) / $poolIssuedTokens;
 		const voiBalance = $currentPoolState.amount - ($currentPoolState['min-balance'] ?? 100_000);
 		const viaBalance = $poolArc200Balance;
 		loading = false;
 
-		inputTokenA = Number((BigInt(voiBalance) * ratio) / BigInt(1e6)) / voiToken.unit;
-		inputTokenB = Number((BigInt(viaBalance) * ratio) / BigInt(1e6)) / arc200Token.unit;
+		inputTokenA = Number(BigInt(voiBalance) * ratio) / voiToken.unit / SCALE;
+		inputTokenB = Number(BigInt(viaBalance) * ratio) / arc200Token.unit / SCALE;
 
 		disabled = !inputTokenB;
 	}
@@ -287,10 +289,10 @@
 
 			<div class="flex justify-center mt-2 pr-0">
 				<button
-					class="btn btn-primary w-full box-border"
-					class:disabled={tokenA.ticker === tokenB.ticker || disabled || maxError}
-					disabled={disabled || maxError}
-					on:click={changeLiquidity}
+					class="btn btn-primary w-full box-border {tokenA.ticker === tokenB.ticker || disabled || maxError
+						? 'disabled btn-outline'
+						: ''}"
+					on:click={disabled || maxError ? () => {} : changeLiquidity}
 				>
 					{action === 'remove' ? 'Remove' : 'Add'} Liquidity
 				</button>
@@ -311,9 +313,8 @@
 	</div>
 {/if}
 
-<style lang="postcss">
+<style>
 	.disabled {
-		@apply btn-outline;
 		pointer-events: none;
 	}
 	form {
