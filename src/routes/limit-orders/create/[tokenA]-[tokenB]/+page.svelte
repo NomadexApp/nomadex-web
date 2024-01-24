@@ -97,7 +97,7 @@
 
 	const getTokenSuggestions = (token: Token) => {
 		if (token.type === TokenType.ARC200) {
-			return knownTokens.slice(1).map((token) => ({ name: token.ticker, value: token }));
+			return $knownTokens.slice(1).map((token) => ({ name: token.ticker, value: token }));
 		}
 	};
 
