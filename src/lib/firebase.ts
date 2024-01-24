@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, getDocs, setDoc, collection, doc } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, getDocs, setDoc, collection, doc } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 import {
 	PUBLIC_API_KEY,
@@ -22,7 +22,9 @@ const firebaseConfig = {
 };
 
 export const firebaseApp = initializeApp(firebaseConfig);
-export const firestore = getFirestore(firebaseApp);
+export const firestore = initializeFirestore(firebaseApp, {
+	experimentalForceLongPolling: true
+});
 export const firebaseAnalytics = getAnalytics(firebaseApp);
 
 export function getCollection(path: string) {
