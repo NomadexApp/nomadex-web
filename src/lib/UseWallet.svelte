@@ -13,7 +13,7 @@
 		localStorage.setItem('defaultWallet', walletType);
 	});
 
-	const getKibisisClient = async () => {
+	export const getKibisisClient = async () => {
 		let count = 0;
 		while (count++ < 3) {
 			const resp = await kibisis.init({

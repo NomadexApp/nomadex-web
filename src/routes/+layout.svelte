@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Notify from '$lib/Notify.svelte';
 	import Sidebar from '$lib/Sidebar.svelte';
-	import { connectedAccount, isKibisisInstalled, walletConnect } from '$lib/UseWallet.svelte';
+	import { connectedAccount, getKibisisClient, isKibisisInstalled, walletConnect } from '$lib/UseWallet.svelte';
 	import { pageContentRefreshPending } from '$lib/utils';
 	import QRCodeIcon from 'svelte-star/dist/io/IoMdQrScanner.svelte';
 	import '$lib/stores/onchain';
@@ -12,6 +12,11 @@
 	import { arePoolsLoaded, getListOfArc200Tokens } from '$lib/index';
 
 	onMount(() => {
+		try {
+			getKibisisClient();
+		} catch (e) {
+			//
+		}
 		getListOfArc200Tokens();
 	});
 </script>
