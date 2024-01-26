@@ -86,8 +86,10 @@
 								signed.push(...resp);
 								break;
 							}
-						} catch (e) {
-							console.error((<Error>e).message);
+						} catch (e: any) {
+							if (e['code'] !== 4002) {
+								throw e;
+							}
 						}
 					}
 				}
