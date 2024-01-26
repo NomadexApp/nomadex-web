@@ -6,6 +6,8 @@
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { LimitOrders001ClientConnector, LimitOrderType } from '$lib/LimitOrderConnector';
 	import { pageContentRefresh } from '$lib/utils';
+	import { getLastActivePair } from '$lib/config';
+	import { lastActiveLimitOrderPair } from '$lib/stores';
 
 	let limitOrders: {
 		orderId: number;
@@ -114,7 +116,7 @@
 	<div class="flex flex-col justify-center gap-1 pt-6 max-w-[800px] mx-auto">
 		<div class="flex justify-center">
 			<h4 class="text-xl font-bold prose w-full mb-5">Limit Orders</h4>
-			<a href="/limit-orders/create/VOI-VIA" class="btn">Create</a>
+			<a href="/limit-orders/create/{getLastActivePair($lastActiveLimitOrderPair)}" class="btn">Create</a>
 		</div>
 		<div class="w-full flex flex-col pt-4 p-4 bg-base-200 relative">
 			<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">

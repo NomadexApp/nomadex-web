@@ -16,6 +16,7 @@
 	import MdAddCircle from 'svelte-star/dist/md/MdToll.svelte';
 	import IoMdSwap from 'svelte-star/dist/io/IoMdSwap.svelte';
 	import MdLaunch from 'svelte-star/dist/md/MdLaunch.svelte';
+	import { getLastActivePair } from './config';
 
 	let sidebarWidth = 0;
 	let innerWidth = browser ? window.innerWidth : 0;
@@ -34,21 +35,6 @@
 			init = true;
 		});
 	});
-
-	function getLastActivePair(pair: string) {
-		const defaultPair = `VOI-${$knownPools[0].arc200Asset.symbol}`;
-		if (!pair) {
-			return defaultPair;
-		}
-		const pools = pair
-			.split('-')
-			.map((sym) => $knownPools.find((pool) => pool.arc200Asset.symbol === sym))
-			.filter((pool) => pool);
-		if (pools.length) {
-			return pair;
-		}
-		return defaultPair;
-	}
 </script>
 
 <svelte:window bind:scrollY bind:innerWidth />

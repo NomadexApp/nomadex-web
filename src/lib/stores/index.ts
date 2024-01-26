@@ -10,6 +10,7 @@ isDarkTheme.subscribe((isDark) => {
 });
 
 export const lastActiveSwapPair = writable<string>();
+export const lastActiveLimitOrderPair = writable<string>();
 export const lastActiveAnalyticsPair = writable<string>();
 
 lastActiveSwapPair.subscribe((state) => {
@@ -19,6 +20,17 @@ lastActiveSwapPair.subscribe((state) => {
 		const config = localStorage.getItem('LAST_ACTIVE_SWAP_PAIR');
 		if (config) {
 			lastActiveSwapPair.set(config);
+		}
+	}
+});
+
+lastActiveLimitOrderPair.subscribe((state) => {
+	if (state) {
+		localStorage.setItem('LAST_ACTIVE_LIMIT_ORDER_PAIR', state);
+	} else {
+		const config = localStorage.getItem('LAST_ACTIVE_LIMIT_ORDER_PAIR');
+		if (config) {
+			lastActiveLimitOrderPair.set(config);
 		}
 	}
 });
