@@ -16,6 +16,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"@ungap/structured-clone": "^1.2.0",
+		"@walletconnect/client": "^1.8.0",
 		"@walletconnect/types": "^2.11.0",
 		"algosdk": "^2.7.0",
 		"arc200js": "^2.3.2",
