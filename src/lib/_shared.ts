@@ -7,11 +7,12 @@ import type { SendTransactionFrom } from '@algorandfoundation/algokit-utils/type
 import Contract from 'arc200js';
 
 export const nodeClientAllowsCompile = new algosdk.Algodv2('', 'https://testnet-api.voi.nodly.io', '');
-export const nodeClient = new algosdk.Algodv2(
+export const algodClientOpts: [string, string, string] = [
 	'b14d9ca0ec11a5b80d961d1824e9733f5bac9c833a476b078ff01a9413434347',
 	'https://voi-node-api.nomadex.app/',
 	''
-);
+];
+export const nodeClient = new algosdk.Algodv2(...algodClientOpts);
 export const indexerClient = new algosdk.Indexer('', 'https://testnet-idx.voi.nodly.io', '');
 
 export const viaAppId = 6779767;
@@ -89,8 +90,8 @@ export const getClient = (appId: number, signer = <SendTransactionFrom>getTransa
 			id: appId,
 			...(signer
 				? {
-						sender: signer,
-				  }
+					sender: signer,
+				}
 				: {}),
 		},
 		nodeClient

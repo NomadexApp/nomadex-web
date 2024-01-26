@@ -1,32 +1,55 @@
 <script lang="ts" context="module">
 	import { WalletConnector } from '../../packages/wallet-connect';
 	import { get, writable } from 'svelte/store';
+	import { kibisis } from '@txnlab/use-wallet';
 
 	export const deflyWallet = new WalletConnector({});
 	export const connectedAccount = writable<string>();
 	export const connectedWallet = writable<'wc' | 'kibisis'>();
+	export const isKibisisInstalled = writable(false);
 
 	connectedWallet.subscribe((walletType) => {
 		if (!browser || !walletType) return;
 		localStorage.setItem('defaultWallet', walletType);
 	});
 
+	const getKibisisClient = async () => {
+		let count = 0;
+		while (count++ < 3) {
+			const resp = await kibisis.init({
+				algodOptions: algodClientOpts,
+				network: 'testnet',
+			});
+			if (resp) {
+				isKibisisInstalled.set(true);
+				return resp;
+			}
+		}
+		throw Error('failed to get kibisis client');
+	};
+
 	export async function walletDisconnect() {
-		await deflyWallet.disconnect();
+		if (get(connectedWallet) === 'kibisis') {
+			const client = await getKibisisClient();
+			await client?.disconnect();
+		} else {
+			await deflyWallet.disconnect();
+		}
 		connectedAccount.set(<any>undefined);
 		connectedWallet.set(<any>undefined);
 		localStorage.removeItem('defaultWallet');
 	}
 
-	export async function walletConnect(kibisis = browser ? localStorage.getItem('defaultWallet') === 'kibisis' : false) {
-		if (kibisis) {
-			if (!window['algorand']?.wallets?.[0]) return;
-			const { accounts } = await window['algorand'].enable({
-				id: 'kibisis',
-				genesisHash: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=',
+	export async function walletConnect(
+		isKibisis = browser ? localStorage.getItem('defaultWallet') === 'kibisis' : false
+	) {
+		if (isKibisis) {
+			const client = await getKibisisClient();
+			const wallet = await client?.connect(() => {
+				connectedAccount.set('');
 			});
-			if (accounts?.[0]?.address) {
-				connectedAccount.set(accounts?.[0].address);
+			if (wallet?.accounts?.[0]?.address) {
+				connectedAccount.set(wallet?.accounts?.[0]?.address);
 				connectedWallet.set('kibisis');
 			}
 		} else {
@@ -42,16 +65,31 @@
 		try {
 			if (kibisis) {
 				const signed: Uint8Array[] = [];
+				const client = await getKibisisClient();
 				for (const group of txnGroups) {
 					const txns: { txn: string }[] = [];
 					for (const txn of group) {
 						txns.push({ txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64') });
 					}
-					await window['algorand'].enable();
-					const { stxns } = await window['algorand'].signTxns({
-						txns: txns,
-					});
-					signed.push(...stxns.map((stxn) => Uint8Array.from(Buffer.from(stxn, 'base64'))));
+
+					let count = 0;
+					while (count++ < 3) {
+						try {
+							const resp = await client?.signTransactions(
+								[get(connectedAccount)],
+								group.map((txn) => txn.toByte()),
+								group.map((_, i) => i),
+								true
+							);
+
+							if (resp) {
+								signed.push(...resp);
+								break;
+							}
+						} catch (e) {
+							console.error((<Error>e).message);
+						}
+					}
 				}
 
 				return signed;
@@ -124,8 +162,12 @@
 	import { browser } from '$app/environment';
 	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
 	import { isDarkTheme } from './stores';
+	import { algodClientOpts } from './_shared';
 
 	onMount(async () => {
+		try {
+			await getKibisisClient(); // trigger check if kibisis is installed
+		} catch (e) {}
 		if (!$connectedAccount) {
 			const defaultWallet = localStorage.getItem('defaultWallet');
 			if (defaultWallet) {
