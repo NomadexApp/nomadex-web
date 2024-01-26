@@ -9,7 +9,7 @@
 	import MdMenu from 'svelte-star/dist/md/MdMenu.svelte';
 	import { isDarkTheme, lastActiveAnalyticsPair, lastActiveSwapPair } from './stores';
 	import { onMount } from 'svelte';
-	import { knownPools } from '$lib';
+	import { knownPools, knownTokens } from '$lib';
 	import { pageContentRefresh } from './utils';
 	import { page } from '$app/stores';
 	import MdToll from 'svelte-star/dist/md/MdToll.svelte';
@@ -34,6 +34,21 @@
 			init = true;
 		});
 	});
+
+	function getLastActivePair(pair: string) {
+		const defaultPair = `VOI-${$knownPools[0].arc200Asset.symbol}`;
+		if (!pair) {
+			return defaultPair;
+		}
+		const pools = pair
+			.split('-')
+			.map((sym) => $knownPools.find((pool) => pool.arc200Asset.symbol === sym))
+			.filter((pool) => pool);
+		if (pools.length) {
+			return pair;
+		}
+		return defaultPair;
+	}
 </script>
 
 <svelte:window bind:scrollY bind:innerWidth />
@@ -76,7 +91,7 @@
 				<li class="pl-0" class:is-open={$page.url.pathname.startsWith('/swap/')}>
 					<a
 						class="flex justify-between items-center"
-						href="/swap/{$lastActiveSwapPair ?? `VOI-${$knownPools[0].arc200Asset.symbol}`}"
+						href="/swap/{getLastActivePair($lastActiveSwapPair)}"
 						tabindex="0"
 					>
 						<span class="flex pt-[1px] justify-start items-end w-full">SWAP</span>
@@ -103,11 +118,7 @@
 			</li>
 			{#if $knownPools.length}
 				<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/analytics/')}>
-					<a
-						class="flex justify-between"
-						href="/analytics/{$lastActiveAnalyticsPair ?? `VOI-${$knownPools[0].arc200Asset.symbol}`}"
-						tabindex="0"
-					>
+					<a class="flex justify-between" href="/analytics/{getLastActivePair($lastActiveAnalyticsPair)}" tabindex="0">
 						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">ANALYTICS</span>
 						<span class="h-5 w-5"><AnalyticsIcon /></span>
 					</a>
