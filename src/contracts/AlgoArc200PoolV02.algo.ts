@@ -382,11 +382,14 @@ export class AlgoArc200PoolV02 extends Arc200Token {
 		const balanceX = this.getTokenXBalance();
 
 		assert(balanceX > <uint256>0);
-		assert(balanceY > <uint256>0, balanceY > minAmountY);
+		assert(balanceY > <uint256>0);
+		assert(balanceY > minAmountY);
 
 		const amountOut = this.computeOutTokens(amountX, balanceX - amountX, balanceY, this.fee.value.swapFee);
 
-		assert(amountOut > <uint256>0, amountOut >= minAmountY, amountOut < balanceY);
+		assert(amountOut > <uint256>0);
+		assert(amountOut >= minAmountY);
+		assert(amountOut < balanceY);
 
 		const platformFee = this.computePlatformFee(amountX, balanceX - amountX, balanceY);
 
@@ -422,12 +425,15 @@ export class AlgoArc200PoolV02 extends Arc200Token {
 		const balanceY = this.getTokenYBalance();
 		const balanceX = this.getTokenXBalance();
 
-		assert(balanceX > <uint256>0, balanceX > minAmountX);
+		assert(balanceX > <uint256>0);
+		assert(balanceX > minAmountX);
 		assert(balanceY > <uint256>0);
 
 		const amountOut = this.computeOutTokens(amountY, balanceY - amountY, balanceX, this.fee.value.swapFee);
 
-		assert(amountOut > <uint256>0, amountOut >= minAmountX, amountOut < balanceX);
+		assert(amountOut > <uint256>0);
+		assert(amountOut >= minAmountX);
+		assert(amountOut < balanceX);
 
 		const platformFee = this.computePlatformFee(amountY, balanceY - amountY, balanceX);
 
