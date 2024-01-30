@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/UseWallet.svelte';
-	import { nodeClient } from '$lib/_shared';
+	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { LimitOrders001Client } from '../../../contracts/clients/LimitOrders001Client';
 	import { onMount } from 'svelte';
@@ -42,9 +42,8 @@
 				id: appId,
 				sender: signer,
 			},
-			nodeClient
+			nodeClientAllowsCompile
 		);
-		console.log(client);
 
 		if (appId) {
 			console.log('updating...');
@@ -67,7 +66,7 @@
 					id: appId,
 					sender: signer,
 				},
-				nodeClient
+				nodeClientAllowsCompile
 			);
 
 			await newClient.appClient.fundAppAccount(new AlgoAmount({ algos: 0.2 }));
@@ -150,6 +149,10 @@
 					<button class="btn btn-primary btn-sm" on:click={deployLimitOrders}>DEPLOY</button>
 				</div>
 			{:else}
+				<br />
+				<div class="w-full max-w-[610px] flex flex-col justify-center">
+					<button class="btn btn-primary btn-sm" on:click={deployLimitOrders}>Update Contract</button>
+				</div>
 				<br />
 				{#if appId !== 0 && appId > 100}
 					<div class="w-full max-w-[610px] flex flex-col justify-center">
