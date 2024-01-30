@@ -92,36 +92,60 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 				arc200Amount: arc200Amount,
 			});
 
+			const contractBalance = await Arc200Interface.arc200_balanceOf(
+				arc200Id,
+				algosdk.getApplicationAddress(this.appId),
+			);
+
+			const optinTxns: algosdk.Transaction[] = [];
+			if (contractBalance < 1n) {
+				const txns = await Arc200Interface.arc200_transfer(
+					arc200Id,
+					this.signer.addr,
+					algosdk.getApplicationAddress(this.appId),
+					1n
+				);
+				optinTxns.push(...txns);
+			}
+
 			const arc200ApproveTxns = await Arc200Interface.arc200_approve(
 				arc200Id,
 				this.signer.addr,
 				algosdk.getApplicationAddress(this.appId),
-				arc200Amount + arc200Amount
+				arc200Amount
 			);
 
 			const resources = await this.getUnnamedResourcesAccessedFromMethod('createAlgoBuyOrder', args());
 
-			const atc = await (
-				await this.compose()
-			)
-				.createAlgoBuyOrder(args(), {
-					accounts: [...resources.accounts],
-					boxes: [
-						...resources.boxes,
-						{ appIndex: this.appId, name: algosdk.encodeUint64(orderId) },
-						{ appIndex: this.appId, name: algosdk.encodeUint64(orderId + 1) },
-						{
-							appId: arc200Id,
-							name: getBoxName(algosdk.getApplicationAddress(this.appId)),
-						},
-					],
-					apps: [...resources.apps],
-				})
-				.atc();
+			const composer = await this.compose();
+
+			for (const txn of [...optinTxns, ...arc200ApproveTxns]) {
+				txn.group = undefined;
+				composer.addTransaction({
+					txn: txn,
+					signer: this.signer.signer
+				});
+			}
+
+			composer.createAlgoBuyOrder(args(), {
+				accounts: [...resources.accounts],
+				boxes: [
+					...resources.boxes,
+					{ appIndex: this.appId, name: algosdk.encodeUint64(orderId) },
+					{ appIndex: this.appId, name: algosdk.encodeUint64(orderId + 1) },
+					{
+						appId: arc200Id,
+						name: getBoxName(algosdk.getApplicationAddress(this.appId)),
+					},
+				],
+				apps: [...resources.apps],
+			});
+
+			const atc = await composer.atc();
 
 			const txns = atc.buildGroup().map((txn) => txn.txn);
 
-			await signAndSendTransections(nodeClient, [arc200ApproveTxns, txns]);
+			await signAndSendTransections(nodeClient, [txns]);
 		}
 	}
 
