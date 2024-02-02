@@ -7,7 +7,7 @@
 		"fs": false
 	},
 	"devDependencies": {
-		"@algorandfoundation/algokit-client-generator": "^2.5.0",
+		"@algorandfoundation/algokit-client-generator": "^2.6.0",
 		"@algorandfoundation/algokit-utils": "^5.3.2",
 		"@algorandfoundation/tealscript": "0.80.1",
 		"@blockshake/defly-connect": "^1.1.6",

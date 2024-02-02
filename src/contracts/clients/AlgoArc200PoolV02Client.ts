@@ -24,7 +24,7 @@ import type {
   ApplicationClient,
 } from '@algorandfoundation/algokit-utils/types/app-client'
 import type { AppSpec } from '@algorandfoundation/algokit-utils/types/app-spec'
-import type { SendTransactionResult, TransactionToSign, SendTransactionFrom } from '@algorandfoundation/algokit-utils/types/transaction'
+import type { SendTransactionResult, TransactionToSign, SendTransactionFrom, SendTransactionParams } from '@algorandfoundation/algokit-utils/types/transaction'
 import type { ABIResult, TransactionWithSigner } from 'algosdk'
 import { Algodv2, OnApplicationComplete, Transaction, AtomicTransactionComposer, modelsv2 } from 'algosdk'
 export const APP_SPEC: AppSpec = {
@@ -903,7 +903,7 @@ export type OnCompleteUpdApp =  { onCompleteAction: 'update_application' | OnApp
  */
 export type IntegerState = {
   /**
-   * Gets the state value as a BigInt 
+   * Gets the state value as a BigInt.
    */
   asBigInt(): bigint
   /**
@@ -927,6 +927,11 @@ export type BinaryState = {
 
 export type AppCreateCallTransactionResult = AppCallTransactionResult & Partial<AppCompilationResult> & AppReference
 export type AppUpdateCallTransactionResult = AppCallTransactionResult & Partial<AppCompilationResult>
+
+export type AppClientComposeCallCoreParams = Omit<AppClientCallCoreParams, 'sendParams'> & {
+  sendParams?: Omit<SendTransactionParams, 'skipSending' | 'atc' | 'skipWaiting' | 'maxRoundsToWaitForConfirmation' | 'populateAppCallResources'>
+}
+export type AppClientComposeExecuteParams = Pick<SendTransactionParams, 'skipWaiting' | 'maxRoundsToWaitForConfirmation' | 'populateAppCallResources' | 'suppressLog'>
 
 /**
  * Defines the types of available calls and state of the AlgoArc200PoolV02 smart contract.
@@ -2321,122 +2326,122 @@ export class AlgoArc200PoolV02Client {
     let promiseChain:Promise<unknown> = Promise.resolve()
     const resultMappers: Array<undefined | ((x: any) => any)> = []
     return {
-      setManager(args: MethodArgs<'setManager(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      setManager(args: MethodArgs<'setManager(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.setManager(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      initialize(args: MethodArgs<'initialize(byte[32],byte[8],uint8,uint256,address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      initialize(args: MethodArgs<'initialize(byte[32],byte[8],uint8,uint256,address)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.initialize(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Name(args: MethodArgs<'arc200_name()byte[32]'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Name(args: MethodArgs<'arc200_name()byte[32]'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Name(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Symbol(args: MethodArgs<'arc200_symbol()byte[8]'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Symbol(args: MethodArgs<'arc200_symbol()byte[8]'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Symbol(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Decimals(args: MethodArgs<'arc200_decimals()uint8'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Decimals(args: MethodArgs<'arc200_decimals()uint8'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Decimals(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200TotalSupply(args: MethodArgs<'arc200_totalSupply()uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200TotalSupply(args: MethodArgs<'arc200_totalSupply()uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200TotalSupply(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200BalanceOf(args: MethodArgs<'arc200_balanceOf(address)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200BalanceOf(args: MethodArgs<'arc200_balanceOf(address)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200BalanceOf(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      hasBalance(args: MethodArgs<'hasBalance(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      hasBalance(args: MethodArgs<'hasBalance(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.hasBalance(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      hasAllowance(args: MethodArgs<'hasAllowance(address,address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      hasAllowance(args: MethodArgs<'hasAllowance(address,address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.hasAllowance(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Allowance(args: MethodArgs<'arc200_allowance(address,address)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Allowance(args: MethodArgs<'arc200_allowance(address,address)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Allowance(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Transfer(args: MethodArgs<'arc200_transfer(address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Transfer(args: MethodArgs<'arc200_transfer(address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Transfer(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Approve(args: MethodArgs<'arc200_approve(address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Approve(args: MethodArgs<'arc200_approve(address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Approve(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200TransferFrom(args: MethodArgs<'arc200_transferFrom(address,address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200TransferFrom(args: MethodArgs<'arc200_transferFrom(address,address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200TransferFrom(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      poolInitialize(args: MethodArgs<'poolInitialize(byte[32],byte[8],application)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      poolInitialize(args: MethodArgs<'poolInitialize(byte[32],byte[8],application)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.poolInitialize(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      setFeeController(args: MethodArgs<'setFeeController(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      setFeeController(args: MethodArgs<'setFeeController(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.setFeeController(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      setFees(args: MethodArgs<'setFees(uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      setFees(args: MethodArgs<'setFees(uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.setFees(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      setPlatformFees(args: MethodArgs<'setPlatformFees(uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      setPlatformFees(args: MethodArgs<'setPlatformFees(uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.setPlatformFees(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      registerOnline(args: MethodArgs<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      registerOnline(args: MethodArgs<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.registerOnline(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      registerOffline(args: MethodArgs<'registerOffline()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      registerOffline(args: MethodArgs<'registerOffline()void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.registerOffline(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      getRatio(args: MethodArgs<'getRatio()uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      getRatio(args: MethodArgs<'getRatio()uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.getRatio(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      addLiquidity(args: MethodArgs<'addLiquidity(pay,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      addLiquidity(args: MethodArgs<'addLiquidity(pay,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.addLiquidity(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      removeLiquidity(args: MethodArgs<'removeLiquidity(uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      removeLiquidity(args: MethodArgs<'removeLiquidity(uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.removeLiquidity(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      swapXtoY(args: MethodArgs<'swapXtoY(pay,uint256)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      swapXtoY(args: MethodArgs<'swapXtoY(pay,uint256)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.swapXtoY(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      swapYtoX(args: MethodArgs<'swapYtoX(uint256,uint256)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      swapYtoX(args: MethodArgs<'swapYtoX(uint256,uint256)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.swapYtoX(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
@@ -2444,7 +2449,7 @@ export class AlgoArc200PoolV02Client {
       get update() {
         const $this = this
         return {
-          updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientCallCoreParams & AppClientCompilationParams) {
+          updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientComposeCallCoreParams & AppClientCompilationParams) {
             promiseChain = promiseChain.then(() => client.update.updateApplication(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
             resultMappers.push(undefined)
             return $this
@@ -2454,14 +2459,14 @@ export class AlgoArc200PoolV02Client {
       get delete() {
         const $this = this
         return {
-          deleteApplication(args: MethodArgs<'deleteApplication()void'>, params?: AppClientCallCoreParams) {
+          deleteApplication(args: MethodArgs<'deleteApplication()void'>, params?: AppClientComposeCallCoreParams) {
             promiseChain = promiseChain.then(() => client.delete.deleteApplication(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
             resultMappers.push(undefined)
             return $this
           },
         }
       },
-      clearState(args?: BareCallArgs & AppClientCallCoreParams & CoreAppCallArgs) {
+      clearState(args?: BareCallArgs & AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.clearState({...args, sendParams: {...args?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
@@ -2482,9 +2487,9 @@ export class AlgoArc200PoolV02Client {
           returns: result.methodResults?.map((val, i) => resultMappers[i] !== undefined ? resultMappers[i]!(val.returnValue) : val.returnValue)
         }
       },
-      async execute() {
+      async execute(sendParams?: AppClientComposeExecuteParams) {
         await promiseChain
-        const result = await algokit.sendAtomicTransactionComposer({ atc, sendParams: {} }, client.algod)
+        const result = await algokit.sendAtomicTransactionComposer({ atc, sendParams }, client.algod)
         return {
           ...result,
           returns: result.returns?.map((val, i) => resultMappers[i] !== undefined ? resultMappers[i]!(val.returnValue) : val.returnValue)
@@ -2501,7 +2506,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  setManager(args: MethodArgs<'setManager(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'setManager(address)bool'>]>
+  setManager(args: MethodArgs<'setManager(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'setManager(address)bool'>]>
 
   /**
    * Calls the initialize(byte[32],byte[8],uint8,uint256,address)void ABI method.
@@ -2512,7 +2517,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  initialize(args: MethodArgs<'initialize(byte[32],byte[8],uint8,uint256,address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'initialize(byte[32],byte[8],uint8,uint256,address)void'>]>
+  initialize(args: MethodArgs<'initialize(byte[32],byte[8],uint8,uint256,address)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'initialize(byte[32],byte[8],uint8,uint256,address)void'>]>
 
   /**
    * Calls the arc200_name()byte[32] ABI method.
@@ -2523,7 +2528,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Name(args: MethodArgs<'arc200_name()byte[32]'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_name()byte[32]'>]>
+  arc200Name(args: MethodArgs<'arc200_name()byte[32]'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_name()byte[32]'>]>
 
   /**
    * Calls the arc200_symbol()byte[8] ABI method.
@@ -2534,7 +2539,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Symbol(args: MethodArgs<'arc200_symbol()byte[8]'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_symbol()byte[8]'>]>
+  arc200Symbol(args: MethodArgs<'arc200_symbol()byte[8]'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_symbol()byte[8]'>]>
 
   /**
    * Calls the arc200_decimals()uint8 ABI method.
@@ -2545,7 +2550,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Decimals(args: MethodArgs<'arc200_decimals()uint8'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_decimals()uint8'>]>
+  arc200Decimals(args: MethodArgs<'arc200_decimals()uint8'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_decimals()uint8'>]>
 
   /**
    * Calls the arc200_totalSupply()uint256 ABI method.
@@ -2556,7 +2561,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200TotalSupply(args: MethodArgs<'arc200_totalSupply()uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_totalSupply()uint256'>]>
+  arc200TotalSupply(args: MethodArgs<'arc200_totalSupply()uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_totalSupply()uint256'>]>
 
   /**
    * Calls the arc200_balanceOf(address)uint256 ABI method.
@@ -2567,7 +2572,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200BalanceOf(args: MethodArgs<'arc200_balanceOf(address)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_balanceOf(address)uint256'>]>
+  arc200BalanceOf(args: MethodArgs<'arc200_balanceOf(address)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_balanceOf(address)uint256'>]>
 
   /**
    * Calls the hasBalance(address)bool ABI method.
@@ -2578,7 +2583,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  hasBalance(args: MethodArgs<'hasBalance(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'hasBalance(address)bool'>]>
+  hasBalance(args: MethodArgs<'hasBalance(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'hasBalance(address)bool'>]>
 
   /**
    * Calls the hasAllowance(address,address)bool ABI method.
@@ -2589,7 +2594,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  hasAllowance(args: MethodArgs<'hasAllowance(address,address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'hasAllowance(address,address)bool'>]>
+  hasAllowance(args: MethodArgs<'hasAllowance(address,address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'hasAllowance(address,address)bool'>]>
 
   /**
    * Calls the arc200_allowance(address,address)uint256 ABI method.
@@ -2600,7 +2605,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Allowance(args: MethodArgs<'arc200_allowance(address,address)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_allowance(address,address)uint256'>]>
+  arc200Allowance(args: MethodArgs<'arc200_allowance(address,address)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_allowance(address,address)uint256'>]>
 
   /**
    * Calls the arc200_transfer(address,uint256)bool ABI method.
@@ -2611,7 +2616,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Transfer(args: MethodArgs<'arc200_transfer(address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_transfer(address,uint256)bool'>]>
+  arc200Transfer(args: MethodArgs<'arc200_transfer(address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_transfer(address,uint256)bool'>]>
 
   /**
    * Calls the arc200_approve(address,uint256)bool ABI method.
@@ -2622,7 +2627,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Approve(args: MethodArgs<'arc200_approve(address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_approve(address,uint256)bool'>]>
+  arc200Approve(args: MethodArgs<'arc200_approve(address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_approve(address,uint256)bool'>]>
 
   /**
    * Calls the arc200_transferFrom(address,address,uint256)bool ABI method.
@@ -2633,7 +2638,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200TransferFrom(args: MethodArgs<'arc200_transferFrom(address,address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_transferFrom(address,address,uint256)bool'>]>
+  arc200TransferFrom(args: MethodArgs<'arc200_transferFrom(address,address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'arc200_transferFrom(address,address,uint256)bool'>]>
 
   /**
    * Calls the poolInitialize(byte[32],byte[8],application)void ABI method.
@@ -2644,7 +2649,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  poolInitialize(args: MethodArgs<'poolInitialize(byte[32],byte[8],application)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'poolInitialize(byte[32],byte[8],application)void'>]>
+  poolInitialize(args: MethodArgs<'poolInitialize(byte[32],byte[8],application)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'poolInitialize(byte[32],byte[8],application)void'>]>
 
   /**
    * Calls the setFeeController(address)bool ABI method.
@@ -2655,7 +2660,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  setFeeController(args: MethodArgs<'setFeeController(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'setFeeController(address)bool'>]>
+  setFeeController(args: MethodArgs<'setFeeController(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'setFeeController(address)bool'>]>
 
   /**
    * Calls the setFees(uint256)bool ABI method.
@@ -2666,7 +2671,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  setFees(args: MethodArgs<'setFees(uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'setFees(uint256)bool'>]>
+  setFees(args: MethodArgs<'setFees(uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'setFees(uint256)bool'>]>
 
   /**
    * Calls the setPlatformFees(uint256)bool ABI method.
@@ -2677,7 +2682,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  setPlatformFees(args: MethodArgs<'setPlatformFees(uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'setPlatformFees(uint256)bool'>]>
+  setPlatformFees(args: MethodArgs<'setPlatformFees(uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'setPlatformFees(uint256)bool'>]>
 
   /**
    * Calls the registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void ABI method.
@@ -2688,7 +2693,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  registerOnline(args: MethodArgs<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>]>
+  registerOnline(args: MethodArgs<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>]>
 
   /**
    * Calls the registerOffline()void ABI method.
@@ -2699,7 +2704,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  registerOffline(args: MethodArgs<'registerOffline()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'registerOffline()void'>]>
+  registerOffline(args: MethodArgs<'registerOffline()void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'registerOffline()void'>]>
 
   /**
    * Calls the getRatio()uint256 ABI method.
@@ -2708,7 +2713,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  getRatio(args: MethodArgs<'getRatio()uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'getRatio()uint256'>]>
+  getRatio(args: MethodArgs<'getRatio()uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'getRatio()uint256'>]>
 
   /**
    * Calls the addLiquidity(pay,uint256)bool ABI method.
@@ -2719,7 +2724,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  addLiquidity(args: MethodArgs<'addLiquidity(pay,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'addLiquidity(pay,uint256)bool'>]>
+  addLiquidity(args: MethodArgs<'addLiquidity(pay,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'addLiquidity(pay,uint256)bool'>]>
 
   /**
    * Calls the removeLiquidity(uint256)bool ABI method.
@@ -2730,7 +2735,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  removeLiquidity(args: MethodArgs<'removeLiquidity(uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'removeLiquidity(uint256)bool'>]>
+  removeLiquidity(args: MethodArgs<'removeLiquidity(uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'removeLiquidity(uint256)bool'>]>
 
   /**
    * Calls the swapXtoY(pay,uint256)uint256 ABI method.
@@ -2741,7 +2746,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  swapXtoY(args: MethodArgs<'swapXtoY(pay,uint256)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'swapXtoY(pay,uint256)uint256'>]>
+  swapXtoY(args: MethodArgs<'swapXtoY(pay,uint256)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'swapXtoY(pay,uint256)uint256'>]>
 
   /**
    * Calls the swapYtoX(uint256,uint256)uint256 ABI method.
@@ -2752,7 +2757,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  swapYtoX(args: MethodArgs<'swapYtoX(uint256,uint256)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'swapYtoX(uint256,uint256)uint256'>]>
+  swapYtoX(args: MethodArgs<'swapYtoX(uint256,uint256)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'swapYtoX(uint256,uint256)uint256'>]>
 
   /**
    * Gets available update methods
@@ -2765,7 +2770,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
      * @param params Any additional parameters for the call
      * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
      */
-    updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientCallCoreParams & AppClientCompilationParams): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'updateApplication()void'>]>
+    updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientComposeCallCoreParams & AppClientCompilationParams): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'updateApplication()void'>]>
   }
 
   /**
@@ -2779,7 +2784,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
      * @param params Any additional parameters for the call
      * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
      */
-    deleteApplication(args: MethodArgs<'deleteApplication()void'>, params?: AppClientCallCoreParams): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'deleteApplication()void'>]>
+    deleteApplication(args: MethodArgs<'deleteApplication()void'>, params?: AppClientComposeCallCoreParams): AlgoArc200PoolV02Composer<[...TReturns, MethodReturn<'deleteApplication()void'>]>
   }
 
   /**
@@ -2788,7 +2793,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
    * @param args The arguments for the bare call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  clearState(args?: BareCallArgs & AppClientCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, undefined]>
+  clearState(args?: BareCallArgs & AppClientComposeCallCoreParams & CoreAppCallArgs): AlgoArc200PoolV02Composer<[...TReturns, undefined]>
 
   /**
    * Adds a transaction to the composer
@@ -2808,7 +2813,7 @@ export type AlgoArc200PoolV02Composer<TReturns extends [...any[]] = []> = {
   /**
    * Executes the transaction group and returns the results
    */
-  execute(): Promise<AlgoArc200PoolV02ComposerResults<TReturns>>
+  execute(sendParams?: AppClientComposeExecuteParams): Promise<AlgoArc200PoolV02ComposerResults<TReturns>>
 }
 export type SimulateOptions = Omit<ConstructorParameters<typeof modelsv2.SimulateRequest>[0], 'txnGroups'>
 export type AlgoArc200PoolV02ComposerSimulateResult<TReturns extends [...any[]]> = {

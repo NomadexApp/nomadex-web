@@ -24,7 +24,7 @@ import type {
   ApplicationClient,
 } from '@algorandfoundation/algokit-utils/types/app-client'
 import type { AppSpec } from '@algorandfoundation/algokit-utils/types/app-spec'
-import type { SendTransactionResult, TransactionToSign, SendTransactionFrom } from '@algorandfoundation/algokit-utils/types/transaction'
+import type { SendTransactionResult, TransactionToSign, SendTransactionFrom, SendTransactionParams } from '@algorandfoundation/algokit-utils/types/transaction'
 import type { ABIResult, TransactionWithSigner } from 'algosdk'
 import { Algodv2, OnApplicationComplete, Transaction, AtomicTransactionComposer, modelsv2 } from 'algosdk'
 export const APP_SPEC: AppSpec = {
@@ -589,7 +589,7 @@ export type OnCompleteUpdApp =  { onCompleteAction: 'update_application' | OnApp
  */
 export type IntegerState = {
   /**
-   * Gets the state value as a BigInt 
+   * Gets the state value as a BigInt.
    */
   asBigInt(): bigint
   /**
@@ -613,6 +613,11 @@ export type BinaryState = {
 
 export type AppCreateCallTransactionResult = AppCallTransactionResult & Partial<AppCompilationResult> & AppReference
 export type AppUpdateCallTransactionResult = AppCallTransactionResult & Partial<AppCompilationResult>
+
+export type AppClientComposeCallCoreParams = Omit<AppClientCallCoreParams, 'sendParams'> & {
+  sendParams?: Omit<SendTransactionParams, 'skipSending' | 'atc' | 'skipWaiting' | 'maxRoundsToWaitForConfirmation' | 'populateAppCallResources'>
+}
+export type AppClientComposeExecuteParams = Pick<SendTransactionParams, 'skipWaiting' | 'maxRoundsToWaitForConfirmation' | 'populateAppCallResources' | 'suppressLog'>
 
 /**
  * Defines the types of available calls and state of the LimitOrders001 smart contract.
@@ -1275,52 +1280,52 @@ export class LimitOrders001Client {
     let promiseChain:Promise<unknown> = Promise.resolve()
     const resultMappers: Array<undefined | ((x: any) => any)> = []
     return {
-      setFee(args: MethodArgs<'setFee(uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      setFee(args: MethodArgs<'setFee(uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.setFee(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      setOwner(args: MethodArgs<'setOwner(address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      setOwner(args: MethodArgs<'setOwner(address)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.setOwner(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      collectFee(args: MethodArgs<'collectFee(uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      collectFee(args: MethodArgs<'collectFee(uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.collectFee(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      createAlgoSellOrder(args: MethodArgs<'createAlgoSellOrder(pay,application,uint256)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      createAlgoSellOrder(args: MethodArgs<'createAlgoSellOrder(pay,application,uint256)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.createAlgoSellOrder(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      createAlgoBuyOrder(args: MethodArgs<'createAlgoBuyOrder(application,uint256,uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      createAlgoBuyOrder(args: MethodArgs<'createAlgoBuyOrder(application,uint256,uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.createAlgoBuyOrder(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      fillAlgoToArc200Order(args: MethodArgs<'fillAlgoToArc200Order(uint64,uint256)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      fillAlgoToArc200Order(args: MethodArgs<'fillAlgoToArc200Order(uint64,uint256)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.fillAlgoToArc200Order(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      fillArc200ToAlgoOrder(args: MethodArgs<'fillArc200ToAlgoOrder(uint64,pay)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      fillArc200ToAlgoOrder(args: MethodArgs<'fillArc200ToAlgoOrder(uint64,pay)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.fillArc200ToAlgoOrder(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      cancelOrder(args: MethodArgs<'cancelOrder(uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      cancelOrder(args: MethodArgs<'cancelOrder(uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.cancelOrder(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      registerOnline(args: MethodArgs<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      registerOnline(args: MethodArgs<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.registerOnline(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      registerOffline(args: MethodArgs<'registerOffline()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      registerOffline(args: MethodArgs<'registerOffline()void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.registerOffline(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
@@ -1328,14 +1333,14 @@ export class LimitOrders001Client {
       get update() {
         const $this = this
         return {
-          updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientCallCoreParams & AppClientCompilationParams) {
+          updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientComposeCallCoreParams & AppClientCompilationParams) {
             promiseChain = promiseChain.then(() => client.update.updateApplication(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
             resultMappers.push(undefined)
             return $this
           },
         }
       },
-      clearState(args?: BareCallArgs & AppClientCallCoreParams & CoreAppCallArgs) {
+      clearState(args?: BareCallArgs & AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.clearState({...args, sendParams: {...args?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
@@ -1356,9 +1361,9 @@ export class LimitOrders001Client {
           returns: result.methodResults?.map((val, i) => resultMappers[i] !== undefined ? resultMappers[i]!(val.returnValue) : val.returnValue)
         }
       },
-      async execute() {
+      async execute(sendParams?: AppClientComposeExecuteParams) {
         await promiseChain
-        const result = await algokit.sendAtomicTransactionComposer({ atc, sendParams: {} }, client.algod)
+        const result = await algokit.sendAtomicTransactionComposer({ atc, sendParams }, client.algod)
         return {
           ...result,
           returns: result.returns?.map((val, i) => resultMappers[i] !== undefined ? resultMappers[i]!(val.returnValue) : val.returnValue)
@@ -1375,7 +1380,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  setFee(args: MethodArgs<'setFee(uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'setFee(uint64)void'>]>
+  setFee(args: MethodArgs<'setFee(uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'setFee(uint64)void'>]>
 
   /**
    * Calls the setOwner(address)void ABI method.
@@ -1384,7 +1389,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  setOwner(args: MethodArgs<'setOwner(address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'setOwner(address)void'>]>
+  setOwner(args: MethodArgs<'setOwner(address)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'setOwner(address)void'>]>
 
   /**
    * Calls the collectFee(uint64)void ABI method.
@@ -1393,7 +1398,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  collectFee(args: MethodArgs<'collectFee(uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'collectFee(uint64)void'>]>
+  collectFee(args: MethodArgs<'collectFee(uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'collectFee(uint64)void'>]>
 
   /**
    * Calls the createAlgoSellOrder(pay,application,uint256)void ABI method.
@@ -1402,7 +1407,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  createAlgoSellOrder(args: MethodArgs<'createAlgoSellOrder(pay,application,uint256)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'createAlgoSellOrder(pay,application,uint256)void'>]>
+  createAlgoSellOrder(args: MethodArgs<'createAlgoSellOrder(pay,application,uint256)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'createAlgoSellOrder(pay,application,uint256)void'>]>
 
   /**
    * Calls the createAlgoBuyOrder(application,uint256,uint64)void ABI method.
@@ -1411,7 +1416,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  createAlgoBuyOrder(args: MethodArgs<'createAlgoBuyOrder(application,uint256,uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'createAlgoBuyOrder(application,uint256,uint64)void'>]>
+  createAlgoBuyOrder(args: MethodArgs<'createAlgoBuyOrder(application,uint256,uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'createAlgoBuyOrder(application,uint256,uint64)void'>]>
 
   /**
    * Calls the fillAlgoToArc200Order(uint64,uint256)void ABI method.
@@ -1420,7 +1425,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  fillAlgoToArc200Order(args: MethodArgs<'fillAlgoToArc200Order(uint64,uint256)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'fillAlgoToArc200Order(uint64,uint256)void'>]>
+  fillAlgoToArc200Order(args: MethodArgs<'fillAlgoToArc200Order(uint64,uint256)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'fillAlgoToArc200Order(uint64,uint256)void'>]>
 
   /**
    * Calls the fillArc200ToAlgoOrder(uint64,pay)void ABI method.
@@ -1429,7 +1434,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  fillArc200ToAlgoOrder(args: MethodArgs<'fillArc200ToAlgoOrder(uint64,pay)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'fillArc200ToAlgoOrder(uint64,pay)void'>]>
+  fillArc200ToAlgoOrder(args: MethodArgs<'fillArc200ToAlgoOrder(uint64,pay)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'fillArc200ToAlgoOrder(uint64,pay)void'>]>
 
   /**
    * Calls the cancelOrder(uint64)void ABI method.
@@ -1438,7 +1443,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  cancelOrder(args: MethodArgs<'cancelOrder(uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'cancelOrder(uint64)void'>]>
+  cancelOrder(args: MethodArgs<'cancelOrder(uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'cancelOrder(uint64)void'>]>
 
   /**
    * Calls the registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void ABI method.
@@ -1447,7 +1452,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  registerOnline(args: MethodArgs<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>]>
+  registerOnline(args: MethodArgs<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void'>]>
 
   /**
    * Calls the registerOffline()void ABI method.
@@ -1456,7 +1461,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  registerOffline(args: MethodArgs<'registerOffline()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'registerOffline()void'>]>
+  registerOffline(args: MethodArgs<'registerOffline()void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, MethodReturn<'registerOffline()void'>]>
 
   /**
    * Gets available update methods
@@ -1469,7 +1474,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
      * @param params Any additional parameters for the call
      * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
      */
-    updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientCallCoreParams & AppClientCompilationParams): LimitOrders001Composer<[...TReturns, MethodReturn<'updateApplication()void'>]>
+    updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientComposeCallCoreParams & AppClientCompilationParams): LimitOrders001Composer<[...TReturns, MethodReturn<'updateApplication()void'>]>
   }
 
   /**
@@ -1478,7 +1483,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
    * @param args The arguments for the bare call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  clearState(args?: BareCallArgs & AppClientCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, undefined]>
+  clearState(args?: BareCallArgs & AppClientComposeCallCoreParams & CoreAppCallArgs): LimitOrders001Composer<[...TReturns, undefined]>
 
   /**
    * Adds a transaction to the composer
@@ -1498,7 +1503,7 @@ export type LimitOrders001Composer<TReturns extends [...any[]] = []> = {
   /**
    * Executes the transaction group and returns the results
    */
-  execute(): Promise<LimitOrders001ComposerResults<TReturns>>
+  execute(sendParams?: AppClientComposeExecuteParams): Promise<LimitOrders001ComposerResults<TReturns>>
 }
 export type SimulateOptions = Omit<ConstructorParameters<typeof modelsv2.SimulateRequest>[0], 'txnGroups'>
 export type LimitOrders001ComposerSimulateResult<TReturns extends [...any[]]> = {

@@ -24,7 +24,7 @@ import type {
   ApplicationClient,
 } from '@algorandfoundation/algokit-utils/types/app-client'
 import type { AppSpec } from '@algorandfoundation/algokit-utils/types/app-spec'
-import type { SendTransactionResult, TransactionToSign, SendTransactionFrom } from '@algorandfoundation/algokit-utils/types/transaction'
+import type { SendTransactionResult, TransactionToSign, SendTransactionFrom, SendTransactionParams } from '@algorandfoundation/algokit-utils/types/transaction'
 import type { ABIResult, TransactionWithSigner } from 'algosdk'
 import { Algodv2, OnApplicationComplete, Transaction, AtomicTransactionComposer, modelsv2 } from 'algosdk'
 export const APP_SPEC: AppSpec = {
@@ -485,7 +485,7 @@ export type OnCompleteUpdApp =  { onCompleteAction: 'update_application' | OnApp
  */
 export type IntegerState = {
   /**
-   * Gets the state value as a BigInt 
+   * Gets the state value as a BigInt.
    */
   asBigInt(): bigint
   /**
@@ -509,6 +509,11 @@ export type BinaryState = {
 
 export type AppCreateCallTransactionResult = AppCallTransactionResult & Partial<AppCompilationResult> & AppReference
 export type AppUpdateCallTransactionResult = AppCallTransactionResult & Partial<AppCompilationResult>
+
+export type AppClientComposeCallCoreParams = Omit<AppClientCallCoreParams, 'sendParams'> & {
+  sendParams?: Omit<SendTransactionParams, 'skipSending' | 'atc' | 'skipWaiting' | 'maxRoundsToWaitForConfirmation' | 'populateAppCallResources'>
+}
+export type AppClientComposeExecuteParams = Pick<SendTransactionParams, 'skipWaiting' | 'maxRoundsToWaitForConfirmation' | 'populateAppCallResources' | 'suppressLog'>
 
 /**
  * Defines the types of available calls and state of the Arc200Token smart contract.
@@ -1435,67 +1440,67 @@ export class Arc200TokenClient {
     let promiseChain:Promise<unknown> = Promise.resolve()
     const resultMappers: Array<undefined | ((x: any) => any)> = []
     return {
-      setManager(args: MethodArgs<'setManager(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      setManager(args: MethodArgs<'setManager(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.setManager(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      initialize(args: MethodArgs<'initialize(byte[32],byte[8],uint8,uint256,address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      initialize(args: MethodArgs<'initialize(byte[32],byte[8],uint8,uint256,address)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.initialize(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Name(args: MethodArgs<'arc200_name()byte[32]'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Name(args: MethodArgs<'arc200_name()byte[32]'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Name(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Symbol(args: MethodArgs<'arc200_symbol()byte[8]'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Symbol(args: MethodArgs<'arc200_symbol()byte[8]'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Symbol(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Decimals(args: MethodArgs<'arc200_decimals()uint8'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Decimals(args: MethodArgs<'arc200_decimals()uint8'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Decimals(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200TotalSupply(args: MethodArgs<'arc200_totalSupply()uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200TotalSupply(args: MethodArgs<'arc200_totalSupply()uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200TotalSupply(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200BalanceOf(args: MethodArgs<'arc200_balanceOf(address)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200BalanceOf(args: MethodArgs<'arc200_balanceOf(address)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200BalanceOf(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      hasBalance(args: MethodArgs<'hasBalance(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      hasBalance(args: MethodArgs<'hasBalance(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.hasBalance(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      hasAllowance(args: MethodArgs<'hasAllowance(address,address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      hasAllowance(args: MethodArgs<'hasAllowance(address,address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.hasAllowance(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Allowance(args: MethodArgs<'arc200_allowance(address,address)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Allowance(args: MethodArgs<'arc200_allowance(address,address)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Allowance(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Transfer(args: MethodArgs<'arc200_transfer(address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Transfer(args: MethodArgs<'arc200_transfer(address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Transfer(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200Approve(args: MethodArgs<'arc200_approve(address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200Approve(args: MethodArgs<'arc200_approve(address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200Approve(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
-      arc200TransferFrom(args: MethodArgs<'arc200_transferFrom(address,address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+      arc200TransferFrom(args: MethodArgs<'arc200_transferFrom(address,address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.arc200TransferFrom(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
@@ -1503,7 +1508,7 @@ export class Arc200TokenClient {
       get update() {
         const $this = this
         return {
-          updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientCallCoreParams & AppClientCompilationParams) {
+          updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientComposeCallCoreParams & AppClientCompilationParams) {
             promiseChain = promiseChain.then(() => client.update.updateApplication(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
             resultMappers.push(undefined)
             return $this
@@ -1513,14 +1518,14 @@ export class Arc200TokenClient {
       get delete() {
         const $this = this
         return {
-          deleteApplication(args: MethodArgs<'deleteApplication()void'>, params?: AppClientCallCoreParams) {
+          deleteApplication(args: MethodArgs<'deleteApplication()void'>, params?: AppClientComposeCallCoreParams) {
             promiseChain = promiseChain.then(() => client.delete.deleteApplication(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
             resultMappers.push(undefined)
             return $this
           },
         }
       },
-      clearState(args?: BareCallArgs & AppClientCallCoreParams & CoreAppCallArgs) {
+      clearState(args?: BareCallArgs & AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.clearState({...args, sendParams: {...args?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
@@ -1541,9 +1546,9 @@ export class Arc200TokenClient {
           returns: result.methodResults?.map((val, i) => resultMappers[i] !== undefined ? resultMappers[i]!(val.returnValue) : val.returnValue)
         }
       },
-      async execute() {
+      async execute(sendParams?: AppClientComposeExecuteParams) {
         await promiseChain
-        const result = await algokit.sendAtomicTransactionComposer({ atc, sendParams: {} }, client.algod)
+        const result = await algokit.sendAtomicTransactionComposer({ atc, sendParams }, client.algod)
         return {
           ...result,
           returns: result.returns?.map((val, i) => resultMappers[i] !== undefined ? resultMappers[i]!(val.returnValue) : val.returnValue)
@@ -1560,7 +1565,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  setManager(args: MethodArgs<'setManager(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'setManager(address)bool'>]>
+  setManager(args: MethodArgs<'setManager(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'setManager(address)bool'>]>
 
   /**
    * Calls the initialize(byte[32],byte[8],uint8,uint256,address)void ABI method.
@@ -1571,7 +1576,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  initialize(args: MethodArgs<'initialize(byte[32],byte[8],uint8,uint256,address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'initialize(byte[32],byte[8],uint8,uint256,address)void'>]>
+  initialize(args: MethodArgs<'initialize(byte[32],byte[8],uint8,uint256,address)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'initialize(byte[32],byte[8],uint8,uint256,address)void'>]>
 
   /**
    * Calls the arc200_name()byte[32] ABI method.
@@ -1582,7 +1587,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Name(args: MethodArgs<'arc200_name()byte[32]'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_name()byte[32]'>]>
+  arc200Name(args: MethodArgs<'arc200_name()byte[32]'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_name()byte[32]'>]>
 
   /**
    * Calls the arc200_symbol()byte[8] ABI method.
@@ -1593,7 +1598,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Symbol(args: MethodArgs<'arc200_symbol()byte[8]'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_symbol()byte[8]'>]>
+  arc200Symbol(args: MethodArgs<'arc200_symbol()byte[8]'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_symbol()byte[8]'>]>
 
   /**
    * Calls the arc200_decimals()uint8 ABI method.
@@ -1604,7 +1609,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Decimals(args: MethodArgs<'arc200_decimals()uint8'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_decimals()uint8'>]>
+  arc200Decimals(args: MethodArgs<'arc200_decimals()uint8'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_decimals()uint8'>]>
 
   /**
    * Calls the arc200_totalSupply()uint256 ABI method.
@@ -1615,7 +1620,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200TotalSupply(args: MethodArgs<'arc200_totalSupply()uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_totalSupply()uint256'>]>
+  arc200TotalSupply(args: MethodArgs<'arc200_totalSupply()uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_totalSupply()uint256'>]>
 
   /**
    * Calls the arc200_balanceOf(address)uint256 ABI method.
@@ -1626,7 +1631,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200BalanceOf(args: MethodArgs<'arc200_balanceOf(address)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_balanceOf(address)uint256'>]>
+  arc200BalanceOf(args: MethodArgs<'arc200_balanceOf(address)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_balanceOf(address)uint256'>]>
 
   /**
    * Calls the hasBalance(address)bool ABI method.
@@ -1637,7 +1642,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  hasBalance(args: MethodArgs<'hasBalance(address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'hasBalance(address)bool'>]>
+  hasBalance(args: MethodArgs<'hasBalance(address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'hasBalance(address)bool'>]>
 
   /**
    * Calls the hasAllowance(address,address)bool ABI method.
@@ -1648,7 +1653,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  hasAllowance(args: MethodArgs<'hasAllowance(address,address)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'hasAllowance(address,address)bool'>]>
+  hasAllowance(args: MethodArgs<'hasAllowance(address,address)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'hasAllowance(address,address)bool'>]>
 
   /**
    * Calls the arc200_allowance(address,address)uint256 ABI method.
@@ -1659,7 +1664,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Allowance(args: MethodArgs<'arc200_allowance(address,address)uint256'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_allowance(address,address)uint256'>]>
+  arc200Allowance(args: MethodArgs<'arc200_allowance(address,address)uint256'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_allowance(address,address)uint256'>]>
 
   /**
    * Calls the arc200_transfer(address,uint256)bool ABI method.
@@ -1670,7 +1675,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Transfer(args: MethodArgs<'arc200_transfer(address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_transfer(address,uint256)bool'>]>
+  arc200Transfer(args: MethodArgs<'arc200_transfer(address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_transfer(address,uint256)bool'>]>
 
   /**
    * Calls the arc200_approve(address,uint256)bool ABI method.
@@ -1681,7 +1686,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200Approve(args: MethodArgs<'arc200_approve(address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_approve(address,uint256)bool'>]>
+  arc200Approve(args: MethodArgs<'arc200_approve(address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_approve(address,uint256)bool'>]>
 
   /**
    * Calls the arc200_transferFrom(address,address,uint256)bool ABI method.
@@ -1692,7 +1697,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param params Any additional parameters for the call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  arc200TransferFrom(args: MethodArgs<'arc200_transferFrom(address,address,uint256)bool'>, params?: AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_transferFrom(address,address,uint256)bool'>]>
+  arc200TransferFrom(args: MethodArgs<'arc200_transferFrom(address,address,uint256)bool'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, MethodReturn<'arc200_transferFrom(address,address,uint256)bool'>]>
 
   /**
    * Gets available update methods
@@ -1705,7 +1710,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
      * @param params Any additional parameters for the call
      * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
      */
-    updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientCallCoreParams & AppClientCompilationParams): Arc200TokenComposer<[...TReturns, MethodReturn<'updateApplication()void'>]>
+    updateApplication(args: MethodArgs<'updateApplication()void'>, params?: AppClientComposeCallCoreParams & AppClientCompilationParams): Arc200TokenComposer<[...TReturns, MethodReturn<'updateApplication()void'>]>
   }
 
   /**
@@ -1719,7 +1724,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
      * @param params Any additional parameters for the call
      * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
      */
-    deleteApplication(args: MethodArgs<'deleteApplication()void'>, params?: AppClientCallCoreParams): Arc200TokenComposer<[...TReturns, MethodReturn<'deleteApplication()void'>]>
+    deleteApplication(args: MethodArgs<'deleteApplication()void'>, params?: AppClientComposeCallCoreParams): Arc200TokenComposer<[...TReturns, MethodReturn<'deleteApplication()void'>]>
   }
 
   /**
@@ -1728,7 +1733,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
    * @param args The arguments for the bare call
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
-  clearState(args?: BareCallArgs & AppClientCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, undefined]>
+  clearState(args?: BareCallArgs & AppClientComposeCallCoreParams & CoreAppCallArgs): Arc200TokenComposer<[...TReturns, undefined]>
 
   /**
    * Adds a transaction to the composer
@@ -1748,7 +1753,7 @@ export type Arc200TokenComposer<TReturns extends [...any[]] = []> = {
   /**
    * Executes the transaction group and returns the results
    */
-  execute(): Promise<Arc200TokenComposerResults<TReturns>>
+  execute(sendParams?: AppClientComposeExecuteParams): Promise<Arc200TokenComposerResults<TReturns>>
 }
 export type SimulateOptions = Omit<ConstructorParameters<typeof modelsv2.SimulateRequest>[0], 'txnGroups'>
 export type Arc200TokenComposerSimulateResult<TReturns extends [...any[]]> = {
