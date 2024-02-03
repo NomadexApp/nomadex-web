@@ -10,6 +10,7 @@
 	import { convertDecimals } from '$lib/numbers';
 	import MdArrowDropDown from 'svelte-star/dist/md/MdArrowDropDown.svelte';
 	import { lastActiveAnalyticsPair } from '$lib/stores';
+	import CurrencyNumber from '$lib/CurrencyNumber.svelte';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -418,19 +419,11 @@
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{fromAmount < 0.1
-							? fromAmount
-							: fromAmount < 10 || window.innerWidth > 600
-							? fromAmount.toLocaleString()
-							: Math.floor(fromAmount).toLocaleString()}
+						<CurrencyNumber amount={fromAmount} />
 						{event.direction ? arc200Token.ticker : 'VOI'}
 					</span>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{toAmount < 0.1
-							? toAmount
-							: toAmount < 10 || window.innerWidth > 600
-							? toAmount.toLocaleString()
-							: Math.floor(toAmount).toLocaleString()}
+						<CurrencyNumber amount={toAmount} />
 						{event.direction ? 'VOI' : arc200Token.ticker}
 					</span>
 				</div>
@@ -495,19 +488,11 @@
 						{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 					</a>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{changeSign}{voiAmount < 0.1
-							? voiAmount
-							: voiAmount < 10 || window.innerWidth > 600
-							? voiAmount.toLocaleString()
-							: Math.floor(voiAmount).toLocaleString()}
+						{changeSign}<CurrencyNumber amount={voiAmount} />
 						VOI
 					</span>
 					<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-						{changeSign}{arc200Amount < 0.1
-							? arc200Amount
-							: arc200Amount < 10 || window.innerWidth > 600
-							? arc200Amount.toLocaleString()
-							: Math.floor(arc200Amount).toLocaleString()}
+						{changeSign}<CurrencyNumber amount={arc200Amount} />
 						{arc200Token.ticker}
 					</span>
 				</div>
