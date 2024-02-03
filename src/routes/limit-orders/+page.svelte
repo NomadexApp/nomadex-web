@@ -9,6 +9,8 @@
 	import { getLastActivePair } from '$lib/config';
 	import { lastActiveLimitOrderPair } from '$lib/stores';
 	import { convertDecimals } from '$lib/numbers';
+	import LimitOrder from '$lib/LimitOrder.svelte';
+	import { limit } from 'firebase/firestore';
 
 	let limitOrders: {
 		orderId: number;
@@ -61,91 +63,54 @@
 		return () => clearTimeout(timeout);
 	});
 
-	let selcetdOrder: number | undefined;
+	let selectedOrder: number | undefined;
 	let amounts: Record<string, number> = {};
 
-	async function sell(amount: number, limitOrder: (typeof limitOrders)[0]) {
-		const connector = new LimitOrders001ClientConnector(contracts.orderbookLimitOrderApp);
-
-		if (limitOrder.isDirectionFromArc200ToAlgo) {
-			await connector.invoke(
-				'fillOrder',
-				LimitOrderType.SELL_ARC200_FOR_ALGO,
-				limitOrder.orderId,
-				limitOrder.maker,
-				limitOrder.arc200Id,
-				BigInt(amount * 1e6)
-			);
-		} else {
-			const amnt = Math.floor(amount * limitOrder.arc200Token.unit);
-			await connector.invoke(
-				'fillOrder',
-				LimitOrderType.SELL_ALGO_FOR_ARC200,
-				limitOrder.orderId,
-				limitOrder.maker,
-				limitOrder.arc200Id,
-				BigInt(amnt)
-			);
+	let sortedLimitOrders: Record<
+		string,
+		{
+			sellOrders: typeof limitOrders;
+			buyOrders: typeof limitOrders;
 		}
-		pageContentRefresh(0);
-	}
-
-	async function cancelLimitOrder(e: MouseEvent, limitOrder: (typeof limitOrders)[0]) {
-		e.stopPropagation();
-		const connector = new LimitOrders001ClientConnector(contracts.orderbookLimitOrderApp);
-
-		if (limitOrder.maker === $connectedAccount) {
-			await connector.invoke('deleteLimitOrder', limitOrder.orderId);
-		}
-		pageContentRefresh(0);
-	}
-
-	const isValid = (amount: number, limitOrder: (typeof limitOrders)[0]) =>
-		amount &&
-		amount <=
-			Number(limitOrder.isDirectionFromArc200ToAlgo ? limitOrder.algoAmount : limitOrder.arc200Amount) /
-				Number(limitOrder.isDirectionFromArc200ToAlgo ? BigInt(1e6) : limitOrder.arc200Token.unit);
-
-	function amountAfterFee(amount: number, percentFee: number) {
-		return (amount * (100 - percentFee)) / 100;
-	}
-
-	let sortedLimitOrders: Record<string, typeof limitOrders> = {};
+	> = {};
 
 	$: sortedLimitOrders = ((limitOrders) => {
 		const orders: typeof sortedLimitOrders = {};
 		for (const order of limitOrders) {
-			orders[order.arc200Id] = [...(orders[order.arc200Id] ?? []), order];
+			if (!orders[order.arc200Id]) {
+				orders[order.arc200Id] = { sellOrders: [], buyOrders: [] };
+			}
+			if (order.isDirectionFromArc200ToAlgo) {
+				orders[order.arc200Id].sellOrders = [...(orders[order.arc200Id].sellOrders ?? []), order];
+			} else {
+				orders[order.arc200Id].buyOrders = [...(orders[order.arc200Id].buyOrders ?? []), order];
+			}
 		}
-		const getPrice = (o: (typeof orders)[0][0]) =>
-			o.algoAmount / Number(convertDecimals(o.arc200Amount, o.arc200Token.decimals, 6));
+		const getPrice = (o: (typeof limitOrders)[0]) =>
+			Number(convertDecimals(o.arc200Amount, o.arc200Token.decimals, 6)) / o.algoAmount;
+
 		for (const key in orders) {
-			orders[key] = orders[key]
-				.sort((a, b) => b.orderId - a.orderId)
-				.sort((a, b) => {
-					if (a.isDirectionFromArc200ToAlgo && b.isDirectionFromArc200ToAlgo) {
-						return getPrice(a) - getPrice(b);
-					} else if (a.isDirectionFromArc200ToAlgo && !b.isDirectionFromArc200ToAlgo) {
-						return 1;
-					} else if (!a.isDirectionFromArc200ToAlgo && b.isDirectionFromArc200ToAlgo) {
-						return -1;
-					} else if (!a.isDirectionFromArc200ToAlgo && !b.isDirectionFromArc200ToAlgo) {
-						return getPrice(a) - getPrice(b);
-					}
-					return 0;
-				});
+			const sellOrders = orders[key].sellOrders.sort((a, b) => b.orderId - a.orderId);
+			const buyOrders = orders[key].buyOrders.sort((a, b) => b.orderId - a.orderId);
+
+			orders[key].sellOrders = sellOrders.sort((a, b) => getPrice(b) - getPrice(a));
+			orders[key].buyOrders = buyOrders.sort((a, b) => getPrice(b) - getPrice(a));
 		}
 		return orders;
 	})(limitOrders);
+
+	function scrollIntoView(node: HTMLDivElement) {
+		node.scrollIntoView();
+	}
 </script>
 
 <section class="p-4">
 	<br />
 	<br />
-	<div class="flex flex-col justify-center gap-1 pt-6 max-w-[800px] mx-auto">
+	<div class="flex flex-col justify-center pt-6 max-w-[800px] mx-auto">
 		<div class="flex justify-center">
 			<h4 class="text-xl font-bold prose w-full mb-5">Limit Orders</h4>
-			<a href="/limit-orders/create/{getLastActivePair($lastActiveLimitOrderPair)}" class="btn">Create</a>
+			<a href="/limit-orders/create/{getLastActivePair($lastActiveLimitOrderPair)}" class="btn btn-sm">Create</a>
 		</div>
 		{#if loading}
 			<div class="w-full min-h-44 flex justify-center items-center">
@@ -153,120 +118,68 @@
 			</div>
 		{:else}
 			{#each Object.keys(sortedLimitOrders) as key}
-				{@const orders = sortedLimitOrders[key]}
-				<div class="w-full flex flex-col pt-4 p-4 bg-base-200 relative">
+				<div class="w-full flex flex-col p-2 px-4 bg-base-200 relative">
 					<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
-						<div class="flex justify-between cursor-pointer select-none font-bold" on:click={() => {}} on:keydown>
+						<div class="flex justify-between cursor-pointer select-none" on:click={() => {}} on:keydown>
 							<span class="name mb-0 flex justify-start items-center w-full gap-5">
-								<span class="w-24">Maker</span>
-								<span class="w-16">Type</span>
-								<span class="w-16"> Amount </span>
-								<span class="hidden md:block flex-grow max-w-16" />
-
-								<span class="w-24">Price</span>
+								<span class="w-6">&nbsp;</span>
+								<span class="w-24">creator</span>
+								<span class="w-24">price</span>
+								<span class="w-24">sell amt</span>
+								<span class="w-24">buy amt</span>
+								<!-- <span class="hidden md:block flex-grow max-w-16" /> -->
 							</span>
 							<div class="w-12">&nbsp;</div>
 						</div>
 					</div>
 				</div>
-
-				{#each orders as limitOrder}
-					{@const arc200TokenAmount = Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit}
-					{@const algoTokenAmouunt = Number(limitOrder.algoAmount) / 1e6}
-					<div class="w-full flex flex-col pt-4 p-4 bg-base-200 relative">
-						<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
-							<div
-								class="flex justify-between cursor-pointer select-none"
-								on:click={() => (selcetdOrder = selcetdOrder === limitOrder.orderId ? undefined : limitOrder.orderId)}
-								on:keydown
-							>
-								<span class="name mb-0 flex justify-start items-center w-full gap-5">
-									<a
-										href="https://voi.observer/explorer/account/{limitOrder.maker}"
-										target="_blank"
-										referrerpolicy="no-referrer"
-										class="w-24"
-										on:click={(e) => e.stopPropagation()}
-									>
-										{limitOrder.maker.slice(0, 3)}...{limitOrder.maker.slice(-3)}
-									</a>
-									<span class="w-16">{limitOrder.isDirectionFromArc200ToAlgo ? 'BUY' : 'SELL'}</span>
-
-									<span class="w-16 text-nowrap">
-										{algoTokenAmouunt.toLocaleString('en')} VOI
-									</span>
-									<span class="hidden md:block flex-grow max-w-16" />
-									<span class="text-nowrap">
-										{(arc200TokenAmount / algoTokenAmouunt).toLocaleString('en')}
-										{limitOrder.arc200Token.ticker}
-										<!-- <span class="text-[0.7rem] ml-auto">
-										<span class="hidden md:inline-block">/ VOI</span>
-									</span> -->
-									</span>
-								</span>
-								<div class="w-12">
-									{#if limitOrder.maker === $connectedAccount}
-										<button class="btn btn-sm btn-ghost" on:click={(e) => cancelLimitOrder(e, limitOrder)}>x</button>
-									{:else}
-										&nbsp;
-									{/if}
-								</div>
-							</div>
-						</div>
-						<div
-							class="pool rounded-btn flex flex-col items-center overflow-hidden gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px] transition-all duration-200"
-							style="height: {selcetdOrder === Number(limitOrder.orderId) ? '200' : '0'}px;"
-						>
-							<div class="flex flex-col pt-4 gap-2 w-full max-w-[448px]">
-								<label for="">
-									Enter {limitOrder.isDirectionFromArc200ToAlgo ? 'VOI' : limitOrder.arc200Token.ticker} amount</label
-								>
-								<input
-									type="number"
-									placeholder="Enter {limitOrder.isDirectionFromArc200ToAlgo
-										? 'VOI'
-										: limitOrder.arc200Token.ticker} amount"
-									bind:value={amounts[limitOrder.orderId]}
-									step={0.000001}
-									required
-									class="input input-primary input-bordered w-full focus:outline-none"
-								/>
-								<div class="flex justify-center mt-2 pr-0">
-									<button
-										class="btn btn-primary w-full box-border"
-										disabled={!isValid(amounts[limitOrder.orderId], limitOrder)}
-										class:btn-outline={!isValid(amounts[limitOrder.orderId], limitOrder)}
-										on:click={() => sell(amounts[limitOrder.orderId], limitOrder)}
-									>
-										{#if limitOrder.isDirectionFromArc200ToAlgo}
-											SELL
-										{:else}
-											BUY
-										{/if}
-									</button>
-								</div>
-
-								{#if isValid(amounts[limitOrder.orderId], limitOrder)}
-									<div class="text-right">
-										You will receive {amountAfterFee(
-											Number(
-												amounts[limitOrder.orderId] *
-													(limitOrder.isDirectionFromArc200ToAlgo
-														? arc200TokenAmount / algoTokenAmouunt
-														: algoTokenAmouunt / arc200TokenAmount)
-											),
-											contractsConstants.orderbookLimitOrderAppFeePercent
-										).toLocaleString('en')}
-										{limitOrder.isDirectionFromArc200ToAlgo ? limitOrder.arc200Token.ticker : 'VOI'}
-									</div>
-								{/if}
-							</div>
-						</div>
+				{@const sellOrders = sortedLimitOrders[key].sellOrders}
+				{@const buyOrders = sortedLimitOrders[key].buyOrders}
+				<!-- <div class="h-[2px]" /> -->
+				<div class="flex flex-col text-sm max-h-[700px]">
+					<div class="half flex-grow flex flex-col py-1 bg-base-200 justify-start max-h-[340px] overflow-y-scroll">
+						{#each buyOrders as limitOrder}
+							<LimitOrder
+								order={limitOrder}
+								opened={selectedOrder === limitOrder.orderId}
+								onSelect={() => {
+									selectedOrder = selectedOrder === limitOrder.orderId ? undefined : limitOrder.orderId;
+								}}
+							/>
+						{/each}
+						<div use:scrollIntoView />
 					</div>
-				{/each}
+					<!-- <div class="h-[2px]" /> -->
+					<div class="half flex-grow flex flex-col py-1 bg-base-200 justify-start max-h-[340px] overflow-y-scroll">
+						{#each sellOrders as limitOrder}
+							<LimitOrder
+								order={limitOrder}
+								opened={selectedOrder === limitOrder.orderId}
+								onSelect={() => {
+									selectedOrder = selectedOrder === limitOrder.orderId ? undefined : limitOrder.orderId;
+								}}
+							/>
+						{/each}
+					</div>
+				</div>
 				<br />
 				<br />
 			{/each}
 		{/if}
 	</div>
 </section>
+
+<style>
+	/* .half::-webkit-scrollbar {
+		-webkit-appearance: none;
+		width: 7px;
+	}
+	.half::-webkit-scrollbar-thumb {
+		border-radius: 4px;
+		background-color: rgba(0, 0, 0, 0.5);
+		-webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+	} */
+	* {
+		box-sizing: border-box;
+	}
+</style>
