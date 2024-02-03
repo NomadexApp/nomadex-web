@@ -161,9 +161,19 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 				orderId: orderId,
 				arc200Amount: amount,
 			});
-			const resources = await this.getUnnamedResourcesAccessedFromMethod('fillAlgoToArc200Order', args());
 
-			const atc = await this.compose()
+			const composer = await this.compose();
+
+			for (const txn of [...approveTxns]) {
+				txn.group = undefined;
+				composer.addTransaction({
+					txn: txn,
+					signer: this.signer.signer
+				});
+			}
+
+			const resources = await this.getUnnamedResourcesAccessedFromMethod('fillAlgoToArc200Order', args());
+			const atc = await composer
 				.fillAlgoToArc200Order(
 					{
 						orderId: orderId,
@@ -185,7 +195,7 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 					}
 				)
 				.atc();
-			await signAndSendTransections(nodeClient, [approveTxns, atc.buildGroup().map((t) => t.txn)]);
+			await signAndSendTransections(nodeClient, [atc.buildGroup().map((t) => t.txn)]);
 		} else if (orderType === LimitOrderType.SELL_ARC200_FOR_ALGO) {
 			const suggestedParams = await nodeClient.getTransactionParams().do();
 
