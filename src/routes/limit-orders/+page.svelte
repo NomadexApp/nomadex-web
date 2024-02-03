@@ -163,7 +163,6 @@
 					</div>
 				</div>
 				<br />
-				<br />
 			{/each}
 		{/if}
 	</div>
