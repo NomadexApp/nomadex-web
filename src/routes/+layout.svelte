@@ -60,7 +60,7 @@
 			<Notify />
 		{:else}
 			<div class="flex h-screen w-full justify-center items-center">
-				<span class="loading loading-ring text-base-300 w-[5rem]" />
+				<span class="loading loading-ring text-primary w-[2.5rem]" />
 			</div>
 		{/if}
 	</div>
