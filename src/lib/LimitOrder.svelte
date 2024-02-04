@@ -93,8 +93,8 @@
 				</a>
 
 				<span class="w-24 text-nowrap">
-					{(arc200TokenAmount / algoTokenAmouunt).toLocaleString('en')} VOI
-					<!-- {limitOrder.arc200Token.ticker} -->
+					{(arc200TokenAmount / algoTokenAmouunt).toLocaleString('en')}
+					{order.arc200Token.ticker}
 				</span>
 
 				<span class="w-24 text-nowrap">
@@ -121,7 +121,9 @@
 			</span>
 			<div class="w-6">
 				{#if order.maker === $connectedAccount}
-					<button class="btn btn-sm btn-ghost absolute" on:click|stopPropagation={(e) => cancelLimitOrder(e, order)}>x</button>
+					<button class="btn btn-sm btn-ghost absolute" on:click|stopPropagation={(e) => cancelLimitOrder(e, order)}
+						>x</button
+					>
 				{:else}
 					&nbsp;
 				{/if}
