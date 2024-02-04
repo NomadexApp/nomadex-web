@@ -110,7 +110,7 @@
 				.sort((a, b) => b[sortBy] - a[sortBy]) as millionar, index (millionar.address)}
 				<tr>
 					<td>
-						#{index + 1}
+						{`${index + 1}`.padStart(2, '0')}
 					</td>
 					<td>
 						<a
