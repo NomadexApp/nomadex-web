@@ -103,7 +103,7 @@
 				<th>Address</th>
 				<th on:click={() => (sortBy = 'amount')}>Voi Balance</th>
 				<th on:click={() => (sortBy = 'viaAmount')}>Via Balance</th>
-				<th on:click={() => (sortBy = 'total')}>Score</th>
+				<th on:click={() => (sortBy = 'total')}>Total</th>
 			</tr>
 			{#each [...filtededHolders]
 				.map( (mil) => ({ address: mil.address, amount: mil.amount, viaAmount: mil.viaAmount, total: mil.amount + mil.viaAmount }) )
