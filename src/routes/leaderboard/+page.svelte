@@ -4,74 +4,18 @@
 	import { onMount } from 'svelte';
 
 	let millionars: { address: string; amount: number; viaAmount: number }[] = [];
+	let loading = false;
 
 	onMount(async () => {
-		const lptId = 24589656;
-		const lptHolderAccounts = await indexerClient.searchAccounts().assetID(lptId).do();
-		console.log(
-			lptHolderAccounts.accounts
-				.map((acc) => [acc.address, (acc.assets.find((asset) => asset['asset-id'] === lptId)?.amount ?? 0) / 1e6])
-				.sort((a, b) => b[1] - a[1])
-		);
-
-		const cache = localStorage.getItem('CACHED_LEADERBOARD') ?? '{}';
-		const cachedJson = JSON.parse(cache);
-		if (cachedJson.cachedAt > Date.now() - 24 * 3600_000) {
-			const holders = cachedJson.holders ?? [];
+		try {
+			loading = true;
+			const holdersResp = await fetch('https://api.nomadex.app/holders');
+			const holders = await holdersResp.json();
 			millionars = holders;
-			return;
+		} catch (e) {
+			console.error(e);
 		}
-
-		let next: string | undefined = undefined;
-		while (next !== '') {
-			let req = indexerClient.searchAccounts().currencyGreaterThan(500_000_000_000);
-			if (next) {
-				req = req.nextToken(next);
-			}
-			const resp = await req.do();
-			millionars.push(
-				...(resp.accounts ?? []).map((acc) => ({ address: acc.address, amount: acc.amount, viaAmount: 0 }))
-			);
-			next = resp['next-token'] ?? '';
-		}
-
-		const { boxes } = await indexerClient.searchForApplicationBoxes(viaAppId).do();
-		const boxesWithBalance = boxes.filter((box) => box.name.length === 33 && box.name[0] == 0);
-		// console.log(boxesWithBalance);
-		const boxesValues = await Promise.all(
-			boxesWithBalance.map((box) => indexerClient.lookupApplicationBoxByIDandName(viaAppId, box.name).do())
-		);
-		const viaHolders = boxesValues.map((box) => ({
-			address: algosdk.encodeAddress(box.name.slice(1)),
-			amount: Number(algosdk.ABIUintType.from('uint256').decode(box.value)),
-		}));
-		for (const viaHolder of viaHolders) {
-			const voiHolder = millionars.find((mil) => mil.address === viaHolder.address);
-			if (voiHolder) {
-				voiHolder.viaAmount = viaHolder.amount;
-			} else {
-				let voiValance = 0;
-				try {
-					const voiAccount = await indexerClient.lookupAccountByID(viaHolder.address).do();
-					voiValance = voiAccount.account.amount;
-				} catch (e) {
-					//
-				}
-				millionars.push({ address: viaHolder.address, amount: voiValance, viaAmount: viaHolder.amount });
-			}
-		}
-
-		localStorage.setItem(
-			'CACHED_LEADERBOARD',
-			JSON.stringify({
-				cachedAt: Date.now(),
-				holders: millionars,
-			})
-		);
-
-		setTimeout(() => {
-			millionars = millionars;
-		}, 1000);
+		loading = false;
 	});
 	const filteredAddresess = [
 		'VIAGCPULN6FUTHUNPQZDRQIHBT7IUVT264B3XDXLZNX7OZCJP6MEF7JFQU',
@@ -142,47 +86,53 @@
 	);
 </script>
 
-<div class="w-full h-full flex flex-col items-center justify-center p-12">
-	<div class="flex justify-between w-full max-w-[600px]">
-		<button on:click={() => (filter = !filter)}>{filter ? 'Filtered' : 'Unfiltered'}</button>
-		<button on:click={() => voiValue++}>1 VOI = {voiValues[voiValue % voiValues.length]} VIA</button>
+{#if loading}
+	<div class="h-full flex justify-center items-center">
+		<span class="loading" />
 	</div>
-	<br />
-	<table>
-		<tr class="cursor-pointer">
-			<th>Rank</th>
-			<th>Address</th>
-			<th on:click={() => (sortBy = 'amount')}>Voi Balance</th>
-			<th on:click={() => (sortBy = 'viaAmount')}>Via Balance</th>
-			<th on:click={() => (sortBy = 'total')}>Score</th>
-		</tr>
-		{#each [...filtededHolders]
-			.map( (mil) => ({ address: mil.address, amount: mil.amount, viaAmount: mil.viaAmount, total: mil.amount + mil.viaAmount }) )
-			.sort((a, b) => b[sortBy] - a[sortBy]) as millionar, index (millionar.address)}
-			<tr>
-				<td>
-					#{index + 1}
-				</td>
-				<td>
-					<a
-						href="https://voi.observer/explorer/account/{millionar.address}"
-						referrerpolicy="no-referrer"
-						target="_blank"
-					>
-						{#if namedWallets[millionar.address]}
-							{namedWallets[millionar.address]}
-						{:else}
-							{millionar.address.slice(0, 3)}...{millionar.address.slice(-3)}
-						{/if}
-					</a>
-				</td>
-				<td>{Math.floor(millionar.amount / 1e6).toLocaleString('en')}</td>
-				<td>{Math.floor(millionar.viaAmount / 1e6).toLocaleString('en')}</td>
-				<td>{Math.floor(millionar.total / 1e6).toLocaleString('en')}</td>
+{:else}
+	<div class="w-full h-full flex flex-col items-center justify-center p-12">
+		<div class="flex justify-between w-full max-w-[600px]">
+			<button on:click={() => (filter = !filter)}>{filter ? 'Filtered' : 'Unfiltered'}</button>
+			<button on:click={() => voiValue++}>1 VOI = {voiValues[voiValue % voiValues.length]} VIA</button>
+		</div>
+		<br />
+		<table>
+			<tr class="cursor-pointer">
+				<th>Rank</th>
+				<th>Address</th>
+				<th on:click={() => (sortBy = 'amount')}>Voi Balance</th>
+				<th on:click={() => (sortBy = 'viaAmount')}>Via Balance</th>
+				<th on:click={() => (sortBy = 'total')}>Score</th>
 			</tr>
-		{/each}
-	</table>
-</div>
+			{#each [...filtededHolders]
+				.map( (mil) => ({ address: mil.address, amount: mil.amount, viaAmount: mil.viaAmount, total: mil.amount + mil.viaAmount }) )
+				.sort((a, b) => b[sortBy] - a[sortBy]) as millionar, index (millionar.address)}
+				<tr>
+					<td>
+						#{index + 1}
+					</td>
+					<td>
+						<a
+							href="https://voi.observer/explorer/account/{millionar.address}"
+							referrerpolicy="no-referrer"
+							target="_blank"
+						>
+							{#if namedWallets[millionar.address]}
+								{namedWallets[millionar.address]}
+							{:else}
+								{millionar.address.slice(0, 3)}...{millionar.address.slice(-3)}
+							{/if}
+						</a>
+					</td>
+					<td>{Math.floor(millionar.amount / 1e6).toLocaleString('en')}</td>
+					<td>{Math.floor(millionar.viaAmount / 1e6).toLocaleString('en')}</td>
+					<td>{Math.floor(millionar.total / 1e6).toLocaleString('en')}</td>
+				</tr>
+			{/each}
+		</table>
+	</div>
+{/if}
 
 <style>
 	table {
