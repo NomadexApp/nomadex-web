@@ -123,10 +123,9 @@
 						<div class="flex justify-between cursor-pointer select-none" on:click={() => {}} on:keydown>
 							<span class="name mb-0 flex justify-start items-center w-full gap-5">
 								<span class="w-3">&nbsp;</span>
-								<span class="w-24 hidden min-[500px]:inline">creator</span>
-								<span class="w-24">price</span>
-								<span class="w-24">sell amt</span>
-								<span class="w-24 hidden min-[500px]:inline">buy amt</span>
+								<span class="w-24 hidden min-[500px]:inline">Maker</span>
+								<span class="w-24">Price</span>
+								<span class="w-24">Amount</span>
 								<!-- <span class="hidden md:block flex-grow max-w-16" /> -->
 							</span>
 							<div class="w-12">&nbsp;</div>

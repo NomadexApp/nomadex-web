@@ -98,23 +98,8 @@
 				</span>
 
 				<span class="w-24 text-nowrap">
-					{#if order.isDirectionFromArc200ToAlgo}
-						{arc200TokenAmount.toLocaleString('en')}
-						{order.arc200Token.ticker}
-					{:else}
-						{algoTokenAmouunt.toLocaleString('en')}
-						VOI
-					{/if}
-				</span>
-
-				<span class="w-24 text-nowrap hidden min-[500px]:inline">
-					{#if !order.isDirectionFromArc200ToAlgo}
-						{arc200TokenAmount.toLocaleString('en')}
-						{order.arc200Token.ticker}
-					{:else}
-						{algoTokenAmouunt.toLocaleString('en')}
-						VOI
-					{/if}
+					{algoTokenAmouunt.toLocaleString('en')}
+					VOI
 				</span>
 
 				<span class="hidden md:block flex-grow" />
