@@ -5,6 +5,7 @@
 	import SwapIcon from 'svelte-star/dist/md/MdAutorenew.svelte';
 	import PoolsIcon from 'svelte-star/dist/md/MdFormatListBulleted.svelte';
 	import AnalyticsIcon from 'svelte-star/dist/md/MdShowChart.svelte';
+	import MdFilterList from 'svelte-star/dist/md/MdFilterList.svelte';
 	import MdMore from 'svelte-star/dist/md/MdMoreHoriz.svelte';
 	import MdMenu from 'svelte-star/dist/md/MdMenu.svelte';
 	import { isDarkTheme, lastActiveAnalyticsPair, lastActiveSwapPair } from './stores';
@@ -107,6 +108,14 @@
 					<a class="flex justify-between" href="/analytics/{getLastActivePair($lastActiveAnalyticsPair)}" tabindex="0">
 						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">ANALYTICS</span>
 						<span class="h-5 w-5"><AnalyticsIcon /></span>
+					</a>
+				</li>
+			{/if}
+			{#if $knownPools.length}
+				<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/holders')}>
+					<a class="flex justify-between" href="/holders" tabindex="0">
+						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">Holders</span>
+						<span class="h-5 w-5 rotate-180"><MdFilterList /></span>
 					</a>
 				</li>
 			{/if}
