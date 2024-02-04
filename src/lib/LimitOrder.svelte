@@ -74,7 +74,7 @@
 	<div class="pool rounded-btn flex flex-col min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
 		<div class="flex justify-between cursor-pointer select-none" on:click={() => onSelect()} on:keydown>
 			<span class="name mb-0 flex justify-start items-center w-full gap-5">
-				<span class="w-6 flex justify-center items-center">
+				<span class="w-3 flex justify-center items-center">
 					{#if order.isDirectionFromArc200ToAlgo}
 						<span class="block rounded-full w-3 h-3 bg-green-500">&nbsp;</span>
 					{:else}
@@ -86,7 +86,7 @@
 					href="https://voi.observer/explorer/account/{order.maker}"
 					target="_blank"
 					referrerpolicy="no-referrer"
-					class="w-24"
+					class="w-24 hidden min-[500px]:inline"
 					on:click={(e) => e.stopPropagation()}
 				>
 					{order.maker.slice(0, 3)}...{order.maker.slice(-3)}
@@ -107,7 +107,7 @@
 					{/if}
 				</span>
 
-				<span class="w-24 text-nowrap">
+				<span class="w-24 text-nowrap hidden min-[500px]:inline">
 					{#if !order.isDirectionFromArc200ToAlgo}
 						{arc200TokenAmount.toLocaleString('en')}
 						{order.arc200Token.ticker}
