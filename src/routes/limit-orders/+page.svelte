@@ -120,7 +120,7 @@
 			{#each Object.keys(sortedLimitOrders) as key}
 				<div class="w-full flex flex-col p-2 px-4 bg-base-200 relative">
 					<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
-						<div class="flex justify-between cursor-pointer select-none" on:click={() => {}} on:keydown>
+						<div class="flex justify-between cursor-pointer select-none font-bold" on:click={() => {}} on:keydown>
 							<span class="name mb-0 flex justify-start items-center w-full gap-5">
 								<span class="w-3">&nbsp;</span>
 								<span class="w-24 hidden min-[500px]:inline">Maker</span>
