@@ -101,8 +101,8 @@
 			<tr class="cursor-pointer">
 				<th>Rank</th>
 				<th>Address</th>
-				<th on:click={() => (sortBy = 'amount')}>Voi Balance</th>
-				<th on:click={() => (sortBy = 'viaAmount')}>Via Balance</th>
+				<th class="hidden min-[500px]:table-cell" on:click={() => (sortBy = 'amount')}>Voi Balance</th>
+				<th class="hidden min-[500px]:table-cell" on:click={() => (sortBy = 'viaAmount')}>Via Balance</th>
 				<th on:click={() => (sortBy = 'total')}>Total</th>
 			</tr>
 			{#each [...filtededHolders]
@@ -125,8 +125,8 @@
 							{/if}
 						</a>
 					</td>
-					<td>{Math.floor(millionar.amount / 1e6).toLocaleString('en')}</td>
-					<td>{Math.floor(millionar.viaAmount / 1e6).toLocaleString('en')}</td>
+					<td class="hidden min-[500px]:table-cell">{Math.floor(millionar.amount / 1e6).toLocaleString('en')}</td>
+					<td class="hidden min-[500px]:table-cell">{Math.floor(millionar.viaAmount / 1e6).toLocaleString('en')}</td>
 					<td>{Math.floor(millionar.total / 1e6).toLocaleString('en')}</td>
 				</tr>
 			{/each}
@@ -136,7 +136,8 @@
 
 <style>
 	table {
-		width: 600px;
+		width: 100%;
+		max-width: 600px;
 	}
 	th {
 		text-align: left;
