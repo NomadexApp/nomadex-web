@@ -111,9 +111,9 @@
 				</li>
 			{/if}
 			{#if $knownPools.length}
-				<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/holders')}>
-					<a class="flex justify-between" href="/holders" tabindex="0">
-						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">Holders</span>
+				<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/accounts')}>
+					<a class="flex justify-between" href="/accounts" tabindex="0">
+						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">ACCOUNTS</span>
 						<span class="h-5 w-5"><MdPeopleOutline /></span>
 					</a>
 				</li>
