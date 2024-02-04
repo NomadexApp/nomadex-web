@@ -99,7 +99,7 @@
 		<br />
 		<table>
 			<tr class="cursor-pointer">
-				<th>Rank</th>
+				<th>#</th>
 				<th>Address</th>
 				<th class="hidden min-[500px]:table-cell" on:click={() => (sortBy = 'amount')}>Voi Balance</th>
 				<th class="hidden min-[500px]:table-cell" on:click={() => (sortBy = 'viaAmount')}>Via Balance</th>
