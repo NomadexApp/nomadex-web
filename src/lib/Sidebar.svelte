@@ -64,7 +64,7 @@
 				on:click={() => isMobile && (sidebarOpen = false)}
 				on:keydown
 			>
-				<div class="w-24">
+				<div class="w-24 text-accent">
 					<Logo />
 				</div>
 			</div>
