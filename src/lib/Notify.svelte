@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { writable, get } from 'svelte/store';
+	import { writable } from 'svelte/store';
 	type Notification = {
 		id: number;
 		message: string;

@@ -48,11 +48,8 @@
 			})
 			.filter((b) => b.arc200Token);
 	});
-	let positionCount = writable(0);
-
 	let selcetdOrder: number | undefined;
 	let amount = 0;
-	let received = 0;
 
 	async function sell(amount: number, limitOrder: (typeof limitOrders)[0]) {
 		const client = new LimitOrders001Client(

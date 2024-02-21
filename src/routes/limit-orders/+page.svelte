@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { contracts, contractsConstants, knownTokens, type Token } from '$lib';
+	import { contracts, knownTokens, type Token } from '$lib';
 	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import { LimitOrders001ClientConnector, LimitOrderType } from '$lib/LimitOrderConnector';
-	import { pageContentRefresh } from '$lib/utils';
 	import { getLastActivePair } from '$lib/config';
 	import { lastActiveLimitOrderPair } from '$lib/stores';
 	import { convertDecimals } from '$lib/numbers';
