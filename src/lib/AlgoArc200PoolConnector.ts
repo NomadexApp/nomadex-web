@@ -177,7 +177,19 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 		});
 
 		const composer = this.compose();
-		const opts = await this.getUnnamedResourcesAccessedFromMethod('swapXtoY', swapArgs());
+
+		const arc200Balance = await Arc200Interface.arc200_balanceOf(this.arc200AssetId, this.signer.addr);
+		const optinTxns: algosdk.Transaction[] = [];
+		if (arc200Balance < 1n) {
+			const txns = await Arc200Interface.arc200_transfer(this.arc200AssetId, this.signer.addr, this.signer.addr, 0n);
+			for (const txn of txns) {
+				txn.group = undefined;
+				composer.addTransaction({ txn, signer: this.signer.signer });
+				optinTxns.push(txn);
+			}
+		}
+
+		const opts = await this.getUnnamedResourcesAccessedFromMethod('swapXtoY', swapArgs(), optinTxns);
 		const atc = await composer
 			.swapXtoY(swapArgs(), {
 				...opts,
