@@ -19,8 +19,9 @@
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
 	let matchedPool: Pool = <any>undefined;
-	let moreEvents = false;
-	let eventsPageSize = 50;
+	let moreSwapEvents = false;
+	let moreDepositEvents = false;
+	let eventsPageSize = 20;
 
 	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
@@ -369,6 +370,9 @@
 	</div>
 	<div class="events flex flex-col gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)]">
 		{#if swapEvents?.length}
+			{@const someSwapEvents = [...swapEvents]
+				.sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
+				.slice(0, moreSwapEvents ? 1_000_000 : eventsPageSize)}
 			<div class="w-full event font-bold p-3 px-0 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
 				<h4 class="text-lg text-left w-full mb-2 max-w-[724px]">Recent Txns</h4>
 				<span class="flex-grow" />
@@ -383,9 +387,7 @@
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">From Amt.</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">To Amt.</span>
 			</div>
-			{#each [...swapEvents]
-				.sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
-				.slice(0, moreEvents ? 1_000_000 : eventsPageSize) as event}
+			{#each someSwapEvents as event}
 				{@const fromAmount = Number(event.fromAmount / getFromTokenFromEvent(event).unit)}
 				{@const toAmount = Number(event.toAmount / getToTokenFromEvent(event).unit)}
 				<div
@@ -429,14 +431,19 @@
 				</div>
 			{/each}
 
-			{#if !moreEvents && swapEvents.length > eventsPageSize}
-				<button class="btn btn-sm btn-ghost mt-4" on:click={() => (moreEvents = true)}>Show More</button>
+			{#if swapEvents.length > eventsPageSize && (moreSwapEvents || swapEvents.length > someSwapEvents.length)}
+				<button class="btn btn-sm btn-ghost mt-4" on:click={(e) => (moreSwapEvents = !moreSwapEvents)}>
+					Show {moreSwapEvents ? 'Less' : 'More'}
+				</button>
 			{/if}
 		{/if}
 	</div>
 
 	<div class="events flex flex-col gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)]">
 		{#if depositEvents?.length}
+			{@const someDepositEvents = [...depositEvents]
+				.sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
+				.slice(0, moreDepositEvents ? 1_000_000 : eventsPageSize)}
 			<div class="w-full event font-bold p-3 px-0 rounded-btn flex justify-start items-center gap-1 max-w-[800px]">
 				<h4 class="text-lg text-left w-full mb-2 max-w-[724px]">Add/Remove Liquidity</h4>
 				<span class="flex-grow" />
@@ -451,9 +458,7 @@
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">Amt.</span>
 				<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">Amt.</span>
 			</div>
-			{#each [...depositEvents]
-				.sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
-				.slice(0, moreEvents ? 1_000_000 : eventsPageSize) as event}
+			{#each someDepositEvents as event}
 				{@const voiAmount = Number(convertDecimals(event.amts[0], 6, 6)) / 1e6}
 				{@const arc200Amount = Number(convertDecimals(event.amts[1], arc200Token.decimals, 6)) / 1e6}
 				{@const changeSign = event.adding ? '+' : '-'}
@@ -498,8 +503,10 @@
 				</div>
 			{/each}
 
-			{#if !moreEvents && depositEvents.length > eventsPageSize}
-				<button class="btn btn-sm btn-ghost mt-4" on:click={() => (moreEvents = true)}>Show More</button>
+			{#if depositEvents.length > eventsPageSize && (moreDepositEvents || depositEvents.length > someDepositEvents.length)}
+				<button class="btn btn-sm btn-ghost mt-4" on:click={(e) => (moreDepositEvents = !moreDepositEvents)}>
+					Show {moreDepositEvents ? 'Less' : 'More'}
+				</button>
 			{/if}
 		{/if}
 	</div>
