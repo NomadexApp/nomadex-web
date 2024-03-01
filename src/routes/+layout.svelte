@@ -10,6 +10,7 @@
 	import { browser } from '$app/environment';
 	import '$lib/firebase';
 	import { arePoolsLoaded, getListOfArc200Tokens } from '$lib/index';
+	import { page } from '$app/stores';
 
 	onMount(() => {
 		try {
@@ -26,7 +27,7 @@
 		{#if $arePoolsLoaded}
 			<Sidebar />
 			<div class="w-full flex flex-col">
-				{#if $connectedAccount}
+				{#if $connectedAccount || $page.url.pathname.startsWith('/analytics/') || $page.url.pathname.startsWith('/accounts')}
 					{#if $pageContentRefreshPending}
 						<section class="flex flex-col justify-center items-center h-full max-h-[95vh]">
 							<span class="loading" />
