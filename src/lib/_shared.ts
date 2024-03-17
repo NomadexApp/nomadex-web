@@ -12,7 +12,8 @@ export const algodClientOpts: [string, string, string] = [
 	'https://voi-node-api.nomadex.app/',
 	''
 ];
-export const nodeClient = new algosdk.Algodv2(...algodClientOpts);
+export const nodeClient = nodeClientAllowsCompile;
+// new algosdk.Algodv2(...algodClientOpts);
 export const indexerClient = new algosdk.Indexer('', 'https://testnet-idx.voi.nodly.io', '');
 
 export const viaAppId = 6779767;
