@@ -1,28 +1,26 @@
 <script lang="ts">
 	import type { Pool } from '$lib';
-	import algosdk from 'algosdk';
-	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from './stores/onchain';
 	import { convertDecimals } from './numbers';
 
-	export let pool: Pool;
+	export let pool: Pool & { balances: { [k: string]: any } };
 
-	const poolState = onChainStateWatcher.getAccountWatcher(algosdk.getApplicationAddress(pool.poolId));
-	const poolArc200Balance = watchArc200Balance(pool.arc200Asset.assetId, algosdk.getApplicationAddress(pool.poolId));
-	const poolTotalSupply = watchPoolTotalSupply(pool.poolId);
+	const algoBalance = pool.balances.algo;
+	const arc200Balance = pool.balances.arc200;
+	const lptBalance = pool.balances.lpt;
 </script>
 
 <div class="pool bg-base-200 p-4 rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
 	<div class="flex justify-between">
 		<span class="name text-lg">VOI / {pool.arc200Asset.symbol}</span>
 		<span class="">
-			{#if ($poolTotalSupply ?? 0n) > 0n}
-				{#if $poolArc200Balance}
+			{#if ($lptBalance ?? 0n) > 0n}
+				{#if $arc200Balance}
 					<span class="">
-						{($poolState.amount / 1e6).toLocaleString('en')} VOI
+						{($algoBalance / 1e6).toLocaleString('en')} VOI
 					</span>
 					/
 					<span class="">
-						{(Number(convertDecimals($poolArc200Balance, pool.arc200Asset.decimals, 6)) / 1e6).toLocaleString('en')}
+						{(Number(convertDecimals($arc200Balance, pool.arc200Asset.decimals, 6)) / 1e6).toLocaleString('en')}
 						{pool.arc200Asset.symbol}
 					</span>
 				{:else}

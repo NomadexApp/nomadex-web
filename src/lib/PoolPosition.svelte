@@ -3,11 +3,11 @@
 	import { connectedAccount } from './UseWallet.svelte';
 	import { watchArc200Balance, watchPoolTotalSupply } from './stores/onchain';
 
-	export let pool: Pool;
+	export let pool: Pool & { balances: { [k: string]: any } };
 	export let exists = () => {};
 
 	const balance = watchArc200Balance(pool.poolId, $connectedAccount);
-	const totalSupply = watchPoolTotalSupply(pool.poolId);
+	const totalSupply = pool.balances.lpt;
 
 	$: $balance && $totalSupply && exists();
 </script>
