@@ -45,7 +45,7 @@
 	const namedWallets = {};
 	let filter = true;
 	let voiValue = 0;
-	let voiValues = [1, 1.8];
+	let voiValues = [1, 1.16];
 	let sortBy = 'total';
 
 	$: filtededHolders = (filter ? millionars.filter((mil) => !filteredAddresess.includes(mil.address)) : millionars).map(
