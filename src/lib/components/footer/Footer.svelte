@@ -1,5 +1,5 @@
 <footer>
-    Footer
+    <h2 class="text-xl">Nomadex | Decentralized Exchange</h2>
 </footer>
 
 <style>

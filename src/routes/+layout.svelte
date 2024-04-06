@@ -33,7 +33,7 @@
 		margin: 0 auto;
 		margin-top: 0;
 		display: flex;
-		clip-path: polygon(100px 0%, calc(100% - 100px) 0%, 100% 50px, 100% 100%, 0 100%, 0 50px);
+		clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0 100%, 0 10px);
 		padding: 1rem;
 	}
 </style>

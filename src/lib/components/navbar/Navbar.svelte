@@ -2,6 +2,9 @@
 	import Logo from '$lib/components/logo/Logo.svelte';
 	import Button from '$lib/components/button/Button.svelte';
 	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
+	import { getStores } from '$app/stores';
+
+	const { page } = getStores();
 </script>
 
 <!-- {#each Array(3).fill(0) as i}
@@ -23,33 +26,33 @@
 		<div class="space" />
 		<ul>
 			<li>
-				<a class="active" href="/">Swap</a>
+				<a class:active={$page.url.pathname === '/'} href="/">Swap</a>
 			</li>
 
 			<li>
-				<a href="/">Pool</a>
+				<a class:active={$page.url.pathname.startsWith('/pool')} href="/pool">Pool</a>
 			</li>
 
 			<li>
-				<a href="/">Limit</a>
+				<a class:active={$page.url.pathname.startsWith('/limit')} href="/limit">Limit</a>
 			</li>
 
 			<li>
-				<a href="/">Analytics</a>
+				<a class:active={$page.url.pathname.startsWith('/analytics')} href="/analytics">Analytics</a>
 			</li>
 
 			<li>
-				<a href="/">v0.1</a>
+				<a href="https://v01.nomadex.app" target="_blank">v0.1</a>
 			</li>
 		</ul>
 		<div class="actions">
 			{#if Math.random() < 0.5}
-				<button class="btn">
+				<button class="btn bg-[#222211] hover:bg-[#333311]">
 					<span class="inline-block h-6 w-6"><LogoutIcon /></span>
 					Disconnect
 				</button>
 			{:else}
-				<button class="btn">
+				<button class="btn bg-[#222211] hover:bg-[#333311]">
 					<span class="inline-block h-6 w-6"><LogoutIcon /></span>
 					Connect Wallet
 				</button>
@@ -131,24 +134,11 @@
 		opacity: 0.7;
 	}
 
-	a:hover {
-		/* border-bottom: 2px solid #35353577; */
-	}
-
 	a.active {
 		font-weight: 500;
 	}
 
 	.actions {
 		margin-left: auto;
-	}
-	.star {
-		position: absolute;
-		color: var(--primary-color);
-		z-index: 0;
-		font-size: 1.5rem;
-	}
-	.icon :global(svg) {
-		width: 100%;
 	}
 </style>
