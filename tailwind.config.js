@@ -1,9 +1,9 @@
 const theme = {
 	default: {
-		'--rounded-box': '0.25rem',
-		'--rounded-btn': '0.125rem',
-		'--rounded-badge': '0.125rem',
-		'--tab-radius': '0.125rem',
+		'--rounded-box': '8px',
+		'--rounded-btn': '8px',
+		'--rounded-badge': '8px',
+		'--tab-radius': '8px',
 		'--animation-btn': '0',
 		'--animation-input': '0',
 		'--btn-focus-scale': '1',
@@ -44,12 +44,12 @@ export default {
 			},
 		],
 		// darkTheme: "dark", // name of one of the included themes for dark mode
-		base: true, // applies background color and foreground color for root element by default
+		base: false, // applies background color and foreground color for root element by default
 		styled: true, // include daisyUI colors and design decisions for all components
 		utils: true, // adds responsive and modifier utility classes
 		prefix: '', // prefix for daisyUI classnames (components, modifiers and responsive class names. Not colors)
 		logs: true, // Shows info about daisyUI version and used config in the console when building your CSS
-		themeRoot: ':root', // The element that receives theme color CSS variables
+		themeRoot: 'html', // The element that receives theme color CSS variables
 	},
 	theme: {
 		extend: {},
