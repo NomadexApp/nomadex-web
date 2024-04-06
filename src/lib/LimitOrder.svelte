@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { contracts, contractsConstants, type Token } from '$lib';
+	import CurrencyNumber from './CurrencyNumber.svelte';
 	import { LimitOrders001ClientConnector, LimitOrderType } from './LimitOrderConnector';
 	import { connectedAccount } from './UseWallet.svelte';
 	import { pageContentRefresh } from './utils';
@@ -72,47 +73,26 @@
 
 <div class="w-full flex flex-col p-2 px-4 bg-base-200 relative">
 	<div class="pool rounded-btn flex flex-col min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
-		<div class="flex justify-between cursor-pointer select-none" on:click={() => onSelect()} on:keydown>
-			<span class="name mb-0 flex justify-start items-center w-full gap-5">
-				<span class="w-3 flex justify-center items-center">
-					{#if order.isDirectionFromArc200ToAlgo}
-						<span class="block rounded-full w-3 h-3 bg-green-500">&nbsp;</span>
-					{:else}
-						<span class="block rounded-full w-3 h-3 bg-red-500">&nbsp;</span>
-					{/if}
-				</span>
-
-				<a
-					href="https://voi.observer/explorer/account/{order.maker}"
-					target="_blank"
-					referrerpolicy="no-referrer"
-					class="w-24 hidden min-[500px]:inline"
-					on:click={(e) => e.stopPropagation()}
-				>
-					{order.maker.slice(0, 3)}...{order.maker.slice(-3)}
-				</a>
-
-				<span class="w-24 text-nowrap">
+		<div
+			class="flex justify-between cursor-pointer select-none"
+			class:text-green-400={order.isDirectionFromArc200ToAlgo}
+			class:text-red-400={!order.isDirectionFromArc200ToAlgo}
+			on:click={() => onSelect()}
+			on:keydown
+		>
+			<span class="name mb-0 flex justify-between items-center w-full gap-5">
+				<span class="w-14 text-nowrap">
 					{(arc200TokenAmount / algoTokenAmouunt).toLocaleString('en')}
-					{order.arc200Token.ticker}
 				</span>
 
-				<span class="w-24 text-nowrap">
-					{algoTokenAmouunt.toLocaleString('en')}
-					VOI
+				<span class="w-14 text-nowrap">
+					<CurrencyNumber amount={algoTokenAmouunt} />
 				</span>
 
-				<span class="hidden md:block flex-grow" />
+				<span class="w-14 text-nowrap text-right">
+					<CurrencyNumber amount={arc200TokenAmount} />
+				</span>
 			</span>
-			<div class="w-6">
-				{#if order.maker === $connectedAccount}
-					<button class="btn btn-sm btn-ghost absolute" on:click|stopPropagation={(e) => cancelLimitOrder(e, order)}
-						>x</button
-					>
-				{:else}
-					&nbsp;
-				{/if}
-			</div>
 		</div>
 	</div>
 	<div

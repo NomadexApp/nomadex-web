@@ -125,3 +125,83 @@ export class SwapEvents {
 		});
 	}
 }
+
+
+export async function getSwapEvents(poolId: number) {
+	const eventSignature = 'Swap(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))';
+	const updatedEvents: {
+		sender: string;
+		fromAmount: number;
+		toAmount: number;
+		direction: number;
+		poolBals: [bigint, bigint];
+		txn: SwapTxn;
+	}[] = [];
+	const txns = await SwapEvents.loadTxnsByEvent(poolId, eventSignature);
+	for (const txn of txns) {
+		const events = txn.events[eventSignature];
+		if (events instanceof Array) {
+			for (const event of events) {
+				const [sender, inAmts, outAmts, poolBals] = <any[]>event;
+				const direction = Number(inAmts[0]) === 0 ? 1 : 0;
+				const fromAmount = inAmts[direction];
+				const toAmount = outAmts[direction ? 0 : 1];
+				updatedEvents.push({
+					sender: sender,
+					fromAmount: Number(fromAmount),
+					toAmount: Number(toAmount),
+					direction: direction,
+					poolBals: poolBals,
+					txn: txn,
+				});
+			}
+		}
+	}
+	return updatedEvents;
+}
+
+export async function getDepositEvents(poolId: number) {
+	const updatedEvents: {
+		sender: string;
+		amts: [bigint, bigint];
+		lpt: bigint;
+		adding: boolean;
+		poolBals: [bigint, bigint];
+		txn: SwapTxn;
+	}[] = [];
+	for (const eventSignature of [
+		'Deposit(address,(uint256,uint256),uint256,(uint256,uint256))',
+		'Withdraw(address,uint256,(uint256,uint256),(uint256,uint256))',
+	]) {
+		const txns = await SwapEvents.loadTxnsByEvent(poolId, eventSignature);
+		for (const txn of txns) {
+			const events = txn.events[eventSignature];
+			if (events instanceof Array) {
+				for (const event of events) {
+					if (eventSignature.startsWith('Deposit')) {
+						const [sender, inAmts, outLpt, poolBals] = <any[]>event;
+						updatedEvents.push({
+							sender: sender,
+							amts: inAmts,
+							lpt: outLpt,
+							adding: true,
+							poolBals: poolBals,
+							txn: txn,
+						});
+					} else {
+						const [sender, inLpt, outAmts, poolBals] = <any[]>event;
+						updatedEvents.push({
+							sender: sender,
+							amts: outAmts,
+							lpt: inLpt,
+							adding: false,
+							poolBals: poolBals,
+							txn: txn,
+						});
+					}
+				}
+			}
+		}
+	}
+	return updatedEvents;
+}
