@@ -1,5 +1,5 @@
-<footer>
-    <h2 class="text-xl">Nomadex | Decentralized Exchange</h2>
+<footer class="h-[100px] md:h-[200px]">
+    <h2 class="text-xs lg:text-xl">Nomadex | Decentralized Exchange</h2>
 </footer>
 
 <style>
@@ -9,10 +9,9 @@
         align-items: center;
         background-color: #444422;
         width: 100%;
-        height: 200px;
     }
     footer::after {
-        content: "hello";
+        content: "";
         position: fixed;
         top: 70vh;
         background: #444422;

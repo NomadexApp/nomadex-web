@@ -28,15 +28,18 @@
 <style>
 	dialog {
 		position: fixed;
-		margin: 0;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
 		background: #222211;
 		border-radius: 8px;
-		min-width: 400px;
 		width: max-content;
-		max-width: 99vw;
+		height: min-content;
+		max-height: calc(100vh - 2rem);
+		display: block;
+		max-width: calc(100vw - 2rem);
+		overflow-x: auto;
+		overflow-y: auto;
 		padding: 1rem;
 		box-shadow: 0px 0px 2px #000;
 		min-height: 100px;

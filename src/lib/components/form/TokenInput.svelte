@@ -1,6 +1,12 @@
 <script lang="ts">
+	import { onNumberKeyPress } from '$lib/inputs';
+
 	export let pretext = '';
+	export let posttext = '';
+	export let value = 0;
 	export let token: string;
+	export let showMax = false;
+	export let handleMax = () => {};
 </script>
 
 <div class="field input-field relative">
@@ -8,7 +14,15 @@
 		<div class="absolute left-4 text-sm text-gray-50 opacity-50"><span>{pretext}</span></div>
 	{/if}
 	<div class="flex">
-		<input type="number" class="no-arrows" placeholder="0" />
+		<input
+			type="number"
+			step="0.000001"
+			bind:value
+			on:keypress={onNumberKeyPress}
+			on:keyup
+			class="no-arrows"
+			placeholder="0"
+		/>
 		<div class="right">
 			<button class="currency" on:click>
 				{token}
@@ -24,6 +38,18 @@
 			</button>
 		</div>
 	</div>
+	{#if posttext}
+		<div class="absolute bottom-2 left-4 text-sm text-gray-50 opacity-50"><span>{posttext}</span></div>
+	{/if}
+	{#if showMax}
+		<div
+			class="absolute bottom-2 right-4 text-sm text-gray-50 opacity-50 cursor-pointer"
+			on:click={() => handleMax()}
+			on:keydown
+		>
+			<span>MAX</span>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -33,7 +59,7 @@
 		flex-direction: column;
 		width: 100%;
 		padding: 0.5rem 0;
-		padding-right: 1.5rem;
+		padding-right: 1rem;
 		border-radius: 8px;
 	}
 

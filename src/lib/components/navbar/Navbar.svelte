@@ -3,6 +3,11 @@
 	import Button from '$lib/components/button/Button.svelte';
 	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
 	import { getStores } from '$app/stores';
+	import UseWallet, { connectedAccount, walletDisconnect } from '$lib/UseWallet.svelte';
+	import { openModal } from '../modal/Modal.svelte';
+	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
+	import { getLastActivePair } from '$lib/config';
+	import { lastActiveSwapPair } from '$lib/stores';
 
 	const { page } = getStores();
 </script>
@@ -26,7 +31,7 @@
 		<div class="space" />
 		<ul>
 			<li>
-				<a class:active={$page.url.pathname === '/'} href="/">Swap</a>
+				<a class:active={$page.url.pathname.startsWith('/swap/')} href="/swap/{getLastActivePair($lastActiveSwapPair)}">Swap</a>
 			</li>
 
 			<li>
@@ -46,13 +51,14 @@
 			</li>
 		</ul>
 		<div class="actions">
-			{#if Math.random() < 0.5}
-				<button class="btn bg-[#222211] hover:bg-[#333311]">
+			<!-- <UseWallet /> -->
+			{#if $connectedAccount}
+				<button class="btn bg-[#222211] hover:bg-[#333311]" on:click={() => walletDisconnect()}>
 					<span class="inline-block h-6 w-6"><LogoutIcon /></span>
-					Disconnect
+					Disconnect ({$connectedAccount.slice(0, 4)})
 				</button>
 			{:else}
-				<button class="btn bg-[#222211] hover:bg-[#333311]">
+				<button class="btn bg-[#222211] hover:bg-[#333311]" on:click={() => openModal(ConnectWallet, {})}>
 					<span class="inline-block h-6 w-6"><LogoutIcon /></span>
 					Connect Wallet
 				</button>
@@ -63,11 +69,13 @@
 
 <style>
 	.navbar-wrapper {
-		width: 100%;
-		background: var(--primary-color);
+		width: 100vw;
+		height: calc(200px);
+		background: linear-gradient(to bottom, var(--primary-color) 100px, #333333);
 		position: fixed;
 		top: 0;
 		z-index: 1000;
+		clip-path: polygon(0 0, 100% 0, 100% 100%,calc(100% - 1rem) calc(100% - 100px), 1rem calc(100% - 100px), 0 100%);
 	}
 
 	.navbar {
@@ -79,6 +87,7 @@
 		align-items: center;
 		padding: 1rem;
 		gap: 1rem;
+		overflow-x: auto;
 	}
 
 	.logo-wrapper {

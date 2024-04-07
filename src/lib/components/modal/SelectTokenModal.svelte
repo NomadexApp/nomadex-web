@@ -31,6 +31,11 @@
 
 
 <style>
+	form {
+		width: min(350px, calc(100vw - 5rem));
+		max-width: 400px;
+		overflow: hidden;
+	}
 	.tokens {
 		display: flex;
 		flex-direction: column;

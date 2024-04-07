@@ -1,8 +1,5 @@
 <script>
-	import SwapForm from '$lib/components/form/SwapForm.svelte';
+	import { goto } from '$app/navigation';
+
+	goto('/swap/VOI-VIA');
 </script>
-
-<SwapForm />
-
-<style>
-</style>
