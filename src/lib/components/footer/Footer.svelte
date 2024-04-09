@@ -7,7 +7,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #444422;
+        background-color: #ffff66;
+        color: black;
         width: 100%;
     }
     footer::after {

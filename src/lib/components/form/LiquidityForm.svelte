@@ -5,40 +5,68 @@
 	import SwapInfo from '$lib/components/form/SwapInfo.svelte';
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
 	import { openModal } from '../modal/Modal.svelte';
-	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
 	import { knownTokens, type Token } from '$lib';
 	import { readableNumber } from '$lib/CurrencyNumber.svelte';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { pageContentRefresh } from '$lib/utils';
 
+	export let tokenLptBalance: number | bigint = 0n;
 	export let tokenABalance: number | bigint = 0n;
 	export let tokenBBalance: number | bigint = 0n;
 	export let poolTokenABalance: number | bigint = 0n;
 	export let poolTokenBBalance: number | bigint = 0n;
-	export let minReceived = 0;
+	export let poolShare = 0;
+	export let tokenLptInput = 0;
 	export let tokenAInput = 0;
 	export let tokenBInput = 0;
-	export let slippage = 1;
-	export let impact = 1;
 	export let tokenA: Token;
 	export let tokenB: Token;
 	export let disabled = false;
+	export let action: string;
+	export let onInputTokenLpt = () => {};
 	export let onInputTokenA = () => {};
 	export let onInputTokenB = () => {};
-	export let handleSwitchPlaces = () => {};
-	export let handleSwap = () => {};
+	export let handleSubmit = () => {};
 	export let handleTokenChange: (token: Token, index: number) => void = () => {};
 </script>
 
 <div class="form">
-	<FormTitle>Swap VOI for VIA</FormTitle>
+	<FormTitle>{action === 'remove' ? 'Remove' : 'Add'} Liquidity</FormTitle>
+	{#if action === 'remove'}
+		<TokenInput
+			pretext="You pay"
+			posttext={`balance ${tokenLptBalance.toLocaleString()} LPT`}
+			token={'LPT'}
+			showMax
+			bind:value={tokenLptInput}
+			on:keydown={(e) => disabled && e.preventDefault()}
+			on:keyup={onInputTokenLpt}
+			handleMax={() => {
+				tokenLptInput = tokenLptInput === Number(tokenLptBalance) ? 0 : Number(tokenLptBalance);
+				onInputTokenLpt();
+			}}
+			on:click={() => {
+				if (tokenA.id === 0) return;
+				openModal(SelectTokenModal, {
+					tokens: $knownTokens.filter((tok) => tok.id !== tokenA.id),
+					handleSelect(token) {
+						handleTokenChange(token, 0);
+					},
+				});
+			}}
+		>
+			<svelte:fragment slot="currency">LPT</svelte:fragment>
+		</TokenInput>
+	{/if}
 	<TokenInput
-		pretext="You pay"
-		posttext={`balance ${tokenABalance.toLocaleString()} ${tokenA.ticker}`}
+		pretext={action === 'remove' ? '' : 'You pay'}
+		posttext={action === 'add' ? `balance ${tokenABalance.toLocaleString()} ${tokenA.ticker}` : ''}
 		token={tokenA.ticker}
-		showMax
+		showMax={action === 'add'}
 		bind:value={tokenAInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
 		on:keyup={onInputTokenA}
+		disabled={action === 'remove'}
 		handleMax={() => {
 			tokenAInput = tokenAInput === Number(tokenABalance) ? 0 : Number(tokenABalance);
 			onInputTokenA();
@@ -52,37 +80,38 @@
 				},
 			});
 		}}
-	/>
-	<div class="flex justify-center px-1">
-		<button
-			type="reset"
-			class="btn btn-ghost btn-link btn-sm opacity-80 text-base-content"
-			on:click={handleSwitchPlaces}
-		>
-			<span class="block h-6"><MdSwapVert /></span>
-		</button>
-	</div>
+	>
+		<svelte:fragment slot="currency">{tokenA.ticker}</svelte:fragment>
+	</TokenInput>
 	<TokenInput
-		pretext="You receive"
+		pretext={action === 'remove' ? '' : 'You pay'}
 		token={tokenB.ticker}
-		posttext={`balance ${tokenBBalance.toLocaleString()} ${tokenB.ticker}`}
+		posttext={action === 'add' ? `balance ${tokenBBalance.toLocaleString()} ${tokenB.ticker}` : ''}
 		bind:value={tokenBInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
 		on:keyup={onInputTokenB}
+		disabled={action === 'remove'}
+		showMax={action === 'add'}
+		handleMax={() => {
+			tokenBInput = tokenBInput === Number(tokenBBalance) ? 0 : Number(tokenBBalance);
+			onInputTokenB();
+		}}
 		on:click={() => {
 			if (tokenB.id === 0) return;
 			openModal(SelectTokenModal, {
-				tokens: $knownTokens.filter((tok) => tok.id !== tokenB.id),
+				tokens: $knownTokens.filter((tok) => tok.id !== tokenB.id && tok.id),
 				handleSelect(token) {
 					handleTokenChange(token, 1);
 				},
 			});
 		}}
-	/>
+	>
+		<svelte:fragment slot="currency">{tokenB.ticker}</svelte:fragment>
+	</TokenInput>
 
-	<ActionButton on:click={handleSwap} disabled={Boolean($connectedAccount) && disabled}>
+	<ActionButton on:click={handleSubmit} disabled={Boolean($connectedAccount) && disabled}>
 		{#if $connectedAccount}
-			Swap
+			{action === 'remove' ? 'Remove' : 'Add'} Liquidity
 		{:else}
 			Connect to a Wallet
 		{/if}
@@ -96,12 +125,20 @@
 					Number(poolTokenBBalance) || 0
 				).toLocaleString()} ${tokenB.ticker}`,
 			],
-			['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
-			['Price impact', `${impact}%`],
-			['Slippage', `${slippage * 100}%`],
-			['Fee', '1%'],
+			['Your share', `${(poolShare || 0).toLocaleString()}%`],
 		]}
 	/>
+</div>
+
+<br />
+<div class="flex justify-center text-sm">
+	<a
+		class="hover:underline underline-offset-4 text-[#ffffff]"
+		href="/liquidity/{tokenB.ticker}/{action === 'remove' ? 'add' : 'remove'}"
+		on:click={() => pageContentRefresh()}
+	>
+		{action === 'remove' ? 'Add' : 'Remove'} Liquidity
+	</a>
 </div>
 
 <style>

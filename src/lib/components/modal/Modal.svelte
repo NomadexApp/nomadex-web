@@ -30,13 +30,14 @@
 		position: fixed;
 		top: 50%;
 		left: 50%;
+		margin: 0;
 		transform: translate(-50%, -50%);
 		background: #222211;
+		color: white;
 		border-radius: 8px;
 		width: max-content;
 		height: min-content;
 		max-height: calc(100vh - 2rem);
-		display: block;
 		max-width: calc(100vw - 2rem);
 		overflow-x: auto;
 		overflow-y: auto;
@@ -46,14 +47,14 @@
 		z-index: 1001;
 	}
 	dialog[open] + .overlay {
-		content: 'a';
+		content: '';
 		width: 100%;
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: #44444455;
+		background: #ffffff77;
 		z-index: 1000;
 	}
 </style>

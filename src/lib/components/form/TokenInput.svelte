@@ -6,6 +6,7 @@
 	export let value = 0;
 	export let token: string;
 	export let showMax = false;
+	export let disabled = false;
 	export let handleMax = () => {};
 </script>
 
@@ -18,24 +19,27 @@
 			type="number"
 			step="0.000001"
 			bind:value
+			{disabled}
 			on:keypress={onNumberKeyPress}
 			on:keyup
 			class="no-arrows"
 			placeholder="0"
 		/>
 		<div class="right">
-			<button class="currency" on:click>
-				{token}
-				<svg
-					width="12"
-					height="7"
-					viewBox="0 0 12 7"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-					class="SwapCurrencyInputPanel__StyledDropDown-sc-3e2fecea-8 jJfXUM"
-					><path d="M0.97168 1L6.20532 6L11.439 1" stroke="currentColor" /></svg
-				>
-			</button>
+			<slot name="currency">
+				<button class="currency" on:click>
+					{token}
+					<svg
+						width="12"
+						height="7"
+						viewBox="0 0 12 7"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						class="SwapCurrencyInputPanel__StyledDropDown-sc-3e2fecea-8 jJfXUM"
+						><path d="M0.97168 1L6.20532 6L11.439 1" stroke="currentColor" /></svg
+					>
+				</button>
+			</slot>
 		</div>
 	</div>
 	{#if posttext}
@@ -72,16 +76,17 @@
 	}
 
 	.field .right {
-		width: 5rem;
+		width: max-content;
+		min-width: 5rem;
 		display: flex;
-		justify-content: center;
+		justify-content: end;
 		align-items: center;
 	}
 
 	.field .right .currency {
 		padding: 0.25rem 1rem;
 		background: #ffff6622;
-		border-radius: 1rem;
+		border-radius: 3rem;
 		cursor: pointer;
 	}
 
@@ -97,6 +102,6 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		gap: 1rem;
+		gap: 0.5rem;
 	}
 </style>

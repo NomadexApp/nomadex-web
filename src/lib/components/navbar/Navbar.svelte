@@ -1,26 +1,18 @@
 <script lang="ts">
 	import Logo from '$lib/components/logo/Logo.svelte';
-	import Button from '$lib/components/button/Button.svelte';
-	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
+	import MdAccountBalanceWallet from 'svelte-star/dist/md/MdAccountBalanceWallet.svelte';
 	import { getStores } from '$app/stores';
-	import UseWallet, { connectedAccount, walletDisconnect } from '$lib/UseWallet.svelte';
+	import { connectedAccount, walletDisconnect } from '$lib/UseWallet.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
 	import { getLastActivePair } from '$lib/config';
-	import { lastActiveSwapPair } from '$lib/stores';
+	import { lastActiveAnalyticsPair, lastActiveLimitOrderPair, lastActiveSwapPair } from '$lib/stores';
+	import { addNotification } from '$lib/Notify.svelte';
+	import { getAccountBalance, watchArc200Balance } from '$lib/stores/onchain';
 
 	const { page } = getStores();
 </script>
 
-<!-- {#each Array(3).fill(0) as i}
-	<span
-		class="star"
-		style="top: {100 + Math.random() * 25}px;left: {Math.random() *
-			window.innerWidth}px;transform: rotate({Math.random() * 360}deg);"
-	>
-		★
-	</span>
-{/each} -->
 <div class="navbar-wrapper">
 	<nav class="navbar">
 		<div class="navbar-brand">
@@ -30,8 +22,13 @@
 		</div>
 		<div class="space" />
 		<ul>
-			<li>
-				<a class:active={$page.url.pathname.startsWith('/swap/')} href="/swap/{getLastActivePair($lastActiveSwapPair)}">Swap</a>
+			<li class="first">
+				<a
+					class:active={$page.url.pathname.startsWith('/swap/')}
+					href="/swap/{getLastActivePair('swap', $lastActiveSwapPair)}"
+				>
+					Swap
+				</a>
 			</li>
 
 			<li>
@@ -39,27 +36,54 @@
 			</li>
 
 			<li>
-				<a class:active={$page.url.pathname.startsWith('/limit')} href="/limit">Limit</a>
+				<a
+					class:active={$page.url.pathname.startsWith('/limit')}
+					href="/limit/{getLastActivePair('limit', $lastActiveLimitOrderPair)}"
+				>
+					Limit
+				</a>
 			</li>
 
 			<li>
-				<a class:active={$page.url.pathname.startsWith('/analytics')} href="/analytics">Analytics</a>
+				<a
+					class:active={$page.url.pathname.startsWith('/analytics')}
+					href="/analytics/{getLastActivePair('analytics', $lastActiveAnalyticsPair)}"
+				>
+					Analytics
+				</a>
 			</li>
 
 			<li>
 				<a href="https://v01.nomadex.app" target="_blank">v0.1</a>
 			</li>
 		</ul>
-		<div class="actions">
+		<div class="actions flex gap-2">
 			<!-- <UseWallet /> -->
 			{#if $connectedAccount}
-				<button class="btn bg-[#222211] hover:bg-[#333311]" on:click={() => walletDisconnect()}>
-					<span class="inline-block h-6 w-6"><LogoutIcon /></span>
-					Disconnect ({$connectedAccount.slice(0, 4)})
+				<span class="text-black flex flex-col items-end bg-[#22221100] p-2 rounded text-sm cursor-default">
+					{#await getAccountBalance($connectedAccount)}
+						<span>0 VOI</span>
+					{:then balance}
+						<span>{(balance / 1e6).toLocaleString()} VOI</span>
+					{/await}
+					<span
+						class="font-bold"
+						on:keydown
+						on:click={() => {
+							navigator.clipboard.writeText($connectedAccount);
+							addNotification('info', 'Copied to clipboard', 1000);
+						}}
+					>
+						{$connectedAccount.slice(0, 3)}...{$connectedAccount.slice(-3)}
+					</span>
+				</span>
+				<button class="btn bg-black hover:bg-[#222205]" on:click={() => walletDisconnect()}>
+					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
+					Disconnect
 				</button>
 			{:else}
-				<button class="btn bg-[#222211] hover:bg-[#333311]" on:click={() => openModal(ConnectWallet, {})}>
-					<span class="inline-block h-6 w-6"><LogoutIcon /></span>
+				<button class="btn bg-black hover:bg-[#222205]" on:click={() => openModal(ConnectWallet, {})}>
+					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Connect Wallet
 				</button>
 			{/if}
@@ -70,12 +94,27 @@
 <style>
 	.navbar-wrapper {
 		width: 100vw;
-		height: calc(200px);
+		--edge-height: 300px;
+		--edge-width: 0.2rem;
+		height: calc(100px + var(--edge-height));
 		background: linear-gradient(to bottom, var(--primary-color) 100px, #333333);
 		position: fixed;
 		top: 0;
 		z-index: 1000;
-		clip-path: polygon(0 0, 100% 0, 100% 100%,calc(100% - 1rem) calc(100% - 100px), 1rem calc(100% - 100px), 0 100%);
+		clip-path: polygon(
+			0 0,
+			100% 0,
+			100% 100%,
+			calc(100% - var(--edge-width)) calc(100% - var(--edge-height)),
+			var(--edge-width) calc(100% - var(--edge-height)),
+			0 100%
+		);
+	}
+
+	@media (max-width: 700px) {
+		.navbar-wrapper {
+			/* clip-path: polygon(0 0, 100% 0, 100% 100%, calc(100% - 1rem) calc(100% - 300px), 1rem calc(100% - 300px), 0 100%); */
+		}
 	}
 
 	.navbar {
@@ -133,21 +172,32 @@
 		text-decoration: none;
 		color: #000000;
 		font-weight: 400;
-		padding: 0.25rem 0.5rem;
+		/* padding: 0.25rem 0.5rem; */
 		transition: 100ms all;
-		/* box-shadow: 1px 1px 0px #aaa; */
-		font-size: 15px;
-		/* width: 80px; */
-		display: flex;
+		font-size: 17px;
 		justify-content: center;
+		align-items: center;
 		opacity: 0.7;
 	}
 
-	a.active {
-		font-weight: 500;
+	ul li {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0 0.25rem;
+		background: #ffff66;
+		border-radius: 8px;
+		height: 2rem;
+	}
+
+	ul li:hover {
+		background: #f0f066;
 	}
 
 	.actions {
 		margin-left: auto;
+	}
+	.actions button {
+		color: white;
 	}
 </style>
