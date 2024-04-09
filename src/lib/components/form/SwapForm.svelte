@@ -29,8 +29,6 @@
 	export let handleSwap = () => {};
 	export let handleTokenChange: (token: Token, index: number) => void = () => {};
 
-	$: slippage = slippagePercent / 100;
-
 	let editingSlippage = false;
 </script>
 
@@ -97,6 +95,7 @@
 				on:blur={() => {
 					slippage = slippagePercent / 100;
 					editingSlippage = false;
+					onInputTokenA();
 				}}
 			/> %
 		</div>

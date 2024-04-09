@@ -204,7 +204,7 @@
 		{impact}
 		bind:tokenAInput={inputTokenA}
 		bind:tokenBInput={inputTokenB}
-		{slippage}
+		bind:slippage
 		{tokenA}
 		{tokenB}
 		{onInputTokenA}
