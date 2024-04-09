@@ -14,13 +14,13 @@
 </script>
 
 <div class="navbar-wrapper">
-	<nav class="navbar">
+	<nav class="navbar flex flex-col sm:flex-row">
 		<div class="navbar-brand">
 			<div class="logo-wrapper">
 				<a href="/"><Logo /></a>
 			</div>
 		</div>
-		<div class="space" />
+		<div class="space hidden sm:block" />
 		<ul>
 			<li class="first">
 				<a
@@ -62,9 +62,9 @@
 			{#if $connectedAccount}
 				<span class="text-black flex flex-col items-end bg-[#22221100] p-2 rounded text-sm cursor-default">
 					{#await getAccountBalance($connectedAccount)}
-						<span>0 VOI</span>
+						<span class="text-nowrap">0 VOI</span>
 					{:then balance}
-						<span>{(balance / 1e6).toLocaleString()} VOI</span>
+						<span class="text-nowrap">{(balance / 1e6).toLocaleString()} VOI</span>
 					{/await}
 					<span
 						class="font-bold"
@@ -93,11 +93,12 @@
 
 <style>
 	.navbar-wrapper {
+		--height: 100px;
 		width: 100vw;
 		--edge-height: 300px;
 		--edge-width: 0.2rem;
-		height: calc(100px + var(--edge-height));
-		background: linear-gradient(to bottom, var(--primary-color) 100px, #333333);
+		height: calc(var(--height) + var(--edge-height));
+		background: linear-gradient(to bottom, var(--primary-color) var(--height), #333333);
 		position: fixed;
 		top: 0;
 		z-index: 1000;
@@ -112,13 +113,33 @@
 	}
 
 	@media (max-width: 700px) {
+		:global(html body) {
+			padding-top: 0;
+		}
 		.navbar-wrapper {
-			/* clip-path: polygon(0 0, 100% 0, 100% 100%, calc(100% - 1rem) calc(100% - 300px), 1rem calc(100% - 300px), 0 100%); */
+			position: relative;
+			--height: 350px;
+			--edge-height: 50px;
+		}
+
+		ul {
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+		.actions {
+			flex-direction: column;
+			justify-content: center;
+			margin-left: 0 !important;
+		}
+		.actions > span {
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 	}
 
 	.navbar {
-		height: 100px;
+		height: var(--height);
 		overflow: hidden;
 		max-width: 1500px;
 		margin: 0 auto;
