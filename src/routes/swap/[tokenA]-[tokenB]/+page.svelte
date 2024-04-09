@@ -181,6 +181,16 @@
 	};
 
 	let impact = 0;
+
+	$: impact = Number(
+		(
+			((poolTokenABalance * 0.99 + inputTokenA) /
+				(poolTokenBBalance - inputTokenB) /
+				((poolTokenABalance * 0.99) / poolTokenBBalance) -
+				1) *
+				100 || 0
+		).toFixed(2)
+	);
 </script>
 
 {#if voiToken && arc200Token}

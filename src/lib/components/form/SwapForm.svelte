@@ -18,6 +18,7 @@
 	export let tokenAInput = 0;
 	export let tokenBInput = 0;
 	export let slippage = 1;
+	export let slippagePercent = slippage * 100;
 	export let impact = 1;
 	export let tokenA: Token;
 	export let tokenB: Token;
@@ -27,6 +28,10 @@
 	export let handleSwitchPlaces = () => {};
 	export let handleSwap = () => {};
 	export let handleTokenChange: (token: Token, index: number) => void = () => {};
+
+	$: slippage = slippagePercent / 100;
+
+	let editingSlippage = false;
 </script>
 
 <div class="form">
@@ -46,7 +51,7 @@
 		on:click={() => {
 			if (tokenA.id === 0) return;
 			openModal(SelectTokenModal, {
-				tokens: $knownTokens.filter((tok) => tok.id !== tokenA.id),
+				tokens: $knownTokens.filter((tok) => tok.id && tok.id !== tokenA.id),
 				handleSelect(token) {
 					handleTokenChange(token, 0);
 				},
@@ -72,13 +77,30 @@
 		on:click={() => {
 			if (tokenB.id === 0) return;
 			openModal(SelectTokenModal, {
-				tokens: $knownTokens.filter((tok) => tok.id !== tokenB.id),
+				tokens: $knownTokens.filter((tok) => tok.id && tok.id !== tokenB.id),
 				handleSelect(token) {
 					handleTokenChange(token, 1);
 				},
 			});
 		}}
 	/>
+
+	<div class="flex justify-end items-center gap-2 text-[#999966]">
+		<div class="text-[0.8rem] text-[#999966]">Slippage</div>
+		<div on:click={() => (editingSlippage = true)} on:keydown>
+			<input
+				type="number"
+				class="no-arrows bg-[#333311] outline-none p-[1px] px-[2px] text-[0.9rem] w-[3rem] text-center rounded"
+				step={0.01}
+				bind:value={slippagePercent}
+				placeholder="1%"
+				on:blur={() => {
+					slippage = slippagePercent / 100;
+					editingSlippage = false;
+				}}
+			/> %
+		</div>
+	</div>
 
 	<ActionButton on:click={handleSwap} disabled={Boolean($connectedAccount) && disabled}>
 		{#if $connectedAccount}
@@ -117,5 +139,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+	input:focus-within {
+		color: white;
 	}
 </style>
