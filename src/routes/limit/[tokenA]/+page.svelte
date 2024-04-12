@@ -125,11 +125,15 @@
 	})(limitOrders);
 
 	let price = 0;
-	let lazyPrice = price;
+	let lazyPrice = Number(price.toFixed(6));
 
-	$: if (!lazyPrice && price) {
-		lazyPrice = price;
-	}
+	const updatePriceInput = (price: number) => {
+		if (!lazyPrice && price) {
+			lazyPrice = Number(price.toFixed(6));
+		}
+	};
+
+	$: updatePriceInput(price);
 
 	let buying = true;
 	let disabled = false;
@@ -137,7 +141,7 @@
 	let inputTokenA = 0;
 
 	async function createLimitOrder() {
-		const inputTokenB = buying ? inputTokenA / price : inputTokenA * price;
+		const inputTokenB = buying ? inputTokenA / lazyPrice : inputTokenA * lazyPrice;
 
 		if (!tokenA || !tokenB) return;
 		const prev = disabled;
@@ -235,7 +239,7 @@
 	</div>
 	<div class="max-w-[900px] w-full mx-auto flex gap-2">
 		<LimitForm
-			price={Number(lazyPrice.toFixed(6))}
+			bind:price={lazyPrice}
 			{buying}
 			{tokenA}
 			{tokenB}
