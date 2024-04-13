@@ -231,7 +231,7 @@
 								<div
 									on:click={() => (lazyPrice = group.price)}
 									on:keydown
-									class="cursor-pointer w-full p-2 px-2 sm:px-3 rounded flex flex-row-reverse justify-between items-center gap-1 max-w-[800px] hover:bg-[#ffff6620]"
+									class="cursor-pointer w-full p-2 px-2 sm:px-3 rounded flex flex-row-reverse min-[300px]:flex-row justify-between items-center gap-1 max-w-[800px] hover:bg-[#ffff6620]"
 								>
 									<span class="text-[0.8rem] sm:text-[1rem]">
 										<CurrencyNumber amount={Number(convertDecimals(group.total, tokenA.decimals, 6)) / 1e6} />
