@@ -20,6 +20,7 @@
 			step="0.000001"
 			bind:value
 			{disabled}
+			min={0}
 			on:keypress={onNumberKeyPress}
 			on:keyup
 			class="no-arrows"

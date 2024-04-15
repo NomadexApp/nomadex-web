@@ -305,8 +305,10 @@
 			buying={$page.params.action === 'buy'}
 			{tokenA}
 			{tokenB}
+			{disabled}
 			tokenABalance={(Number($arc200Balance) - 1) / arc200Token.unit}
-			tokenBBalance={($connectedUserState.amount - ($connectedUserState['min-balance'] ?? 0)) / 1e6}
+			tokenBBalance={Math.max(0, $connectedUserState.amount - (($connectedUserState['min-balance'] ?? 0) + 100_000)) /
+				1e6}
 			bind:tokenAInput={inputTokenA}
 			handleSubmit={() => {
 				if ($connectedAccount) {
