@@ -20,7 +20,7 @@
 					<span class="flex-grow" />
 				</div>
 
-				<div class="bg-[#00000033] rounded-[8px]">
+				<div class="bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
 					<div class="w-full event font-bold p-3 px-6 flex justify-start items-center gap-1 max-w-[800px]">
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
@@ -88,7 +88,7 @@
 					<h4 class="text-lg text-left w-full mb-1 max-w-[724px] font-medium">Change Liquidity Txns</h4>
 					<span class="flex-grow" />
 				</div>
-				<div class="bg-[#00000033] rounded-[8px]">
+				<div class="bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
 					<div class="w-full event font-bold p-3 px-6 flex justify-start items-center gap-1 max-w-[800px]">
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>

@@ -136,6 +136,10 @@
 		width: 800px;
 	}
 
+	.pools {
+		backdrop-filter: blur(5px);
+	}
+
 	.pools > :global(.pool) {
 		grid-template-columns: minmax(100px, 1fr) minmax(50px, 150px) minmax(50px, 75px) 120px;
 		padding: 0.5rem;

@@ -208,7 +208,7 @@
 	<div class="flex flex-col justify-start w-full overflow-auto">
 		<PoolChartContext bind:price context="limit" />
 	</div>
-	<div class="flex flex-col justify-center max-w-[500px] w-full mx-auto bg-[#00000033] rounded-[8px] my-4">
+	<div class="flex flex-col justify-center max-w-[500px] w-full mx-auto bg-[#00000033] backdrop-blur-[5px] rounded-[8px] my-4">
 		{#if loading}
 			<div class="w-full min-h-44 flex justify-center items-center">
 				<span class="loading text-primary" />
@@ -332,7 +332,7 @@
 					<div class="flex justify-center">
 						<h4 class="text-xl w-full mb-5 font-medium">My orders</h4>
 					</div>
-					<div class="bg-[#00000033] rounded-[8px]">
+					<div class="bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
 						<div
 							class="w-full event font-bold p-3 px-2 sm:px-3 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
 						>

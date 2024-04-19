@@ -316,6 +316,7 @@
 		width: 100%;
 	}
 	.chart-container {
+		backdrop-filter: blur(5px);
 		width: 100%;
 		display: flex;
 		justify-content: center;
