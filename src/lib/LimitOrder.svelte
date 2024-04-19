@@ -44,10 +44,10 @@
 	<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-10 sm:w-10 text-justify flex justify-end">
 		{#if order.maker === $connectedAccount}
 			<button
-				class="p-2 bg-[#ffff6622] w-6 h-6 rounded flex justify-center items-center"
+				class="p-2 btn btn-sm btn-ghost btn-square w-6 h-6 rounded flex justify-center items-center"
 				on:click={(e) => cancelLimitOrder(e, order)}
 			>
-				<span class="scale-150"><MdClose /></span>
+				<span class="scale-[3]"><MdClose /></span>
 			</button>
 		{/if}
 	</span>

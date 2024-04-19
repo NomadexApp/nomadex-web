@@ -88,12 +88,12 @@
 		<div class="join sm:grid sm:grid-cols-2">
 			<a
 				href="/pool"
-				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-[#ffff66] hover:text-black"
+				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-primary hover:text-black"
 				class:active={$page.url.pathname.match(/\/pool\/?$/)}>Pools</a
 			>
 			<a
 				href="/pool/your-positions"
-				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-[#ffff66] hover:text-black"
+				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-primary hover:text-black"
 				class:active={$page.url.pathname.match(/\/pool\/your-positions\/?/)}>Your Positions</a
 			>
 		</div>
@@ -147,6 +147,6 @@
 
 	.join-item.active {
 		color: #000000;
-		background: #ffff66;
+		background: var(--color-primary);
 	}
 </style>

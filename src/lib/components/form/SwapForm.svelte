@@ -132,6 +132,7 @@
 		margin: 0 auto 0 auto;
 		height: max-content;
 		padding: 2rem;
+		backdrop-filter: blur(5px);
 		background: #00000040;
 		border-radius: 8px;
 		width: 500px;

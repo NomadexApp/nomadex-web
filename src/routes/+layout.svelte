@@ -28,7 +28,7 @@
 		pageContentRefresh();
 	}
 
-	let hue = Math.floor(Date.now() / 1000) % 359;
+	let hue = Math.floor(Date.now() / 1000) % 360;
 	function nextHue(hue: number, x: number) {
 		return (hue + 45 * x) % 360;
 	}

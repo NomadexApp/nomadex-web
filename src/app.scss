@@ -60,10 +60,12 @@ body {
 			hsl(var(--hue6) 50% 50% / 40%),
 			hsl(var(--hue7) 50% 50% / 40%),
 			hsl(var(--hue8) 50% 50% / 40%),
-			hsl(var(--hue1) 50% 50% / 40%)
+			hsl(var(--hue1) 50% 50% / 40%),
+			hsl(var(--hue2) 50% 50% / 40%),
+			hsl(var(--hue3) 50% 50% / 40%),
 		);
 	opacity: 1;
-	background-size: 800% 100%;
+	background-size: 8000% 100%;
 
 	-webkit-animation: AnimationName 360s linear infinite;
 	-moz-animation: AnimationName 360s linear infinite;
@@ -77,7 +79,7 @@ body {
 		background-position-x: 0%;
 	}
 	100% {
-		background-position-x: 89%;
+		background-position-x: 80%;
 	}
 }
 @-moz-keyframes AnimationName {
@@ -85,7 +87,7 @@ body {
 		background-position-x: 0%;
 	}
 	100% {
-		background-position-x: 89%;
+		background-position-x: 80%;
 	}
 }
 @-o-keyframes AnimationName {
@@ -93,7 +95,7 @@ body {
 		background-position-x: 0%;
 	}
 	100% {
-		background-position-x: 89%;
+		background-position-x: 80%;
 	}
 }
 @keyframes AnimationName {
@@ -101,7 +103,7 @@ body {
 		background-position-x: 0%;
 	}
 	100% {
-		background-position-x: 89%;
+		background-position-x: 80%;
 	}
 }
 

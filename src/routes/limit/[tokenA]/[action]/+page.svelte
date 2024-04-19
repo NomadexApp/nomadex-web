@@ -274,7 +274,7 @@
 
 	<div class="join grid grid-cols-2 w-full max-w-[500px] mx-auto">
 		<a
-			class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-[#ffff66]"
+			class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-primary"
 			class:active={$page.params.action === 'buy'}
 			data-sveltekit-noscroll
 			href="/limit/{tokenA.ticker}/buy"
@@ -285,7 +285,7 @@
 			Buy {arc200Token.ticker}
 		</a>
 		<a
-			class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-[#ffff66]"
+			class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-primary"
 			class:active={$page.params.action !== 'buy'}
 			data-sveltekit-noscroll
 			href="/limit/{tokenA.ticker}/sell"
