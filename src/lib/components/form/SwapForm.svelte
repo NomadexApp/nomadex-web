@@ -59,7 +59,7 @@
 	<div class="flex justify-center px-1">
 		<button
 			type="reset"
-			class="btn btn-ghost btn-link btn-sm opacity-80 text-base-content"
+			class="btn btn-ghost btn-link text-white btn-sm opacity-80"
 			on:click={handleSwitchPlaces}
 		>
 			<span class="block h-6"><MdSwapVert /></span>
@@ -83,12 +83,14 @@
 		}}
 	/>
 
-	<div class="flex justify-end items-center gap-2 text-[#999966]">
-		<div class="text-[0.8rem] text-[#999966]">Slippage</div>
+	<div class="flex justify-end items-center gap-2 text-[#999999]">
+		<div class="text-[0.8rem] text-[#f0f0f0aa]">Slippage</div>
 		<div on:click={() => (editingSlippage = true)} on:keydown>
 			<input
 				type="number"
-				class="no-arrows bg-[#333311] outline-none p-[1px] px-[2px] text-[0.9rem] w-[3rem] text-center rounded"
+				class="no-arrows bg-[#00000040] outline-none p-[1px] px-[2px] text-[0.9rem] w-[3rem] text-center rounded"
+				min={0.01}
+				max={40}
 				step={0.01}
 				bind:value={slippagePercent}
 				placeholder="1%"
@@ -127,11 +129,10 @@
 
 <style>
 	.form {
-		background-color: var(--primary-color);
-		margin: 100px auto 0 auto;
+		margin: 0 auto 0 auto;
 		height: max-content;
 		padding: 2rem;
-		background: #222211;
+		background: #00000040;
 		border-radius: 8px;
 		width: 500px;
 		max-width: calc(100vw - 2rem);

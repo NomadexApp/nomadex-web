@@ -33,7 +33,7 @@
 </script>
 
 <div
-	class="w-full event p-2 px-2 sm:px-3 rounded-btn flex justify-start items-center gap-1 max-w-[800px] bg-[#ffff6605] hover:bg-[#ffff6620]"
+	class="w-full event p-2 px-2 sm:px-3 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
 >
 	<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">
 		{(algoTokenAmouunt / arc200TokenAmount).toLocaleString('en')}

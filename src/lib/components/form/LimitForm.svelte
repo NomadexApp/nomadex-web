@@ -85,7 +85,7 @@
 		margin: 0 auto 0 auto;
 		height: max-content;
 		padding: 2rem;
-		background: #222211;
+		background: #00000040;
 		border-radius: 8px;
 		width: 500px;
 		max-width: calc(100vw - 2rem);

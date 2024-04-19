@@ -200,6 +200,7 @@
 </script>
 
 {#if voiToken && arc200Token}
+	<br /><br />
 	<SwapForm
 		disabled={!loaded || !inputTokenB || !inputTokenA}
 		tokenABalance={Number(convertDecimals(formData.tokenABalance ?? 0n, tokenA.decimals, 6)) / 1e6}

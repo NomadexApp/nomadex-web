@@ -73,6 +73,7 @@
 					pool.poolId.toString() === searchText
 		  )
 		: $sortedPools;
+	$: my = Boolean($page.url.pathname.match('/your-positions'));
 </script>
 
 <form class="max-w-[90vw] overflow-hidden">
@@ -87,12 +88,12 @@
 		<div class="join sm:grid sm:grid-cols-2">
 			<a
 				href="/pool"
-				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-[#ffff66]"
+				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-[#ffff66] hover:text-black"
 				class:active={$page.url.pathname.match(/\/pool\/?$/)}>Pools</a
 			>
 			<a
 				href="/pool/your-positions"
-				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-[#ffff66]"
+				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-[#ffff66] hover:text-black"
 				class:active={$page.url.pathname.match(/\/pool\/your-positions\/?/)}>Your Positions</a
 			>
 		</div>
@@ -107,15 +108,16 @@
 		<h3 class="text-xl mb-2">Popular pools</h3>
 	{/if}
 
-	<div class="pools mb-8 text-base">
-		<div class="pools-head mb-2 text-sm justify-between bg-[#ffff6605] hover:bg-[#ffff6611] rounded p-2 cursor-pointer">
-			<th class="flex-grow-[1.2]"> Name </th>
-			<th class="flex-grow w-20"> TVL </th>
-			<th class="flex-grow hidden sm:inline-block pl-2"> APR </th>
-			<th class="flex-grow"> &nbsp; </th>
+	<div class="pools mb-8 text-base sm:bg-[#00000033] sm:rounded-[8px] flex flex-col gap-2">
+		<div class="pool hidden sm:grid">
+			<div>Name</div>
+			<div>{my?'Locked':'TVL'}</div>
+			<div>APR</div>
+			<div>&nbsp;</div>
 		</div>
+
 		{#each filteredPools.sort((pool, pool1) => Number(get(pool1.balances.algo)) - Number(get(pool.balances.algo))) as pool (pool.poolId)}
-			<PoolInfo {pool} checkForLpt={Boolean($page.url.pathname.match(/\/pool\/your-positions$/))} />
+			<PoolInfo {pool} {my} checkForLpt={Boolean($page.url.pathname.match(/\/pool\/your-positions$/))} />
 		{/each}
 	</div>
 </form>
@@ -127,25 +129,20 @@
 
 <slot />
 
-<!-- <div class="buttons">
-	<ActionButton on:click={() => close()}>Close</ActionButton>
-</div> -->
-
 <style>
 	form {
 		margin: 0 auto;
 		margin-top: 50px;
-		width: 700px;
+		width: 800px;
 	}
 
-	.pools {
-		display: flex;
-		flex-direction: column;
+	.pools > :global(.pool) {
+		grid-template-columns: minmax(100px, 1fr) minmax(50px, 150px) minmax(50px, 75px) 120px;
+		padding: 0.5rem;
 	}
 
-	.pools-head {
-		display: flex;
-		justify-content: space-between;
+	.pools > :global(.pool) > :global(*) {
+		padding: 0.5rem;
 	}
 
 	.join-item.active {

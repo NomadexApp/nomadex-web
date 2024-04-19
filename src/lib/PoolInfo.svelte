@@ -16,6 +16,7 @@
 
 	export let pool: Pool & { balances: { [k: string]: any } };
 	export let checkForLpt = false;
+	export let my = false;
 
 	const algoBalance = pool.balances.algo;
 
@@ -24,7 +25,10 @@
 
 	let updateCounter = 0;
 
+	const poolLptBalance = watchArc200Balance(pool.poolId, algosdk.getApplicationAddress(pool.poolId));
 	const lptBalance = watchArc200Balance(pool.poolId, $connectedAccount);
+
+	$: sharePercent = Number($lptBalance * 100n) / Number(100_000_000_000_000_000_000n - $poolLptBalance);
 
 	async function getApr(pool: Pool, i = 0) {
 		if ($aprCacheStore[pool.poolId]) return $aprCacheStore[pool.poolId];
@@ -141,20 +145,18 @@
 </script>
 
 {#if !checkForLpt || $lptBalance > 0n}
-	<tr class="pool mb-2 justify-between bg-[#ffff6605] hover:bg-[#ffff6611] rounded p-2 cursor-pointer flex flex-wrap">
-		<td class="flex gap-2">
+	<div class="pool sm:grid bg-[#00000033] sm:bg-transparent rounded-[8px]">
+		<div class="name flex gap-2 w-full">
 			<div class="hidden sm:flex icon avatar w-7 h-7 bg-[#666633] rounded-full justify-center items-center">?</div>
-			<div class="hidden sm:flex ml-[-1rem] icon avatar w-7 h-7 bg-[#666633] rounded-full justify-center items-center">
-				?
-			</div>
-			<div class="flex flex-col justify-center w-[90px]">
-				<span class="name inline-block text-nowrap"
-					>{pool.arc200Asset.symbol} <span class="text-gray-500">/</span> VOI</span
-				>
-			</div>
-		</td>
-		<td class="w-20 text-nowrap">{readableNumber(($algoBalance * 2) / 1e6)} VOI</td>
-		<td class="hidden sm:inline-block w-[50px] text-nowrap">
+			<div class="hidden sm:flex icon avatar w-7 h-7 bg-[#666666] rounded-full justify-center items-center ml-[-1.25rem]">?</div>
+			<span class="text-nowrap inline-flex items-center">
+				{pool.arc200Asset.symbol} <span class="text-gray-300 mx-1">/</span> VOI
+			</span>
+		</div>
+		<div class="flex items-center w-[40%] sm:w-[50px] text-nowrap">
+			{readableNumber((($algoBalance * 2) / 1e6) * (my ? sharePercent / 100 : 1))} VOI
+		</div>
+		<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
 			{#await getApr(pool, updateCounter)}
 				0 %
 			{:then apr}
@@ -162,12 +164,22 @@
 			{:catch err}
 				{err.message}
 			{/await}
-		</td>
-		<td>
-			<button class="btn btn-sm bg-[#222211] text-white">
-				<span class="sm:hidden">+</span>
-				<a class="hidden sm:contents" href="/liquidity/{pool.arc200Asset.symbol}/add">Add Liq</a>
+		</div>
+		<div class="w-full flex justify-end">
+			{#if $lptBalance > 0n}
+				<button class="btn btn-sm btn-square btn-ghost text-white">
+					<a class="scale-150 font-thin" href="/liquidity/{pool.arc200Asset.symbol}/remove">-</a>
+				</button>
+			{/if}
+			<button class="btn btn-sm btn-square btn-ghost text-white">
+				<a class="scale-150 font-thin" href="/liquidity/{pool.arc200Asset.symbol}/add">+</a>
 			</button>
-		</td>
-	</tr>
+		</div>
+	</div>
 {/if}
+
+<style>
+	.pool > div {
+		display: inline-flex;
+	}
+</style>

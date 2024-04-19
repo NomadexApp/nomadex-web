@@ -29,13 +29,13 @@
 		{#each filteredTokens as token}
 			<div
 				on:keydown
-				class="token flex gap-4 bg-[#ffff6605] hover:bg-[#ffff6611] rounded p-2 cursor-pointer"
+				class="token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
 				on:click={() => {
 					close();
 					handleSelect(token);
 				}}
 			>
-				<div class="icon avatar w-10 h-10 bg-[#666633] rounded-full flex justify-center items-center">?</div>
+				<div class="icon avatar w-10 h-10 bg-[#f0f0f005] rounded-full flex justify-center items-center">?</div>
 				<div class="flex flex-col text-sm">
 					<span class="name">{token.ticker}</span>
 					<span class="symbol text-gray-200">{token.id}</span>
@@ -46,13 +46,13 @@
 </form>
 
 <div class="buttons">
-	<ActionButton on:click={() => close()}>Close</ActionButton>
+	<button class="btn btn-ghost w-full" on:click={() => close()}>Close</button>
 </div>
 
 <style>
 	form {
-		width: min(350px, calc(100vw - 5rem));
-		max-width: 400px;
+		width: 100vw;
+		max-width: calc(500px - 2rem);
 		overflow: hidden;
 	}
 	.tokens {

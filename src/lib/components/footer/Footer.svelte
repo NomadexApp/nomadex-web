@@ -7,18 +7,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #ffff66;
-        color: black;
+        background: #00000095;
+        color: white;
         width: 100%;
-    }
-    footer::after {
-        content: "";
-        position: fixed;
-        top: 70vh;
-        background: #444422;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: -100;
     }
 </style>

@@ -208,7 +208,7 @@
 	<div class="flex flex-col justify-start w-full overflow-auto">
 		<PoolChartContext bind:price context="limit" />
 	</div>
-	<div class="flex flex-col justify-center pt-6 max-w-[500px] w-full mx-auto">
+	<div class="flex flex-col justify-center max-w-[500px] w-full mx-auto bg-[#00000033] rounded-[8px] my-4">
 		{#if loading}
 			<div class="w-full min-h-44 flex justify-center items-center">
 				<span class="loading text-primary" />
@@ -218,10 +218,10 @@
 				{@const sellOrders = sortedLimitOrders[key].sellOrders}
 				{@const buyOrders = sortedLimitOrders[key].buyOrders}
 
-				<div class="flex bg-[#ffff6605] flex-col-reverse min-[300px]:flex-row">
+				<div class="flex flex-col-reverse min-[300px]:flex-row">
 					<div class="flex flex-col flex-grow">
 						<div class="flex-grow">
-							<div class="flex justify-between p-2 px-2 font-[500]">
+							<div class="flex justify-between p-2 px-2 font-[500] sm:pl-3">
 								<span class="">Bid</span>
 								<span class="" />
 							</div>
@@ -245,7 +245,7 @@
 					</div>
 					<div class="flex flex-col flex-grow">
 						<div class="flex-grow">
-							<div class="flex justify-between p-2 px-2 font-[500]">
+							<div class="flex justify-between p-2 px-2 font-[500] sm:pl-3">
 								<span class="">Ask</span>
 								<span class="" />
 							</div>
@@ -268,8 +268,6 @@
 						</div>
 					</div>
 				</div>
-				<br />
-				<br />
 			{/each}
 		{/if}
 	</div>
@@ -332,22 +330,24 @@
 					{@const sellOrders = sortedLimitOrders[key].sellOrders?.filter((o) => o.maker === $connectedAccount)}
 					{@const buyOrders = sortedLimitOrders[key].buyOrders?.filter((o) => o.maker === $connectedAccount)}
 					<div class="flex justify-center">
-						<h4 class="text-xl w-full mb-5">My orders</h4>
+						<h4 class="text-xl w-full mb-5 font-medium">My orders</h4>
 					</div>
-					<div
-						class="w-full event bg-[#ffff6605] font-bold p-3 px-2 sm:px-3 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
-					>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Price</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Amount</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-10 sm:w-10 text-justify flex justify-end" />
-					</div>
-					{#each buyOrders as limitOrder}
-						<LimitOrder order={limitOrder} />
-					{/each}
+					<div class="bg-[#00000033] rounded-[8px]">
+						<div
+							class="w-full event font-bold p-3 px-2 sm:px-3 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
+						>
+							<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Price</span>
+							<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Amount</span>
+							<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-10 sm:w-10 text-justify flex justify-end" />
+						</div>
+						{#each buyOrders as limitOrder}
+							<LimitOrder order={limitOrder} />
+						{/each}
 
-					{#each [...sellOrders].reverse() as limitOrder}
-						<LimitOrder order={limitOrder} />
-					{/each}
+						{#each [...sellOrders].reverse() as limitOrder}
+							<LimitOrder order={limitOrder} />
+						{/each}
+					</div>
 
 					<br />
 					<br />

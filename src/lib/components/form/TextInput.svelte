@@ -15,7 +15,7 @@
 
 <style>
 	.field {
-		background: #282811;
+		background: #00000033;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
