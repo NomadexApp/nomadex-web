@@ -53,7 +53,7 @@
 				<!-- <Sidebar /> -->
 				<div class="w-full flex flex-col">
 					{#if $pageContentRefreshPending}
-						<section class="flex flex-col justify-center items-center h-full max-h-[95vh]">
+						<section class="flex flex-col justify-center items-center h-full max-h-[70vh]">
 							<span class="loading" />
 						</section>
 					{:else}
@@ -63,7 +63,7 @@
 					{/if} -->
 				</div>
 			{:else}
-				<div class="flex h-screen w-full justify-center items-center">
+				<div class="flex h-screen max-h-[70vh] w-full justify-center items-center">
 					<span class="loading loading-ring text-primary w-[2.5rem]" />
 				</div>
 			{/if}

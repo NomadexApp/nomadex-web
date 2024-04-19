@@ -3,6 +3,20 @@
 html {
 	padding: 0;
 	margin: 0;
+	--color-primary: hsl(60 85% 50%);
+	--color-primary-50: hsl(60 85% 50% / 50%);
+	--color-primary-25: hsl(60 85% 50% / 25%);
+	--color-primary-12: hsl(60 85% 50% / 12%);
+	--color-light-1: hsl(60, 50%, 90%);
+	--color-light-2: hsl(60, 40%, 80%);
+	--color-light-3: hsl(60, 30%, 70%);
+	--color-light-4: hsl(60, 20%, 60%);
+	--color-light-5: hsl(60, 18%, 50%);
+	--color-light-6: hsl(60, 16%, 40%);
+	--color-light-7: hsl(60, 14%, 30%);
+	--color-light-8: hsl(60, 14%, 25%);
+	--color-light-9: hsl(60, 14%, 10%);
+	--color-light-10: hsl(60, 14%, 0%);
 }
 
 body {
