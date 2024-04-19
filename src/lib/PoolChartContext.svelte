@@ -224,7 +224,7 @@
 		</div>
 		<div>
 			<button
-				class="btn btn-sm btn-ghost border-none bg-secondary hover:bg-secondary hover:opacity-70 text-white hidden sm:inline-flex rounded-[4px]"
+				class="btn btn-sm btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white hidden sm:inline-flex rounded-[4px]"
 				on:click={() => {
 					logarithmic = !logarithmic;
 					generateDataByTime(pricingDirection);
@@ -233,7 +233,7 @@
 			<button
 				class="btn btn-sm {timescale === Timescale['15m']
 					? 'btn-primary'
-					: 'btn-ghost border-none bg-secondary hover:bg-secondary hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 				on:click={() => {
 					timescale = Timescale['15m'];
 					generateDataByTime(pricingDirection);
@@ -242,7 +242,7 @@
 			<button
 				class="btn btn-sm {timescale === Timescale['30m']
 					? 'btn-primary'
-					: 'btn-ghost border-none bg-secondary hover:bg-secondary hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 				on:click={() => {
 					timescale = Timescale['30m'];
 					generateDataByTime(pricingDirection);
@@ -251,7 +251,7 @@
 			<button
 				class="btn btn-sm {timescale === Timescale['1hr']
 					? 'btn-primary'
-					: 'btn-ghost border-none bg-secondary hover:bg-secondary hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 				on:click={() => {
 					timescale = Timescale['1hr'];
 					generateDataByTime(pricingDirection);
@@ -260,7 +260,7 @@
 			<button
 				class="btn btn-sm {timescale === Timescale['4hr']
 					? 'btn-primary'
-					: 'btn-ghost border-none bg-secondary hover:bg-secondary hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 				on:click={() => {
 					timescale = Timescale['4hr'];
 					generateDataByTime(pricingDirection);
@@ -269,7 +269,7 @@
 			<button
 				class="btn btn-sm {timescale === Timescale['1d']
 					? 'btn-primary'
-					: 'btn-ghost border-none bg-secondary hover:bg-secondary hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 				on:click={() => {
 					timescale = Timescale['1d'];
 					generateDataByTime(pricingDirection);
