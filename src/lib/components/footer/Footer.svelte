@@ -11,12 +11,12 @@
 
 <footer class="flex-col sm:flex-row" class:scrolled={fullScroll}>
 	<div class="flex justify-start gap-4">
-		<div class="w-10">
+		<div class="w-10 text-primary">
 			<Logo />
 		</div>
 		<div class="select-none cursor-default">
 			<h2 class="text-lg font-normal">Nomadex</h2>
-			<h3 class="text-gray-400">Decentralized Exchange</h3>
+			<h3 class="text-gray-400 mt-[-4px]">Decentralized Exchange</h3>
 		</div>
 	</div>
 	<div class="flex justify-between w-screen max-w-[280px] px-4">
