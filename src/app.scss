@@ -62,7 +62,7 @@ body {
 			hsl(var(--hue8) 50% 50% / 40%),
 			hsl(var(--hue1) 50% 50% / 40%),
 			hsl(var(--hue2) 50% 50% / 40%),
-			hsl(var(--hue3) 50% 50% / 40%),
+			hsl(var(--hue3) 50% 50% / 40%)
 		);
 	opacity: 1;
 	background-size: 8000% 100%;
@@ -122,4 +122,9 @@ input[type='number'].no-arrows::-webkit-inner-spin-button,
 input[type='number'].no-arrows::-webkit-outer-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
+}
+
+input[type='number'] {
+	-moz-appearance: textfield;
+	appearance: textfield;
 }
