@@ -9,18 +9,18 @@
 
 <svelte:window bind:scrollY on:scroll|preventDefault />
 
-<footer class="" class:scrolled={fullScroll}>
+<footer class="flex-col sm:flex-row" class:scrolled={fullScroll}>
 	<div class="flex justify-start gap-4">
 		<div class="w-10">
 			<Logo />
 		</div>
 		<div>
-			<h2 class="text-xs lg:text-xl">Nomadex</h2>
+			<h2 class="text-lg font-normal">Nomadex</h2>
 			<h3 class="text-gray-400">Decentralized Exchange</h3>
 		</div>
 	</div>
-	<div class="flex justify-between flex-grow max-w-[280px]">
-		<div>
+	<div class="flex justify-between w-screen max-w-[280px] px-4">
+		<div class="">
 			<h3 class="mb-2">App</h3>
 			<ul class="font-thin text-gray-400">
 				<li>
@@ -37,7 +37,7 @@
 				</li>
 			</ul>
 		</div>
-		<div>
+		<div class="">
 			<h3 class="mb-2">Links</h3>
 			<ul class="font-thin text-gray-400">
 				<li><a target="_blank" href="//twitter.com/nomadex_app">Twitter</a></li>
@@ -56,7 +56,9 @@
 		background: #222222;
 		color: #f0f0f0;
 		width: 100%;
-		height: 200px;
+		min-height: 200px;
+		padding: 2rem 2rem;
+		gap: 2rem;
 	}
 	/* footer.scrolled::after {
 		content: '';
