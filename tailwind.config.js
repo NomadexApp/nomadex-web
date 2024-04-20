@@ -17,7 +17,7 @@ const theme = {
 	},
 	dark: {
 		'color-scheme': 'dark',
-		'primary': 'hsl(60 85% 50%)',
+		'primary': 'hsl(60 100% 70%)',
 		'primary-content': 'hsl(60 14% 15%)',
 		'secondary': '#222211'
 	},
