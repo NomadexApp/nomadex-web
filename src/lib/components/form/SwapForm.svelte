@@ -32,8 +32,8 @@
 	let editingSlippage = false;
 </script>
 
-<div class="form">
-	<FormTitle>Swap VOI for VIA</FormTitle>
+<div class="form pt-8">
+	<FormTitle>Swap {tokenA.ticker} for {tokenB.ticker}</FormTitle>
 	<TokenInput
 		pretext="You pay"
 		posttext={`balance ${tokenABalance.toLocaleString()} ${tokenA.ticker}`}
