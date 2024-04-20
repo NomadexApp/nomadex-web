@@ -14,7 +14,7 @@
 		<div class="w-10">
 			<Logo />
 		</div>
-		<div>
+		<div class="select-none cursor-default">
 			<h2 class="text-lg font-normal">Nomadex</h2>
 			<h3 class="text-gray-400">Decentralized Exchange</h3>
 		</div>
