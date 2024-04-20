@@ -29,10 +29,8 @@
 	});
 </script>
 
-<section class="p-4">
-	<br />
-	<br />
-	<div class="flex flex-col justify-center items-center gap-2 pt-6 relative">
+<section class="p-2">
+	<div class="flex flex-col justify-center items-center gap-2 pt-4 relative">
 		<div class="flex justify-between max-w-[800px] w-full">
 			<h4 class="text-xl font-bold w-full mb-5">Tokens</h4>
 			<a href="/tokens/arc200-create" class="btn btn-ghost">Create Arc200 Token</a>
