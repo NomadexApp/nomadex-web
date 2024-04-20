@@ -144,7 +144,7 @@
 <style>
 	.form {
 		background-color: var(--primary-color);
-		margin: 100px auto 0 auto;
+		margin: 5rem auto 0 auto;
 		height: max-content;
 		padding: 2rem;
 		background: #00000040;

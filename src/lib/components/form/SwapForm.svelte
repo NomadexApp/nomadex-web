@@ -129,7 +129,7 @@
 
 <style>
 	.form {
-		margin: 0 auto 0 auto;
+		margin: 5rem auto 0 auto;
 		height: max-content;
 		padding: 2rem;
 		backdrop-filter: blur(5px);
