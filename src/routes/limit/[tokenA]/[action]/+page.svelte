@@ -220,7 +220,7 @@
 />
 
 <section class="flex flex-col justify-center max-w-[1200px] mx-auto">
-	<div class="flex flex-col justify-start w-full overflow-auto">
+	<div class="flex flex-col justify-start w-full overflow-auto mb-8">
 		<PoolChartContext bind:price context="limit" />
 	</div>
 	<div class="flex justify-end w-full max-w-[500px] mx-auto">

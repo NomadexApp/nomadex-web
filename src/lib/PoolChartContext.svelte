@@ -192,7 +192,7 @@
 
 <svelte:window bind:innerWidth />
 
-<section class="p-4 flex flex-col items-center gap-2 max-w-[900px] mx-auto">
+<section class="flex flex-col items-center gap-2 max-w-[900px] mx-auto">
 	<div class="flex w-full gap-2">
 		<button
 			class="currency flex justify-center items-center mt-[0.1rem] p-2 py-0 w-[2.2rem] h-[1.8rem] rounded text-white bg-transparent"
@@ -321,7 +321,8 @@
 		display: flex;
 		justify-content: center;
 		max-height: 500px;
-		max-width: calc(100vw - 200px);
+		max-width: 900px;
+		padding-right: 0.5rem;
 	}
 
 	@media (max-width: 300px) {
