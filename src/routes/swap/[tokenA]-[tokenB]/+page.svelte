@@ -197,6 +197,19 @@
 				100 || 0
 		).toFixed(2)
 	);
+
+	let lastPoolArc200Balance = 0n;
+	let lastPoolAlgoBalance = 0;
+	$: if (
+		$poolArc200Balance &&
+		$currentPoolState.amount &&
+		inputTokenA &&
+		($poolArc200Balance !== lastPoolArc200Balance || $currentPoolState.amount !== lastPoolAlgoBalance)
+	) {
+		onInputTokenA();
+		lastPoolArc200Balance = $poolArc200Balance;
+		lastPoolAlgoBalance = $currentPoolState.amount;
+	}
 </script>
 
 {#if voiToken && arc200Token}
