@@ -4,21 +4,16 @@
 	import FormTitle from '$lib/components/form/FormTitle.svelte';
 	import TextInput from '$lib/components/form/TextInput.svelte';
 	import Join from '$lib/components/join/Join.svelte';
-	import { getDepositEvents } from '$lib/events';
 
 	const { page } = getStores();
 
 	let searchText = '';
 
 	import PoolInfo from '$lib/PoolInfo.svelte';
-	import PoolPosition from '$lib/PoolPosition.svelte';
 	import { onChainStateWatcher, watchArc200Balance, watchPoolTotalSupply } from '$lib/stores/onchain';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import algosdk from 'algosdk';
 	import { writable, derived, get } from 'svelte/store';
-
-	let hasPosition = false;
-	let showMore = false;
 
 	const sortedPools = writable<(Pool & { balances: { [k: string]: any } })[]>([]);
 
@@ -68,6 +63,7 @@
 
 	const popularPools = ['VIA', 'ROCKET', 'pix', 'VWIFI', 'Tacos', 'Voice'];
 	$: my = Boolean($page.url.pathname.match('/your-positions'));
+	$: all = Boolean($page.url.pathname.match('/pool/all'));
 
 	$: filteredPools = searchText
 		? $sortedPools.filter(
@@ -77,26 +73,30 @@
 					pool.poolId.toString() === searchText
 		  )
 		: $sortedPools.filter((pool) =>
-				popularPools.length && !my ? popularPools.includes(pool.arc200Asset.symbol) : true
+				popularPools.length && !my && !all ? popularPools.includes(pool.arc200Asset.symbol) : true
 		  );
 </script>
 
 <form class="max-w-[90vw] overflow-hidden">
 	<FormTitle>Liquidity Pools</FormTitle>
-	<p>
-		Liquidity providers earn a fee on all trades proportional to their share of the pool. Fees are added to the pool,
-		accrue in real time and can be claimed by removing your liquidity.
-	</p>
-	<div class="br" />
+	{#if !all}
+		<p>
+			Liquidity providers earn a fee on all trades proportional to their share of the pool. Fees are added to the pool,
+			accrue in real time and can be claimed by removing your liquidity.
+		</p>
+		<div class="br" />
 
-	{#if $connectedAccount}
-		<Join
-			items={[
-				{ id: 'pools', name: 'Pools', href: '/pool' },
-				{ id: 'your-positions', name: 'Your Positions', href: '/pool/your-positions' },
-			]}
-			active={$page.url.pathname.match(/\/pool\/your-positions\/?/) ? 'your-positions' : 'pools'}
-		/>
+		{#if $connectedAccount}
+			<Join
+				items={[
+					{ id: 'pools', name: 'Pools', href: '/pool' },
+					{ id: 'your-positions', name: 'Your Positions', href: '/pool/your-positions' },
+				]}
+				active={$page.url.pathname.match(/\/pool\/your-positions\/?/) ? 'your-positions' : 'pools'}
+			/>
+			<div class="br" />
+		{/if}
+	{:else}
 		<div class="br" />
 	{/if}
 	<br class="sm:hidden" />
@@ -122,6 +122,11 @@
 		{/each}
 	</div>
 </form>
+{#if !my && !all}
+	<div class="flex justify-center">
+		<a href="/pool/all"><button class="btn btn-ghost">All Pools</button></a>
+	</div>
+{/if}
 <div class="br" />
 <div class="br" />
 <div class="br" />
