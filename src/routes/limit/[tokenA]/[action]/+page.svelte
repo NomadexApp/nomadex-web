@@ -379,36 +379,34 @@
 				{#each Object.keys(sortedLimitOrders).filter((key) => Number(key) === arc200Token.id) as key}
 					{@const sellOrders = sortedLimitOrders[key].sellOrders?.filter((o) => o.maker === $connectedAccount)}
 					{@const buyOrders = sortedLimitOrders[key].buyOrders?.filter((o) => o.maker === $connectedAccount)}
-					<div class="flex justify-center">
-						<h4 class="text-xl w-full mb-5 font-medium">My orders</h4>
-					</div>
-					<div class="bg-[#00000033] backdrop-blur-[5px] rounded-[8px] p-2">
-						<div
-							class="w-full event font-medium p-3 px-2 sm:px-3 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
-						>
-							<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Price</span>
-							<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Amount</span>
-							<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-10 sm:w-10 text-justify flex justify-end" />
+					{#if sellOrders.length || buyOrders.length}
+						<div class="flex justify-center">
+							<h4 class="text-xl w-full mb-5 font-medium">My orders</h4>
 						</div>
-						{#each [...sellOrders].reverse() as limitOrder}
-							<LimitOrder buy={false} order={limitOrder} />
-						{/each}
+						<div class="bg-[#00000033] backdrop-blur-[5px] rounded-[8px] p-2">
+							<div
+								class="w-full event font-medium p-3 px-2 sm:px-3 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
+							>
+								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Price</span>
+								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Amount</span>
+								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-10 sm:w-10 text-justify flex justify-end" />
+							</div>
+							{#each [...sellOrders].reverse() as limitOrder}
+								<LimitOrder buy={false} order={limitOrder} />
+							{/each}
 
-						{#each buyOrders as limitOrder}
-							<LimitOrder buy={true} order={limitOrder} />
-						{/each}
-					</div>
+							{#each buyOrders as limitOrder}
+								<LimitOrder buy={true} order={limitOrder} />
+							{/each}
+						</div>
 
-					<div class="br" />
-					<div class="br" />
+						<div class="br" />
+						<div class="br" />
+					{/if}
 				{/each}
 			{/if}
 		</div>
 	{/if}
-	<div class="br" />
-	<div class="br" />
-	<div class="br" />
-	<div class="br" />
 	<div class="br" />
 	<div class="br" />
 	<div class="br" />
