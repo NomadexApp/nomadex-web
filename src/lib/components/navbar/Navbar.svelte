@@ -55,10 +55,6 @@
 					Analytics
 				</a>
 			</li>
-
-			<li>
-				<a href="https://v01.nomadex.app" target="_blank">v0.1</a>
-			</li>
 		</ul>
 		<div class="actions ml-auto flex gap-2">
 			<!-- <UseWallet /> -->
@@ -127,7 +123,7 @@
 		color: currentColor;
 	}
 
-	@media (max-width: 700px) {
+	@media (max-width: 639px) {
 		:global(html body) {
 			padding-top: 0;
 		}
@@ -142,14 +138,13 @@
 			justify-content: center;
 		}
 		.actions {
-			flex-direction: column;
+			width: 100%;
 			justify-content: center;
-			margin-left: 0 !important;
 		}
 		.actions > span {
 			display: flex;
 			justify-content: center;
-			align-items: center;
+			/* align-items: center; */
 		}
 	}
 
