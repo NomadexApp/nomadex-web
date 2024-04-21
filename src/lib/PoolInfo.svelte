@@ -166,17 +166,17 @@
 			{readableNumber((($algoBalance * 2) / 1e6) * (my ? sharePercent / 100 : 1))} VOI
 		</div>
 		{#await getApr(pool, updateCounter)}
-			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">0 VOI</div>
+			<div class="hidden sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">0 VOI</div>
 			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">0 %</div>
 		{:then [apr, volume]}
-			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
+			<div class="hidden sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
 				{readableNumber(Number(volume) / 1e6)} VOI
 			</div>
 			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
 				{Number((apr ?? 0).toFixed(apr > 10 ? 0 : 2))} %
 			</div>
 		{:catch err}
-			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">{err.message}</div>
+			<div class="hidden sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">{err.message}</div>
 			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">{err.message}</div>
 		{/await}
 		<div class="w-full flex justify-end">
@@ -193,7 +193,7 @@
 {/if}
 
 <style>
-	.pool > div {
+	.pool > div:not(.hidden) {
 		display: inline-flex;
 	}
 </style>
