@@ -111,7 +111,7 @@
 	<div class="pools mb-8 text-base sm:bg-[#00000033] sm:rounded-[8px] flex flex-col gap-2">
 		<div class="pool hidden sm:grid">
 			<div>Name</div>
-			<div>{my ? 'Locked' : 'TVL'}</div>
+			<div>{my ? 'Value' : 'TVL'}</div>
 			<div class="inline-flex items-start">VOL<span class="text-xs -mt-1 text-gray-300">7d</span></div>
 			<div>APR</div>
 			<div>&nbsp;</div>
