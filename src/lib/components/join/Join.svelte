@@ -12,13 +12,13 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<div class="join sm:grid sm:grid-cols-2">
+<div class="sm:grid sm:grid-cols-2 gap-1">
 	{#each items as item}
 		{@const { id, name, href, ...rest } = item}
 		<a
 			{href}
 			{...rest}
-			class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-primary hover:text-black"
+			class="btn hover:outline-none btn-outline text-[#ffffdd]"
 			class:active={id === active}
 			on:click={() => dispatch('select', item)}
 		>
@@ -28,12 +28,17 @@
 </div>
 
 <style>
+	a:not(.active) {
+		border: 0px solid var(--color-primary);
+		background: #00000033;
+		backdrop-filter: blur(5px);
+	}
 	a.active,
 	a:hover {
-		border: 1px solid var(--color-primary);
+		border: 0px solid var(--color-primary);
 	}
-	.join-item.active {
-		color: #000000;
+	a.active {
 		background: var(--color-primary);
+		color: black;
 	}
 </style>
