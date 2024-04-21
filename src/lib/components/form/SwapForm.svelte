@@ -50,12 +50,12 @@
 						'Price',
 						`1 ${tokenA.ticker} = ${Number(
 							(
-								Number(convertDecimals((tokenBInput || 0) * 1e6, tokenB.decimals, 6)) /
-								Number(convertDecimals((tokenAInput || 0) * 1e6, tokenA.decimals, 6))
+								Number(convertDecimals(Math.floor((tokenBInput || 0) * 1e6), tokenB.decimals, 6)) /
+								Number(convertDecimals(Math.floor((tokenAInput || 0) * 1e6), tokenA.decimals, 6))
 							).toFixed(4)
 						)} ${tokenB.ticker}`,
 					],
-					<[string, string]>['Fee', `${(tokenBInput || 0) * 0.01} ${tokenB.ticker}`],
+					<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.ticker}`],
 			  ]
 			: []),
 		['Fee %', '1%'],
