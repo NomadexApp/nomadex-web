@@ -130,7 +130,7 @@
 	/>
 </div>
 
-<br />
+<div class="br" />
 <div class="flex justify-center text-sm">
 	<a
 		class="hover:underline underline-offset-4 text-[#ffffff]"

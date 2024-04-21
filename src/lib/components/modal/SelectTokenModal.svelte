@@ -21,7 +21,7 @@
 <form>
 	<h3 class="text-2xl mb-4">Select a token</h3>
 	<TextInput placeholder="Search by name or id" bind:value={tokenSearch} />
-	<br />
+	<div class="br" />
 	<span class="block text-xl mb-4">
 		{#if tokenSearch}Matched{:else}Popular{/if} tokens
 	</span>

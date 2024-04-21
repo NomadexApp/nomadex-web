@@ -69,7 +69,7 @@
 			</div>
 		{/each}
 	</div>
-	<br />
+	<div class="br" />
 </section>
 
 <style lang="postcss">

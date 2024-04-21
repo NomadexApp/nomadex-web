@@ -83,7 +83,7 @@
 		Liquidity providers earn a fee on all trades proportional to their share of the pool. Fees are added to the pool,
 		accrue in real time and can be claimed by removing your liquidity.
 	</p>
-	<br />
+	<div class="br" />
 
 	{#if $connectedAccount}
 		<Join
@@ -93,14 +93,14 @@
 			]}
 			active={$page.url.pathname.match(/\/pool\/your-positions\/?/) ? 'your-positions' : 'pools'}
 		/>
-		<br />
+		<div class="br" />
 	{/if}
 	<br class="sm:hidden" />
 
 	{#if $page.url.pathname.match(/\/pool\/?$/)}
 		<h3 class="text-xl mb-2">Search pool</h3>
 		<TextInput placeholder="Search by name or id" bind:value={searchText} />
-		<br />
+		<div class="br" />
 		<h3 class="text-xl mb-2">Popular pools</h3>
 	{/if}
 
@@ -117,11 +117,11 @@
 		{/each}
 	</div>
 </form>
-<br />
-<br />
-<br />
-<br />
-<br />
+<div class="br" />
+<div class="br" />
+<div class="br" />
+<div class="br" />
+<div class="br" />
 
 <slot />
 

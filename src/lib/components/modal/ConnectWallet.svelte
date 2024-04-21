@@ -9,10 +9,10 @@
 </script>
 
 <form>
-	<br />
+	<div class="br" />
 	<h2 class="text-2xl font-bold">Connect to a Wallet</h2>
 	<p>Select a wallet provider.</p>
-	<br />
+	<div class="br" />
 	<div class="buttons flex flex-col items-center gap-2 mb-2 mx-auto">
 		{#if $isKibisisInstalled}
 			<button

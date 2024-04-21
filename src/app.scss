@@ -128,3 +128,10 @@ input[type='number'] {
 	-moz-appearance: textfield;
 	appearance: textfield;
 }
+
+.br {
+	display: flex;
+	width: 0%;
+	height: 1rem;
+	background: red;
+}

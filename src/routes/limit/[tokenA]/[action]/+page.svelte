@@ -346,7 +346,7 @@
 			on:select={() => (inputTokenA = 0)}
 		/>
 	</div>
-	<br />
+	<div class="br" />
 	<div class="max-w-[900px] w-full mx-auto flex gap-2">
 		<LimitForm
 			bind:price={lazyPrice}
@@ -367,7 +367,7 @@
 			}}
 		/>
 	</div>
-	<br />
+	<div class="br" />
 
 	{#if $connectedAccount}
 		<div class="flex flex-col justify-center pt-6 max-w-[500px] w-full mx-auto">
@@ -399,19 +399,19 @@
 						{/each}
 					</div>
 
-					<br />
-					<br />
+					<div class="br" />
+					<div class="br" />
 				{/each}
 			{/if}
 		</div>
 	{/if}
-	<br />
-	<br />
-	<br />
-	<br />
-	<br />
-	<br />
-	<br />
+	<div class="br" />
+	<div class="br" />
+	<div class="br" />
+	<div class="br" />
+	<div class="br" />
+	<div class="br" />
+	<div class="br" />
 </section>
 
 <style>

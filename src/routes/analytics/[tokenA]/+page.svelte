@@ -9,7 +9,7 @@
 <PoolChartContext>
 	<svelte:fragment slot="swap-events" let:arc200Token let:swapEvents let:getFromTokenFromEvent let:getToTokenFromEvent>
 		{@const _a = (() => arc200Token.ticker && lastActiveAnalyticsPair.set(arc200Token.ticker))()}
-		<br />
+		<div class="br" />
 		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[768px]">
 			{#if swapEvents?.length}
 				{@const someSwapEvents = [...swapEvents]
@@ -78,7 +78,7 @@
 	</svelte:fragment>
 
 	<svelte:fragment slot="liquidity-events" let:arc200Token let:depositEvents>
-		<br />
+		<div class="br" />
 		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[768px]">
 			{#if depositEvents?.length}
 				{@const someDepositEvents = [...depositEvents]
@@ -144,9 +144,9 @@
 				</div>
 			{/if}
 		</div>
-		<br />
-		<br />
-		<br />
+		<div class="br" />
+		<div class="br" />
+		<div class="br" />
 	</svelte:fragment>
 </PoolChartContext>
 
