@@ -17,7 +17,7 @@
 <svelte:window bind:scrollY />
 
 <div class="navbar-wrapper" class:scrolled={scrollY > 10}>
-	<nav class="navbar flex flex-col sm:flex-row text-gray-100">
+	<nav class="navbar flex flex-col sm:flex-row text-gray-100 max-w-screen-2xl mx-auto">
 		<div class="navbar-brand">
 			<div class="logo-wrapper">
 				<a class="text-primary" href="/"><Logo /></a>
@@ -156,8 +156,6 @@
 	.navbar {
 		height: var(--height);
 		overflow: hidden;
-		max-width: 1500px;
-		margin: 0 auto;
 		display: flex;
 		align-items: center;
 		padding: 1rem;
