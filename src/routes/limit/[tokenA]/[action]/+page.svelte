@@ -186,12 +186,14 @@
 			algoAmount: number;
 			arc200Amount: bigint;
 			isDirectionFromArc200ToAlgo: number;
-		}[]
+		}[],
+		range: number
 	) {
 		const aggregated: { price: number; total: bigint; orders: typeof orders }[] = [];
 		for (const order of orders) {
 			const price = order.algoAmount / Number(convertDecimals(order.arc200Amount, tokenA.decimals, 6));
-			const approxPrice = Number(price.toFixed(6));
+			const c = 10 ** -Math.log10(range);
+			const approxPrice = Number(Math.floor(price * c) / c);
 			let priceGroup = aggregated.find((grp) => grp.price === approxPrice);
 			if (!priceGroup) {
 				priceGroup = { price: approxPrice, total: 0n, orders: [] };
@@ -202,13 +204,64 @@
 		}
 		return aggregated;
 	}
+	let rangeSelectElement: HTMLDetailsElement;
+	let range = JSON.parse(browser ? localStorage.getItem('LIMIT_ORDERBOOK_PRICE_RANGE') || '0.001' : '0.001');
+	let rangeOptions = [1, 0.1, 0.01, 0.001, 0.0001];
+
+	$: browser && localStorage.setItem('LIMIT_ORDERBOOK_PRICE_RANGE', JSON.stringify(range));
 </script>
+
+<svelte:window
+	on:click={() => {
+		if (!rangeSelectElement) return;
+		rangeSelectElement.open = false;
+	}}
+/>
 
 <section class="flex flex-col justify-center max-w-[1200px] mx-auto">
 	<div class="flex flex-col justify-start w-full overflow-auto">
 		<PoolChartContext bind:price context="limit" />
 	</div>
-	<div class="flex flex-col justify-center max-w-[500px] w-full mx-auto bg-[#00000033] backdrop-blur-[5px] rounded-[8px] my-4">
+	<div class="flex justify-end w-full max-w-[500px] mx-auto">
+		<details
+			bind:this={rangeSelectElement}
+			class="dropdown dropdown-bottom dropdown-end"
+			on:blur={() => console.log('blu')}
+			on:click|stopPropagation
+			on:keydown
+		>
+			<summary class="btn btn-sm btn-ghost mb-2 flex gap-1 items-center">
+				{range}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="w-4 h-4"
+				>
+					<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+				</svg>
+			</summary>
+			<ul class="dropdown-content z-[1] menu p-0 shadow rounded-box w-24 bg-[#222222]">
+				{#each rangeOptions as opt}
+					<li
+						class="hover:bg-[#ffffff20] rounded-sm"
+						on:click={() => {
+							range = opt;
+							rangeSelectElement.open = false;
+						}}
+						on:keydown
+					>
+						<a href={null}>{opt}</a>
+					</li>
+				{/each}
+			</ul>
+		</details>
+	</div>
+	<div
+		class="flex flex-col justify-center max-w-[500px] w-full mx-auto bg-[#00000033] backdrop-blur-[5px] rounded-btn mb-4 py-2 px-2 overflow-hidden"
+	>
 		{#if loading}
 			<div class="w-full min-h-44 flex justify-center items-center">
 				<span class="loading text-primary" />
@@ -219,7 +272,7 @@
 				{@const buyOrders = sortedLimitOrders[key].buyOrders}
 
 				<div class="flex flex-col-reverse min-[300px]:flex-row">
-					<div class="flex flex-col flex-grow">
+					<div class="flex flex-col flex-grow w-full">
 						<div class="flex-grow">
 							<div class="flex justify-between p-2 px-2 font-[500] sm:pl-3">
 								<span class="">Bid</span>
@@ -227,7 +280,7 @@
 							</div>
 						</div>
 						<div class="flex-grow h-full max-h-[200px] overflow-y-auto">
-							{#each aggregateOrders(buyOrders).slice(0, 5) as group}
+							{#each aggregateOrders(buyOrders, range).slice(0, 5) as group}
 								<div
 									on:click={() => (lazyPrice = group.price)}
 									on:keydown
@@ -243,7 +296,7 @@
 							{/each}
 						</div>
 					</div>
-					<div class="flex flex-col flex-grow">
+					<div class="flex flex-col flex-grow w-full">
 						<div class="flex-grow">
 							<div class="flex justify-between p-2 px-2 font-[500] sm:pl-3">
 								<span class="">Ask</span>
@@ -251,7 +304,7 @@
 							</div>
 						</div>
 						<div class="flex-grow h-full max-h-[200px] overflow-y-auto">
-							{#each aggregateOrders([...sellOrders].reverse()).slice(0, 5) as group}
+							{#each aggregateOrders([...sellOrders].reverse(), range).slice(0, 5) as group}
 								<div
 									on:click={() => (lazyPrice = group.price)}
 									on:keydown
