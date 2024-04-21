@@ -9,6 +9,7 @@
 	import { knownTokens, type Token } from '$lib';
 	import { readableNumber } from '$lib/CurrencyNumber.svelte';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { convertDecimals } from '$lib/numbers';
 
 	export let tokenABalance: number | bigint = 0n;
 	export let tokenBBalance: number | bigint = 0n;
@@ -30,6 +31,35 @@
 	export let handleTokenChange: (token: Token, index: number) => void = () => {};
 
 	let editingSlippage = false;
+
+	let swapInfo: [string, string][] = [];
+
+	$: swapInfo = [
+		[
+			'Pool balance',
+			`${readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString()} ${tokenA.ticker} / ${readableNumber(
+				Number(poolTokenBBalance) || 0
+			).toLocaleString()} ${tokenB.ticker}`,
+		],
+		['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
+		['Price impact', `${impact}%`],
+		['Slippage', `${slippage * 100}%`],
+		...(tokenAInput && tokenBInput
+			? [
+					<[string, string]>[
+						'Price',
+						`1 ${tokenA.ticker} = ${Number(
+							(
+								Number(convertDecimals((tokenBInput || 0) * 1e6, tokenB.decimals, 6)) /
+								Number(convertDecimals((tokenAInput || 0) * 1e6, tokenA.decimals, 6))
+							).toFixed(4)
+						)} ${tokenB.ticker}`,
+					],
+					<[string, string]>['Fee', `${(tokenBInput || 0) * 0.01} ${tokenB.ticker}`],
+			  ]
+			: []),
+		['Fee %', '1%'],
+	];
 </script>
 
 <div class="form pt-8">
@@ -57,11 +87,7 @@
 		}}
 	/>
 	<div class="flex justify-center px-1">
-		<button
-			type="reset"
-			class="btn btn-ghost btn-link text-white btn-sm opacity-80"
-			on:click={handleSwitchPlaces}
-		>
+		<button type="reset" class="btn btn-ghost btn-link text-white btn-sm opacity-80" on:click={handleSwitchPlaces}>
 			<span class="block h-6"><MdSwapVert /></span>
 		</button>
 	</div>
@@ -111,20 +137,7 @@
 		{/if}
 	</ActionButton>
 
-	<SwapInfo
-		data={[
-			[
-				'Pool balance',
-				`${readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString()} ${tokenA.ticker} / ${readableNumber(
-					Number(poolTokenBBalance) || 0
-				).toLocaleString()} ${tokenB.ticker}`,
-			],
-			['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
-			['Price impact', `${impact}%`],
-			['Slippage', `${slippage * 100}%`],
-			['Fee', '1%'],
-		]}
-	/>
+	<SwapInfo data={swapInfo} />
 </div>
 
 <style>
