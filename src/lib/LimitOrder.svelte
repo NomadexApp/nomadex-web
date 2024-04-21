@@ -33,7 +33,7 @@
 </script>
 
 <div
-	class="w-full event p-2 px-2 sm:px-3 rounded-btn flex justify-start items-center gap-1 max-w-[800px]"
+	class="w-full event p-2 px-2 sm:px-3 rounded flex justify-start items-center gap-1 max-w-[800px] hover:bg-[#ffffff20]"
 >
 	<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">
 		{(algoTokenAmouunt / arc200TokenAmount).toLocaleString('en')}
@@ -44,10 +44,10 @@
 	<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-10 sm:w-10 text-justify flex justify-end">
 		{#if order.maker === $connectedAccount}
 			<button
-				class="p-2 btn btn-sm btn-ghost btn-square w-6 h-6 rounded flex justify-center items-center"
+				class="btn btn-sm btn-ghost btn-square hover:bg-transparent w-6 h-6 rounded flex justify-center items-center"
 				on:click={(e) => cancelLimitOrder(e, order)}
 			>
-				<span class="scale-[3]"><MdClose /></span>
+				<span class="scale-[0.8]"><MdClose /></span>
 			</button>
 		{/if}
 	</span>

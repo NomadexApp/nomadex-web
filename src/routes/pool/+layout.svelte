@@ -3,6 +3,7 @@
 	import { knownPools, type Pool } from '$lib';
 	import FormTitle from '$lib/components/form/FormTitle.svelte';
 	import TextInput from '$lib/components/form/TextInput.svelte';
+	import Join from '$lib/components/join/Join.svelte';
 	import { getDepositEvents } from '$lib/events';
 
 	const { page } = getStores();
@@ -85,18 +86,13 @@
 	<br />
 
 	{#if $connectedAccount}
-		<div class="join sm:grid sm:grid-cols-2">
-			<a
-				href="/pool"
-				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-primary hover:text-black"
-				class:active={$page.url.pathname.match(/\/pool\/?$/)}>Pools</a
-			>
-			<a
-				href="/pool/your-positions"
-				class="join-item btn hover:outline-none btn-outline text-[#ffffdd] hover:bg-primary hover:text-black"
-				class:active={$page.url.pathname.match(/\/pool\/your-positions\/?/)}>Your Positions</a
-			>
-		</div>
+		<Join
+			items={[
+				{ id: 'pools', name: 'Pools', href: '/pool' },
+				{ id: 'your-positions', name: 'Your Positions', href: '/pool/your-positions' },
+			]}
+			active={$page.url.pathname.match(/\/pool\/your-positions\/?/) ? 'your-positions' : 'pools'}
+		/>
 		<br />
 	{/if}
 	<br class="sm:hidden" />
@@ -111,7 +107,7 @@
 	<div class="pools mb-8 text-base sm:bg-[#00000033] sm:rounded-[8px] flex flex-col gap-2">
 		<div class="pool hidden sm:grid">
 			<div>Name</div>
-			<div>{my?'Locked':'TVL'}</div>
+			<div>{my ? 'Locked' : 'TVL'}</div>
 			<div>APR</div>
 			<div>&nbsp;</div>
 		</div>
@@ -147,10 +143,5 @@
 
 	.pools > :global(.pool) > :global(*) {
 		padding: 0.5rem;
-	}
-
-	.join-item.active {
-		color: #000000;
-		background: var(--color-primary);
 	}
 </style>
