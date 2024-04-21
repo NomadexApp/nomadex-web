@@ -66,6 +66,9 @@
 		}
 	}
 
+	const popularPools = ['VIA', 'ROCKET', 'pix', 'VWIFI', 'Tacos', 'Voice'];
+	$: my = Boolean($page.url.pathname.match('/your-positions'));
+
 	$: filteredPools = searchText
 		? $sortedPools.filter(
 				(pool) =>
@@ -73,8 +76,9 @@
 					pool.arc200Asset.assetId.toString() === searchText ||
 					pool.poolId.toString() === searchText
 		  )
-		: $sortedPools;
-	$: my = Boolean($page.url.pathname.match('/your-positions'));
+		: $sortedPools.filter((pool) =>
+				popularPools.length && !my ? popularPools.includes(pool.arc200Asset.symbol) : true
+		  );
 </script>
 
 <form class="max-w-[90vw] overflow-hidden">
@@ -108,6 +112,7 @@
 		<div class="pool hidden sm:grid">
 			<div>Name</div>
 			<div>{my ? 'Locked' : 'TVL'}</div>
+			<div class="inline-flex items-start">VOL<span class="text-xs -mt-1 text-gray-300">7d</span></div>
 			<div>APR</div>
 			<div>&nbsp;</div>
 		</div>
@@ -137,7 +142,7 @@
 	}
 
 	.pools > :global(.pool) {
-		grid-template-columns: minmax(100px, 1fr) minmax(50px, 150px) minmax(50px, 75px) 120px;
+		grid-template-columns: minmax(100px, 1fr) minmax(50px, 150px) minmax(50px, 150px) minmax(50px, 75px) 120px;
 		padding: 0.5rem;
 	}
 

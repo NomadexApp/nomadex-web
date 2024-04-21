@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { writable } from 'svelte/store';
 
-	export const aprCacheStore = writable<{ [k: string]: number }>({});
+	export const aprCacheStore = writable<{ [k: string]: [number, bigint] }>({});
 </script>
 
 <script lang="ts">
@@ -30,9 +30,9 @@
 
 	$: sharePercent = Number($lptBalance * 100n) / Number(100_000_000_000_000_000_000n - $poolLptBalance);
 
-	async function getApr(pool: Pool, i = 0) {
+	async function getApr(pool: Pool, i = 0): Promise<[number, bigint]> {
 		if ($aprCacheStore[pool.poolId]) return $aprCacheStore[pool.poolId];
-		$aprCacheStore[pool.poolId] = $aprCacheStore[pool.poolId] || 0.000001;
+		$aprCacheStore[pool.poolId] = $aprCacheStore[pool.poolId] || [0.000001, 0n];
 
 		for (const p of promises) {
 			try {
@@ -45,7 +45,7 @@
 		let txns: SwapTxn[] = [];
 		for (let i = 0; i < 10; i++) {
 			try {
-				txns = await SwapEvents.loadTxns(pool.poolId, currentRound - 800_000, currentRound - 30000);
+				txns = await SwapEvents.loadTxns(pool.poolId, currentRound - 800_000, currentRound);
 				break;
 			} catch (e) {
 				//
@@ -62,20 +62,20 @@
 					[x: string]: algosdk.ABIValue[];
 				};
 			})[]
-		> = SwapEvents.parseEvents(txns, [depositEvent, withdrawEvent]);
+		> = SwapEvents.parseEvents(txns, [depositEvent, withdrawEvent, swapEvent]);
 
-		const data: {
+		type Event = {
 			sender: string;
-			amts: number[];
-			lpt: number;
-			adding: boolean;
-			poolBals: number[];
+			amts: bigint[];
 			txn: SwapTxn & {
 				events: {
 					[x: string]: algosdk.ABIValue[];
 				};
 			};
-		}[] = [];
+		};
+
+		let volume = 0n;
+		const data: (Event & { lpt: number; adding: boolean; poolBals: number[] })[] = [];
 
 		for (const txns of Object.values(parsedTxns)) {
 			for (const txn of txns) {
@@ -101,6 +101,11 @@
 								poolBals: poolBals,
 								txn: txn,
 							});
+						} else if (eventSignature === swapEvent) {
+							if (Date.now() - txn['round-time'] * 1000 <= 7 * 86400000) {
+								const [, inAmts, outAmts] = <any>(<unknown>event);
+								volume += inAmts[0] > 0n ? inAmts[0] : outAmts[0];
+							}
 						}
 					}
 				}
@@ -111,7 +116,7 @@
 		const block = blocks[0];
 		if (!block) {
 			updateCounter++;
-			return 0;
+			return [0, volume];
 		}
 
 		const poolAddress = algosdk.getApplicationAddress(pool.poolId);
@@ -136,11 +141,11 @@
 		const valueDiffPercent = ((dataPoints[1].value - dataPoints[0].value) * 100) / dataPoints[0].value;
 
 		const apr = (!timeDiff ? 0 : (valueDiffPercent / Math.max(1, timeDiff)) * (365 * 24 * 60 * 60)) || 0;
-		$aprCacheStore[pool.poolId] = apr;
+		$aprCacheStore[pool.poolId] = [apr, volume];
 
 		updateCounter++;
 
-		return apr;
+		return [apr, volume];
 	}
 </script>
 
@@ -148,7 +153,11 @@
 	<div class="pool sm:grid bg-[#00000033] sm:bg-transparent rounded-[8px]">
 		<div class="name flex gap-2 w-full">
 			<div class="hidden sm:flex icon avatar w-7 h-7 bg-[#666633] rounded-full justify-center items-center">?</div>
-			<div class="hidden sm:flex icon avatar w-7 h-7 bg-[#666666] rounded-full justify-center items-center ml-[-1.25rem]">?</div>
+			<div
+				class="hidden sm:flex icon avatar w-7 h-7 bg-[#666666] rounded-full justify-center items-center ml-[-1.25rem]"
+			>
+				?
+			</div>
 			<span class="text-nowrap inline-flex items-center">
 				{pool.arc200Asset.symbol} <span class="text-gray-300 mx-1">/</span> VOI
 			</span>
@@ -156,15 +165,20 @@
 		<div class="flex items-center w-[40%] sm:w-[50px] text-nowrap">
 			{readableNumber((($algoBalance * 2) / 1e6) * (my ? sharePercent / 100 : 1))} VOI
 		</div>
-		<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
-			{#await getApr(pool, updateCounter)}
-				0 %
-			{:then apr}
-				{Number(apr.toFixed(apr > 10 ? 0 : 2))} %
-			{:catch err}
-				{err.message}
-			{/await}
-		</div>
+		{#await getApr(pool, updateCounter)}
+			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">0 VOI</div>
+			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">0 %</div>
+		{:then [apr, volume]}
+			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
+				{readableNumber(Number(volume) / 1e6)} VOI
+			</div>
+			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
+				{Number((apr ?? 0).toFixed(apr > 10 ? 0 : 2))} %
+			</div>
+		{:catch err}
+			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">{err.message}</div>
+			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">{err.message}</div>
+		{/await}
 		<div class="w-full flex justify-end">
 			{#if $lptBalance > 0n}
 				<button class="btn btn-sm btn-square btn-ghost text-white">
