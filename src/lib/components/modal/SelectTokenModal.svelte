@@ -1,5 +1,8 @@
 <script lang="ts">
 	import type { Token } from '$lib';
+	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { getArc200Balance } from '$lib/_shared';
+	import { convertDecimals } from '$lib/numbers';
 	import ActionButton from '../form/ActionButton.svelte';
 	import TextInput from '../form/TextInput.svelte';
 
@@ -8,14 +11,32 @@
 	export let handleSelect: (token: Token) => void = () => {};
 
 	let tokenSearch = '';
+	let filteredTokens: Token[] = [];
+
+	let balances = {};
 
 	$: filteredTokens = tokenSearch
 		? tokens.filter(
 				(token) =>
-					token.id.toString() === filteredTokens ||
+					token.id.toString() === tokenSearch ||
 					token.ticker.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
 		  )
 		: tokens;
+
+	$: $connectedAccount && getBalances(filteredTokens);
+
+	let loading = false;
+
+	async function getBalances(tokens: Token[]) {
+		loading = true;
+		for (const token of tokens) {
+			if ($connectedAccount && typeof balances[token.id] !== 'number') {
+				const balance = await getArc200Balance(token.id, $connectedAccount);
+				balances[token.id] = balance;
+			}
+		}
+		loading = false;
+	}
 </script>
 
 <form>
@@ -26,7 +47,7 @@
 		{#if tokenSearch}Matched{:else}Popular{/if} tokens
 	</span>
 	<div class="tokens flex flex-col gap-2 mb-4 overflow-y-auto max-h-96">
-		{#each filteredTokens as token}
+		{#each filteredTokens.sort((token) => (loading ? 0 : balances[token.id] ? -1 : 1)) as token}
 			<div
 				on:keydown
 				class="token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
@@ -36,10 +57,16 @@
 				}}
 			>
 				<div class="icon avatar w-10 h-10 bg-[#f0f0f005] rounded-full flex justify-center items-center">?</div>
-				<div class="flex flex-col text-sm">
+				<div class="flex flex-col text-sm flex-grow">
 					<span class="name">{token.ticker}</span>
 					<span class="symbol text-gray-200">{token.id}</span>
 				</div>
+				{#if balances[token.id]}
+					<div>
+						{(Number(convertDecimals(balances[token.id] ?? 0, token.decimals, 6)) / 1e6).toLocaleString()}
+						{token.ticker}
+					</div>
+				{/if}
 			</div>
 		{/each}
 	</div>
