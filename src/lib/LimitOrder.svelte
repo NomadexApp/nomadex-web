@@ -17,6 +17,7 @@
 		arc200Amount: bigint;
 		isDirectionFromArc200ToAlgo: number;
 	};
+	export let buy: boolean;
 
 	async function cancelLimitOrder(e: MouseEvent, limitOrder: typeof order) {
 		e.stopPropagation();
@@ -35,7 +36,11 @@
 <div
 	class="w-full event p-2 px-2 sm:px-3 rounded flex justify-start items-center gap-1 max-w-[800px] hover:bg-[#ffffff20]"
 >
-	<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">
+	<span
+		class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex font-mono"
+		class:text-green-300={buy}
+		class:text-red-400={!buy}
+	>
 		{(algoTokenAmouunt / arc200TokenAmount).toLocaleString('en')}
 	</span>
 	<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">

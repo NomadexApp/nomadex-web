@@ -290,8 +290,8 @@
 									<span class="text-[0.8rem] sm:text-[1rem]">
 										<CurrencyNumber amount={Number(convertDecimals(group.total, tokenA.decimals, 6)) / 1e6} />
 									</span>
-									<span class="text-green-300 text-[0.8rem] sm:text-[1rem]">
-										{Number(group.price.toFixed(4))}
+									<span class="text-green-300 text-[0.8rem] sm:text-[1rem] font-mono">
+										{group.price.toFixed(-Math.log10(range))}
 									</span>
 								</div>
 							{/each}
@@ -311,8 +311,8 @@
 									on:keydown
 									class="cursor-pointer w-full p-2 px-2 sm:px-3 rounded flex justify-between items-center gap-1 max-w-[800px] hover:bg-[#ffffff20]"
 								>
-									<span class="text-red-400 text-[0.8rem] sm:text-[1rem]">
-										{Number(group.price.toFixed(4))}
+									<span class="text-red-400 text-[0.8rem] sm:text-[1rem] font-mono">
+										{group.price.toFixed(-Math.log10(range))}
 									</span>
 									<span class="text-[0.8rem] sm:text-[1rem] text-justify">
 										<CurrencyNumber amount={Number(convertDecimals(group.total, tokenA.decimals, 6)) / 1e6} />
@@ -390,12 +390,12 @@
 							<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 flex">Amount</span>
 							<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-10 sm:w-10 text-justify flex justify-end" />
 						</div>
-						{#each buyOrders as limitOrder}
-							<LimitOrder order={limitOrder} />
+						{#each [...sellOrders].reverse() as limitOrder}
+							<LimitOrder buy={false} order={limitOrder} />
 						{/each}
 
-						{#each [...sellOrders].reverse() as limitOrder}
-							<LimitOrder order={limitOrder} />
+						{#each buyOrders as limitOrder}
+							<LimitOrder buy={true} order={limitOrder} />
 						{/each}
 					</div>
 
