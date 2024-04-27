@@ -169,60 +169,60 @@ interface ActionTypes {
 	'connect-wallet': {
 		address: string,
 		timestamp: number
-		walletType: 'kibisis' | 'wc'
+		wallet: 'kibisis' | 'wc'
 	};
 	'swap': {
 		address: string,
 		timestamp: number,
-		txnId: string,
-		poolId: number,
-		arc200TokenId: number,
-		arc200TokenSymbol: string,
-		amount: string,
-		targetAmountApprox: string,
-		isDirectionVoiToArc200: boolean
+		txn_id: string,
+		pool_id: number,
+		arc200_id: number,
+		arc200_symbol: string,
+		amount_voi: string,
+		amount_arc200: string,
+		x_to_y: boolean
 	};
 	'add-liquidity': {
 		address: string,
 		timestamp: number,
-		txnId: string,
-		poolId: number,
-		arc200TokenId: number,
-		arc200TokenSymbol: string,
-		voiAmount: string,
-		arc200Amount: string,
+		txn_id: string,
+		pool_id: number,
+		arc200_id: number,
+		arc200_symbol: string,
+		amount_voi: string,
+		amount_arc200: string,
 	};
 	'remove-liquidity': {
 		address: string,
 		timestamp: number,
-		txnId: string,
-		poolId: number,
-		arc200TokenId: number,
-		arc200TokenSymbol: string,
-		lptAmount: string
+		txn_id: string,
+		pool_id: number,
+		arc200_id: number,
+		arc200_symbol: string,
+		amount_lpt: string
 	};
 	'create-limit-order': {
 		address: string,
 		timestamp: number,
-		txnId: string,
-		arc200TokenId: number,
-		arc200TokenSymbol: string,
-		voiAmount: string,
-		arc200Amount: string,
-		isSellingArc200: boolean
+		txn_id: string,
+		arc200_id: number,
+		arc200_symbol: string,
+		amount_voi: string,
+		amount_arc200: string,
+		x_to_y: boolean
 	};
 	'create-arc200-token': {
 		address: string,
 		timestamp: number,
-		tokenId: number,
-		symbol: string,
+		arc200_id: number,
+		arc200_symbol: string,
 	};
 	'create-arc200-pool': {
 		address: string,
 		timestamp: number,
-		poolId: number,
-		arc200TokenId: number,
-		arc200Symbol: string
+		pool_id: number,
+		arc200_id: number,
+		arc200_symbol: string
 	};
 }
 

@@ -111,8 +111,8 @@
 			await saveVoiActionToList('create-arc200-token', {
 				address: $connectedAccount,
 				timestamp: Date.now(),
-				tokenId: appId,
-				symbol: symbol.slice(0, 8),
+				arc200_id: appId,
+				arc200_symbol: symbol.slice(0, 8),
 			});
 			goto(`/tokens/arc200-${appId}`);
 		} catch (e) {

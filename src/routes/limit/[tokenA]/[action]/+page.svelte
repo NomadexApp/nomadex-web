@@ -156,8 +156,8 @@
 
 		const limitOrderActionData = {
 			address: $connectedAccount,
-			arc200TokenId: arc200Token.id,
-			arc200TokenSymbol: arc200Token.ticker,
+			arc200_id: arc200Token.id,
+			arc200_symbol: arc200Token.ticker,
 		};
 
 		if ($page.params.action === 'buy') {
@@ -171,10 +171,10 @@
 			saveVoiActionToList('create-limit-order', {
 				...limitOrderActionData,
 				timestamp: Date.now(),
-				txnId: txnId,
-				voiAmount: BigInt(tokenAAmount).toString(),
-				arc200Amount: BigInt(tokenBAmount).toString(),
-				isSellingArc200: false,
+				txn_id: txnId,
+				amount_voi: BigInt(tokenAAmount).toString(),
+				amount_arc200: BigInt(tokenBAmount).toString(),
+				x_to_y: true,
 			});
 			pageContentRefresh(0);
 		} else {
@@ -188,10 +188,10 @@
 			saveVoiActionToList('create-limit-order', {
 				...limitOrderActionData,
 				timestamp: Date.now(),
-				txnId: txnId,
-				voiAmount: BigInt(tokenBAmount).toString(),
-				arc200Amount: BigInt(tokenAAmount).toString(),
-				isSellingArc200: true,
+				txn_id: txnId,
+				amount_voi: BigInt(tokenBAmount).toString(),
+				amount_arc200: BigInt(tokenAAmount).toString(),
+				x_to_y: false,
 			});
 			pageContentRefresh(0);
 		}

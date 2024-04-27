@@ -145,9 +145,9 @@
 		await saveVoiActionToList('create-arc200-pool', {
 			address: $connectedAccount,
 			timestamp: Date.now(),
-			poolId: connector.appId,
-			arc200TokenId: arc200Token.id,
-			arc200Symbol: arc200Token.ticker,
+			pool_id: connector.appId,
+			arc200_id: arc200Token.id,
+			arc200_symbol: arc200Token.ticker,
 		});
 
 		await new Promise((r) => setTimeout(r, 4000));

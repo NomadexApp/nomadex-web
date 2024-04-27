@@ -192,9 +192,9 @@
 
 		const liquidityActionData = {
 			address: $connectedAccount,
-			poolId: matchedPool.poolId,
-			arc200TokenId: matchedPool.arc200Asset.assetId,
-			arc200TokenSymbol: matchedPool.arc200Asset.symbol,
+			pool_id: matchedPool.poolId,
+			arc200_id: matchedPool.arc200Asset.assetId,
+			arc200_symbol: matchedPool.arc200Asset.symbol,
 		};
 
 		if (action === 'add') {
@@ -204,9 +204,9 @@
 			saveVoiActionToList('add-liquidity', {
 				...liquidityActionData,
 				timestamp: Date.now(),
-				txnId: txnId,
-				voiAmount: algoAmount.toString(),
-				arc200Amount: arc200Amount.toString(),
+				txn_id: txnId,
+				amount_voi: algoAmount.toString(),
+				amount_arc200: arc200Amount.toString(),
 			});
 			pageContentRefresh(0);
 		} else if (action === 'remove') {
@@ -215,8 +215,8 @@
 			saveVoiActionToList('remove-liquidity', {
 				...liquidityActionData,
 				timestamp: Date.now(),
-				txnId: txnId,
-				lptAmount: lptAmount.toString(),
+				txn_id: txnId,
+				amount_lpt: lptAmount.toString(),
 			});
 			pageContentRefresh(0);
 		}

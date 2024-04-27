@@ -156,11 +156,9 @@
 
 		const swapActionData = {
 			address: $connectedAccount,
-			poolId: matchedPool.poolId,
-			arc200TokenId: matchedPool.arc200Asset.assetId,
-			arc200TokenSymbol: matchedPool.arc200Asset.symbol,
-			amount: BigInt(tokenAAmount).toString(),
-			targetAmountApprox: BigInt(tokenBAmount).toString(),
+			pool_id: matchedPool.poolId,
+			arc200_id: matchedPool.arc200Asset.assetId,
+			arc200_symbol: matchedPool.arc200Asset.symbol,
 		};
 
 		if (tokenA.ticker === voiToken.ticker && tokenB.ticker === arc200Token.ticker) {
@@ -168,8 +166,10 @@
 			saveVoiActionToList('swap', {
 				...swapActionData,
 				timestamp: Date.now(),
-				txnId: txnId,
-				isDirectionVoiToArc200: true,
+				txn_id: txnId,
+				amount_voi: BigInt(tokenAAmount).toString(),
+				amount_arc200: BigInt(tokenBAmount).toString(),
+				x_to_y: true,
 			});
 			pageContentRefresh(0);
 		} else if (tokenA.ticker === arc200Token.ticker && tokenB.ticker === voiToken.ticker) {
@@ -177,8 +177,10 @@
 			saveVoiActionToList('swap', {
 				...swapActionData,
 				timestamp: Date.now(),
-				txnId: txnId,
-				isDirectionVoiToArc200: false,
+				txn_id: txnId,
+				amount_voi: BigInt(tokenBAmount).toString(),
+				amount_arc200: BigInt(tokenAAmount).toString(),
+				x_to_y: false,
 			});
 			pageContentRefresh(0);
 		}
