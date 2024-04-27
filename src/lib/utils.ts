@@ -147,3 +147,13 @@ export function timeAgo(timestamp: number): string {
 		return `${years}yr${years !== 1 ? 's' : ''} ago`;
 	}
 }
+
+
+export function getLastTxnId(txns: Uint8Array[]) {
+	txns = (txns || <Uint8Array[]>[]).filter(Boolean);
+	const txn = txns?.slice(-1)?.[0];
+	if (txn) {
+		const decodedTxn = algosdk.decodeSignedTransaction(txn);
+		return decodedTxn.txn.txID();
+	}
+}

@@ -1,8 +1,6 @@
 <script lang="ts">
+	import { saveVoiActionToList } from '$lib';
 	import { isKibisisInstalled, walletConnect } from '$lib/UseWallet.svelte';
-	import ActionButton from '../form/ActionButton.svelte';
-	import FormTitle from '../form/FormTitle.svelte';
-	import TextInput from '../form/TextInput.svelte';
 	import QRCodeIcon from 'svelte-star/dist/io/IoMdQrScanner.svelte';
 
 	export let close: Function;
@@ -17,8 +15,11 @@
 		{#if $isKibisisInstalled}
 			<button
 				class="btn btn-ghost w-full bg-[#ffffff15] hover:bg-[#ffffff25]"
-				on:click={() => {
-					walletConnect(true);
+				on:click={async () => {
+					const address = await walletConnect(true);
+					if (address) {
+						saveVoiActionToList('connect-wallet', { address: address, timestamp: Date.now(), walletType: 'kibisis' });
+					}
 					close();
 				}}
 			>
@@ -37,8 +38,11 @@
 		{/if}
 		<button
 			class="btn btn-ghost w-full bg-[#ffffff15] hover:bg-[#ffffff25]"
-			on:click={() => {
-				walletConnect();
+			on:click={async () => {
+				const address = await walletConnect();
+				if (address) {
+					saveVoiActionToList('connect-wallet', { address: address, timestamp: Date.now(), walletType: 'wc' });
+				}
 				close();
 			}}
 		>

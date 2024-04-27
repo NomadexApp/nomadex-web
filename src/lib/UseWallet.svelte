@@ -51,20 +51,24 @@
 
 	export async function walletConnect(
 		isKibisis = browser ? localStorage.getItem('defaultWallet') === 'kibisis' : false
-	) {
+	): Promise<string> {
+		let address = '';
 		if (isKibisis) {
 			const client = await getKibisisClient();
 			const wallet = await client?.connect(() => {
 				connectedAccount.set('');
 			});
-			if (wallet?.accounts?.[0]?.address) {
-				connectedAccount.set(wallet?.accounts?.[0]?.address);
+			address = wallet?.accounts?.[0]?.address;
+			if (address) {
+				connectedAccount.set(address);
 				connectedWallet.set('kibisis');
 			}
 		} else {
-			connectedAccount.set((await deflyWallet.connect())[0]);
+			address = (await deflyWallet.connect())[0];
+			connectedAccount.set(address);
 			connectedWallet.set('wc');
 		}
+		return address;
 	}
 
 	export async function signTransactions(
@@ -151,7 +155,7 @@
 		}
 
 		console.log('sent txns...');
-		return true;
+		return groups;
 	}
 
 	export function getTransactionSignerAccount(kibisis = get(connectedWallet) === 'kibisis') {

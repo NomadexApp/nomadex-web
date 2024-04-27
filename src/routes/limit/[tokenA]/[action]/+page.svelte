@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { contracts, knownTokens, TokenType, type Token } from '$lib';
+	import { contracts, knownTokens, saveVoiActionToList, TokenType, type Token } from '$lib';
 	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { convertDecimals } from '$lib/numbers';
@@ -154,23 +154,45 @@
 		const tokenBAmount = Math.floor(inputTokenB * tokenB.unit);
 		const connector = new LimitOrders001ClientConnector(contracts.orderbookLimitOrderApp);
 
+		const limitOrderActionData = {
+			address: $connectedAccount,
+			arc200TokenId: arc200Token.id,
+			arc200TokenSymbol: arc200Token.ticker,
+		};
+
 		if ($page.params.action === 'buy') {
-			await connector.invoke(
+			const txnId = await connector.invoke(
 				'createOrder',
 				LimitOrderType.SELL_ALGO_FOR_ARC200,
 				arc200Token.id,
 				BigInt(tokenAAmount),
 				BigInt(tokenBAmount)
 			);
+			saveVoiActionToList('create-limit-order', {
+				...limitOrderActionData,
+				timestamp: Date.now(),
+				txnId: txnId,
+				voiAmount: BigInt(tokenAAmount).toString(),
+				arc200Amount: BigInt(tokenBAmount).toString(),
+				isSellingArc200: false,
+			});
 			pageContentRefresh(0);
 		} else {
-			await connector.invoke(
+			const txnId = await connector.invoke(
 				'createOrder',
 				LimitOrderType.SELL_ARC200_FOR_ALGO,
 				arc200Token.id,
 				BigInt(tokenBAmount),
 				BigInt(tokenAAmount)
 			);
+			saveVoiActionToList('create-limit-order', {
+				...limitOrderActionData,
+				timestamp: Date.now(),
+				txnId: txnId,
+				voiAmount: BigInt(tokenBAmount).toString(),
+				arc200Amount: BigInt(tokenAAmount).toString(),
+				isSellingArc200: true,
+			});
 			pageContentRefresh(0);
 		}
 		disabled = prev;

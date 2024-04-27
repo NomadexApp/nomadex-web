@@ -2,7 +2,7 @@ import algosdk from 'algosdk';
 import Contract from 'arc200js';
 import { getTransactionSignerAccount, signAndSendTransections } from './UseWallet.svelte';
 import { getBoxName, getUnnamedResourcesAccessed, nodeClient, nodeClientAllowsCompile } from './_shared';
-import { Arc200Interface } from './utils';
+import { Arc200Interface, getLastTxnId } from './utils';
 import { addNotification } from './Notify.svelte';
 import { AlgoArc200PoolV02Client } from '../contracts/clients/AlgoArc200PoolV02Client';
 
@@ -207,8 +207,8 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 
 		const swapTxns = atc.buildGroup().map(({ txn }) => txn);
 
-		await signAndSendTransections(nodeClient, [swapTxns]);
-		console.log({ success: true });
+		const txnsBuffer = await signAndSendTransections(nodeClient, [swapTxns]);
+		return getLastTxnId(txnsBuffer?.[0]);
 	}
 
 	async swapArc200ToVoi(arc200Amount: bigint, minVoiAmount: bigint) {
@@ -239,8 +239,8 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 			.atc();
 		const swapTxns = atc.buildGroup().map(({ txn }) => txn);
 
-		await signAndSendTransections(nodeClient, [swapTxns]);
-		console.log({ success: true });
+		const txnsBuffer = await signAndSendTransections(nodeClient, [swapTxns]);
+		return getLastTxnId(txnsBuffer?.[0]);
 	}
 
 	async mint(algoAmount: bigint, arc200Amount: bigint) {
@@ -283,7 +283,8 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 			.buildGroup()
 			.map(({ txn }) => txn);
 
-		await signAndSendTransections(nodeClient, [mintTxns]);
+		const txnsBuffer = await signAndSendTransections(nodeClient, [mintTxns]);
+		return getLastTxnId(txnsBuffer?.[0]);
 	}
 
 	async burn(lptAmount: bigint) {
@@ -302,8 +303,8 @@ export class AlgoArc200PoolConnector extends AlgoArc200PoolV02Client {
 
 		const burnTxns = atc.buildGroup().map(({ txn }) => txn);
 
-		await signAndSendTransections(nodeClient, [burnTxns]);
-		console.log({ success: true });
+		const txnsBuffer = await signAndSendTransections(nodeClient, [burnTxns]);
+		return getLastTxnId(txnsBuffer?.[0]);
 	}
 
 	async invoke(functionName: string, ...args: any[]) {

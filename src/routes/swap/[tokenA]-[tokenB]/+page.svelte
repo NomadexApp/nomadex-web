@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Token, knownTokens, TokenType, knownPools, type Pool } from '$lib';
+	import { type Token, knownTokens, TokenType, knownPools, type Pool, saveVoiActionToList } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
@@ -14,6 +14,7 @@
 	import SwapForm from '$lib/components/form/SwapForm.svelte';
 	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
+	import { indexerClient, nodeClient } from '$lib/_shared';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
@@ -153,11 +154,32 @@
 
 		const algoArc200PoolConnector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 
+		const swapActionData = {
+			address: $connectedAccount,
+			poolId: matchedPool.poolId,
+			arc200TokenId: matchedPool.arc200Asset.assetId,
+			arc200TokenSymbol: matchedPool.arc200Asset.symbol,
+			amount: BigInt(tokenAAmount).toString(),
+			targetAmountApprox: BigInt(tokenBAmount).toString(),
+		};
+
 		if (tokenA.ticker === voiToken.ticker && tokenB.ticker === arc200Token.ticker) {
-			await algoArc200PoolConnector.invoke('swapVoiToArc200', BigInt(tokenAAmount), BigInt(minOfTokenB));
+			const txnId = await algoArc200PoolConnector.invoke('swapVoiToArc200', BigInt(tokenAAmount), BigInt(minOfTokenB));
+			saveVoiActionToList('swap', {
+				...swapActionData,
+				timestamp: Date.now(),
+				txnId: txnId,
+				isDirectionVoiToArc200: true,
+			});
 			pageContentRefresh(0);
 		} else if (tokenA.ticker === arc200Token.ticker && tokenB.ticker === voiToken.ticker) {
-			await algoArc200PoolConnector.invoke('swapArc200ToVoi', BigInt(tokenAAmount), BigInt(minOfTokenB));
+			const txnId = await algoArc200PoolConnector.invoke('swapArc200ToVoi', BigInt(tokenAAmount), BigInt(minOfTokenB));
+			saveVoiActionToList('swap', {
+				...swapActionData,
+				timestamp: Date.now(),
+				txnId: txnId,
+				isDirectionVoiToArc200: false,
+			});
 			pageContentRefresh(0);
 		}
 		disabled = prev;

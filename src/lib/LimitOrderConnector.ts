@@ -4,7 +4,7 @@ import { addNotification } from './Notify.svelte';
 import { LimitOrders001Client } from '../contracts/clients/LimitOrders001Client';
 import algosdk from 'algosdk';
 import { makePaymentTxnWithSuggestedParamsFromObject } from 'algosdk';
-import { Arc200Interface } from './utils';
+import { Arc200Interface, getLastTxnId } from './utils';
 
 // const ADMIN = 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ';
 
@@ -75,7 +75,8 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 			});
 
 			const resources = await this.getUnnamedResourcesAccessedFromMethod('createAlgoSellOrder', args());
-			await this.createAlgoSellOrder(args(), {
+			const composer = await this.compose();
+			composer.createAlgoSellOrder(args(), {
 				accounts: [...resources.accounts],
 				boxes: [
 					...resources.boxes,
@@ -85,6 +86,14 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 				],
 				apps: [...resources.apps],
 			});
+
+
+			const atc = await composer.atc();
+
+			const txns = atc.buildGroup().map((txn) => txn.txn);
+
+			const txnsBuffer = await signAndSendTransections(nodeClient, [txns]);
+			return getLastTxnId(txnsBuffer?.[0]);
 		} else if (orderType === LimitOrderType.SELL_ARC200_FOR_ALGO) {
 			const args = () => ({
 				arc200AppId: arc200Id,
@@ -145,7 +154,8 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 
 			const txns = atc.buildGroup().map((txn) => txn.txn);
 
-			await signAndSendTransections(nodeClient, [txns]);
+			const txnsBuffer = await signAndSendTransections(nodeClient, [txns]);
+			return getLastTxnId(txnsBuffer?.[0]);
 		}
 	}
 
@@ -195,7 +205,8 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 					}
 				)
 				.atc();
-			await signAndSendTransections(nodeClient, [atc.buildGroup().map((t) => t.txn)]);
+			const txnsBuffer = await signAndSendTransections(nodeClient, [atc.buildGroup().map((t) => t.txn)]);
+			return getLastTxnId(txnsBuffer?.[0]);
 		} else if (orderType === LimitOrderType.SELL_ARC200_FOR_ALGO) {
 			const suggestedParams = await nodeClient.getTransactionParams().do();
 
@@ -215,7 +226,8 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 					...resources,
 				})
 				.atc();
-			await signAndSendTransections(nodeClient, [atc.buildGroup().map((t) => t.txn)]);
+			const txnsBuffer = await signAndSendTransections(nodeClient, [atc.buildGroup().map((t) => t.txn)]);
+			return getLastTxnId(txnsBuffer?.[0]);
 		} else {
 			console.error('unknown order type');
 		}
@@ -234,7 +246,8 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 			})
 			.atc();
 
-		await signAndSendTransections(nodeClient, [atc.buildGroup().map((t) => t.txn)]);
+		const txnsBuffer = await signAndSendTransections(nodeClient, [atc.buildGroup().map((t) => t.txn)]);
+		return getLastTxnId(txnsBuffer?.[0]);
 	}
 
 	async invoke(functionName: string, ...args: any[]) {

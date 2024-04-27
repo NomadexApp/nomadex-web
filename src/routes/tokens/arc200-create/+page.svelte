@@ -5,7 +5,8 @@
 	import { Arc200TokenClient } from '../../../contracts/clients/Arc200TokenClient';
 	import { goto } from '$app/navigation';
 	import { addNotification } from '$lib/Notify.svelte';
-	import { knownTokens, saveArc200TokenToList } from '$lib';
+	import { knownTokens, saveArc200TokenToList, saveVoiActionToList } from '$lib';
+	import { getLastTxnId } from '$lib/utils';
 
 	let manager = $connectedAccount;
 	let name = '';
@@ -101,11 +102,18 @@
 
 			const txns = await getInitGroup();
 
-			await signAndSendTransections(nodeClient, [txns]);
+			const txnsBuffer = await signAndSendTransections(nodeClient, [txns]);
+			const txnId = getLastTxnId(txnsBuffer?.[0]);
 
 			remove();
 			addNotification('success', `Created token ${appId}`, 10000);
 			await saveArc200TokenToList(symbol, appId, decimals);
+			await saveVoiActionToList('create-arc200-token', {
+				address: $connectedAccount,
+				timestamp: Date.now(),
+				tokenId: appId,
+				symbol: symbol.slice(0, 8),
+			});
 			goto(`/tokens/arc200-${appId}`);
 		} catch (e) {
 			console.error((<Error>e).message);
@@ -129,7 +137,8 @@
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
 	<div class="h-full flex flex-col justify-start items-center gap-3 w-full">
-		<div class="br" /><div class="br" />
+		<div class="br" />
+		<div class="br" />
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Manager Adress:</div>
 			<input
@@ -155,16 +164,30 @@
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Decimals:</div>
-			<input class="input input-secondary bg-[#00000040]" type="number" max={18} min={0} step={1} bind:value={decimals} />
+			<input
+				class="input input-secondary bg-[#00000040]"
+				type="number"
+				max={18}
+				min={0}
+				step={1}
+				bind:value={decimals}
+			/>
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Total Supply</div>
-			<input class="input input-secondary bg-[#00000040]" type="number" min={0} max={2 ** 64} step={1} bind:value={totalSupply} />
+			<input
+				class="input input-secondary bg-[#00000040]"
+				type="number"
+				min={0}
+				max={2 ** 64}
+				step={1}
+				bind:value={totalSupply}
+			/>
 		</div>
 		<div>
 			Total Supply: {totalSupply.toLocaleString('en')}{decimals ? '.' : ''}{Array(decimals).fill('0').join('')}
 		</div>
-		{#if isValid}
+		{#if isValid && $connectedAccount}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
 				<button class="btn btn-primary btn-sm" on:click={createArc200Token}>Create ARC200 Token</button>
 			</div>

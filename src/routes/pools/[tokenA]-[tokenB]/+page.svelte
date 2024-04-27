@@ -2,7 +2,15 @@
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
 	import { getStores } from '$app/stores';
-	import { knownPools, knownTokens, TokenType, type Token, type Pool, saveVoiArc200PoolToList } from '$lib';
+	import {
+		knownPools,
+		knownTokens,
+		TokenType,
+		type Token,
+		type Pool,
+		saveVoiArc200PoolToList,
+		saveVoiActionToList,
+	} from '$lib';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -134,8 +142,15 @@
 		console.log('added liquidity');
 
 		await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id);
+		await saveVoiActionToList('create-arc200-pool', {
+			address: $connectedAccount,
+			timestamp: Date.now(),
+			poolId: connector.appId,
+			arc200TokenId: arc200Token.id,
+			arc200Symbol: arc200Token.ticker,
+		});
 
-		goto(`/liquidity/VOI-${arc200Token.ticker}/add`);
+		window.location.href = `/liquidity/VOI-${arc200Token.ticker}/add`;
 
 		return;
 	}
@@ -243,16 +258,18 @@
 						{arc200Token.ticker}
 					</h6>
 
-					<div class="flex justify-center mt-2 pr-0">
-						<button
-							class="btn btn-ghost bg-[#00000040] w-full box-border"
-							class:disabled={updating}
-							disabled={updating}
-							on:click={createVoiPool}
-						>
-							Create Pool
-						</button>
-					</div>
+					{#if $connectedAccount}
+						<div class="flex justify-center mt-2 pr-0">
+							<button
+								class="btn btn-ghost bg-[#00000040] w-full box-border"
+								class:disabled={updating}
+								disabled={updating}
+								on:click={createVoiPool}
+							>
+								Create Pool
+							</button>
+						</div>
+					{/if}
 					<div class="br" />
 				</form>
 			{:else}

@@ -164,3 +164,75 @@ export async function saveVoiArc200PoolToList(symbol: string, poolId: number, ar
 	});
 	await getListOfArc200Tokens();
 }
+
+interface ActionTypes {
+	'connect-wallet': {
+		address: string,
+		timestamp: number
+		walletType: 'kibisis' | 'wc'
+	};
+	'swap': {
+		address: string,
+		timestamp: number,
+		txnId: string,
+		poolId: number,
+		arc200TokenId: number,
+		arc200TokenSymbol: string,
+		amount: string,
+		targetAmountApprox: string,
+		isDirectionVoiToArc200: boolean
+	};
+	'add-liquidity': {
+		address: string,
+		timestamp: number,
+		txnId: string,
+		poolId: number,
+		arc200TokenId: number,
+		arc200TokenSymbol: string,
+		voiAmount: string,
+		arc200Amount: string,
+	};
+	'remove-liquidity': {
+		address: string,
+		timestamp: number,
+		txnId: string,
+		poolId: number,
+		arc200TokenId: number,
+		arc200TokenSymbol: string,
+		lptAmount: string
+	};
+	'create-limit-order': {
+		address: string,
+		timestamp: number,
+		txnId: string,
+		arc200TokenId: number,
+		arc200TokenSymbol: string,
+		voiAmount: string,
+		arc200Amount: string,
+		isSellingArc200: boolean
+	};
+	'create-arc200-token': {
+		address: string,
+		timestamp: number,
+		tokenId: number,
+		symbol: string,
+	};
+	'create-arc200-pool': {
+		address: string,
+		timestamp: number,
+		poolId: number,
+		arc200TokenId: number,
+		arc200Symbol: string
+	};
+}
+
+export async function saveVoiActionToList<K extends keyof ActionTypes>(action: K, context: ActionTypes[K]) {
+	if (typeof action !== 'string' || typeof context.address !== "string" || typeof context.timestamp !== "number") {
+		throw Error('Bad action, cannot save action to the list');
+	}
+	try {
+		await putDoc(`/networks/${network}/versions/${version}/actions/${context.timestamp}`, { ...context, action });
+	} catch (e) {
+		console.log(e);
+	}
+}

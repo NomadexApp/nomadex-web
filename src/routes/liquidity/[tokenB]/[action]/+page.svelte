@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Token, knownTokens, TokenType, knownPools, type Pool } from '$lib';
+	import { type Token, knownTokens, TokenType, knownPools, type Pool, saveVoiActionToList } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
@@ -189,15 +189,35 @@
 		const prev = disabled;
 		disabled = true;
 		const algoArc200PoolConnector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+
+		const liquidityActionData = {
+			address: $connectedAccount,
+			poolId: matchedPool.poolId,
+			arc200TokenId: matchedPool.arc200Asset.assetId,
+			arc200TokenSymbol: matchedPool.arc200Asset.symbol,
+		};
+
 		if (action === 'add') {
-			await algoArc200PoolConnector.invoke(
-				'mint',
-				BigInt(Math.floor(inputTokenA * tokenA.unit)),
-				BigInt(Math.floor(inputTokenB * tokenB.unit))
-			);
+			const algoAmount = BigInt(Math.floor(inputTokenA * tokenA.unit));
+			const arc200Amount = BigInt(Math.floor(inputTokenB * tokenB.unit));
+			const txnId = await algoArc200PoolConnector.invoke('mint', algoAmount, arc200Amount);
+			saveVoiActionToList('add-liquidity', {
+				...liquidityActionData,
+				timestamp: Date.now(),
+				txnId: txnId,
+				voiAmount: algoAmount.toString(),
+				arc200Amount: arc200Amount.toString(),
+			});
 			pageContentRefresh(0);
 		} else if (action === 'remove') {
-			await algoArc200PoolConnector.invoke('burn', BigInt(Math.floor(inputTokenLpt * 1e6)));
+			const lptAmount = BigInt(Math.floor(inputTokenLpt * 1e6));
+			const txnId = await algoArc200PoolConnector.invoke('burn', lptAmount);
+			saveVoiActionToList('remove-liquidity', {
+				...liquidityActionData,
+				timestamp: Date.now(),
+				txnId: txnId,
+				lptAmount: lptAmount.toString(),
+			});
 			pageContentRefresh(0);
 		}
 		disabled = prev;

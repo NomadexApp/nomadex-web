@@ -67,7 +67,8 @@
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
 	<div class="h-full flex flex-col justify-start items-center gap-3 w-full">
-		<div class="br" /><div class="br" />
+		<div class="br" />
+		<div class="br" />
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Arc200 Token Id:</div>
 			<input
@@ -111,7 +112,7 @@
 			{/if}
 		{/if}
 
-		{#if symbol}
+		{#if $connectedAccount && symbol}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
 				<button class="btn btn-primary" class:btn-outline={loading} disabled={loading} on:click={createVoiPool}>
 					{#if $knownPools.find((pool) => pool.arc200Asset.assetId === appId)}
