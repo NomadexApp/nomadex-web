@@ -150,6 +150,8 @@
 			arc200Symbol: arc200Token.ticker,
 		});
 
+		await new Promise((r) => setTimeout(r, 5000));
+
 		window.location.href = `/liquidity/VOI-${arc200Token.ticker}/add`;
 
 		return;
