@@ -38,6 +38,10 @@
 				<a class:active={$page.url.pathname.startsWith('/pool')} href="/pool">Pool</a>
 			</li>
 
+			<li class="hidden md:flex">
+				<a class:active={$page.url.pathname.startsWith('/tokens')} href="/tokens">Token</a>
+			</li>
+
 			<li>
 				<a
 					class:active={$page.url.pathname.startsWith('/limit')}
@@ -76,12 +80,18 @@
 						{$connectedAccount.slice(0, 3)}...{$connectedAccount.slice(-3)}
 					</span>
 				</span>
-				<button class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary" on:click={() => walletDisconnect()}>
+				<button
+					class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary"
+					on:click={() => walletDisconnect()}
+				>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Disconnect
 				</button>
 			{:else}
-				<button class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary" on:click={() => openModal(ConnectWallet, {})}>
+				<button
+					class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary"
+					on:click={() => openModal(ConnectWallet, {})}
+				>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Connect Wallet
 				</button>
@@ -205,7 +215,7 @@
 		/* opacity: 0.7; */
 	}
 
-	ul li {
+	ul li:not(.hidden) {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -215,7 +225,7 @@
 		height: 2rem;
 	}
 
-	ul li:hover a {
+	ul li:not(.hidden):hover a {
 		opacity: 0.5;
 	}
 </style>
