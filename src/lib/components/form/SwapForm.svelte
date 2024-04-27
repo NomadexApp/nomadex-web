@@ -41,9 +41,6 @@
 				Number(poolTokenBBalance) || 0
 			).toLocaleString()} ${tokenB.ticker}`,
 		],
-		['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
-		['Price impact', `${impact}%`],
-		['Slippage', `${slippage * 100}%`],
 		...(tokenAInput && tokenBInput
 			? [
 					<[string, string]>[
@@ -58,7 +55,9 @@
 					<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.ticker}`],
 			  ]
 			: []),
-		['Fee %', '1%'],
+		['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
+		['Price impact', `${impact}%`],
+		['Slippage', `${slippage * 100}%`],
 	];
 </script>
 
