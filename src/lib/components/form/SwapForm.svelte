@@ -41,21 +41,18 @@
 				Number(poolTokenBBalance) || 0
 			).toLocaleString()} ${tokenB.ticker}`,
 		],
+		['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
 		...(tokenAInput && tokenBInput
 			? [
+					<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.ticker}`],
 					<[string, string]>[
-						'Price',
-						`1 ${tokenA.ticker} = ${Number(
-							(
-								Number(convertDecimals(Math.floor((tokenBInput || 0) * 1e6), tokenB.decimals, 6)) /
-								Number(convertDecimals(Math.floor((tokenAInput || 0) * 1e6), tokenA.decimals, 6))
-							).toFixed(4)
+						`Price of ${tokenA.ticker}`,
+						`${Number(
+							(Number(Math.floor((tokenBInput || 0) * 1e6)) / Number(Math.floor((tokenAInput || 0) * 1e6))).toFixed(4)
 						)} ${tokenB.ticker}`,
 					],
-					<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.ticker}`],
 			  ]
 			: []),
-		['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
 		['Price impact', `${impact}%`],
 		['Slippage', `${slippage * 100}%`],
 	];
