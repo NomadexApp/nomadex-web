@@ -245,51 +245,51 @@
 	<div class="flex flex-col justify-start w-full overflow-auto mb-8">
 		<PoolChartContext bind:price context="limit" />
 	</div>
-	<div class="flex justify-end w-full max-w-[500px] mx-auto">
-		<details
-			bind:this={rangeSelectElement}
-			class="dropdown dropdown-bottom dropdown-end"
-			on:blur={() => console.log('blu')}
-			on:click|stopPropagation
-			on:keydown
-		>
-			<summary class="btn btn-sm btn-ghost mb-2 flex gap-1 items-center">
-				{range}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="1.5"
-					stroke="currentColor"
-					class="w-4 h-4"
-				>
-					<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-				</svg>
-			</summary>
-			<ul class="dropdown-content z-[1] menu p-0 shadow rounded-box w-24 bg-[#222222]">
-				{#each rangeOptions as opt}
-					<li
-						class="hover:bg-[#ffffff20] rounded-sm"
-						on:click={() => {
-							range = opt;
-							rangeSelectElement.open = false;
-						}}
-						on:keydown
+	{#if loading}
+		<div class="w-full min-h-44 flex justify-center items-center">
+			<span class="loading text-primary" />
+		</div>
+	{:else if Object.keys(sortedLimitOrders).filter((key) => Number(key) === arc200Token.id)?.length}
+		<div class="flex justify-end w-full max-w-[500px] mx-auto">
+			<details
+				bind:this={rangeSelectElement}
+				class="dropdown dropdown-bottom dropdown-end"
+				on:blur={() => console.log('blu')}
+				on:click|stopPropagation
+				on:keydown
+			>
+				<summary class="btn btn-sm btn-ghost mb-2 flex gap-1 items-center">
+					{range}
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="w-4 h-4"
 					>
-						<a href={null}>{opt}</a>
-					</li>
-				{/each}
-			</ul>
-		</details>
-	</div>
-	<div
-		class="flex flex-col justify-center max-w-[500px] w-full mx-auto bg-[#00000033] backdrop-blur-[5px] rounded-btn mb-4 py-2 px-2 overflow-hidden"
-	>
-		{#if loading}
-			<div class="w-full min-h-44 flex justify-center items-center">
-				<span class="loading text-primary" />
-			</div>
-		{:else}
+						<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+					</svg>
+				</summary>
+				<ul class="dropdown-content z-[1] menu p-0 shadow rounded-box w-24 bg-[#222222]">
+					{#each rangeOptions as opt}
+						<li
+							class="hover:bg-[#ffffff20] rounded-sm"
+							on:click={() => {
+								range = opt;
+								rangeSelectElement.open = false;
+							}}
+							on:keydown
+						>
+							<a href={null}>{opt}</a>
+						</li>
+					{/each}
+				</ul>
+			</details>
+		</div>
+		<div
+			class="flex flex-col justify-center max-w-[500px] w-full mx-auto bg-[#00000033] backdrop-blur-[5px] rounded-btn mb-4 py-2 px-2 overflow-hidden"
+		>
 			{#each Object.keys(sortedLimitOrders).filter((key) => Number(key) === arc200Token.id) as key}
 				{@const sellOrders = sortedLimitOrders[key].sellOrders}
 				{@const buyOrders = sortedLimitOrders[key].buyOrders}
@@ -345,8 +345,8 @@
 					</div>
 				</div>
 			{/each}
-		{/if}
-	</div>
+		</div>
+	{/if}
 
 	<div class="w-full max-w-[500px] mx-auto">
 		<Join
