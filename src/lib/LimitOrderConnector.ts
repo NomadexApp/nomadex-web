@@ -5,6 +5,7 @@ import { LimitOrders001Client } from '../contracts/clients/LimitOrders001Client'
 import algosdk from 'algosdk';
 import { makePaymentTxnWithSuggestedParamsFromObject } from 'algosdk';
 import { Arc200Interface, getLastTxnId } from './utils';
+import * as algokit from '@algorandfoundation/algokit-utils';
 
 // const ADMIN = 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ';
 
@@ -88,7 +89,7 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 			});
 
 
-			const atc = await composer.atc();
+			const atc = await algokit.populateAppCallResources(await composer.atc(), nodeClient);
 
 			const txns = atc.buildGroup().map((txn) => txn.txn);
 
@@ -150,7 +151,7 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 				apps: [...resources.apps],
 			});
 
-			const atc = await composer.atc();
+			const atc = await algokit.populateAppCallResources(await composer.atc(), nodeClient);
 
 			const txns = atc.buildGroup().map((txn) => txn.txn);
 
