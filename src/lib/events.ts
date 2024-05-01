@@ -1,5 +1,5 @@
 import { sha512_256 } from 'js-sha512';
-import { indexerClient, nodeClient } from './_shared';
+import { indexerClient } from './_shared';
 import algosdk from 'algosdk';
 import { browser } from '$app/environment';
 
