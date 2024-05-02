@@ -39,7 +39,7 @@
 		<button
 			class="btn btn-ghost w-full bg-[#ffffff15] hover:bg-[#ffffff25]"
 			on:click={async () => {
-				const address = await walletConnect();
+				const address = await walletConnect(false);
 				if (address) {
 					saveVoiActionToList('connect-wallet', { address: address, timestamp: Date.now(), wallet: 'wc' });
 				}
