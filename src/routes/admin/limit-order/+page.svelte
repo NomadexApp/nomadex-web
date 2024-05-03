@@ -22,17 +22,6 @@
 	let vote_last = 0;
 	let vote_key_dilution = 0;
 
-	onMount(async () => {
-		const { boxes: boxesNames } = await nodeClient.getApplicationBoxes(appId).do();
-		const boxes = await Promise.all(boxesNames.map((box) => nodeClient.getApplicationBoxByName(appId, box.name).do()));
-		console.log(
-			boxes.map((box) => ({
-				name: Buffer.from(box.name).toString('hex'),
-				value: Buffer.from(box.value).toString('hex'),
-			}))
-		);
-	});
-
 	async function deployLimitOrders() {
 		const signer = getTransactionSignerAccount();
 
