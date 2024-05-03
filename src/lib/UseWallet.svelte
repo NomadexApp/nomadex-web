@@ -50,7 +50,8 @@
 	}
 
 	export async function walletConnect(
-		isKibisis = browser ? localStorage.getItem('defaultWallet') === 'kibisis' : false
+		isKibisis = browser ? localStorage.getItem('defaultWallet') === 'kibisis' : false,
+		clicked = false
 	): Promise<string> {
 		let address = '';
 		if (isKibisis) {
@@ -65,7 +66,7 @@
 			}
 		} else {
 			try {
-				await deflyWallet.disconnect();
+				if (clicked) await deflyWallet.disconnect();
 			} catch (e) {
 				/***/
 			}
