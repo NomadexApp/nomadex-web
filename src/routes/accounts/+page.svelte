@@ -81,7 +81,7 @@
 					</td>
 					<td>
 						<a
-							href="https://voi.observer/explorer/account/{millionar.address}"
+							href="https://avmexplorer.com/address/{millionar.address}"
 							referrerpolicy="no-referrer"
 							target="_blank"
 						>

@@ -36,7 +36,7 @@
 							<div class="w-full event hover:invert-[10%] p-2 px-6 flex justify-start items-center gap-1 max-w-[800px]">
 								<a
 									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
-									href="https://voi.observer/explorer/transaction/{event.txn.id}"
+									href="https://avmexplorer.com/tx/{event.txn.id}"
 									target="_blank"
 									referrerpolicy="no-referrer"
 								>
@@ -46,7 +46,7 @@
 									{timeAgo(event.txn['round-time'] * 1000)}
 								</span>
 								<a
-									href="https://voi.observer/explorer/block/{event.txn['confirmed-round']}"
+									href="https://avmexplorer.com/block/{event.txn['confirmed-round']}"
 									target="_blank"
 									referrerpolicy="no-referrer"
 									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
@@ -55,7 +55,7 @@
 								</a>
 								<a
 									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"
-									href="https://voi.observer/explorer/account/{event.sender}"
+									href="https://avmexplorer.com/address/{event.sender}"
 									target="_blank"
 									referrerpolicy="no-referrer"
 								>
@@ -105,7 +105,7 @@
 							<div class="w-full event hover:invert-[10%] p-2 px-6 flex justify-start items-center gap-1 max-w-[800px]">
 								<a
 									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
-									href="https://voi.observer/explorer/transaction/{event.txn.id}"
+									href="https://avmexplorer.com/tx/{event.txn.id}"
 									target="_blank"
 									referrerpolicy="no-referrer"
 								>
@@ -115,7 +115,7 @@
 									{timeAgo(event.txn['round-time'] * 1000)}
 								</span>
 								<a
-									href="https://voi.observer/explorer/block/{event.txn['confirmed-round']}"
+									href="https://avmexplorer.com/block/{event.txn['confirmed-round']}"
 									target="_blank"
 									referrerpolicy="no-referrer"
 									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
@@ -124,7 +124,7 @@
 								</a>
 								<a
 									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"
-									href="https://voi.observer/explorer/account/{event.sender}"
+									href="https://avmexplorer.com/address/{event.sender}"
 									target="_blank"
 									referrerpolicy="no-referrer"
 								>
