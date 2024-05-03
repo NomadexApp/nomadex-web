@@ -2,7 +2,7 @@
 	import Logo from '$lib/components/logo/Logo.svelte';
 	import MdAccountBalanceWallet from 'svelte-star/dist/md/MdAccountBalanceWallet.svelte';
 	import { getStores } from '$app/stores';
-	import { connectedAccount, walletDisconnect } from '$lib/UseWallet.svelte';
+	import UseWallet, { connectedAccount, walletDisconnect } from '$lib/UseWallet.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
 	import { getLastActivePair } from '$lib/config';
@@ -98,6 +98,7 @@
 			{/if}
 		</div>
 	</nav>
+	<UseWallet />
 </div>
 
 <style>

@@ -181,8 +181,8 @@
 	import algosdk from 'algosdk';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
-	import { isDarkTheme } from '../lib/stores';
+	// import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
+	// import { isDarkTheme } from '../lib/stores';
 	import { algodClientOpts } from './_shared';
 
 	onMount(async () => {
@@ -204,7 +204,7 @@
 </script>
 
 {#if $connectedAccount}
-	<div class="flex">
+	<!-- <div class="flex">
 		<div class="flex justify-between items-center w-full bg-red-">
 			<div on:click={() => walletDisconnect()} on:keydown>
 				<a class="flex items-center text-[1rem] gap-2" href={null} tabindex="0">
@@ -232,7 +232,7 @@
 				</a>
 			</div>
 		</div>
-	</div>
+	</div> -->
 {:else}
 	<!-- <li>
 		<a href={null} tabindex="0">
