@@ -64,6 +64,11 @@
 				connectedWallet.set('kibisis');
 			}
 		} else {
+			try {
+				await deflyWallet.disconnect();
+			} catch (e) {
+				/***/
+			}
 			address = (await deflyWallet.connect())[0];
 			connectedAccount.set(address);
 			connectedWallet.set('wc');
