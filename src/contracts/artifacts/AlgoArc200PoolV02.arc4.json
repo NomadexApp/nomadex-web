@@ -286,7 +286,7 @@
         },
         {
           "name": "tokenYAppId",
-          "type": "application",
+          "type": "uint64",
           "desc": "appid (or id) of the y-token"
         }
       ],

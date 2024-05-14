@@ -12,7 +12,7 @@ export class LimitOrders001 extends Contract {
 		uint64,
 		{
 			maker: Address;
-			arc200Id: Application;
+			arc200Id: AppID;
 			algoAmount: uint64;
 			arc200Amount: uint256;
 			isBuyingAlgo: uint8;
@@ -57,7 +57,7 @@ export class LimitOrders001 extends Contract {
 		return true;
 	}
 
-	private arc200TransferTo(arc200Id: Application, to: Address, amount: uint256): boolean {
+	private arc200TransferTo(arc200Id: AppID, to: Address, amount: uint256): boolean {
 		return sendMethodCall<[Address, uint256], boolean>({
 			sender: this.app.address,
 			name: 'arc200_transfer',
@@ -67,7 +67,7 @@ export class LimitOrders001 extends Contract {
 		});
 	}
 
-	private arc200TranferFrom(arc200Id: Application, from: Address, to: Address, amount: uint256): boolean {
+	private arc200TranferFrom(arc200Id: AppID, from: Address, to: Address, amount: uint256): boolean {
 		return sendMethodCall<[Address, Address, uint256], boolean>({
 			sender: this.app.address,
 			name: 'arc200_transferFrom',
@@ -103,7 +103,7 @@ export class LimitOrders001 extends Contract {
 		orderDirection: uint8;
 	}>();
 
-	createAlgoSellOrder(algoPayTxn: PayTxn, arc200Id: Application, arc200Amount: uint256): void {
+	createAlgoSellOrder(algoPayTxn: PayTxn, arc200Id: AppID, arc200Amount: uint256): void {
 		verifyPayTxn(algoPayTxn, {
 			amount: { greaterThan: 0 },
 			sender: this.txn.sender,
@@ -134,7 +134,7 @@ export class LimitOrders001 extends Contract {
 		this.orderCounter.value = orderId + 1;
 	}
 
-	createAlgoBuyOrder(arc200AppId: Application, arc200Amount: uint256, algoAmount: uint64): void {
+	createAlgoBuyOrder(arc200AppId: AppID, arc200Amount: uint256, algoAmount: uint64): void {
 		const orderId = this.orderCounter.value;
 		assert(!this.orderbook(orderId).exists);
 

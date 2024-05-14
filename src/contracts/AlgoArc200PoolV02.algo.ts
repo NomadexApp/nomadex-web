@@ -14,7 +14,7 @@ export class AlgoArc200PoolV02 extends Arc200Token {
 		platformFee: uint256;
 	}>({ key: 'fee' });
 
-	tokenYAppId = BoxKey<Application>({ key: 'token_y_app_id' });
+	tokenYAppId = BoxKey<AppID>({ key: 'token_y_app_id' });
 
 	/**
 	 * Swap event logged on swap
@@ -64,7 +64,7 @@ export class AlgoArc200PoolV02 extends Arc200Token {
 	 * @param symbol symbol of the lp token
 	 * @param tokenYAppId appid (or id) of the y-token
 	 */
-	poolInitialize(name: StaticArray<byte, 32>, symbol: StaticArray<byte, 8>, tokenYAppId: Application): void {
+	poolInitialize(name: StaticArray<byte, 32>, symbol: StaticArray<byte, 8>, tokenYAppId: AppID): void {
 		assert(this.app.creator === this.txn.sender || this.manager.value === this.txn.sender);
 		assert(!this.totalSupply.exists);
 

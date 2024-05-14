@@ -12,6 +12,7 @@ import type {
   AppCompilationResult,
   AppReference,
   AppState,
+  AppStorageSchema,
   CoreAppCallArgs,
   RawAppCallArgs,
   TealTemplateParams,
@@ -658,6 +659,13 @@ export type AppClientComposeCallCoreParams = Omit<AppClientCallCoreParams, 'send
 }
 export type AppClientComposeExecuteParams = Pick<SendTransactionParams, 'skipWaiting' | 'maxRoundsToWaitForConfirmation' | 'populateAppCallResources' | 'suppressLog'>
 
+export type IncludeSchema = {
+  /**
+   * Any overrides for the storage schema to request for the created app; by default the schema indicated by the app spec is used.
+   */
+  schema?: Partial<AppStorageSchema>
+}
+
 /**
  * Defines the types of available calls and state of the AlgoArc200Pool smart contract.
  */
@@ -670,10 +678,10 @@ export type AlgoArc200Pool = {
       argsObj: {
         admin: string
         governer: string
-        arc200_token: number | bigint
-        lp_fee: bigint | number
+        arc200Token: number | bigint
+        lpFee: bigint | number
       }
-      argsTuple: [admin: string, governer: string, arc200_token: number | bigint, lp_fee: bigint | number]
+      argsTuple: [admin: string, governer: string, arc200Token: number | bigint, lpFee: bigint | number]
       returns: void
     }>
     & Record<'updateApplication()void' | 'updateApplication', {
@@ -684,11 +692,11 @@ export type AlgoArc200Pool = {
     }>
     & Record<'create_pool_token(pay,string,string)uint64' | 'create_pool_token', {
       argsObj: {
-        algo_seed_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>
-        lpt_name: string
-        lpt_unit: string
+        algoSeedTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>
+        lptName: string
+        lptUnit: string
       }
-      argsTuple: [algo_seed_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>, lpt_name: string, lpt_unit: string]
+      argsTuple: [algoSeedTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>, lptName: string, lptUnit: string]
       returns: bigint
     }>
     & Record<'set_admin(address)void' | 'set_admin', {
@@ -735,14 +743,14 @@ export type AlgoArc200Pool = {
     }>
     & Record<'register_online(byte[],byte[],byte[],uint64,uint64,uint64)void' | 'register_online', {
       argsObj: {
-        selection_pk: Uint8Array
-        state_proof_pk: Uint8Array
-        vote_pk: Uint8Array
-        vote_first: bigint | number
-        vote_last: bigint | number
-        vote_key_dilution: bigint | number
+        selectionPk: Uint8Array
+        stateProofPk: Uint8Array
+        votePk: Uint8Array
+        voteFirst: bigint | number
+        voteLast: bigint | number
+        voteKeyDilution: bigint | number
       }
-      argsTuple: [selection_pk: Uint8Array, state_proof_pk: Uint8Array, vote_pk: Uint8Array, vote_first: bigint | number, vote_last: bigint | number, vote_key_dilution: bigint | number]
+      argsTuple: [selectionPk: Uint8Array, stateProofPk: Uint8Array, votePk: Uint8Array, voteFirst: bigint | number, voteLast: bigint | number, voteKeyDilution: bigint | number]
       returns: void
     }>
     & Record<'register_offline()void' | 'register_offline', {
@@ -759,18 +767,18 @@ export type AlgoArc200Pool = {
     }>
     & Record<'mint(pay,uint64,asset)void' | 'mint', {
       argsObj: {
-        pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>
-        arc200_amount: bigint | number
-        lpt_asset: number | bigint
+        payTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>
+        arc200Amount: bigint | number
+        lptAsset: number | bigint
       }
-      argsTuple: [pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>, arc200_amount: bigint | number, lpt_asset: number | bigint]
+      argsTuple: [payTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>, arc200Amount: bigint | number, lptAsset: number | bigint]
       returns: void
     }>
     & Record<'burn(axfer)void' | 'burn', {
       argsObj: {
-        lpt_xfer_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>
+        lptXferTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>
       }
-      argsTuple: [lpt_xfer_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>]
+      argsTuple: [lptXferTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>]
       returns: void
     }>
     & Record<'swap_to_arc200(pay,uint64)uint64' | 'swap_to_arc200', {
@@ -778,13 +786,13 @@ export type AlgoArc200Pool = {
         /**
          * Txn with an amount of algos sending to this app account
          */
-        pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>
+        payTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>
         /**
          * min arc200 for this swap to be successful
          */
-        min_amount: bigint | number
+        minAmount: bigint | number
       }
-      argsTuple: [pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>, min_amount: bigint | number]
+      argsTuple: [payTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>, minAmount: bigint | number]
       /**
        * amount of algos returned
        */
@@ -795,13 +803,13 @@ export type AlgoArc200Pool = {
         /**
          * amount of arc200 approved
          */
-        arc200_amount: bigint | number
+        arc200Amount: bigint | number
         /**
          * min algo for this swap to be successful
          */
-        min_amount: bigint | number
+        minAmount: bigint | number
       }
-      argsTuple: [arc200_amount: bigint | number, min_amount: bigint | number]
+      argsTuple: [arc200Amount: bigint | number, minAmount: bigint | number]
       /**
        * amount of algos returned
        */
@@ -812,17 +820,17 @@ export type AlgoArc200Pool = {
    */
   state: {
     global: {
-      'admin'?: BinaryState
-      'governer'?: BinaryState
-      'ratio'?: IntegerState
-      'swap_fee'?: IntegerState
-      'admin_fee'?: IntegerState
-      'lpt_asset'?: IntegerState
-      'arc200_token'?: IntegerState
-      'mint_enabled'?: BinaryState
-      'burn_enabled'?: BinaryState
-      'swap_enabled'?: BinaryState
-      'initialized'?: BinaryState
+      admin?: BinaryState
+      governer?: BinaryState
+      ratio?: IntegerState
+      swapFee?: IntegerState
+      adminFee?: IntegerState
+      lptAsset?: IntegerState
+      arc200Token?: IntegerState
+      mintEnabled?: BinaryState
+      burnEnabled?: BinaryState
+      swapEnabled?: BinaryState
+      initialized?: BinaryState
     }
   }
 }
@@ -903,7 +911,7 @@ export abstract class AlgoArc200PoolCallFactory {
       createApplication(args: MethodArgs<'createApplication(address,address,application,uint64)void'>, params: AppClientCallCoreParams & CoreAppCallArgs & AppClientCompilationParams & (OnCompleteNoOp) = {}) {
         return {
           method: 'createApplication(address,address,application,uint64)void' as const,
-          methodArgs: Array.isArray(args) ? args : [args.admin, args.governer, args.arc200_token, args.lp_fee],
+          methodArgs: Array.isArray(args) ? args : [args.admin, args.governer, args.arc200Token, args.lpFee],
           ...params,
         }
       },
@@ -942,7 +950,7 @@ export abstract class AlgoArc200PoolCallFactory {
   static createPoolToken(args: MethodArgs<'create_pool_token(pay,string,string)uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'create_pool_token(pay,string,string)uint64' as const,
-      methodArgs: Array.isArray(args) ? args : [args.algo_seed_txn, args.lpt_name, args.lpt_unit],
+      methodArgs: Array.isArray(args) ? args : [args.algoSeedTxn, args.lptName, args.lptUnit],
       ...params,
     }
   }
@@ -1040,7 +1048,7 @@ export abstract class AlgoArc200PoolCallFactory {
   static registerOnline(args: MethodArgs<'register_online(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'register_online(byte[],byte[],byte[],uint64,uint64,uint64)void' as const,
-      methodArgs: Array.isArray(args) ? args : [args.selection_pk, args.state_proof_pk, args.vote_pk, args.vote_first, args.vote_last, args.vote_key_dilution],
+      methodArgs: Array.isArray(args) ? args : [args.selectionPk, args.stateProofPk, args.votePk, args.voteFirst, args.voteLast, args.voteKeyDilution],
       ...params,
     }
   }
@@ -1084,7 +1092,7 @@ export abstract class AlgoArc200PoolCallFactory {
   static mint(args: MethodArgs<'mint(pay,uint64,asset)void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'mint(pay,uint64,asset)void' as const,
-      methodArgs: Array.isArray(args) ? args : [args.pay_txn, args.arc200_amount, args.lpt_asset],
+      methodArgs: Array.isArray(args) ? args : [args.payTxn, args.arc200Amount, args.lptAsset],
       ...params,
     }
   }
@@ -1100,7 +1108,7 @@ export abstract class AlgoArc200PoolCallFactory {
   static burn(args: MethodArgs<'burn(axfer)void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'burn(axfer)void' as const,
-      methodArgs: Array.isArray(args) ? args : [args.lpt_xfer_txn],
+      methodArgs: Array.isArray(args) ? args : [args.lptXferTxn],
       ...params,
     }
   }
@@ -1116,7 +1124,7 @@ export abstract class AlgoArc200PoolCallFactory {
   static swapToArc200(args: MethodArgs<'swap_to_arc200(pay,uint64)uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'swap_to_arc200(pay,uint64)uint64' as const,
-      methodArgs: Array.isArray(args) ? args : [args.pay_txn, args.min_amount],
+      methodArgs: Array.isArray(args) ? args : [args.payTxn, args.minAmount],
       ...params,
     }
   }
@@ -1132,7 +1140,7 @@ export abstract class AlgoArc200PoolCallFactory {
   static swapFromArc200(args: MethodArgs<'swap_from_arc200(uint64,uint64)uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'swap_from_arc200(uint64,uint64)uint64' as const,
-      methodArgs: Array.isArray(args) ? args : [args.arc200_amount, args.min_amount],
+      methodArgs: Array.isArray(args) ? args : [args.arc200Amount, args.minAmount],
       ...params,
     }
   }
@@ -1197,7 +1205,7 @@ export class AlgoArc200PoolClient {
    * @param params The arguments for the contract calls and any additional parameters for the call
    * @returns The deployment result
    */
-  public deploy(params: AlgoArc200PoolDeployArgs & AppClientDeployCoreParams = {}): ReturnType<ApplicationClient['deploy']> {
+  public deploy(params: AlgoArc200PoolDeployArgs & AppClientDeployCoreParams & IncludeSchema = {}): ReturnType<ApplicationClient['deploy']> {
     const createArgs = params.createCall?.(AlgoArc200PoolCallFactory.create)
     const updateArgs = params.updateCall?.(AlgoArc200PoolCallFactory.update)
     return this.appClient.deploy({
@@ -1221,7 +1229,7 @@ export class AlgoArc200PoolClient {
        * @param params Any additional parameters for the call
        * @returns The create result
        */
-      async createApplication(args: MethodArgs<'createApplication(address,address,application,uint64)void'>, params: AppClientCallCoreParams & AppClientCompilationParams & (OnCompleteNoOp) = {}) {
+      async createApplication(args: MethodArgs<'createApplication(address,address,application,uint64)void'>, params: AppClientCallCoreParams & AppClientCompilationParams & IncludeSchema & CoreAppCallArgs & (OnCompleteNoOp) = {}) {
         return $this.mapReturnValue<MethodReturn<'createApplication(address,address,application,uint64)void'>, AppCreateCallTransactionResult>(await $this.appClient.create(AlgoArc200PoolCallFactory.create.createApplication(args, params)))
       },
     }
@@ -1240,7 +1248,7 @@ export class AlgoArc200PoolClient {
        * @param params Any additional parameters for the call
        * @returns The update result
        */
-      async updateApplication(args: MethodArgs<'updateApplication()void'>, params: AppClientCallCoreParams & AppClientCompilationParams = {}) {
+      async updateApplication(args: MethodArgs<'updateApplication()void'>, params: AppClientCallCoreParams & AppClientCompilationParams & CoreAppCallArgs = {}) {
         return $this.mapReturnValue<MethodReturn<'updateApplication()void'>, AppUpdateCallTransactionResult>(await $this.appClient.update(AlgoArc200PoolCallFactory.update.updateApplication(args, params)))
       },
     }
@@ -1477,25 +1485,25 @@ export class AlgoArc200PoolClient {
       get ratio() {
         return AlgoArc200PoolClient.getIntegerState(state, 'ratio')
       },
-      get swap_fee() {
+      get swapFee() {
         return AlgoArc200PoolClient.getIntegerState(state, 'swap_fee')
       },
-      get admin_fee() {
+      get adminFee() {
         return AlgoArc200PoolClient.getIntegerState(state, 'admin_fee')
       },
-      get lpt_asset() {
+      get lptAsset() {
         return AlgoArc200PoolClient.getIntegerState(state, 'lpt_asset')
       },
-      get arc200_token() {
+      get arc200Token() {
         return AlgoArc200PoolClient.getIntegerState(state, 'arc200_token')
       },
-      get mint_enabled() {
+      get mintEnabled() {
         return AlgoArc200PoolClient.getBinaryState(state, 'mint_enabled')
       },
-      get burn_enabled() {
+      get burnEnabled() {
         return AlgoArc200PoolClient.getBinaryState(state, 'burn_enabled')
       },
-      get swap_enabled() {
+      get swapEnabled() {
         return AlgoArc200PoolClient.getBinaryState(state, 'swap_enabled')
       },
       get initialized() {

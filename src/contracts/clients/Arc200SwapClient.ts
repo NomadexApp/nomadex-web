@@ -12,6 +12,7 @@ import type {
   AppCompilationResult,
   AppReference,
   AppState,
+  AppStorageSchema,
   CoreAppCallArgs,
   RawAppCallArgs,
   TealTemplateParams,
@@ -432,6 +433,13 @@ export type AppClientComposeCallCoreParams = Omit<AppClientCallCoreParams, 'send
 }
 export type AppClientComposeExecuteParams = Pick<SendTransactionParams, 'skipWaiting' | 'maxRoundsToWaitForConfirmation' | 'populateAppCallResources' | 'suppressLog'>
 
+export type IncludeSchema = {
+  /**
+   * Any overrides for the storage schema to request for the created app; by default the schema indicated by the app spec is used.
+   */
+  schema?: Partial<AppStorageSchema>
+}
+
 /**
  * Defines the types of available calls and state of the Arc200Swap smart contract.
  */
@@ -454,34 +462,34 @@ export type Arc200Swap = {
     }>
     & Record<'mint(pay,uint64,asset)void' | 'mint', {
       argsObj: {
-        pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>
-        arc200_amount: bigint | number
-        pool_token: number | bigint
+        payTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>
+        arc200Amount: bigint | number
+        poolToken: number | bigint
       }
-      argsTuple: [pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>, arc200_amount: bigint | number, pool_token: number | bigint]
+      argsTuple: [payTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>, arc200Amount: bigint | number, poolToken: number | bigint]
       returns: void
     }>
     & Record<'burn(axfer)void' | 'burn', {
       argsObj: {
-        lpt_pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>
+        lptPayTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>
       }
-      argsTuple: [lpt_pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>]
+      argsTuple: [lptPayTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>]
       returns: void
     }>
     & Record<'swap_to_arc200(pay,uint64)uint64' | 'swap_to_arc200', {
       argsObj: {
-        pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>
-        min_amount: bigint | number
+        payTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>
+        minAmount: bigint | number
       }
-      argsTuple: [pay_txn: TransactionToSign | Transaction | Promise<SendTransactionResult>, min_amount: bigint | number]
+      argsTuple: [payTxn: TransactionToSign | Transaction | Promise<SendTransactionResult>, minAmount: bigint | number]
       returns: bigint
     }>
     & Record<'swap_from_arc200(uint64,uint64)uint64' | 'swap_from_arc200', {
       argsObj: {
-        arc200_amount: bigint | number
-        min_amount: bigint | number
+        arc200Amount: bigint | number
+        minAmount: bigint | number
       }
-      argsTuple: [arc200_amount: bigint | number, min_amount: bigint | number]
+      argsTuple: [arc200Amount: bigint | number, minAmount: bigint | number]
       returns: bigint
     }>
     & Record<'create_pool_token(pay)uint64' | 'create_pool_token', {
@@ -493,14 +501,14 @@ export type Arc200Swap = {
     }>
     & Record<'register_online(byte[],byte[],byte[],uint64,uint64,uint64)void' | 'register_online', {
       argsObj: {
-        selection_pk: Uint8Array
-        state_proof_pk: Uint8Array
-        vote_pk: Uint8Array
-        vote_first: bigint | number
-        vote_last: bigint | number
-        vote_key_dilution: bigint | number
+        selectionPk: Uint8Array
+        stateProofPk: Uint8Array
+        votePk: Uint8Array
+        voteFirst: bigint | number
+        voteLast: bigint | number
+        voteKeyDilution: bigint | number
       }
-      argsTuple: [selection_pk: Uint8Array, state_proof_pk: Uint8Array, vote_pk: Uint8Array, vote_first: bigint | number, vote_last: bigint | number, vote_key_dilution: bigint | number]
+      argsTuple: [selectionPk: Uint8Array, stateProofPk: Uint8Array, votePk: Uint8Array, voteFirst: bigint | number, voteLast: bigint | number, voteKeyDilution: bigint | number]
       returns: void
     }>
     & Record<'register_offline()void' | 'register_offline', {
@@ -528,12 +536,12 @@ export type Arc200Swap = {
    */
   state: {
     global: {
-      'admin'?: BinaryState
-      'pool_token'?: IntegerState
-      'ratio'?: IntegerState
-      'fee'?: IntegerState
-      'arc200_token'?: IntegerState
-      'initialized'?: BinaryState
+      admin?: BinaryState
+      poolToken?: IntegerState
+      ratio?: IntegerState
+      fee?: IntegerState
+      arc200Token?: IntegerState
+      initialized?: BinaryState
     }
   }
 }
@@ -655,7 +663,7 @@ export abstract class Arc200SwapCallFactory {
   static mint(args: MethodArgs<'mint(pay,uint64,asset)void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'mint(pay,uint64,asset)void' as const,
-      methodArgs: Array.isArray(args) ? args : [args.pay_txn, args.arc200_amount, args.pool_token],
+      methodArgs: Array.isArray(args) ? args : [args.payTxn, args.arc200Amount, args.poolToken],
       ...params,
     }
   }
@@ -669,7 +677,7 @@ export abstract class Arc200SwapCallFactory {
   static burn(args: MethodArgs<'burn(axfer)void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'burn(axfer)void' as const,
-      methodArgs: Array.isArray(args) ? args : [args.lpt_pay_txn],
+      methodArgs: Array.isArray(args) ? args : [args.lptPayTxn],
       ...params,
     }
   }
@@ -685,7 +693,7 @@ export abstract class Arc200SwapCallFactory {
   static swapToArc200(args: MethodArgs<'swap_to_arc200(pay,uint64)uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'swap_to_arc200(pay,uint64)uint64' as const,
-      methodArgs: Array.isArray(args) ? args : [args.pay_txn, args.min_amount],
+      methodArgs: Array.isArray(args) ? args : [args.payTxn, args.minAmount],
       ...params,
     }
   }
@@ -699,7 +707,7 @@ export abstract class Arc200SwapCallFactory {
   static swapFromArc200(args: MethodArgs<'swap_from_arc200(uint64,uint64)uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'swap_from_arc200(uint64,uint64)uint64' as const,
-      methodArgs: Array.isArray(args) ? args : [args.arc200_amount, args.min_amount],
+      methodArgs: Array.isArray(args) ? args : [args.arc200Amount, args.minAmount],
       ...params,
     }
   }
@@ -729,7 +737,7 @@ export abstract class Arc200SwapCallFactory {
   static registerOnline(args: MethodArgs<'register_online(byte[],byte[],byte[],uint64,uint64,uint64)void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'register_online(byte[],byte[],byte[],uint64,uint64,uint64)void' as const,
-      methodArgs: Array.isArray(args) ? args : [args.selection_pk, args.state_proof_pk, args.vote_pk, args.vote_first, args.vote_last, args.vote_key_dilution],
+      methodArgs: Array.isArray(args) ? args : [args.selectionPk, args.stateProofPk, args.votePk, args.voteFirst, args.voteLast, args.voteKeyDilution],
       ...params,
     }
   }
@@ -836,7 +844,7 @@ export class Arc200SwapClient {
    * @param params The arguments for the contract calls and any additional parameters for the call
    * @returns The deployment result
    */
-  public deploy(params: Arc200SwapDeployArgs & AppClientDeployCoreParams = {}): ReturnType<ApplicationClient['deploy']> {
+  public deploy(params: Arc200SwapDeployArgs & AppClientDeployCoreParams & IncludeSchema = {}): ReturnType<ApplicationClient['deploy']> {
     const createArgs = params.createCall?.(Arc200SwapCallFactory.create)
     const updateArgs = params.updateCall?.(Arc200SwapCallFactory.update)
     return this.appClient.deploy({
@@ -860,7 +868,7 @@ export class Arc200SwapClient {
        * @param params Any additional parameters for the call
        * @returns The create result
        */
-      async createApplication(args: MethodArgs<'createApplication()void'>, params: AppClientCallCoreParams & AppClientCompilationParams & (OnCompleteNoOp) = {}) {
+      async createApplication(args: MethodArgs<'createApplication()void'>, params: AppClientCallCoreParams & AppClientCompilationParams & IncludeSchema & CoreAppCallArgs & (OnCompleteNoOp) = {}) {
         return $this.mapReturnValue<MethodReturn<'createApplication()void'>, AppCreateCallTransactionResult>(await $this.appClient.create(Arc200SwapCallFactory.create.createApplication(args, params)))
       },
     }
@@ -879,7 +887,7 @@ export class Arc200SwapClient {
        * @param params Any additional parameters for the call
        * @returns The update result
        */
-      async updateApplication(args: MethodArgs<'updateApplication()void'>, params: AppClientCallCoreParams & AppClientCompilationParams = {}) {
+      async updateApplication(args: MethodArgs<'updateApplication()void'>, params: AppClientCallCoreParams & AppClientCompilationParams & CoreAppCallArgs = {}) {
         return $this.mapReturnValue<MethodReturn<'updateApplication()void'>, AppUpdateCallTransactionResult>(await $this.appClient.update(Arc200SwapCallFactory.update.updateApplication(args, params)))
       },
     }
@@ -1053,7 +1061,7 @@ export class Arc200SwapClient {
       get admin() {
         return Arc200SwapClient.getBinaryState(state, 'admin')
       },
-      get pool_token() {
+      get poolToken() {
         return Arc200SwapClient.getIntegerState(state, 'pool_token')
       },
       get ratio() {
@@ -1062,7 +1070,7 @@ export class Arc200SwapClient {
       get fee() {
         return Arc200SwapClient.getIntegerState(state, 'fee')
       },
-      get arc200_token() {
+      get arc200Token() {
         return Arc200SwapClient.getIntegerState(state, 'arc200_token')
       },
       get initialized() {

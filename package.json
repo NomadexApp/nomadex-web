@@ -7,9 +7,9 @@
 		"fs": false
 	},
 	"devDependencies": {
-		"@algorandfoundation/algokit-client-generator": "^2.6.0",
-		"@algorandfoundation/algokit-utils": "^6.0.2",
-		"@algorandfoundation/tealscript": "0.80.1",
+		"@algorandfoundation/algokit-client-generator": "latest",
+		"@algorandfoundation/algokit-utils": "latest",
+		"@algorandfoundation/tealscript": "latest",
 		"@blockshake/defly-connect": "^1.1.6",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/adapter-cloudflare": "^3.0.1",
