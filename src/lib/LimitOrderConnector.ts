@@ -60,7 +60,7 @@ export class LimitOrders001ClientConnector extends LimitOrders001Client {
 
 		const globalState = await this.getGlobalState();
 
-		const orderId = globalState.order_counter?.asNumber();
+		const orderId = globalState.orderCounter?.asNumber();
 		if (typeof orderId !== 'number') throw Error(`Could not get order id:`);
 
 		if (orderType === LimitOrderType.SELL_ALGO_FOR_ARC200) {
