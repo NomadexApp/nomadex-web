@@ -28,7 +28,7 @@ export type Pool = {
 };
 
 export const knownPools = writable<Pool[]>([
-	{ lptId: 27705276, poolId: 27705276, swapFee: 1e12, arc200Asset: { symbol: 'VIA', assetId: 6779767, decimals: 6, unit: 1e6 } }
+	// { lptId: 27705276, poolId: 27705276, swapFee: 1e12, arc200Asset: { symbol: 'VIA', assetId: 6779767, decimals: 6, unit: 1e6 } }
 ]);
 
 export const knownTokens = writable<Token[]>([
@@ -38,7 +38,7 @@ export const knownTokens = writable<Token[]>([
 	{ ticker: 'Tacos', id: 6795477, type: TokenType.ARC200, decimals: 0, unit: 1 },
 ]);
 
-export const arePoolsLoaded = writable(true);
+export const arePoolsLoaded = writable(false);
 
 export const contracts = {
 	orderbookLimitOrderApp: 26171479,
