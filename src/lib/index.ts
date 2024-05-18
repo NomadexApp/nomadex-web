@@ -189,7 +189,22 @@ export async function saveVoiActionToList<K extends keyof ActionTypes>(action: K
 		throw Error('Bad action, cannot save action to the list');
 	}
 	try {
-		await putDoc(`/networks/${network}/versions/${version}/actions/${context.timestamp}`, { ...context, action });
+		// await putDoc(`/networks/${network}/versions/${version}/actions/${context.timestamp}`, { ...context, action });
+		const response = await fetch(`https://api.nomadex.app/actions`, {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify({
+				...context,
+				action
+			})
+		});
+		const jsonResponse = await response.json();
+
+		if (jsonResponse.success) {
+			console.log(`Saved Action: ${action}`);
+		}
 	} catch (e) {
 		console.log(e);
 	}
