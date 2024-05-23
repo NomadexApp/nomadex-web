@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { goto } from '$app/navigation';
-	import { saveArc200TokenToList } from '$lib';
+	import { TokenType, knownTokens, saveArc200TokenToList } from '$lib';
 	import { Arc200Interface } from '$lib/utils';
 
 	let appId = 0;
@@ -18,6 +18,16 @@
 			const decimals = await Arc200Interface.arc200_decimals(appId);
 			if (typeof symbol === 'string' && symbol.length && Number.isInteger(Number(decimals))) {
 				await saveArc200TokenToList(symbol, appId, Number(decimals));
+				$knownTokens = [
+					...$knownTokens,
+					{
+						id: appId,
+						type: TokenType.ARC200,
+						decimals: Number(decimals),
+						ticker: symbol,
+						unit: 10 ** Number(decimals),
+					},
+				];
 				goto(`/tokens/arc200-${appId}`);
 			} else {
 				console.error('Invalid token symbol:', symbol);
