@@ -86,6 +86,9 @@
 	:global(body) {
 		padding-top: 100px;
 	}
+	section {
+		color: white;
+	}
 	article {
 		/* max-width: 1280px; */
 		/* backdrop-filter: blur(10px); */
