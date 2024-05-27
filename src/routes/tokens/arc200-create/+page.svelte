@@ -126,10 +126,10 @@
 
 	$: isValid =
 		algosdk.isValidAddress(manager) &&
-		name.length > 3 &&
+		name.length >= 1 &&
 		name.length < 33 &&
 		name.match(/^[\s\w_-]+$/) &&
-		symbol.length > 1 &&
+		symbol.length >= 1 &&
 		symbol.length < 9 &&
 		symbol.match(/^[\w]+$/) &&
 		!$knownTokens.find((tok) => tok.ticker.toLowerCase() === symbol.toLowerCase());
