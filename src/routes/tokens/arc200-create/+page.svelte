@@ -187,11 +187,12 @@
 		<div>
 			Total Supply: {totalSupply.toLocaleString('en')}{decimals ? '.' : ''}{Array(decimals).fill('0').join('')}
 		</div>
-		{#if isValid && $connectedAccount}
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={createArc200Token}>Create ARC200 Token</button>
-			</div>
-		{/if}
+		<div class="w-full max-w-[610px] flex flex-col justify-center">
+			<button
+				class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}"
+				on:click={isValid && $connectedAccount ? createArc200Token : () => {}}>Create ARC200 Token</button
+			>
+		</div>
 	</div>
 </section>
 

@@ -54,11 +54,12 @@
 				bind:value={appId}
 			/>
 		</div>
-		{#if isValid && $connectedAccount}
-			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={importArc200Token}>Import Token</button>
-			</div>
-		{/if}
+		<div class="w-full max-w-[610px] flex flex-col justify-center">
+			<button
+				class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}"
+				on:click={isValid && $connectedAccount ? importArc200Token : () => {}}>Import Token</button
+			>
+		</div>
 	</div>
 </section>
 
