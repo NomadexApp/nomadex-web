@@ -119,27 +119,13 @@
 		return;
 	}
 
-	$: initialLiquidityAmount = Math.min(
-		Math.min(
-			Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6,
-			Math.min(Math.floor($connectedUserState.amount / 1e6), 100)
-		),
-		100
-	);
+	$: initialLiquidityAmount = Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6;
 
 	async function createVoiPool() {
-		let FIRST_LIQUIDITY = initialLiquidityAmount;
 		const connector = await AlgoArc200PoolConnector.createPool(arc200Token.id);
 
 		console.log('Created App:', connector.appId);
 		await connector.invoke('initPool');
-
-		// await connector.invoke(
-		// 	'mint',
-		// 	convertDecimals(Math.floor(FIRST_LIQUIDITY * 1e6), 6, 6),
-		// 	convertDecimals(Math.floor(FIRST_LIQUIDITY * 1e6), 6, arc200Token.decimals)
-		// );
-		// console.log('added liquidity');
 
 		await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id);
 		await saveVoiActionToList('create-arc200-pool', {
@@ -252,11 +238,11 @@
 			{/if}
 		{:else if typeof $arc200Balance !== 'undefined'}
 			<!--  -->
-			{#if (initialLiquidityAmount ?? 0) > 1}
+			{#if (initialLiquidityAmount ?? 0) >= 1}
 				<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-40">
 					<h4 class="text-left">Create Liquidity Pool (VOI/{arc200Token.ticker})</h4>
 					<h6 class="text-left">
-						Initial Liquidity: {initialLiquidityAmount} VOI / {initialLiquidityAmount}
+						Token Balance: {initialLiquidityAmount}
 						{arc200Token.ticker}
 					</h6>
 

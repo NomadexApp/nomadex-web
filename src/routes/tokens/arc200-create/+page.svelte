@@ -51,7 +51,7 @@
 			const result = await client.create.createApplication({ manager: manager });
 			console.log('created app', result);
 
-			appId = Number(result.confirmation?.applicationIndex);
+			appId = Number(result?.appId || result.confirmation?.applicationIndex);
 			remove();
 
 			remove = addNotification('pending', 'Initializing token contract');
