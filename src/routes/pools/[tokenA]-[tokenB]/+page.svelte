@@ -84,7 +84,7 @@
 		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 		const globalState = await connector.getGlobalState();
 		const manager = globalState.manager;
-		const feeController = globalState.fee_controller;
+		const feeController = globalState.feeController;
 		if (manager) {
 			managerAddress = algosdk.encodeAddress(manager.asByteArray());
 		}
@@ -134,12 +134,12 @@
 		console.log('Created App:', connector.appId);
 		await connector.invoke('initPool');
 
-		await connector.invoke(
-			'mint',
-			convertDecimals(Math.floor(FIRST_LIQUIDITY * 1e6), 6, 6),
-			convertDecimals(Math.floor(FIRST_LIQUIDITY * 1e6), 6, arc200Token.decimals)
-		);
-		console.log('added liquidity');
+		// await connector.invoke(
+		// 	'mint',
+		// 	convertDecimals(Math.floor(FIRST_LIQUIDITY * 1e6), 6, 6),
+		// 	convertDecimals(Math.floor(FIRST_LIQUIDITY * 1e6), 6, arc200Token.decimals)
+		// );
+		// console.log('added liquidity');
 
 		await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id);
 		await saveVoiActionToList('create-arc200-pool', {
