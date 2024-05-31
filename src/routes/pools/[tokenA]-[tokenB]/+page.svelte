@@ -238,7 +238,7 @@
 			{/if}
 		{:else if typeof $arc200Balance !== 'undefined'}
 			<!--  -->
-			{#if (initialLiquidityAmount ?? 0) >= 1}
+			{#if Number($arc200Balance || 0) >= 1}
 				<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-40">
 					<h4 class="text-left">Create Liquidity Pool (VOI/{arc200Token.ticker})</h4>
 					<h6 class="text-left">
@@ -263,9 +263,7 @@
 			{:else}
 				Not Enough balance to create liquidity pool
 				<div class="br" />
-				Balance: {($connectedUserState.amount / 1e6).toLocaleString('en')} VOI / {(
-					Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6
-				).toLocaleString('en')}
+				Balance: {(Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6).toLocaleString('en')}
 				{arc200Token.ticker}
 			{/if}
 		{/if}
