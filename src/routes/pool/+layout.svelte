@@ -45,7 +45,7 @@
 		};
 	}
 
-	const popularPools = ['VIA', 'UNIT', 'MC4N1C', 'VWIFI', 'Tacos', 'ROCKET'];
+	const popularPools = ['UNIT', 'MC4N1C', 'VIA', 'VWIFI', 'Tacos', 'ROCKET'];
 	$: my = Boolean($page.url.pathname.match('/your-positions'));
 	$: all = Boolean($page.url.pathname.match('/pool/all'));
 
@@ -56,9 +56,9 @@
 					pool.arc200Asset.assetId.toString() === searchText ||
 					pool.poolId.toString() === searchText
 		  )
-		: $knownPools.filter((pool) =>
-				popularPools.length && !my && !all ? popularPools.includes(pool.arc200Asset.symbol) : true
-		  );
+		: $knownPools
+				.filter((pool) => (popularPools.length && !my && !all ? popularPools.includes(pool.arc200Asset.symbol) : true))
+				.sort((a, b) => popularPools.indexOf(a.arc200Asset.symbol) - popularPools.indexOf(b.arc200Asset.symbol));
 
 	$: {
 		for (const pool of filteredPools) {
