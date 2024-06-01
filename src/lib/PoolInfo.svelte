@@ -173,7 +173,7 @@
 				{readableNumber(Number(volume) / 1e6)} VOI
 			</div>
 			<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
-				{Number((apr ?? 0).toFixed(apr > 10 ? 0 : 2))} %
+				{Math.max(0, Number((apr ?? 0).toFixed(apr > 10 ? 0 : 2)))} %
 			</div>
 		{:catch err}
 			<div class="hidden sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">{err.message}</div>
