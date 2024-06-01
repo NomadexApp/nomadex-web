@@ -163,7 +163,7 @@
 			</span>
 		</div>
 		<div class="flex items-center w-[40%] sm:w-[50px] text-nowrap">
-			{readableNumber((($algoBalance * 2) / 1e6) * (my ? sharePercent / 100 : 1))} VOI
+			{readableNumber(((algoBalance * 2) / 1e6) * (my ? sharePercent / 100 : 1))} VOI
 		</div>
 		{#await getApr(pool, updateCounter)}
 			<div class="hidden sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">0 VOI</div>
