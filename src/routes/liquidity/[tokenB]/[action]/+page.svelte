@@ -156,7 +156,7 @@
 		const ratio = Number(convertDecimals(viaBalance, arc200Token.decimals, 6)) / 1e6 / (voiBalance / voiToken.unit);
 
 		if (ratio) {
-			inputTokenB = Number((Math.ceil(inputTokenA * ratio * tokenA.unit) / tokenA.unit).toFixed(tokenA.decimals));
+			inputTokenB = Number(Math.floor(inputTokenA * ratio * tokenB.unit) / tokenB.unit);
 			disabled = !inputTokenB;
 		}
 	}
@@ -176,7 +176,7 @@
 		const ratio = voiBalance / voiToken.unit / (Number(convertDecimals(viaBalance, arc200Token.decimals, 6)) / 1e6);
 
 		if (ratio) {
-			inputTokenA = Number((Math.ceil(inputTokenB * ratio * tokenB.unit) / tokenB.unit).toFixed(tokenB.decimals));
+			inputTokenA = Number(Math.floor(inputTokenB * ratio * tokenA.unit) / tokenA.unit);
 			disabled = !inputTokenA;
 		}
 	}
