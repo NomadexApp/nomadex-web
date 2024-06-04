@@ -232,10 +232,14 @@
 	let lastPoolAlgoBalance = 0;
 
 	function change() {
-		if (inputTokenA) {
-			onInputTokenA();
-			lastPoolArc200Balance = $poolArc200Balance;
-			lastPoolAlgoBalance = $currentPoolState.amount;
+		if (action === 'remove') {
+			onInputTokenLpt();
+		} else {
+			if (inputTokenA) {
+				onInputTokenA();
+				lastPoolArc200Balance = $poolArc200Balance;
+				lastPoolAlgoBalance = $currentPoolState.amount;
+			}
 		}
 	}
 	$: if (
