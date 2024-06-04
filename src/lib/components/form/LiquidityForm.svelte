@@ -63,6 +63,7 @@
 		posttext={action === 'add' ? `balance ${tokenABalance.toLocaleString()} ${tokenA.ticker}` : ''}
 		token={tokenA.ticker}
 		showMax={action === 'add'}
+		decimals={tokenA.decimals}
 		bind:value={tokenAInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
 		on:keyup={onInputTokenA}
@@ -87,6 +88,7 @@
 		pretext={action === 'remove' ? '' : 'You pay'}
 		token={tokenB.ticker}
 		posttext={action === 'add' ? `balance ${tokenBBalance.toLocaleString()} ${tokenB.ticker}` : ''}
+		decimals={tokenB.decimals}
 		bind:value={tokenBInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
 		on:keyup={onInputTokenB}

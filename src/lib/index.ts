@@ -1,5 +1,4 @@
 import { writable } from 'svelte/store';
-import { getCollection, putDoc } from './firebase';
 
 export enum TokenType {
 	Default = '',
@@ -48,17 +47,13 @@ export const contractsConstants = {
 	orderbookLimitOrderAppFeePercent: 1,
 };
 
-const network = 'voitest-v1';
-const version = 'v02';
-
 export async function getListOfArc200Tokens() {
-	const tokensSnap = await getCollection(`/networks/${network}/versions/${version}/arc200tokens`);
-	const tokens = tokensSnap.docs.map((doc) => {
-		const data = doc.data();
+	const tokensSnap: { id: number, ticker: string, decimals: number }[] = await (await fetch('https://api.nomadex.app/tokens')).json();
+	const tokens = tokensSnap.map((token) => {
 		return {
-			id: data.id,
-			symbol: doc.id,
-			decimals: data.decimals,
+			id: token.id,
+			symbol: token.ticker,
+			decimals: token.decimals,
 		};
 	});
 	const validTokens: Token[] = tokens
@@ -73,13 +68,12 @@ export async function getListOfArc200Tokens() {
 
 	console.log('Tokens:', validTokens);
 
-	const poolsSnap = await getCollection(`/networks/${network}/versions/${version}/voiarc200pools`);
+	const poolsSnap: { pool_id: number, swap_fee: string, arc200_id: number }[] = await (await fetch('https://api.nomadex.app/pools')).json();
 
-	const pools = poolsSnap.docs.map((doc) => {
-		const data = doc.data();
+	const pools = poolsSnap.map((pool) => {
 		return {
-			id: data.id,
-			arc200Asset: <Token>validTokens.find((token) => token.id === data.arc200Id),
+			id: pool.pool_id,
+			arc200Asset: <Token>validTokens.find((token) => token.id === pool.arc200_id),
 		};
 	});
 	const validPools: Pool[] = pools
@@ -108,19 +102,42 @@ export async function saveArc200TokenToList(symbol: string, id: number, decimals
 	if (typeof symbol !== 'string' || typeof id !== 'number' || typeof decimals !== 'number') {
 		throw Error('Bad arc200 token args, cannot add arc200 to the list');
 	}
-	await putDoc(`/networks/${network}/versions/${version}/arc200tokens/${symbol}`, { id, decimals });
-	await getListOfArc200Tokens();
+	const resp = await fetch('https://api.nomadex.app/tokens', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json'
+		},
+		body: JSON.stringify({
+			id: id,
+			ticker: symbol,
+			decimals: decimals
+		})
+	});
+	const rep = await resp.json();
+	if (rep.success) {
+		await getListOfArc200Tokens();
+	}
 }
 
 export async function saveVoiArc200PoolToList(symbol: string, poolId: number, arc200Id: number) {
 	if (typeof symbol !== 'string' || typeof poolId !== 'number' || typeof arc200Id !== 'number') {
 		throw Error('Bad voi-arc200 pool args, cannot add pool to the list');
 	}
-	await putDoc(`/networks/${network}/versions/${version}/voiarc200pools/VOI-${symbol}`, {
-		id: poolId,
-		arc200Id: arc200Id,
+	const resp = await fetch('https://api.nomadex.app/pools', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json'
+		},
+		body: JSON.stringify({
+			pool_id: poolId,
+			swap_fee: `1000000000000`,
+			arc200_id: arc200Id
+		})
 	});
-	await getListOfArc200Tokens();
+	const rep = await resp.json();
+	if (rep.success) {
+		await getListOfArc200Tokens();
+	}
 }
 
 interface ActionTypes {
