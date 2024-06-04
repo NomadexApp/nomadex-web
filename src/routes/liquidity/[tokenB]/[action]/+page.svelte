@@ -135,8 +135,8 @@
 		const viaBalance = $poolArc200Balance ?? 0;
 		loading = false;
 
-		inputTokenA = Number((Number(BigInt(voiBalance) * ratio) / voiToken.unit / SCALE).toFixed(6));
-		inputTokenB = Number((Number(BigInt(viaBalance) * ratio) / arc200Token.unit / SCALE).toFixed(6));
+		inputTokenA = Math.floor(Number(BigInt(voiBalance) * ratio) / SCALE) / voiToken.unit;
+		inputTokenB = Math.floor(Number(BigInt(viaBalance) * ratio) / SCALE) / arc200Token.unit;
 
 		disabled = !inputTokenB;
 	}
@@ -227,6 +227,24 @@
 		Number(inputTokenB) > Number(convertDecimals($userArc200Balance ?? 0n, tokenB.decimals, 6)) / 1e6;
 
 	$: maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError || maxArc200BalanceError;
+
+	let lastPoolArc200Balance = 0n;
+	let lastPoolAlgoBalance = 0;
+
+	function change() {
+		if (inputTokenA) {
+			onInputTokenA();
+			lastPoolArc200Balance = $poolArc200Balance;
+			lastPoolAlgoBalance = $currentPoolState.amount;
+		}
+	}
+	$: if (
+		$poolArc200Balance &&
+		$currentPoolState.amount &&
+		($poolArc200Balance !== lastPoolArc200Balance || $currentPoolState.amount !== lastPoolAlgoBalance)
+	) {
+		change();
+	}
 </script>
 
 {#if voiToken && arc200Token}
