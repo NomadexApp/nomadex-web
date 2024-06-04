@@ -4,6 +4,7 @@
 	export let pretext = '';
 	export let posttext = '';
 	export let value = 0;
+	export let decimals = 6;
 	export let token: string;
 	export let showMax = false;
 	export let disabled = false;
@@ -17,7 +18,7 @@
 	<div class="flex">
 		<input
 			type="number"
-			step="0.000001"
+			step={1 / 10 ** decimals}
 			bind:value
 			{disabled}
 			min={0}

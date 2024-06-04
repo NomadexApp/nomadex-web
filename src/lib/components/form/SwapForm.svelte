@@ -65,6 +65,7 @@
 		posttext={`balance ${tokenABalance.toLocaleString()} ${tokenA.ticker}`}
 		token={tokenA.ticker}
 		showMax
+		decimals={tokenA.decimals}
 		bind:value={tokenAInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
 		on:keyup={onInputTokenA}
@@ -91,6 +92,7 @@
 		pretext="You receive"
 		token={tokenB.ticker}
 		posttext={`balance ${tokenBBalance.toLocaleString()} ${tokenB.ticker}`}
+		decimals={tokenB.decimals}
 		bind:value={tokenBInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
 		on:keyup={onInputTokenB}
