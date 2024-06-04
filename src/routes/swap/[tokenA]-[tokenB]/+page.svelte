@@ -111,7 +111,7 @@
 		);
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenB = Number((Number(ret) / tokenB.unit).toFixed(6));
+			inputTokenB = Number((Number(ret) / tokenB.unit).toFixed(tokenB.decimals));
 			disabled = !inputTokenB;
 		}
 	}
@@ -130,16 +130,25 @@
 		loading = true;
 		const poolVoiBalance = BigInt($currentPoolState.amount) - BigInt($currentPoolState['min-balance'] ?? 0n);
 		const poolViaBalance = $poolArc200Balance ?? 0n;
-		const ret =
-			calculateInTokens(
-				BigInt(Math.floor(inputTokenB * tokenB.unit)),
-				tokenA.ticker === 'VOI' ? poolVoiBalance : poolViaBalance,
-				tokenA.ticker === 'VOI' ? poolViaBalance : poolVoiBalance,
-				BigInt(matchedPool.swapFee)
-			) + (tokenB.decimals === 0 ? 1n : 0n);
+		const outAmount = BigInt(Math.floor(inputTokenB * tokenB.unit));
+		let ret = calculateInTokens(
+			outAmount,
+			tokenA.ticker === 'VOI' ? poolVoiBalance : poolViaBalance,
+			tokenA.ticker === 'VOI' ? poolViaBalance : poolVoiBalance,
+			BigInt(matchedPool.swapFee)
+		);
+		const outToken = calculateOutTokens(
+			ret,
+			tokenA.ticker === 'VOI' ? poolVoiBalance : poolViaBalance,
+			tokenA.ticker === 'VOI' ? poolViaBalance : poolVoiBalance,
+			BigInt(matchedPool.swapFee)
+		);
+		if (outToken < outAmount) {
+			ret += 1n;
+		}
 		loading = false;
 		if (tm && tm === timeout) {
-			inputTokenA = Number((Number(ret) / tokenA.unit).toFixed(6));
+			inputTokenA = Number((Math.ceil(Number(ret)) / tokenA.unit).toFixed(tokenA.decimals));
 			disabled = !inputTokenB;
 		}
 	}
@@ -225,15 +234,20 @@
 
 	let lastPoolArc200Balance = 0n;
 	let lastPoolAlgoBalance = 0;
+
+	function change() {
+		if (inputTokenA) {
+			onInputTokenA();
+			lastPoolArc200Balance = $poolArc200Balance;
+			lastPoolAlgoBalance = $currentPoolState.amount;
+		}
+	}
 	$: if (
 		$poolArc200Balance &&
 		$currentPoolState.amount &&
-		inputTokenA &&
 		($poolArc200Balance !== lastPoolArc200Balance || $currentPoolState.amount !== lastPoolAlgoBalance)
 	) {
-		onInputTokenA();
-		lastPoolArc200Balance = $poolArc200Balance;
-		lastPoolAlgoBalance = $currentPoolState.amount;
+		change();
 	}
 </script>
 
