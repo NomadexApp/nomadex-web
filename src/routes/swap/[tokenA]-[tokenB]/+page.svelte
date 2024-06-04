@@ -130,12 +130,13 @@
 		loading = true;
 		const poolVoiBalance = BigInt($currentPoolState.amount) - BigInt($currentPoolState['min-balance'] ?? 0n);
 		const poolViaBalance = $poolArc200Balance ?? 0n;
-		const ret = calculateInTokens(
-			BigInt(Math.floor(inputTokenB * tokenB.unit)),
-			tokenA.ticker === 'VOI' ? poolVoiBalance : poolViaBalance,
-			tokenA.ticker === 'VOI' ? poolViaBalance : poolVoiBalance,
-			BigInt(matchedPool.swapFee)
-		);
+		const ret =
+			calculateInTokens(
+				BigInt(Math.floor(inputTokenB * tokenB.unit)),
+				tokenA.ticker === 'VOI' ? poolVoiBalance : poolViaBalance,
+				tokenA.ticker === 'VOI' ? poolViaBalance : poolVoiBalance,
+				BigInt(matchedPool.swapFee)
+			) + (tokenB.decimals === 0 ? 1n : 0n);
 		loading = false;
 		if (tm && tm === timeout) {
 			inputTokenA = Number((Number(ret) / tokenA.unit).toFixed(6));

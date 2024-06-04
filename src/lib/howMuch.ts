@@ -11,5 +11,5 @@ export function calculateInTokens(outAmount: bigint, inSupply: bigint, outSupply
 	if (inAmount > 0n) {
 		return inAmount;
 	}
-	return BigInt(Number.MAX_SAFE_INTEGER) * BigInt(Number.MAX_SAFE_INTEGER);
+	return 0n;
 }
