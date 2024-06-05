@@ -6,7 +6,7 @@
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
-	import { knownTokens, type Token } from '$lib';
+	import { TokenType, knownTokens, type Token } from '$lib';
 	import { readableNumber } from '$lib/CurrencyNumber.svelte';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { convertDecimals } from '$lib/numbers';
@@ -34,12 +34,15 @@
 
 	let swapInfo: [string, string][] = [];
 
+	$: poolVoiBalance = readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString();
+	$: poolArc200Balance = readableNumber(Number(poolTokenBBalance) || 0).toLocaleString();
+
 	$: swapInfo = [
 		[
 			'Pool balance',
-			`${readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString()} ${tokenA.ticker} / ${readableNumber(
-				Number(poolTokenBBalance) || 0
-			).toLocaleString()} ${tokenB.ticker}`,
+			`${tokenA.type === TokenType.ARC200 ? poolArc200Balance : poolVoiBalance} ${tokenA.ticker} / ${
+				tokenB.type === TokenType.ARC200 ? poolArc200Balance : poolVoiBalance
+			} ${tokenB.ticker}`,
 		],
 		['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
 		...(tokenAInput && tokenBInput
