@@ -51,7 +51,7 @@
 
 	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
 
-	$: loaded = $poolArc200Balance && $currentPoolState.amount;
+	$: loaded = ($poolArc200Balance || $poolIssuedTokens === 0n) && $currentPoolState.amount;
 
 	function setSelectedToken(token: Token, index: number) {
 		if (index === 0) {
