@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getStores } from '$app/stores';
-	import { knownPools, type Pool } from '$lib';
+	import { knownPools, popularPools, type Pool } from '$lib';
 	import FormTitle from '$lib/components/form/FormTitle.svelte';
 	import TextInput from '$lib/components/form/TextInput.svelte';
 	import Join from '$lib/components/join/Join.svelte';
@@ -10,17 +10,10 @@
 	let searchText = '';
 
 	import PoolInfo from '$lib/PoolInfo.svelte';
-	import {
-		OnChainStateWatcher,
-		onChainStateWatcher,
-		watchArc200Balance,
-		watchPoolTotalSupply,
-		type AccountState,
-	} from '$lib/stores/onchain';
+	import { OnChainStateWatcher, type AccountState } from '$lib/stores/onchain';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { Arc200Interface } from '$lib/utils';
 	import algosdk from 'algosdk';
-	import { writable, derived, get } from 'svelte/store';
 
 	let poolBalances: { [k: string]: { algo: number; arc200: bigint; lpt: bigint } } = {};
 
@@ -45,7 +38,6 @@
 		};
 	}
 
-	const popularPools = ['UNIT', 'MC4N1C', 'VIA', 'VWIFI', 'Tacos', 'ROCKET'];
 	$: my = Boolean($page.url.pathname.match('/your-positions'));
 	$: all = Boolean($page.url.pathname.match('/pool/all'));
 

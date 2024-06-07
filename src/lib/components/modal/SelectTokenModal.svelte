@@ -43,7 +43,7 @@
 		{#if tokenSearch}Matched{:else}Popular{/if} tokens
 	</span>
 	<div class="tokens flex flex-col gap-2 mb-4 overflow-y-auto max-h-96">
-		{#each filteredTokens.sort((token) => (balances[token.id] ? -1 : 1)) as token}
+		{#each filteredTokens as token}
 			<div
 				on:keydown
 				class="token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
