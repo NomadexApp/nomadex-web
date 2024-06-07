@@ -23,16 +23,16 @@
 		  )
 		: tokens;
 
-	$: $connectedAccount && getBalances(filteredTokens);
+	// $: $connectedAccount && getBalances(filteredTokens);
 
-	async function getBalances(tokens: Token[]) {
-		for (const token of tokens) {
-			if ($connectedAccount && typeof balances[token.id] !== 'number') {
-				const balance = await getArc200Balance(token.id, $connectedAccount);
-				balances[token.id] = balance;
-			}
-		}
-	}
+	// async function getBalances(tokens: Token[]) {
+	// 	for (const token of tokens) {
+	// 		if ($connectedAccount && typeof balances[token.id] !== 'number') {
+	// 			const balance = await getArc200Balance(token.id, $connectedAccount);
+	// 			balances[token.id] = balance;
+	// 		}
+	// 	}
+	// }
 </script>
 
 <form>
