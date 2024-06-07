@@ -114,9 +114,11 @@
 				userLptBalance={Number(balances[$connectedAccount][pool.poolId] || 0)}
 			/>
 		{:else}
-			<div class="w-full flex justify-center p-4 pb-8">
-				<span class="loading"></span>
-			</div>
+			{#if !balances}
+				<div class="w-full flex justify-center p-4 pb-8">
+					<span class="loading" />
+				</div>
+			{/if}
 		{/each}
 	</div>
 </form>
