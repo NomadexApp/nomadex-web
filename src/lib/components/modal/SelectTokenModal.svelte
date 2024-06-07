@@ -40,7 +40,7 @@
 	<TextInput placeholder="Search by name or id" bind:value={tokenSearch} />
 	<div class="br" />
 	<span class="block text-xl mb-4">
-		{#if tokenSearch}Matched{:else}Popular{/if} tokens
+		{#if tokenSearch}Matched tokens{:else}Tokens{/if}
 	</span>
 	<div class="tokens flex flex-col gap-2 mb-4 overflow-y-auto max-h-96">
 		{#each filteredTokens as token}
