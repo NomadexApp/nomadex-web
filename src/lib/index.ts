@@ -26,8 +26,6 @@ export type Pool = {
 	swapFee: number;
 };
 
-export const popularPools = ['UNIT', 'Tacos', 'MC4N1C', 'VIA', 'VWIFI', 'ROCKET'];
-
 export const knownPools = writable<Pool[]>([
 	// { lptId: 27705276, poolId: 27705276, swapFee: 1e12, arc200Asset: { symbol: 'VIA', assetId: 6779767, decimals: 6, unit: 1e6 } }
 ]);
@@ -96,21 +94,6 @@ export async function getListOfArc200Tokens() {
 
 	knownPools.update((pools) => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId)));
 	knownTokens.update((toks) => toks.slice(0, 1).concat(validTokens.sort((a, b) => a.id - b.id)));
-	knownTokens.update(tokens => [...tokens].sort((a, b) => {
-		const aInc = popularPools.includes(a.ticker);
-		const bInc = popularPools.includes(b.ticker);
-		const aInd = popularPools.indexOf(a.ticker);
-		const bInd = popularPools.indexOf(b.ticker);
-		if (aInc && bInc) {
-			return aInd - bInd;
-		} else if (aInc && !bInc) {
-			return -1;
-		} else if (bInc && !aInc) {
-			return 1;
-		} else {
-			return 0;
-		}
-	}))
 
 	arePoolsLoaded.set(true);
 }

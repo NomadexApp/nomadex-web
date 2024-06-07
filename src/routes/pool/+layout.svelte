@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getStores } from '$app/stores';
-	import { knownPools, popularPools, type Pool } from '$lib';
+	import { knownPools, type Pool } from '$lib';
+	import { getPoolBalances } from '$lib/_shared';
 	import FormTitle from '$lib/components/form/FormTitle.svelte';
 	import TextInput from '$lib/components/form/TextInput.svelte';
 	import Join from '$lib/components/join/Join.svelte';
@@ -10,30 +11,30 @@
 	let searchText = '';
 
 	import PoolInfo from '$lib/PoolInfo.svelte';
-	import { OnChainStateWatcher, type AccountState } from '$lib/stores/onchain';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import { Arc200Interface } from '$lib/utils';
 	import algosdk from 'algosdk';
+
+	import { onMount } from 'svelte';
+
+	let balances: { [a: string]: { [p: string]: string } };
+
+	onMount(async () => {
+		const response = await getPoolBalances($connectedAccount);
+		balances = response.balances;
+	});
 
 	let poolBalances: { [k: string]: { algo: number; arc200: bigint; lpt: bigint } } = {};
 
 	async function fetchBalances(pool: Pool) {
 		if (poolBalances[pool.poolId]) return poolBalances[pool.poolId];
+		const poolAddress = algosdk.getApplicationAddress(pool.poolId);
 
-		const poolState = <AccountState>(
-			await OnChainStateWatcher.getAccountState(algosdk.getApplicationAddress(pool.poolId))
-		);
-		const poolArc200Balance = await Arc200Interface.arc200_balanceOf(
-			pool.arc200Asset.assetId,
-			algosdk.getApplicationAddress(pool.poolId)
-		);
-		const lptBalance = await Arc200Interface.arc200_totalSupply(pool.poolId);
 		poolBalances = {
 			...poolBalances,
 			[pool.poolId]: {
-				algo: poolState.amount,
-				arc200: poolArc200Balance,
-				lpt: lptBalance,
+				algo: Number(balances[poolAddress][0]),
+				arc200: BigInt(balances[poolAddress][pool.arc200Asset.assetId]),
+				lpt: BigInt(10 ** 20) - BigInt(balances[poolAddress][pool.poolId]),
 			},
 		};
 	}
@@ -41,18 +42,25 @@
 	$: my = Boolean($page.url.pathname.match('/your-positions'));
 	$: all = Boolean($page.url.pathname.match('/pool/all'));
 
-	$: filteredPools = searchText
-		? $knownPools.filter(
-				(pool) =>
-					pool.arc200Asset.symbol.toLowerCase().match(searchText.toLowerCase()) ||
-					pool.arc200Asset.assetId.toString() === searchText ||
-					pool.poolId.toString() === searchText
-		  )
-		: $knownPools
-				.filter((pool) => (popularPools.length && !my && !all ? popularPools.includes(pool.arc200Asset.symbol) : true))
-				.sort((a, b) => popularPools.indexOf(a.arc200Asset.symbol) - popularPools.indexOf(b.arc200Asset.symbol));
+	$: filteredPools = balances
+		? searchText
+			? $knownPools.filter(
+					(pool) =>
+						pool.arc200Asset.symbol.toLowerCase().match(searchText.toLowerCase()) ||
+						pool.arc200Asset.assetId.toString() === searchText ||
+						pool.poolId.toString() === searchText
+			  )
+			: $knownPools
+					.filter((p) => (my ? Number(balances[$connectedAccount][p.poolId] || 0) : true))
+					.sort(
+						(a, b) =>
+							Number(balances[algosdk.getApplicationAddress(b.poolId)][0]) -
+							Number(balances[algosdk.getApplicationAddress(a.poolId)][0])
+					)
+					.slice(0, my || all ? 500 : 10)
+		: [];
 
-	$: {
+	$: if (balances) {
 		for (const pool of filteredPools) {
 			fetchBalances(pool);
 		}
@@ -103,8 +111,12 @@
 			<PoolInfo
 				pool={{ ...pool, balances: poolBalances[pool.poolId] ?? { algo: 0, arc200: 0, lpt: 0 } }}
 				{my}
-				checkForLpt={Boolean($page.url.pathname.match(/\/pool\/your-positions$/))}
+				userLptBalance={Number(balances[$connectedAccount][pool.poolId] || 0)}
 			/>
+		{:else}
+			<div class="w-full flex justify-center p-4 pb-8">
+				<span class="loading"></span>
+			</div>
 		{/each}
 	</div>
 </form>

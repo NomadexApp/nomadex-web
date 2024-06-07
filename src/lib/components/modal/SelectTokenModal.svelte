@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { Token } from '$lib';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import { getArc200Balance } from '$lib/_shared';
+	import { getArc200Balances } from '$lib/_shared';
 	import { convertDecimals } from '$lib/numbers';
-	import ActionButton from '../form/ActionButton.svelte';
 	import TextInput from '../form/TextInput.svelte';
 
 	export let close: Function;
@@ -23,16 +22,28 @@
 		  )
 		: tokens;
 
-	// $: $connectedAccount && getBalances(filteredTokens);
+	$: $connectedAccount && getBalances(filteredTokens);
 
-	// async function getBalances(tokens: Token[]) {
-	// 	for (const token of tokens) {
-	// 		if ($connectedAccount && typeof balances[token.id] !== 'number') {
-	// 			const balance = await getArc200Balance(token.id, $connectedAccount);
-	// 			balances[token.id] = balance;
-	// 		}
-	// 	}
-	// }
+	async function getBalances(tokens: Token[]) {
+		const requests: any[] = [];
+		for (const token of tokens) {
+			if ($connectedAccount && typeof balances[token.id] !== 'number') {
+				requests.push({
+					tokenType: 'ARC200',
+					assetId: token.id,
+					address: $connectedAccount,
+				});
+			}
+		}
+		const jsonResponse = await getArc200Balances(requests);
+		if (jsonResponse?.[$connectedAccount]) {
+			balances = jsonResponse?.[$connectedAccount];
+		}
+	}
+
+	$: finalTokensList = [...filteredTokens].sort(
+		(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
+	);
 </script>
 
 <form>
@@ -43,7 +54,7 @@
 		{#if tokenSearch}Matched tokens{:else}Tokens{/if}
 	</span>
 	<div class="tokens flex flex-col gap-2 mb-4 overflow-y-auto max-h-96">
-		{#each filteredTokens as token}
+		{#each finalTokensList as token}
 			<div
 				on:keydown
 				class="token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
@@ -57,7 +68,7 @@
 					<span class="name">{token.ticker}</span>
 					<span class="symbol text-gray-200">{token.id}</span>
 				</div>
-				{#if balances[token.id]}
+				{#if balances[token.id] && Number(balances[token.id]) > 0}
 					<div>
 						{(Number(convertDecimals(balances[token.id] ?? 0, token.decimals, 6)) / 1e6).toLocaleString()}
 						{token.ticker}

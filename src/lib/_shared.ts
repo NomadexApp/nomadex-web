@@ -5,6 +5,7 @@ import { connectedAccount, getTransactionSignerAccount } from './UseWallet.svelt
 import { get } from 'svelte/store';
 import type { SendTransactionFrom } from '@algorandfoundation/algokit-utils/types/transaction';
 import Contract from 'arc200js';
+import { knownPools } from '$lib';
 
 export const nodeClientAllowsCompile = new algosdk.Algodv2('', 'https://testnet-api.voi.nodly.io', '');
 export const algodClientOpts: [string, string, string] = [
@@ -152,4 +153,53 @@ export async function getUnnamedResourcesAccessedFromMethod<C extends Arc200Swap
 	const cl: any = client;
 	const composer: AtomicTransactionComposer = await cl.compose()[methodName](args, {}).atc();
 	return getUnnamedResourcesAccessedFromComposer(composer);
+}
+
+export async function getArc200Balances(requests: { assetId: number, address: string }[]) {
+	const resp = await fetch(`https://api.nomadex.app/fetch-balances`, {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json',
+		},
+		body: JSON.stringify(requests.map(req => ({ tokenType: 'ARC200', ...req }))),
+	});
+	const jsonResponse = await resp.json();
+	return jsonResponse.balances;
+}
+
+export async function getPoolBalances(userAddress: string) {
+	const requests: { tokenType: string; assetId: number; address: string }[] = [];
+	for (const pool of get(knownPools)) {
+		const poolId = pool.poolId;
+		const assetId = pool.arc200Asset.assetId;
+		const poolAddress = algosdk.getApplicationAddress(pool.poolId);
+		const arc200Bals: [number, string][] = [
+			[poolId, poolAddress],
+			[assetId, poolAddress],
+			[poolId, userAddress],
+		];
+		requests.push(
+			...[
+				{
+					tokenType: 'NET',
+					assetId: 0,
+					address: poolAddress,
+				},
+				...arc200Bals.map((bal) => ({
+					tokenType: 'ARC200',
+					assetId: bal[0],
+					address: bal[1],
+				})),
+			]
+		);
+	}
+	const resp = await fetch(`https://api.nomadex.app/fetch-balances`, {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json',
+		},
+		body: JSON.stringify(requests),
+	});
+	const jsonResponse = await resp.json();
+	return jsonResponse;
 }
