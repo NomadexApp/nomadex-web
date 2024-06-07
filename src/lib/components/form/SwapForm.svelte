@@ -56,7 +56,7 @@
 					],
 			  ]
 			: []),
-		['Price impact', `${impact}%`],
+		['Price impact', `${tokenAInput && tokenBInput ? impact : 0}%`],
 		['Slippage', `${slippage * 100}%`],
 	];
 </script>
