@@ -43,7 +43,7 @@
 	$: all = Boolean($page.url.pathname.match('/pool/all'));
 
 	$: filteredPools = balances
-		? searchText
+		? (searchText && !my)
 			? $knownPools.filter(
 					(pool) =>
 						pool.arc200Asset.symbol.toLowerCase().match(searchText.toLowerCase()) ||
