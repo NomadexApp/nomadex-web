@@ -143,7 +143,7 @@
 			tokenA.ticker === 'VOI' ? poolViaBalance : poolVoiBalance,
 			BigInt(matchedPool.swapFee)
 		);
-		if (outToken < outAmount) {
+		if (ret > 0n && outToken < outAmount) {
 			ret += 1n;
 		}
 		loading = false;
