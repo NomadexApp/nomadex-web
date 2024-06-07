@@ -44,7 +44,7 @@
 				tokenB.type === TokenType.ARC200 ? poolArc200Balance : poolVoiBalance
 			} ${tokenB.ticker}`,
 		],
-		['Min received', `${minReceived.toLocaleString()} ${tokenB.ticker}`],
+		['Min received', `${(tokenAInput && tokenBInput ? minReceived : 0).toLocaleString()} ${tokenB.ticker}`],
 		...(tokenAInput && tokenBInput
 			? [
 					<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.ticker}`],
