@@ -168,6 +168,9 @@ export async function getArc200Balances(requests: { assetId: number, address: st
 }
 
 export async function getPoolBalances(userAddress: string) {
+	if (!userAddress) {
+		return { balances: {} };
+	}
 	const requests: { tokenType: string; assetId: number; address: string }[] = [];
 	for (const pool of get(knownPools)) {
 		const poolId = pool.poolId;
@@ -194,7 +197,7 @@ export async function getPoolBalances(userAddress: string) {
 		);
 	}
 
-	let balances: Record<string, Record<string, string>> = {};
+	const balances: Record<string, Record<string, string>> = {};
 	const limit = 400;
 
 	for (let i = 0; i < requests.length; i += limit) {
@@ -207,7 +210,10 @@ export async function getPoolBalances(userAddress: string) {
 		});
 		const jsonResponse = await resp.json();
 		if (jsonResponse.balances) {
-			balances = { ...balances, ...jsonResponse.balances }
+			for (const addr in jsonResponse.balances) {
+				const bals = balances[addr] || {};
+				balances[addr] = { ...bals, ...(jsonResponse.balances[addr] || {}) }
+			}
 		}
 	}
 	return { balances };

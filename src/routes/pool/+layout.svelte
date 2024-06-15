@@ -43,7 +43,7 @@
 	$: all = Boolean($page.url.pathname.match('/pool/all'));
 
 	$: filteredPools = balances
-		? (searchText && !my)
+		? searchText && !my
 			? $knownPools.filter(
 					(pool) =>
 						pool.arc200Asset.symbol.toLowerCase().match(searchText.toLowerCase()) ||
@@ -51,7 +51,7 @@
 						pool.poolId.toString() === searchText
 			  )
 			: $knownPools
-					.filter((p) => (my ? Number(balances[$connectedAccount][p.poolId] || 0) : true))
+					.filter((p) => (my ? Number(balances[$connectedAccount]?.[p.poolId] || 0) : true))
 					.sort(
 						(a, b) =>
 							Number(balances[algosdk.getApplicationAddress(b.poolId)][0]) -
