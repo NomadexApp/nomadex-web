@@ -116,6 +116,7 @@ export async function saveArc200TokenToList(symbol: string, id: number, decimals
 	const rep = await resp.json();
 	if (rep.success) {
 		await getListOfArc200Tokens();
+		return true;
 	}
 }
 
@@ -137,6 +138,7 @@ export async function saveVoiArc200PoolToList(symbol: string, poolId: number, ar
 	const rep = await resp.json();
 	if (rep.success) {
 		await getListOfArc200Tokens();
+		return true;
 	}
 }
 

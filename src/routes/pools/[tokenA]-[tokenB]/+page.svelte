@@ -127,7 +127,11 @@
 		console.log('Created App:', connector.appId);
 		await connector.invoke('initPool');
 
-		await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id);
+		let retry = 0;
+		while (!(await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id))) {
+			if (++retry > 5) break;
+		}
+
 		await saveVoiActionToList('create-arc200-pool', {
 			address: $connectedAccount,
 			timestamp: Date.now(),
