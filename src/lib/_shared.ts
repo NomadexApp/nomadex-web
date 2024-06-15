@@ -193,13 +193,22 @@ export async function getPoolBalances(userAddress: string) {
 			]
 		);
 	}
-	const resp = await fetch(`https://api.nomadex.app/fetch-balances`, {
-		method: 'POST',
-		headers: {
-			'content-type': 'application/json',
-		},
-		body: JSON.stringify(requests),
-	});
-	const jsonResponse = await resp.json();
-	return jsonResponse;
+
+	let balances: Record<string, Record<string, string>> = {};
+	const limit = 400;
+
+	for (let i = 0; i < requests.length; i += limit) {
+		const resp = await fetch(`https://api.nomadex.app/fetch-balances`, {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify(requests.slice(i, i + limit)),
+		});
+		const jsonResponse = await resp.json();
+		if (jsonResponse.balances) {
+			balances = { ...balances, ...jsonResponse.balances }
+		}
+	}
+	return { balances };
 }
