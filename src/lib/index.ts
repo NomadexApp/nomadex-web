@@ -93,7 +93,22 @@ export async function getListOfArc200Tokens() {
 	console.log('Pools:', validPools);
 
 	knownPools.update((pools) => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId)));
-	knownTokens.update((toks) => toks.slice(0, 1).concat(validTokens.sort((a, b) => a.id - b.id)));
+	knownTokens.update((toks) => {
+		const tokens = toks.slice(0, 1).concat(validTokens.toSorted((a, b) => {
+			const prefer = ['VIA', 'UNIT', 'POINTS', 'Tacos', 'NOM', 'ROCKET'];
+			if (prefer.includes(a.ticker) && prefer.includes(b.ticker)) {
+				return prefer.indexOf(a.ticker) - prefer.indexOf(b.ticker);
+			} else if (prefer.includes(a.ticker)) {
+				return -1;
+			} else if (prefer.includes(b.ticker)) {
+				return 1;
+			}
+
+			return a.id - b.id;
+		}));
+		console.log(tokens);
+		return tokens;
+	});
 
 	arePoolsLoaded.set(true);
 }
