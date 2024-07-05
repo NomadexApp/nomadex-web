@@ -106,7 +106,6 @@ export async function getListOfArc200Tokens() {
 
 			return a.id - b.id;
 		}));
-		console.log(tokens);
 		return tokens;
 	});
 
