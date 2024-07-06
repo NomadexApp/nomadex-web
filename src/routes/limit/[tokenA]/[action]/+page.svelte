@@ -88,7 +88,7 @@
 		fetchOrders().finally(() => {
 			loading = false;
 		});
-		const timeout = setInterval(() => fetchOrders(), 15_000);
+		const timeout = setInterval(() => fetchOrders(), 60_000);
 		return () => clearTimeout(timeout);
 	});
 

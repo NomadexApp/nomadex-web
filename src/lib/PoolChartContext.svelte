@@ -89,7 +89,7 @@
 		const interval = setInterval(() => {
 			loadSwapEvents();
 			loadDepositEvents();
-		}, 10_000);
+		}, 30_000);
 		return () => {
 			clearInterval(interval);
 		};
