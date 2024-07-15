@@ -450,6 +450,6 @@
 	section {
 		display: flex;
 		width: 100%;
-		min-height: 100vh;
+		min-height: calc(100vh - 300px);
 	}
 </style>

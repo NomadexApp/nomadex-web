@@ -84,6 +84,7 @@
 	}
 
 	onMount(() => {
+		if (context === 'limit') return;
 		loadSwapEvents();
 		loadDepositEvents();
 		const interval = setInterval(() => {
@@ -215,79 +216,83 @@
 		</h1>
 	</div>
 	<div class="flex flex-wrap gap-4 justify-between items-center w-full max-w-[900px]">
-		<div class="cursor-pointer flex flex-col">
-			<span class="text-2xl">
-				Price ≈ {price < 0.1 ? Number(price.toFixed(10)) : price.toLocaleString('en')}
-				{pricingDirection.split('/')[1]}
-			</span>
-			<span />
-		</div>
-		<div>
-			<button
-				class="btn btn-sm btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white hidden sm:inline-flex rounded-[4px]"
-				on:click={() => {
-					logarithmic = !logarithmic;
-					generateDataByTime(pricingDirection);
-				}}>{logarithmic ? 'linear' : 'log'}</button
-			>
-			<button
-				class="btn btn-sm {timescale === Timescale['15m']
-					? 'btn-primary'
-					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-				on:click={() => {
-					timescale = Timescale['15m'];
-					generateDataByTime(pricingDirection);
-				}}>15m</button
-			>
-			<button
-				class="btn btn-sm {timescale === Timescale['30m']
-					? 'btn-primary'
-					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-				on:click={() => {
-					timescale = Timescale['30m'];
-					generateDataByTime(pricingDirection);
-				}}>30m</button
-			>
-			<button
-				class="btn btn-sm {timescale === Timescale['1hr']
-					? 'btn-primary'
-					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-				on:click={() => {
-					timescale = Timescale['1hr'];
-					generateDataByTime(pricingDirection);
-				}}>1hr</button
-			>
-			<button
-				class="btn btn-sm {timescale === Timescale['4hr']
-					? 'btn-primary'
-					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-				on:click={() => {
-					timescale = Timescale['4hr'];
-					generateDataByTime(pricingDirection);
-				}}>4hr</button
-			>
-			<button
-				class="btn btn-sm {timescale === Timescale['1d']
-					? 'btn-primary'
-					: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-				on:click={() => {
-					timescale = Timescale['1d'];
-					generateDataByTime(pricingDirection);
-				}}>1d</button
-			>
-		</div>
+		{#if context !== 'limit'}
+			<div class="cursor-pointer flex flex-col">
+				<span class="text-2xl">
+					Price ≈ {price < 0.1 ? Number(price.toFixed(10)) : price.toLocaleString('en')}
+					{pricingDirection.split('/')[1]}
+				</span>
+				<span />
+			</div>
+			<div>
+				<button
+					class="btn btn-sm btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white hidden sm:inline-flex rounded-[4px]"
+					on:click={() => {
+						logarithmic = !logarithmic;
+						generateDataByTime(pricingDirection);
+					}}>{logarithmic ? 'linear' : 'log'}</button
+				>
+				<button
+					class="btn btn-sm {timescale === Timescale['15m']
+						? 'btn-primary'
+						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					on:click={() => {
+						timescale = Timescale['15m'];
+						generateDataByTime(pricingDirection);
+					}}>15m</button
+				>
+				<button
+					class="btn btn-sm {timescale === Timescale['30m']
+						? 'btn-primary'
+						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					on:click={() => {
+						timescale = Timescale['30m'];
+						generateDataByTime(pricingDirection);
+					}}>30m</button
+				>
+				<button
+					class="btn btn-sm {timescale === Timescale['1hr']
+						? 'btn-primary'
+						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					on:click={() => {
+						timescale = Timescale['1hr'];
+						generateDataByTime(pricingDirection);
+					}}>1hr</button
+				>
+				<button
+					class="btn btn-sm {timescale === Timescale['4hr']
+						? 'btn-primary'
+						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					on:click={() => {
+						timescale = Timescale['4hr'];
+						generateDataByTime(pricingDirection);
+					}}>4hr</button
+				>
+				<button
+					class="btn btn-sm {timescale === Timescale['1d']
+						? 'btn-primary'
+						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					on:click={() => {
+						timescale = Timescale['1d'];
+						generateDataByTime(pricingDirection);
+					}}>1d</button
+				>
+			</div>
+		{/if}
 	</div>
-	<div
-		class="chart-container min-w-[250px] w-full overflow-hidden bg-[#00000033] rounded-[8px]"
-		bind:clientWidth={chartWidth}
-		style="min-height: {chartWidth / 2.6}px;"
-	>
-		<CandleChart
-			label={`Price of ${pricingDirection.split('/').join(' in ')}`}
-			{logarithmic}
-			data={priceData.slice(-80)}
-		/>
-	</div>
+	{#if context !== 'limit'}
+		<div
+			class="chart-container min-w-[250px] w-full overflow-hidden bg-[#00000033] rounded-[8px]"
+			bind:clientWidth={chartWidth}
+			style="min-height: {chartWidth / 2.6}px;"
+		>
+			<CandleChart
+				label={`Price of ${pricingDirection.split('/').join(' in ')}`}
+				{logarithmic}
+				data={priceData.slice(-80)}
+			/>
+		</div>
+	{/if}
 
 	<slot
 		name="swap-events"
