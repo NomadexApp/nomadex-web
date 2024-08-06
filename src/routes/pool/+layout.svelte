@@ -111,7 +111,7 @@
 			<PoolInfo
 				pool={{ ...pool, balances: poolBalances[pool.poolId] ?? { algo: 0, arc200: 0, lpt: 0 } }}
 				{my}
-				userLptBalance={Number(balances[$connectedAccount][pool.poolId] || 0)}
+				userLptBalance={$connectedAccount ? Number(balances[$connectedAccount][pool.poolId] || 0) : 0}
 			/>
 		{:else}
 			{#if !balances}

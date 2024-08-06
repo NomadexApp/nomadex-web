@@ -168,9 +168,6 @@ export async function getArc200Balances(requests: { assetId: number, address: st
 }
 
 export async function getPoolBalances(userAddress: string) {
-	if (!userAddress) {
-		return { balances: {} };
-	}
 	const requests: { tokenType: string; assetId: number; address: string }[] = [];
 	for (const pool of get(knownPools)) {
 		const poolId = pool.poolId;
@@ -179,7 +176,7 @@ export async function getPoolBalances(userAddress: string) {
 		const arc200Bals: [number, string][] = [
 			[poolId, poolAddress],
 			[assetId, poolAddress],
-			[poolId, userAddress],
+			...(userAddress ? [<[number, string]>[poolId, userAddress]] : []),
 		];
 		requests.push(
 			...[
