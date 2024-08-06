@@ -57,6 +57,7 @@
 							Number(balances[algosdk.getApplicationAddress(b.poolId)][0]) -
 							Number(balances[algosdk.getApplicationAddress(a.poolId)][0])
 					)
+					.filter((p) => p.poolId)
 					.slice(0, my || all ? 500 : 10)
 		: [];
 
