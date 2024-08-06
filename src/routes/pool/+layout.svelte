@@ -54,10 +54,9 @@
 					.filter((p) => (my ? Number(balances[$connectedAccount]?.[p.poolId] || 0) : true))
 					.sort(
 						(a, b) =>
-							Number(balances[algosdk.getApplicationAddress(b.poolId)][0]) -
-							Number(balances[algosdk.getApplicationAddress(a.poolId)][0])
+							Number(balances[algosdk.getApplicationAddress(b.poolId)]?.[0] || 0) -
+							Number(balances[algosdk.getApplicationAddress(a.poolId)]?.[0] || 0)
 					)
-					.filter((p) => p.poolId)
 					.slice(0, my || all ? 500 : 10)
 		: [];
 
