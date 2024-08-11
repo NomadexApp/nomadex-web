@@ -37,7 +37,7 @@ export class SwapEvents {
 	}
 
 	static async getCache(appId: number, signature: string): Promise<CacheStructure> {
-		const defaultRet = { lastRound: 2000000, txns: [] };
+		const defaultRet = { lastRound: 9_480_000, txns: [] };
 		if (!browser) return defaultRet;
 
 		const key = `${appId}-${signature}`;
@@ -49,7 +49,7 @@ export class SwapEvents {
 			try {
 				const jsonResponse = await resp.json();
 				if (jsonResponse?.txns) {
-					return <CacheStructure>jsonResponse;
+					return <CacheStructure>{ ...jsonResponse, lastRound: Math.max(defaultRet.lastRound, jsonResponse.lastRound) };
 				}
 			} catch (e) {
 				/**/
