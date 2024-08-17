@@ -87,13 +87,15 @@
 		if (context === 'limit') return;
 		loadSwapEvents();
 		loadDepositEvents();
-		const interval = setInterval(() => {
-			loadSwapEvents();
-			loadDepositEvents();
-		}, 30_000);
-		return () => {
-			clearInterval(interval);
-		};
+		if (!['VIA', 'POINTS'].includes(arc200Token.ticker)) {
+			const interval = setInterval(() => {
+				loadSwapEvents();
+				loadDepositEvents();
+			}, 30_000);
+			return () => {
+				clearInterval(interval);
+			};
+		}
 	});
 
 	const getFromTokenFromEvent = (event: (typeof swapEvents)[0]) => {

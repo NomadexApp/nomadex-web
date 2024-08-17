@@ -1,5 +1,5 @@
 import { sha512_256 } from 'js-sha512';
-import { indexerClient } from './_shared';
+import { indexerClient, nodeClient } from './_shared';
 import algosdk from 'algosdk';
 import { browser } from '$app/environment';
 
@@ -37,10 +37,14 @@ export class SwapEvents {
 	}
 
 	static async getCache(appId: number, signature: string): Promise<CacheStructure> {
-		const defaultRet = { lastRound: 9_480_000, txns: [] };
+		const defaultRet = { lastRound: 2000000, txns: [] };
+		if ([27705276, 54447475].includes(appId)) {
+			const status = await nodeClient.status().do();
+			defaultRet.lastRound = Math.max((status['last-round'] || 10000) - 10000, defaultRet.lastRound);
+		}
 		if (!browser) return defaultRet;
 
-		const key = `${appId}-${signature}`;
+		const key = `v2-${appId}-${signature}`;
 		localStorage.removeItem(key);
 
 		const cached = await caches.open(key);
