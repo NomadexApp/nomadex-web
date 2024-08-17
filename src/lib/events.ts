@@ -29,6 +29,10 @@ export class SwapEvents {
 	static async setCache(update: CacheStructure, appId: number, signature: string) {
 		if (!browser) return;
 
+		if ([27705276, 54447475].includes(appId)) {
+			return;
+		}
+
 		const key = `${appId}-${signature}`;
 		localStorage.removeItem(key);
 
@@ -41,6 +45,7 @@ export class SwapEvents {
 		if ([27705276, 54447475].includes(appId)) {
 			const status = await nodeClient.status().do();
 			defaultRet.lastRound = Math.max((status['last-round'] || 10000) - 10000, defaultRet.lastRound);
+			return defaultRet;
 		}
 		if (!browser) return defaultRet;
 
