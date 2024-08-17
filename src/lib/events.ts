@@ -41,7 +41,7 @@ export class SwapEvents {
 	}
 
 	static async getCache(appId: number, signature: string): Promise<CacheStructure> {
-		const defaultRet = { lastRound: 2000000, txns: [] };
+		const defaultRet = { lastRound: 9_000_000, txns: [] };
 		if ([27705276, 54447475].includes(appId)) {
 			const status = await nodeClient.status().do();
 			defaultRet.lastRound = Math.max((status['last-round'] || 10000) - 10000, defaultRet.lastRound);
