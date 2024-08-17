@@ -33,7 +33,7 @@ export class SwapEvents {
 			return;
 		}
 
-		const key = `${appId}-${signature}`;
+		const key = `v2-${appId}-${signature}`;
 		localStorage.removeItem(key);
 
 		const cached = await caches.open(key);
