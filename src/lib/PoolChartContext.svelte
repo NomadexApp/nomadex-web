@@ -143,7 +143,7 @@
 			return ms;
 		};
 
-		let close = 1;
+		let close = 0.01;
 
 		for (
 			let time = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000) + 0.1;
