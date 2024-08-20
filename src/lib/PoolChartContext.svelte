@@ -143,7 +143,7 @@
 			return ms;
 		};
 
-		let close = 0.01;
+		let close = -1;
 
 		for (
 			let time = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000) + 0.1;
@@ -158,8 +158,8 @@
 
 				const _low = matchingEvents.reduce((l, e) => Math.min(l, getPrice(e)), Number.MAX_SAFE_INTEGER);
 				const _high = matchingEvents.reduce((h, e) => Math.max(h, getPrice(e)), 0);
-				const _open = close;
 				const _close = getPrice(matchingEvents[matchingEvents.length - 1]);
+				const _open = close < 0 ? _close : close;
 
 				_priceData.push({
 					x: time * 1000,
