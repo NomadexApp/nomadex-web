@@ -127,9 +127,9 @@
 	<div class="br" />
 	<div class="br" />
 	<div class="flex flex-col justify-center gap-2 pt-6 max-w-[800px] mx-auto">
-		<h4 class="text-xl font-bold prose w-full mb-5">Create a limit Order</h4>
+		<h4 class="text-xl font-bold prose w-full mb-5 text-white">Create a limit Order</h4>
 		{#each limitOrders as limitOrder}
-			<div class="w-full flex flex-col pt-6 p-4 bg-base-300">
+			<div class="w-full flex flex-col pt-2 p-4 bg-gray-100 bg-opacity-15">
 				<div class="pool rounded-btn flex flex-col gap-2 min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
 					<div
 						class="flex justify-between cursor-pointer select-none"
@@ -166,7 +166,7 @@
 							bind:value={amount}
 							step={0.000001}
 							required
-							class="input input-primary input-bordered w-full focus:outline-none"
+							class="input input-primary input-bordered w-full focus:outline-none bg-transparent"
 						/>
 						<div class="flex justify-center mt-2 pr-0">
 							<button
