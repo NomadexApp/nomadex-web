@@ -14,6 +14,7 @@ html {
 	--color-light-5: hsl(60, 18%, 50%);
 	--color-light-6: hsl(60, 16%, 40%);
 	--color-light-7: hsl(60, 14%, 30%);
+	--color-light-85: hsl(60, 14%, 27%);
 	--color-light-8: hsl(60, 14%, 25%);
 	--color-light-9: hsl(60, 14%, 10%);
 	--color-light-10: hsl(60, 14%, 0%);
@@ -28,14 +29,9 @@ body {
 }
 
 .page-background {
-	--color: var(--color-light-7);
+	--color: var(--color-light-8);
 	background: linear-gradient(0deg, transparent 44%, var(--color) 45%, var(--color) 55%, transparent 56%),
 		linear-gradient(90deg, transparent 44%, var(--color) 45%, var(--color) 55%, transparent 56%);
-	// background: radial-gradient(circle, var(--color) 10%, transparent 11%),
-	// 	radial-gradient(circle at bottom left, var(--color) 5%, transparent 6%),
-	// 	radial-gradient(circle at bottom right, var(--color) 5%, transparent 6%),
-	// 	radial-gradient(circle at top left, var(--color) 5%, transparent 6%),
-	// 	radial-gradient(circle at top right, var(--color) 5%, transparent 6%);
 	background-size: 0.6rem 0.6rem;
 	background-color: var(--color-light-8);
 	opacity: 1;
