@@ -7,7 +7,7 @@
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
-	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
+	import MdSwapVert from '$lib/icons/MdSwapVert.svelte';
 	import { onChainStateWatcher } from '$lib/stores/onchain';
 	import { LimitOrderType, LimitOrders001ClientConnector } from '$lib/LimitOrderConnector';
 	import { lastActiveLimitOrderPair } from '$lib/stores';

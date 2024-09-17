@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { contracts, contractsConstants, type Token } from '$lib';
-	import MdClose from 'svelte-star/dist/md/MdClose.svelte';
+	import MdClose from '$lib/icons/MdClose.svelte';
 	import CurrencyNumber from './CurrencyNumber.svelte';
 	import { LimitOrders001ClientConnector, LimitOrderType } from './LimitOrderConnector';
 	import { connectedAccount } from './UseWallet.svelte';

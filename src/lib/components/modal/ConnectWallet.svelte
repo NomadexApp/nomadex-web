@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { saveVoiActionToList } from '$lib';
 	import { isKibisisInstalled, walletConnect } from '$lib/UseWallet.svelte';
-	import QRCodeIcon from 'svelte-star/dist/io/IoMdQrScanner.svelte';
+	import QRCodeIcon from '$lib/icons/IoMdQrScanner.svelte';
 
 	export let close: Function;
 </script>

@@ -92,11 +92,11 @@
 </script>
 
 <script lang="ts">
-	import InfoIcon from 'svelte-star/dist/md/MdInfo.svelte';
-	import WarnIcon from 'svelte-star/dist/md/MdWarning.svelte';
-	import ErrorIcon from 'svelte-star/dist/md/MdError.svelte';
-	import SuccessIcon from 'svelte-star/dist/md/MdCheckCircle.svelte';
-	import MdCloseIcon from 'svelte-star/dist/md/MdClose.svelte';
+	import InfoIcon from '$lib/icons/MdInfo.svelte';
+	import WarnIcon from '$lib/icons/MdWarning.svelte';
+	import ErrorIcon from '$lib/icons/MdError.svelte';
+	import SuccessIcon from '$lib/icons/MdCheckCircle.svelte';
+	import MdCloseIcon from '$lib/icons/MdClose.svelte';
 </script>
 
 {#if $notifications.length}

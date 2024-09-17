@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Logo from '$lib/components/logo/Logo.svelte';
-	import MdAccountBalanceWallet from 'svelte-star/dist/md/MdAccountBalanceWallet.svelte';
+	import MdAccountBalanceWallet from '$lib/icons/MdAccountBalanceWallet.svelte';
 	import { getStores } from '$app/stores';
 	import UseWallet, { connectedAccount, walletDisconnect } from '$lib/UseWallet.svelte';
 	import { openModal } from '../modal/Modal.svelte';

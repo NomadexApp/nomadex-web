@@ -2,18 +2,18 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import UseWallet from './UseWallet.svelte';
-	import SwapIcon from 'svelte-star/dist/md/MdAutorenew.svelte';
-	import AnalyticsIcon from 'svelte-star/dist/md/MdShowChart.svelte';
-	import MdPeopleOutline from 'svelte-star/dist/md/MdPeopleOutline.svelte';
-	import MdMenu from 'svelte-star/dist/md/MdMenu.svelte';
+	import SwapIcon from '$lib/icons/MdAutorenew.svelte';
+	import AnalyticsIcon from '$lib/icons/MdShowChart.svelte';
+	import MdPeopleOutline from '$lib/icons/MdPeopleOutline.svelte';
+	import MdMenu from '$lib/icons/MdMenu.svelte';
 	import { isDarkTheme, lastActiveAnalyticsPair, lastActiveSwapPair } from '../lib/stores';
 	import { onMount } from 'svelte';
 	import { knownPools } from '$lib';
 	import { page } from '$app/stores';
-	import MdToll from 'svelte-star/dist/md/MdToll.svelte';
-	import MdAddCircle from 'svelte-star/dist/md/MdToll.svelte';
-	import IoMdSwap from 'svelte-star/dist/io/IoMdSwap.svelte';
-	import MdLaunch from 'svelte-star/dist/md/MdLaunch.svelte';
+	import MdToll from '$lib/icons/MdToll.svelte';
+	import MdAddCircle from '$lib/icons/MdToll.svelte';
+	import IoMdSwap from '$lib/icons/IoMdSwap.svelte';
+	import MdLaunch from '$lib/icons/MdLaunch.svelte';
 	import { getLastActivePair } from './config';
 	import Logo from './Logo.svelte';
 

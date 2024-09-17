@@ -5,7 +5,7 @@
 	import SwapInfo from '$lib/components/form/SwapInfo.svelte';
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
 	import { openModal } from '../modal/Modal.svelte';
-	import MdSwapVert from 'svelte-star/dist/md/MdSwapVert.svelte';
+	import MdSwapVert from '$lib/icons/MdSwapVert.svelte';
 	import { TokenType, knownTokens, type Token } from '$lib';
 	import { readableNumber } from '$lib/CurrencyNumber.svelte';
 	import { connectedAccount } from '$lib/UseWallet.svelte';

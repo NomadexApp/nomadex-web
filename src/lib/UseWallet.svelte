@@ -181,7 +181,7 @@
 	import algosdk from 'algosdk';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	// import LogoutIcon from 'svelte-star/dist/md/MdPowerSettingsNew.svelte';
+	// import LogoutIcon from '$lib/icons/MdPowerSettingsNew.svelte';
 	// import { isDarkTheme } from '../lib/stores';
 	import { algodClientOpts } from './_shared';
 
