@@ -13,6 +13,7 @@
 	import { browser } from '$app/environment';
 	import '$lib/firebase';
 	import { arePoolsLoaded, getListOfArc200Tokens, knownTokens } from '$lib/index';
+	import Logo from '$lib/Logo.svelte';
 
 	onMount(async () => {
 		try {
@@ -80,7 +81,11 @@
 	</section>
 {/if}
 {#if !browser || !localStorage.getItem('testnet-enabled')}
-	<div class="testnet-overlay" />
+	<div class="testnet-overlay" style="">
+		<div style="display: block; width: 100px;" class="text-primary">
+			<Logo />
+		</div>
+	</div>
 {/if}
 
 <div class="page-background second" style={hueStyle} />
@@ -112,5 +117,8 @@
 		bottom: 0;
 		right: 0;
 		z-index: 1000;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>
