@@ -79,6 +79,9 @@
 		{/if}
 	</section>
 {/if}
+{#if !browser || !localStorage.getItem('testnet-enabled')}
+	<div class="testnet-overlay" />
+{/if}
 
 <div class="page-background second" style={hueStyle} />
 
@@ -100,5 +103,14 @@
 		display: flex;
 		/* clip-path: polygon(15px 0%, calc(100% - 15px) 0%, 100% 25%, 100% 100%, 0 100%, 0 25%); */
 		padding: 1rem;
+	}
+	.testnet-overlay {
+		position: fixed;
+		background: black;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		z-index: 1000;
 	}
 </style>
