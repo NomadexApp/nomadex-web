@@ -10,6 +10,11 @@ export default defineConfig({
 			fs: "./packages/empty/index.js",
 		},
 	},
+	build: {
+		rollupOptions: {
+			external: ['svelte-star']
+		}
+	},
 	server: {
 		fs: {
 			allow: [
