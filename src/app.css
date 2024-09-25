@@ -7,6 +7,10 @@ html {
 	color: white;
 }
 
+body {
+	--wcm-z-index: 1500;
+}
+
 .dropdown .dropdown-content {
 	z-index: 10;
 }

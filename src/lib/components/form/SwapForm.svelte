@@ -34,25 +34,18 @@
 
 	let swapInfo: [string, string][] = [];
 
-	$: poolVoiBalance = readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString();
-	$: poolArc200Balance = readableNumber(Number(poolTokenBBalance) || 0).toLocaleString();
-
 	$: swapInfo = [
 		[
 			'Pool balance',
-			`${tokenA.type === TokenType.ARC200 ? poolArc200Balance : poolVoiBalance} ${tokenA.ticker} / ${
-				tokenB.type === TokenType.ARC200 ? poolArc200Balance : poolVoiBalance
-			} ${tokenB.ticker}`,
+			`${readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString()} ${tokenA.symbol} / ${readableNumber(Number(poolTokenBBalance) || 0).toLocaleString()} ${tokenB.symbol}`,
 		],
-		['Min received', `${(tokenAInput && tokenBInput ? minReceived : 0).toLocaleString()} ${tokenB.ticker}`],
+		['Min received', `${(tokenAInput && tokenBInput ? minReceived : 0).toLocaleString()} ${tokenB.symbol}`],
 		...(tokenAInput && tokenBInput
 			? [
-					<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.ticker}`],
+					<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.symbol}`],
 					<[string, string]>[
-						`Price of ${tokenA.ticker}`,
-						`${Number(
-							(Number(Math.floor((tokenBInput || 0) * 1e6)) / Number(Math.floor((tokenAInput || 0) * 1e6))).toFixed(4)
-						)} ${tokenB.ticker}`,
+						`Price of ${tokenA.symbol}`,
+						`${Number((Number(Math.floor((tokenBInput || 0) * 1e6)) / Number(Math.floor((tokenAInput || 0) * 1e6))).toFixed(4))} ${tokenB.symbol}`,
 					],
 			  ]
 			: []),
@@ -62,11 +55,11 @@
 </script>
 
 <div class="form pt-8">
-	<FormTitle>Swap {tokenA.ticker} for {tokenB.ticker}</FormTitle>
+	<FormTitle>Swap {tokenA.symbol} for {tokenB.symbol}</FormTitle>
 	<TokenInput
 		pretext="You pay"
-		posttext={`balance ${tokenABalance.toLocaleString()} ${tokenA.ticker}`}
-		token={tokenA.ticker}
+		posttext={`balance ${tokenABalance.toLocaleString()} ${tokenA.symbol}`}
+		token={tokenA.symbol}
 		showMax
 		decimals={tokenA.decimals}
 		bind:value={tokenAInput}
@@ -93,8 +86,8 @@
 	</div>
 	<TokenInput
 		pretext="You receive"
-		token={tokenB.ticker}
-		posttext={`balance ${tokenBBalance.toLocaleString()} ${tokenB.ticker}`}
+		token={tokenB.symbol}
+		posttext={`balance ${tokenBBalance.toLocaleString()} ${tokenB.symbol}`}
 		decimals={tokenB.decimals}
 		bind:value={tokenBInput}
 		on:keydown={(e) => disabled && e.preventDefault()}

@@ -140,11 +140,11 @@
 							Listed
 							{#if limitOrder.isDirectionFromArc200ToAlgo}
 								{Number(limitOrder.arc200Amount) / limitOrder.arc200Token.unit}
-								{limitOrder.arc200Token.ticker} for {(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI
+								{limitOrder.arc200Token.symbol} for {(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI
 							{:else}
 								{(Number(limitOrder.algoAmount) / 1e6).toLocaleString('en')} VOI for {Number(limitOrder.arc200Amount) /
 									limitOrder.arc200Token.unit}
-								{limitOrder.arc200Token.ticker}
+								{limitOrder.arc200Token.symbol}
 							{/if}
 						</span>
 					</div>
@@ -156,13 +156,13 @@
 				>
 					<div class="flex flex-col pt-4 gap-2 w-full max-w-[448px]">
 						<label for=""
-							>Enter {limitOrder.isDirectionFromArc200ToAlgo ? 'VOI' : limitOrder.arc200Token.ticker} amount</label
+							>Enter {limitOrder.isDirectionFromArc200ToAlgo ? 'VOI' : limitOrder.arc200Token.symbol} amount</label
 						>
 						<input
 							type="number"
 							placeholder="Enter {limitOrder.isDirectionFromArc200ToAlgo
 								? 'VOI'
-								: limitOrder.arc200Token.ticker} amount"
+								: limitOrder.arc200Token.symbol} amount"
 							bind:value={amount}
 							step={0.000001}
 							required
@@ -186,7 +186,7 @@
 										? (amount * Number(limitOrder.arc200Amount)) / Number(limitOrder.algoAmount)
 										: (amount * Number(limitOrder.algoAmount)) / Number(limitOrder.arc200Amount)
 								).toLocaleString('en')}
-								{limitOrder.isDirectionFromArc200ToAlgo ? limitOrder.arc200Token.ticker : 'VOI'}
+								{limitOrder.isDirectionFromArc200ToAlgo ? limitOrder.arc200Token.symbol : 'VOI'}
 							</div>
 						{/if}
 					</div>

@@ -2,7 +2,7 @@
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/UseWallet.svelte';
 	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
-	import { Arc200TokenClient } from '../../../contracts/clients/Arc200TokenClient';
+	import { SmartAssetClient } from '../../../contracts/clients/SmartAssetClient';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import Contract from 'arc200js';
@@ -21,7 +21,7 @@
 	onMount(async () => {
 		loading = true;
 		try {
-			const client = new Arc200TokenClient(
+			const client = new SmartAssetClient(
 				{
 					id: appId,
 					resolveBy: 'id',
@@ -45,8 +45,8 @@
 			totalSupply = arc200_totalSupply.success ? Number(arc200_totalSupply.returnValue / 10n ** BigInt(decimals)) : 0;
 
 			const state = await client.getGlobalState();
-			if (state.manager) {
-				manager = algosdk.encodeAddress(state.manager.asByteArray());
+			if (state.warden) {
+				manager = algosdk.encodeAddress(state.warden.asByteArray());
 				currentManager = manager;
 			}
 		} catch (e) {

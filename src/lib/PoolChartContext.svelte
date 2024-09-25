@@ -12,8 +12,8 @@
 	import { pageContentRefresh } from './utils';
 
 	const { page } = getStores();
-	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>$knownTokens.find((token) => token.ticker === 'VOI');
+	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.symbol === 'VOI');
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
@@ -22,10 +22,10 @@
 	export let price = 0;
 	export let context = 'analytics';
 
-	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
+	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
 		arc200Token = tokenB;
-	} else if (tokenB?.ticker === 'VOI' && tokenA?.type === TokenType.ARC200) {
+	} else if (tokenB?.symbol === 'VOI' && tokenA?.type === TokenType.ARC200) {
 		voiToken = tokenB;
 		arc200Token = tokenA;
 	} else if (browser) {
@@ -65,7 +65,7 @@
 		poolBals: [bigint, bigint];
 		txn: SwapTxn;
 	}[] = [];
-	let pricingDirection: string = `${tokenA.ticker}/${tokenB.ticker}`;
+	let pricingDirection: string = `${tokenA.symbol}/${tokenB.symbol}`;
 	let timescale = browser
 		? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m']))
 		: Timescale['15m'];
@@ -87,7 +87,7 @@
 		if (context === 'limit') return;
 		loadSwapEvents();
 		loadDepositEvents();
-		if (!['VIA', 'POINTS'].includes(arc200Token.ticker)) {
+		if (!['VIA', 'POINTS'].includes(arc200Token.symbol)) {
 			const interval = setInterval(() => {
 				loadSwapEvents();
 				loadDepositEvents();
@@ -114,14 +114,14 @@
 
 		if (!events.length) return;
 
-		let pricingCurrency = priceOf === `VOI/${arc200Token.ticker}` ? 0 : 1;
+		let pricingCurrency = priceOf === `VOI/${arc200Token.symbol}` ? 0 : 1;
 
 		const getTime = (event: (typeof events)[0]) => event.txn['round-time'];
 		const getPrice = (event: (typeof events)[0]) => {
 			let viaPrice =
 				Number(convertDecimals(event.poolBals[0], 6, 6)) /
 				Number(convertDecimals(event.poolBals[1], arc200Token.decimals, 6));
-			viaPrice = viaPrice < 0.001 && arc200Token.ticker === 'VIA' ? 0 : viaPrice;
+			viaPrice = viaPrice < 0.001 && arc200Token.symbol === 'VIA' ? 0 : viaPrice;
 
 			if (viaPrice) {
 				return pricingCurrency === 0 ? 1 / viaPrice : viaPrice;
@@ -201,9 +201,9 @@
 			class="currency flex justify-center items-center mt-[0.1rem] p-2 py-0 w-[2.2rem] h-[1.8rem] rounded text-white bg-transparent"
 			on:click={() => {
 				openModal(SelectTokenModal, {
-					tokens: $knownTokens.filter((token) => token.ticker !== 'VOI'),
+					tokens: $knownTokens.filter((token) => token.symbol !== 'VOI'),
 					handleSelect(token) {
-						goto(`/${context}/${token.ticker}${context === 'limit' ? `/${$page.params.action}` : ''}`);
+						goto(`/${context}/${token.symbol}${context === 'limit' ? `/${$page.params.action}` : ''}`);
 						pageContentRefresh();
 					},
 				});
@@ -214,7 +214,7 @@
 			</svg>
 		</button>
 		<h1 class="text-3xl">
-			{tokenA.ticker}
+			{tokenA.symbol}
 		</h1>
 	</div>
 	<div class="flex flex-wrap gap-4 justify-between items-center w-full max-w-[900px]">

@@ -24,7 +24,7 @@
 						id: appId,
 						type: TokenType.ARC200,
 						decimals: Number(decimals),
-						ticker: symbol,
+						symbol: symbol,
 						unit: 10 ** Number(decimals),
 					},
 				];

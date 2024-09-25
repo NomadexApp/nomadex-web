@@ -8,7 +8,7 @@
 
 <PoolChartContext>
 	<svelte:fragment slot="swap-events" let:arc200Token let:swapEvents let:getFromTokenFromEvent let:getToTokenFromEvent>
-		{@const _a = (() => arc200Token.ticker && lastActiveAnalyticsPair.set(arc200Token.ticker))()}
+		{@const _a = (() => arc200Token.symbol && lastActiveAnalyticsPair.set(arc200Token.symbol))()}
 		<div class="br" />
 		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[768px]">
 			{#if swapEvents?.length}
@@ -63,11 +63,11 @@
 								</a>
 								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
 									<CurrencyNumber amount={fromAmount} />
-									{event.direction ? arc200Token.ticker : 'VOI'}
+									{event.direction ? arc200Token.symbol : 'VOI'}
 								</span>
 								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
 									<CurrencyNumber amount={toAmount} />
-									{event.direction ? 'VOI' : arc200Token.ticker}
+									{event.direction ? 'VOI' : arc200Token.symbol}
 								</span>
 							</div>
 						{/each}
@@ -136,7 +136,7 @@
 								</span>
 								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
 									{changeSign}<CurrencyNumber amount={arc200Amount} />
-									{arc200Token.ticker}
+									{arc200Token.symbol}
 								</span>
 							</div>
 						{/each}

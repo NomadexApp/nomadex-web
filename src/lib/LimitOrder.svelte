@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { contracts, contractsConstants, type Token } from '$lib';
 	import MdClose from '$lib/icons/MdClose.svelte';
 	import CurrencyNumber from './CurrencyNumber.svelte';
@@ -56,7 +56,7 @@
 			</button>
 		{/if}
 	</span>
-</div>
+</div> -->
 
 <!-- <div class="w-full flex flex-col p-2 px-4 bg-base-200 relative">
 	<div class="pool rounded-btn flex flex-col min-w-[100px] sm:min-w-[300px] w-full max-w-[800px]">
@@ -84,8 +84,8 @@
 	</div>
 </div> -->
 
-<style>
+<!-- <style>
 	* {
 		box-sizing: border-box;
 	}
-</style>
+</style> -->

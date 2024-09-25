@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { contracts, knownTokens, saveVoiActionToList, TokenType, type Token } from '$lib';
+	import { contracts, knownTokens, TokenType, type Token } from '$lib';
 	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { convertDecimals } from '$lib/numbers';
@@ -21,16 +21,16 @@
 	import Join from '$lib/components/join/Join.svelte';
 
 	const { page } = getStores();
-	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>$knownTokens.find((token) => token.ticker === 'VOI');
+	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.symbol === 'VOI');
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
 
-	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
+	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
 		arc200Token = tokenB;
-	} else if (tokenB?.ticker === 'VOI' && tokenA?.type === TokenType.ARC200) {
+	} else if (tokenB?.symbol === 'VOI' && tokenA?.type === TokenType.ARC200) {
 		voiToken = tokenB;
 		arc200Token = tokenA;
 	} else if (browser) {
@@ -38,7 +38,7 @@
 	}
 
 	if (arc200Token) {
-		lastActiveLimitOrderPair.set(arc200Token.ticker);
+		lastActiveLimitOrderPair.set(arc200Token.symbol);
 	}
 
 	let limitOrders: {
@@ -157,7 +157,7 @@
 		const limitOrderActionData = {
 			address: $connectedAccount,
 			arc200_id: arc200Token.id,
-			arc200_symbol: arc200Token.ticker,
+			arc200_symbol: arc200Token.symbol,
 		};
 
 		if ($page.params.action === 'buy') {
@@ -168,14 +168,6 @@
 				BigInt(tokenAAmount),
 				BigInt(tokenBAmount)
 			);
-			saveVoiActionToList('create-limit-order', {
-				...limitOrderActionData,
-				timestamp: Date.now(),
-				txn_id: txnId,
-				amount_voi: BigInt(tokenAAmount).toString(),
-				amount_arc200: BigInt(tokenBAmount).toString(),
-				x_to_y: true,
-			});
 			pageContentRefresh(0);
 		} else {
 			const txnId = await connector.invoke(
@@ -185,14 +177,6 @@
 				BigInt(tokenBAmount),
 				BigInt(tokenAAmount)
 			);
-			saveVoiActionToList('create-limit-order', {
-				...limitOrderActionData,
-				timestamp: Date.now(),
-				txn_id: txnId,
-				amount_voi: BigInt(tokenBAmount).toString(),
-				amount_arc200: BigInt(tokenAAmount).toString(),
-				x_to_y: false,
-			});
 			pageContentRefresh(0);
 		}
 		disabled = prev;
@@ -353,14 +337,14 @@
 			items={[
 				{
 					id: 'buy',
-					name: `Buy ${arc200Token.ticker}`,
-					href: `/limit/${tokenA.ticker}/buy`,
+					name: `Buy ${arc200Token.symbol}`,
+					href: `/limit/${tokenA.symbol}/buy`,
 					'data-sveltekit-noscroll': true,
 				},
 				{
 					id: 'sell',
-					name: `Sell ${arc200Token.ticker}`,
-					href: `/limit/${tokenA.ticker}/sell`,
+					name: `Sell ${arc200Token.symbol}`,
+					href: `/limit/${tokenA.symbol}/sell`,
 					'data-sveltekit-noscroll': true,
 				},
 			]}

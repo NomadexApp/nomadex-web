@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
-	import { getUnnamedResourcesAccessed, nodeClient } from '$lib/_shared';
+	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
 	import algosdk from 'algosdk';
-	import { Arc200TokenClient } from '../../../contracts/clients/Arc200TokenClient';
+	import { SmartAssetClient } from '../../../contracts/clients/SmartAssetClient';
 	import { goto } from '$app/navigation';
 	import { addNotification } from '$lib/Notify.svelte';
-	import { knownTokens, saveArc200TokenToList, saveVoiActionToList } from '$lib';
-	import { getLastTxnId } from '$lib/utils';
+	import { knownTokens } from '$lib';
 
 	let manager = $connectedAccount;
 	let name = '';
@@ -36,19 +35,19 @@
 		let remove = () => {};
 
 		try {
-			const client = new Arc200TokenClient(
+			const client = new SmartAssetClient(
 				{
 					id: 0,
 					resolveBy: 'id',
 					sender: getTransactionSignerAccount(),
 				},
-				new algosdk.Algodv2('', 'https://testnet-api.voi.nodly.io', '')
+				nodeClientAllowsCompile
 			);
 
 			remove = addNotification('pending', 'Deploying token contract');
 
 			console.log('creating app');
-			const result = await client.create.createApplication({ manager: manager });
+			const result = await client.create.createApplication(tokenInfo);
 			console.log('created app', result);
 
 			appId = Number(result?.appId || result.confirmation?.applicationIndex);
@@ -60,60 +59,29 @@
 
 			const suggestedParams = await nodeClient.getTransactionParams().do();
 
-			const getInitGroup = async (res?: object): Promise<algosdk.Transaction[]> => {
-				const deployed = new Arc200TokenClient(
-					{
-						id: appId,
-						resolveBy: 'id',
-						sender: getTransactionSignerAccount(),
-					},
-					nodeClient
-				).compose();
-
-				deployed.addTransaction({
+			const deployed = new SmartAssetClient(
+				{
+					id: appId,
+					resolveBy: 'id',
+					sender: getTransactionSignerAccount(),
+				},
+				nodeClient
+			);
+			await deployed.bootstrap(
+				{
 					txn: algosdk.makePaymentTxnWithSuggestedParamsFromObject({
 						from: $connectedAccount,
 						to: algosdk.getApplicationAddress(appId),
 						amount: 1_000_000,
 						suggestedParams: suggestedParams,
 					}),
-					signer: getTransactionSignerAccount().signer,
-				});
-
-				await deployed.initialize(
-					{
-						name: tokenInfo.name,
-						symbol: tokenInfo.symbol,
-						decimals: tokenInfo.decimals,
-						totalSupply: tokenInfo.totalSupply,
-						mintTo: tokenInfo.manager,
-					},
-					...(res ? [res] : [])
-				);
-
-				const txns = (await deployed.atc()).buildGroup().map((a) => a.txn);
-
-				if (res) {
-					return txns;
-				}
-
-				return getInitGroup(await getUnnamedResourcesAccessed(txns));
-			};
-
-			const txns = await getInitGroup();
-
-			const txnsBuffer = await signAndSendTransections(nodeClient, [txns]);
-			const txnId = getLastTxnId(txnsBuffer?.[0]);
+				},
+				{ sendParams: { populateAppCallResources: true } }
+			);
 
 			remove();
 			addNotification('success', `Created token ${appId}`, 10000);
-			await saveArc200TokenToList(symbol, appId, decimals);
-			await saveVoiActionToList('create-arc200-token', {
-				address: $connectedAccount,
-				timestamp: Date.now(),
-				arc200_id: appId,
-				arc200_symbol: symbol.slice(0, 8),
-			});
+			// await saveArc200TokenToList(symbol, appId, decimals);
 			goto(`/tokens/arc200-${appId}`);
 		} catch (e) {
 			console.error((<Error>e).message);
@@ -132,7 +100,7 @@
 		symbol.length >= 1 &&
 		symbol.length < 9 &&
 		symbol.match(/^[\w]+$/) &&
-		!$knownTokens.find((tok) => tok.ticker.toLowerCase() === symbol.toLowerCase());
+		!$knownTokens.find((tok) => tok.symbol.toLowerCase() === symbol.toLowerCase());
 </script>
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">

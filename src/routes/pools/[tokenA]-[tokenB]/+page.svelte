@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import { AlgoArc200PoolConnector } from '$lib/AlgoArc200PoolConnector';
+	import { PoolConnector } from '$lib/PoolConnector';
 	import { getStores } from '$app/stores';
 	import {
 		knownPools,
@@ -9,7 +9,6 @@
 		type Token,
 		type Pool,
 		saveVoiArc200PoolToList,
-		saveVoiActionToList,
 	} from '$lib';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -20,17 +19,17 @@
 	import { convertDecimals } from '$lib/numbers';
 
 	const { page } = getStores();
-	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenB);
+	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenB);
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
 	let matchedPool: Pool = <any>undefined;
 
-	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
+	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
 		arc200Token = tokenB;
-	} else if (tokenB?.ticker === 'VOI' && tokenA?.type === TokenType.ARC200) {
+	} else if (tokenB?.symbol === 'VOI' && tokenA?.type === TokenType.ARC200) {
 		voiToken = tokenB;
 		arc200Token = tokenA;
 	} else if (browser) {
@@ -59,7 +58,7 @@
 	let voteKeyDilution = 0;
 
 	async function registerOnline() {
-		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+		const connector = new PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 		await connector.invoke('registerOnline', {
 			selectionPk: Uint8Array.from(Buffer.from(selectionPk, 'base64')),
 			stateProofPk: Uint8Array.from(Buffer.from(stateProofPk, 'base64')),
@@ -71,7 +70,7 @@
 	}
 
 	async function registerOffline() {
-		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+		const connector = new PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 		await connector.invoke('registerOffline', {});
 	}
 
@@ -81,7 +80,7 @@
 
 	onMount(async () => {
 		if (!matchedPool) return;
-		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+		const connector = new PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 		const globalState = await connector.getGlobalState();
 		const manager = globalState.manager;
 		const feeController = globalState.feeController;
@@ -105,7 +104,7 @@
 		if (!matchedPool) return;
 		try {
 			updating = true;
-			const connector = new AlgoArc200PoolConnector(
+			const connector = new PoolConnector(
 				matchedPool.arc200Asset.assetId,
 				matchedPool.poolId,
 				undefined,
@@ -122,34 +121,25 @@
 	$: initialLiquidityAmount = Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6;
 
 	async function createVoiPool() {
-		const connector = await AlgoArc200PoolConnector.createPool(arc200Token.id);
+		const connector = await PoolConnector.createPool(arc200Token.id);
 
 		console.log('Created App:', connector.appId);
 		await connector.invoke('initPool');
 
 		let retry = 0;
-		while (!(await saveVoiArc200PoolToList(arc200Token.ticker, connector.appId, arc200Token.id))) {
+		while (!(await saveVoiArc200PoolToList(arc200Token.symbol, connector.appId, arc200Token.id))) {
 			if (++retry > 5) break;
 		}
-
-		await saveVoiActionToList('create-arc200-pool', {
-			address: $connectedAccount,
-			timestamp: Date.now(),
-			pool_id: connector.appId,
-			arc200_id: arc200Token.id,
-			arc200_symbol: arc200Token.ticker,
-		});
-
 		await new Promise((r) => setTimeout(r, 4000));
 
-		window.location.href = `/liquidity/${arc200Token.ticker}/add`;
+		window.location.href = `/liquidity/${arc200Token.symbol}/add`;
 
 		return;
 	}
 
 	async function setPoolFee() {
 		const targetFee = ((feePercent / 100) * SCALE * 100) / platformFeePercent;
-		const connector = new AlgoArc200PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
+		const connector = new PoolConnector(matchedPool.arc200Asset.assetId, matchedPool.poolId);
 		console.log(await connector.getUnnamedResourcesAccessedFromMethod('setFees', { fee: targetFee }));
 		await connector.invoke(
 			'setFees',
@@ -224,7 +214,7 @@
 					</div>
 					<div class="br" />
 					{#if $connectedAccount === managerAddress}
-						<h4 class="text-left">Update Pool Contract (VOI/{arc200Token.ticker})</h4>
+						<h4 class="text-left">Update Pool Contract (VOI/{arc200Token.symbol})</h4>
 
 						<div class="flex justify-center mt-2 pr-0">
 							<button
@@ -244,10 +234,10 @@
 			<!--  -->
 			{#if Number($arc200Balance || 0) >= 1}
 				<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-40">
-					<h4 class="text-left">Create Liquidity Pool (VOI/{arc200Token.ticker})</h4>
+					<h4 class="text-left">Create Liquidity Pool (VOI/{arc200Token.symbol})</h4>
 					<h6 class="text-left">
 						Token Balance: {initialLiquidityAmount}
-						{arc200Token.ticker}
+						{arc200Token.symbol}
 					</h6>
 
 					{#if $connectedAccount}
@@ -268,7 +258,7 @@
 				Not Enough balance to create liquidity pool
 				<div class="br" />
 				Balance: {(Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6).toLocaleString('en')}
-				{arc200Token.ticker}
+				{arc200Token.symbol}
 			{/if}
 		{/if}
 	</div>

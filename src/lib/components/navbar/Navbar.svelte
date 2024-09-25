@@ -5,7 +5,6 @@
 	import UseWallet, { connectedAccount, walletDisconnect } from '$lib/UseWallet.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
-	import { getLastActivePair } from '$lib/config';
 	import { lastActiveAnalyticsPair, lastActiveLimitOrderPair, lastActiveSwapPair } from '$lib/stores';
 	import { addNotification } from '$lib/Notify.svelte';
 	import { getAccountBalance } from '$lib/stores/onchain';
@@ -28,7 +27,7 @@
 			<li class="first">
 				<a
 					class:active={$page.url.pathname.startsWith('/swap/')}
-					href="/swap/{getLastActivePair('swap', $lastActiveSwapPair)}"
+					href="/swap/"
 				>
 					Swap
 				</a>
@@ -45,7 +44,7 @@
 			<li>
 				<a
 					class:active={$page.url.pathname.startsWith('/limit')}
-					href="/limit/{getLastActivePair('limit', $lastActiveLimitOrderPair)}/buy"
+					href="/limit/_/buy"
 				>
 					Limit
 				</a>
@@ -54,7 +53,7 @@
 			<li>
 				<a
 					class:active={$page.url.pathname.startsWith('/analytics')}
-					href="/analytics/{getLastActivePair('analytics', $lastActiveAnalyticsPair)}"
+					href="/analytics/"
 				>
 					Analytics
 				</a>

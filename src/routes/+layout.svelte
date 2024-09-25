@@ -5,7 +5,7 @@
 	import Footer from '$lib/components/footer/Footer.svelte';
 	import Modal, { component, props } from '$lib/components/modal/Modal.svelte';
 	import Notify from '$lib/Notify.svelte';
-	import { connectedAccount, getKibisisClient } from '$lib/UseWallet.svelte';
+	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { pageContentRefresh, pageContentRefreshPending } from '$lib/utils';
 	import '$lib/stores/onchain';
 	import '../app.css';
@@ -16,11 +16,6 @@
 	import Logo from '$lib/Logo.svelte';
 
 	onMount(async () => {
-		try {
-			await getKibisisClient(true);
-		} catch (e) {
-			//
-		}
 		getListOfArc200Tokens();
 	});
 
@@ -50,8 +45,7 @@
 	<section>
 		<Navbar />
 		<article>
-			{#if $arePoolsLoaded}
-				<!-- <Sidebar /> -->
+			{#if $arePoolsLoaded || true}
 				<div class="w-full flex flex-col">
 					{#if $pageContentRefreshPending}
 						<section class="flex flex-col justify-center items-center h-full max-h-[70vh]">
@@ -60,8 +54,6 @@
 					{:else}
 						<slot />
 					{/if}
-					<!-- {#if $connectedAccount || $page.url.pathname.startsWith('/analytics/') || $page.url.pathname.startsWith('/accounts')}
-					{/if} -->
 				</div>
 			{:else}
 				<div class="flex h-screen max-h-[70vh] w-full justify-center items-center">
@@ -80,7 +72,7 @@
 		{/if}
 	</section>
 {/if}
-{#if !browser || !localStorage.getItem('testnet-enabled')}
+{#if false}
 	<div class="testnet-overlay" style="">
 		<div style="display: block; width: 100px;" class="text-primary">
 			<Logo />

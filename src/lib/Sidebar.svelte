@@ -14,7 +14,6 @@
 	import MdAddCircle from '$lib/icons/MdToll.svelte';
 	import IoMdSwap from '$lib/icons/IoMdSwap.svelte';
 	import MdLaunch from '$lib/icons/MdLaunch.svelte';
-	import { getLastActivePair } from './config';
 	import Logo from './Logo.svelte';
 
 	let sidebarWidth = 0;
@@ -78,7 +77,7 @@
 				<li class="pl-0" class:is-open={$page.url.pathname.startsWith('/swap/')}>
 					<a
 						class="flex justify-between items-center"
-						href="/swap/{getLastActivePair('swap', $lastActiveSwapPair)}"
+						href="/swap/"
 						tabindex="0"
 					>
 						<span class="flex pt-[1px] justify-start items-end w-full">SWAP</span>
@@ -107,7 +106,7 @@
 				<li class="pl-0 sm:block" class:is-open={$page.url.pathname.startsWith('/analytics/')}>
 					<a
 						class="flex justify-between"
-						href="/analytics/{getLastActivePair('analytics', $lastActiveAnalyticsPair)}"
+						href="/analytics/"
 						tabindex="0"
 					>
 						<span class="flex pt-[1px] justify-start items-end flex-grow w-full">ANALYTICS</span>

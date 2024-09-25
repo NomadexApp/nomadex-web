@@ -30,21 +30,21 @@
 <div class="form">
 	<FormTitle>Create order ({buying ? 'buy' : 'sell'})</FormTitle>
 	<TokenInput
-		pretext="Price of 1 {tokenA.ticker}"
-		token={tokenA.ticker}
+		pretext="Price of 1 {tokenA.symbol}"
+		token={tokenA.symbol}
 		bind:value={price}
 		on:keydown={(e) => disabled && e.preventDefault()}
 	>
 		<svelte:fragment slot="currency">
-			{tokenB.ticker}
+			{tokenB.symbol}
 		</svelte:fragment>
 	</TokenInput>
 	<TokenInput
 		pretext="You pay"
 		posttext={`balance ${(buying ? tokenBBalance : tokenABalance).toLocaleString()} ${
-			(buying ? tokenB : tokenA).ticker
+			(buying ? tokenB : tokenA).symbol
 		}`}
-		token={(buying ? tokenB : tokenA).ticker}
+		token={(buying ? tokenB : tokenA).symbol}
 		showMax
 		bind:value={tokenAInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
@@ -54,17 +54,17 @@
 		}}
 	>
 		<svelte:fragment slot="currency">
-			{(buying ? tokenB : tokenA).ticker}
+			{(buying ? tokenB : tokenA).symbol}
 		</svelte:fragment>
 	</TokenInput>
 	<TokenInput
 		pretext="You receive"
-		token={(buying ? tokenB : tokenA).ticker}
+		token={(buying ? tokenB : tokenA).symbol}
 		value={Number(Number(tokenBInput).toFixed(6))}
 		disabled
 	>
 		<svelte:fragment slot="currency">
-			{(buying ? tokenA : tokenB).ticker}
+			{(buying ? tokenA : tokenB).symbol}
 		</svelte:fragment>
 	</TokenInput>
 

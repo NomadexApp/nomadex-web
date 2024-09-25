@@ -18,11 +18,11 @@
 		? tokens.filter(
 				(token) =>
 					token.id.toString() === tokenSearch ||
-					token.ticker.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
+					token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
 		  )
 		: tokens;
 
-	$: $connectedAccount && getBalances(filteredTokens);
+	// $: $connectedAccount && getBalances(filteredTokens);
 
 	async function getBalances(tokens: Token[]) {
 		const requests: any[] = [];
@@ -65,13 +65,13 @@
 			>
 				<div class="icon avatar w-10 h-10 bg-[#f0f0f005] rounded-full flex justify-center items-center">?</div>
 				<div class="flex flex-col text-sm flex-grow">
-					<span class="name">{token.ticker}</span>
+					<span class="name">{token.symbol}</span>
 					<span class="symbol text-gray-200">{token.id}</span>
 				</div>
 				{#if balances[token.id] && Number(balances[token.id]) > 0}
 					<div>
 						{(Number(convertDecimals(balances[token.id] ?? 0, token.decimals, 6)) / 1e6).toLocaleString()}
-						{token.ticker}
+						{token.symbol}
 					</div>
 				{/if}
 			</div>

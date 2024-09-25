@@ -5,7 +5,7 @@
 	import SwapInfo from '$lib/components/form/SwapInfo.svelte';
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
 	import { openModal } from '../modal/Modal.svelte';
-	import { knownTokens, type Token } from '$lib';
+	import { knownTokens, type Pool, type Token } from '$lib';
 	import { readableNumber } from '$lib/CurrencyNumber.svelte';
 	import { connectedAccount } from '$lib/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
@@ -19,6 +19,7 @@
 	export let tokenLptInput = 0;
 	export let tokenAInput = 0;
 	export let tokenBInput = 0;
+	export let pool: Pool;
 	export let tokenA: Token;
 	export let tokenB: Token;
 	export let disabled = false;
@@ -45,23 +46,14 @@
 				tokenLptInput = tokenLptInput === Number(tokenLptBalance) ? 0 : Number(tokenLptBalance);
 				onInputTokenLpt();
 			}}
-			on:click={() => {
-				if (tokenA.id === 0) return;
-				openModal(SelectTokenModal, {
-					tokens: $knownTokens.filter((tok) => tok.id !== tokenA.id),
-					handleSelect(token) {
-						handleTokenChange(token, 0);
-					},
-				});
-			}}
 		>
 			<svelte:fragment slot="currency">LPT</svelte:fragment>
 		</TokenInput>
 	{/if}
 	<TokenInput
 		pretext={action === 'remove' ? '' : 'You pay'}
-		posttext={action === 'add' ? `balance ${tokenABalance.toLocaleString()} ${tokenA.ticker}` : ''}
-		token={tokenA.ticker}
+		posttext={action === 'add' ? `balance ${tokenABalance.toLocaleString()} ${tokenA.symbol}` : ''}
+		token={tokenA.symbol}
 		showMax={action === 'add'}
 		decimals={tokenA.decimals}
 		bind:value={tokenAInput}
@@ -72,22 +64,13 @@
 			tokenAInput = tokenAInput === Number(tokenABalance) ? 0 : Number(tokenABalance);
 			onInputTokenA();
 		}}
-		on:click={() => {
-			if (tokenA.id === 0) return;
-			openModal(SelectTokenModal, {
-				tokens: $knownTokens.filter((tok) => tok.id !== tokenA.id),
-				handleSelect(token) {
-					handleTokenChange(token, 0);
-				},
-			});
-		}}
 	>
-		<svelte:fragment slot="currency">{tokenA.ticker}</svelte:fragment>
+		<svelte:fragment slot="currency">{tokenA.symbol}</svelte:fragment>
 	</TokenInput>
 	<TokenInput
 		pretext={action === 'remove' ? '' : 'You pay'}
-		token={tokenB.ticker}
-		posttext={action === 'add' ? `balance ${tokenBBalance.toLocaleString()} ${tokenB.ticker}` : ''}
+		token={tokenB.symbol}
+		posttext={action === 'add' ? `balance ${tokenBBalance.toLocaleString()} ${tokenB.symbol}` : ''}
 		decimals={tokenB.decimals}
 		bind:value={tokenBInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
@@ -98,17 +81,8 @@
 			tokenBInput = tokenBInput === Number(tokenBBalance) ? 0 : Number(tokenBBalance);
 			onInputTokenB();
 		}}
-		on:click={() => {
-			if (tokenB.id === 0) return;
-			openModal(SelectTokenModal, {
-				tokens: $knownTokens.filter((tok) => tok.id !== tokenB.id && tok.id),
-				handleSelect(token) {
-					handleTokenChange(token, 1);
-				},
-			});
-		}}
 	>
-		<svelte:fragment slot="currency">{tokenB.ticker}</svelte:fragment>
+		<svelte:fragment slot="currency">{tokenB.symbol}</svelte:fragment>
 	</TokenInput>
 
 	<ActionButton on:click={handleSubmit} disabled={Boolean($connectedAccount) && disabled}>
@@ -123,9 +97,7 @@
 		data={[
 			[
 				'Pool balance',
-				`${readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString()} ${tokenA.ticker} / ${readableNumber(
-					Number(poolTokenBBalance) || 0
-				).toLocaleString()} ${tokenB.ticker}`,
+				`${readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString()} ${tokenA.symbol} / ${readableNumber(Number(poolTokenBBalance) || 0).toLocaleString()} ${tokenB.symbol}`,
 			],
 			['Your share', `${(poolShare || 0).toLocaleString()}%`],
 		]}
@@ -134,11 +106,7 @@
 
 <div class="br" />
 <div class="flex justify-center text-sm">
-	<a
-		class="hover:underline underline-offset-4 text-[#ffffff]"
-		href="/liquidity/{tokenB.ticker}/{action === 'remove' ? 'add' : 'remove'}"
-		on:click={() => pageContentRefresh()}
-	>
+	<a class="hover:underline underline-offset-4 text-[#ffffff]" href="/liquidity/{pool.id}/{action === 'remove' ? 'add' : 'remove'}" on:click={() => pageContentRefresh()}>
 		{action === 'remove' ? 'Add' : 'Remove'} Liquidity
 	</a>
 </div>

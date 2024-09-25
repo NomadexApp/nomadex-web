@@ -13,23 +13,23 @@
 	import { lastActiveLimitOrderPair } from '$lib/stores';
 
 	const { page } = getStores();
-	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenB);
+	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenB);
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
 
-	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
+	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
 		arc200Token = tokenB;
-	} else if (tokenB?.ticker === 'VOI' && tokenA?.type === TokenType.ARC200) {
+	} else if (tokenB?.symbol === 'VOI' && tokenA?.type === TokenType.ARC200) {
 		voiToken = tokenB;
 		arc200Token = tokenA;
 	} else if (browser) {
 		goto(`/`);
 	}
 
-	lastActiveLimitOrderPair.set(arc200Token.ticker);
+	lastActiveLimitOrderPair.set(arc200Token.symbol);
 
 	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
 
@@ -43,19 +43,19 @@
 
 	function setSelectedToken(token: Token, index: number) {
 		if (index === 0) {
-			if (tokenA.ticker !== token.ticker) {
+			if (tokenA.symbol !== token.symbol) {
 				updateRoute(token, tokenB);
 			}
 		} else {
-			if (tokenB.ticker !== token.ticker) {
+			if (tokenB.symbol !== token.symbol) {
 				updateRoute(tokenA, token);
 			}
 		}
 	}
 
 	function updateRoute(aToken: Token, bToken: Token) {
-		if (aToken.ticker !== tokenA.ticker || bToken.ticker !== tokenB.ticker) {
-			goto(`/limit-orders/create/${aToken.ticker}-${bToken.ticker}`, { replaceState: true });
+		if (aToken.symbol !== tokenA.symbol || bToken.symbol !== tokenB.symbol) {
+			goto(`/limit-orders/create/${aToken.symbol}-${bToken.symbol}`, { replaceState: true });
 			pageContentRefresh(0);
 		}
 	}
@@ -75,7 +75,7 @@
 		const tokenBAmount = Math.floor(inputTokenB * tokenB.unit);
 		const connector = new LimitOrders001ClientConnector(contracts.orderbookLimitOrderApp);
 
-		if (tokenA.ticker === voiToken.ticker && tokenB.ticker === arc200Token.ticker) {
+		if (tokenA.symbol === voiToken.symbol && tokenB.symbol === arc200Token.symbol) {
 			await connector.invoke(
 				'createOrder',
 				LimitOrderType.SELL_ALGO_FOR_ARC200,
@@ -84,7 +84,7 @@
 				BigInt(tokenBAmount)
 			);
 			pageContentRefresh(0);
-		} else if (tokenA.ticker === arc200Token.ticker && tokenB.ticker === voiToken.ticker) {
+		} else if (tokenA.symbol === arc200Token.symbol && tokenB.symbol === voiToken.symbol) {
 			await connector.invoke(
 				'createOrder',
 				LimitOrderType.SELL_ARC200_FOR_ALGO,
@@ -99,7 +99,7 @@
 
 	const getTokenSuggestions = (token: Token) => {
 		if (token.type === TokenType.ARC200) {
-			return $knownTokens.slice(1).map((token) => ({ name: token.ticker, value: token }));
+			return $knownTokens.slice(1).map((token) => ({ name: token.symbol, value: token }));
 		}
 	};
 
@@ -109,14 +109,14 @@
 {#if voiToken && arc200Token}
 	<div class="w-full h-full flex flex-col items-center justify-center p-12">
 		<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] prose">
-			<h4 class="text-lg text-left prose">Limit Order (Sell {tokenA.ticker} for {tokenB.ticker})</h4>
+			<h4 class="text-lg text-left prose">Limit Order (Sell {tokenA.symbol} for {tokenB.symbol})</h4>
 			<label for="">
-				{tokenA.ticker} (Selling Amount)
+				{tokenA.symbol} (Selling Amount)
 			</label>
 			<div class="flex items-center relative">
 				<input
 					type="number"
-					placeholder="{tokenA.ticker} amount"
+					placeholder="{tokenA.symbol} amount"
 					bind:value={inputTokenA}
 					step={0.000001}
 					on:keydown={(e) => !loaded && e.preventDefault()}
@@ -127,7 +127,7 @@
 				<Dropdown
 					class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"
 					options={getTokenSuggestions(tokenA)}
-					selected={{ name: tokenA.ticker, value: tokenA }}
+					selected={{ name: tokenA.symbol, value: tokenA }}
 					onSelect={(value) => setSelectedToken(value, 0)}
 				/>
 			</div>
@@ -143,11 +143,11 @@
 					<span class="block h-6"><MdSwapVert /></span>
 				</button>
 			</div>
-			<label for="">{tokenB.ticker} (Buying Amount)</label>
+			<label for="">{tokenB.symbol} (Buying Amount)</label>
 			<div class="flex items-center relative">
 				<input
 					type="number"
-					placeholder="{tokenB.ticker} amount"
+					placeholder="{tokenB.symbol} amount"
 					bind:value={inputTokenB}
 					step={0.000001}
 					on:keydown={(e) => !loaded && e.preventDefault()}
@@ -158,7 +158,7 @@
 				<Dropdown
 					class="btn-ghost border-primary hover:border-primary border-l-0 rounded-l-none m-0 mx-0"
 					options={getTokenSuggestions(tokenB)}
-					selected={{ name: tokenB.ticker, value: tokenB }}
+					selected={{ name: tokenB.symbol, value: tokenB }}
 					onSelect={(value) => setSelectedToken(value, 1)}
 				/>
 			</div>
@@ -169,7 +169,7 @@
 
 			<div class="flex justify-center mt-2 pr-0">
 				<button
-					class="btn btn-primary w-full box-border {tokenA.ticker === tokenB.ticker || disabled
+					class="btn btn-primary w-full box-border {tokenA.symbol === tokenB.symbol || disabled
 						? 'disabled btn-outline'
 						: ''}"
 					on:click={disabled ? () => {} : createLimitOrder}

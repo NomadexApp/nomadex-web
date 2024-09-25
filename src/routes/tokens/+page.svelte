@@ -48,9 +48,9 @@
 						<span class="flex w-full items-center gap-2">
 							<span class="name text-lg text-bold">
 								{#if token.id}
-									{token.ticker}
+									{token.symbol}
 								{:else}
-									{token.ticker}
+									{token.symbol}
 								{/if}
 							</span>
 							<span class="flex-grow" />

@@ -1,13 +1,13 @@
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 export enum TokenType {
-	Default = '',
-	ASA = 'asa',
-	ARC200 = 'arc200',
+	Default = 0,
+	ASA = 1,
+	ARC200 = 2,
 }
 
 export type Token = {
-	ticker: string;
+	symbol: string;
 	id: number;
 	type: TokenType;
 	decimals: number;
@@ -15,32 +15,36 @@ export type Token = {
 };
 
 export type Pool = {
+	id: number;
+	type: TokenType.ARC200;
 	poolId: number;
-	lptId: number;
-	arc200Asset: {
-		assetId: number;
-		symbol: string;
-		decimals: number;
-		unit: number;
-	};
+	assets: [Token, Token];
 	swapFee: number;
 };
 
-export const knownPools = writable<Pool[]>([
-	// { lptId: 27705276, poolId: 27705276, swapFee: 1e12, arc200Asset: { symbol: 'VIA', assetId: 6779767, decimals: 6, unit: 1e6 } }
-]);
 
 export const knownTokens = writable<Token[]>([
-	{ ticker: 'VOI', id: 0, type: TokenType.Default, decimals: 6, unit: 1e6 },
-	{ ticker: 'VIA', id: 6779767, type: TokenType.ARC200, decimals: 6, unit: 1e6 },
-	{ ticker: 'VRC200', id: 6778021, type: TokenType.ARC200, decimals: 8, unit: 1e8 },
-	{ ticker: 'Tacos', id: 6795477, type: TokenType.ARC200, decimals: 0, unit: 1 },
+	{ symbol: 'ALGO', id: 0, type: TokenType.Default, decimals: 6, unit: 1e6 },
+	{ symbol: 'ARC200', id: 722730128, type: TokenType.ARC200, decimals: 6, unit: 1e6 },
+	{ symbol: 'ASA', id: 722745795, type: TokenType.ASA, decimals: 6, unit: 1e6 },
+	{ symbol: 'NEW', id: 722854721, type: TokenType.ASA, decimals: 6, unit: 1e6 },
+]);
+
+export const knownPools = writable<Pool[]>([
+	// { id: 27705276, poolId: 27705276, swapFee: 1e12, arc200Asset: { symbol: 'VIA', assetId: 6779767, decimals: 6, unit: 1e6 } }
+	{ id: 722854523, type: TokenType.ARC200, poolId: 722854523, swapFee: 2e12, assets: [get(knownTokens)[0], get(knownTokens)[1]], },
+	{ id: 722854579, type: TokenType.ARC200, poolId: 722854579, swapFee: 2e12, assets: [get(knownTokens)[0], get(knownTokens)[2]], },
+	{ id: 722854637, type: TokenType.ARC200, poolId: 722854637, swapFee: 2e12, assets: [get(knownTokens)[2], get(knownTokens)[1]], },
+	{ id: 722854800, type: TokenType.ARC200, poolId: 722854800, swapFee: 2e12, assets: [get(knownTokens)[2], get(knownTokens)[3]], },
 ]);
 
 export const arePoolsLoaded = writable(false);
 
 export const contracts = {
 	orderbookLimitOrderApp: 26171479,
+	poolFcatory: 722854430,
+	arc200Token: 722730128,
+	asaToken: 722745795
 };
 
 export const contractsConstants = {
@@ -48,11 +52,12 @@ export const contractsConstants = {
 };
 
 export async function getListOfArc200Tokens() {
-	const tokensSnap: { id: number, ticker: string, decimals: number }[] = await (await fetch('https://api.nomadex.app/tokens')).json();
+	return;
+	const tokensSnap: { id: number, symbol: string, decimals: number }[] = await (await fetch('https://api.nomadex.app/tokens')).json();
 	const tokens = tokensSnap.map((token) => {
 		return {
 			id: token.id,
-			symbol: token.ticker,
+			symbol: token.symbol,
 			decimals: token.decimals,
 		};
 	});
@@ -60,7 +65,7 @@ export async function getListOfArc200Tokens() {
 		.filter((token) => 0 <= token.decimals && token.decimals <= 18)
 		.map((token) => ({
 			id: token.id,
-			ticker: token.symbol,
+			symbol: token.symbol,
 			type: TokenType.ARC200,
 			decimals: token.decimals,
 			unit: 10 ** token.decimals,
@@ -79,12 +84,12 @@ export async function getListOfArc200Tokens() {
 	const validPools: Pool[] = pools
 		.filter((pool) => pool.arc200Asset)
 		.map((token) => ({
-			lptId: token.id,
+			id: token.id,
 			poolId: token.id,
 			swapFee: 1_000_000_000_000,
 			arc200Asset: {
 				assetId: token.arc200Asset.id,
-				symbol: token.arc200Asset.ticker,
+				symbol: token.arc200Asset.symbol,
 				unit: token.arc200Asset.unit,
 				decimals: token.arc200Asset.decimals,
 			},
@@ -96,11 +101,11 @@ export async function getListOfArc200Tokens() {
 	knownTokens.update((toks) => {
 		const tokens = toks.slice(0, 1).concat(validTokens.toSorted((a, b) => {
 			const prefer = ['VIA', 'UNIT', 'POINTS', 'Tacos', 'NOM', 'ROCKET'];
-			if (prefer.includes(a.ticker) && prefer.includes(b.ticker)) {
-				return prefer.indexOf(a.ticker) - prefer.indexOf(b.ticker);
-			} else if (prefer.includes(a.ticker)) {
+			if (prefer.includes(a.symbol) && prefer.includes(b.symbol)) {
+				return prefer.indexOf(a.symbol) - prefer.indexOf(b.symbol);
+			} else if (prefer.includes(a.symbol)) {
 				return -1;
-			} else if (prefer.includes(b.ticker)) {
+			} else if (prefer.includes(b.symbol)) {
 				return 1;
 			}
 
@@ -123,7 +128,7 @@ export async function saveArc200TokenToList(symbol: string, id: number, decimals
 		},
 		body: JSON.stringify({
 			id: id,
-			ticker: symbol,
+			symbol: symbol,
 			decimals: decimals
 		})
 	});
@@ -153,92 +158,5 @@ export async function saveVoiArc200PoolToList(symbol: string, poolId: number, ar
 	if (rep.success) {
 		await getListOfArc200Tokens();
 		return true;
-	}
-}
-
-interface ActionTypes {
-	'connect-wallet': {
-		address: string,
-		timestamp: number
-		wallet: 'kibisis' | 'wc'
-	};
-	'swap': {
-		address: string,
-		timestamp: number,
-		txn_id: string,
-		pool_id: number,
-		arc200_id: number,
-		arc200_symbol: string,
-		amount_voi: string,
-		amount_arc200: string,
-		x_to_y: boolean
-	};
-	'add-liquidity': {
-		address: string,
-		timestamp: number,
-		txn_id: string,
-		pool_id: number,
-		arc200_id: number,
-		arc200_symbol: string,
-		amount_voi: string,
-		amount_arc200: string,
-	};
-	'remove-liquidity': {
-		address: string,
-		timestamp: number,
-		txn_id: string,
-		pool_id: number,
-		arc200_id: number,
-		arc200_symbol: string,
-		amount_lpt: string
-	};
-	'create-limit-order': {
-		address: string,
-		timestamp: number,
-		txn_id: string,
-		arc200_id: number,
-		arc200_symbol: string,
-		amount_voi: string,
-		amount_arc200: string,
-		x_to_y: boolean
-	};
-	'create-arc200-token': {
-		address: string,
-		timestamp: number,
-		arc200_id: number,
-		arc200_symbol: string,
-	};
-	'create-arc200-pool': {
-		address: string,
-		timestamp: number,
-		pool_id: number,
-		arc200_id: number,
-		arc200_symbol: string
-	};
-}
-
-export async function saveVoiActionToList<K extends keyof ActionTypes>(action: K, context: ActionTypes[K]) {
-	if (typeof action !== 'string' || typeof context.address !== "string" || typeof context.timestamp !== "number") {
-		throw Error('Bad action, cannot save action to the list');
-	}
-	try {
-		// await putDoc(`/networks/${network}/versions/${version}/actions/${context.timestamp}`, { ...context, action });
-		const response = await fetch(`https://api.nomadex.app/actions`, {
-			method: 'POST',
-			headers: {
-				'content-type': 'application/json'
-			},
-			body: JSON.stringify({
-				...context,
-				action
-			})
-		});
-		const jsonResponse = await response.json();
-
-		if (jsonResponse.success) {
-			console.log(`Saved Action: ${action}`);
-		}
-	} catch (e) {
-		console.log(e);
 	}
 }

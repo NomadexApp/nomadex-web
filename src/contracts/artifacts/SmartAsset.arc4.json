@@ -1,0 +1,330 @@
+{
+  "name": "SmartAsset",
+  "desc": "",
+  "methods": [
+    {
+      "name": "arc200_name",
+      "readonly": true,
+      "args": [],
+      "returns": {
+        "type": "byte[32]"
+      }
+    },
+    {
+      "name": "arc200_symbol",
+      "readonly": true,
+      "args": [],
+      "returns": {
+        "type": "byte[8]"
+      }
+    },
+    {
+      "name": "arc200_decimals",
+      "readonly": true,
+      "args": [],
+      "returns": {
+        "type": "uint8"
+      }
+    },
+    {
+      "name": "arc200_totalSupply",
+      "readonly": true,
+      "args": [],
+      "returns": {
+        "type": "uint256"
+      }
+    },
+    {
+      "name": "arc200_balanceOf",
+      "readonly": true,
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "uint256"
+      }
+    },
+    {
+      "name": "arc200_allowance",
+      "readonly": true,
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "uint256"
+      }
+    },
+    {
+      "name": "arc200_transfer",
+      "args": [
+        {
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "arc200_approve",
+      "args": [
+        {
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "arc200_transferFrom",
+      "args": [
+        {
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      },
+      "events": [
+        {
+          "name": "arc200_Transfer",
+          "args": [
+            {
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "name": "supportsInterface",
+      "readonly": true,
+      "args": [
+        {
+          "name": "interfaceID",
+          "type": "byte[4]"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "zeroAddress",
+      "readonly": true,
+      "args": [],
+      "returns": {
+        "type": "address"
+      }
+    },
+    {
+      "name": "hasBox",
+      "readonly": true,
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "createBalanceBox",
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "createAllowanceBox",
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "noop",
+      "args": [
+        {
+          "name": "number",
+          "type": "uint64"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "updateApplication",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "deleteApplication",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "manager",
+      "readonly": true,
+      "args": [],
+      "returns": {
+        "type": "address"
+      }
+    },
+    {
+      "name": "grant",
+      "args": [
+        {
+          "name": "manager",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "createApplication",
+      "args": [
+        {
+          "name": "manager",
+          "type": "address"
+        },
+        {
+          "name": "name",
+          "type": "byte[32]"
+        },
+        {
+          "name": "symbol",
+          "type": "byte[8]"
+        },
+        {
+          "name": "decimals",
+          "type": "uint8"
+        },
+        {
+          "name": "totalSupply",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "bootstrap",
+      "args": [
+        {
+          "name": "txn",
+          "type": "pay"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "arc200_Transfer",
+      "args": [
+        {
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "desc": ""
+    },
+    {
+      "name": "arc200_Approval",
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "desc": ""
+    }
+  ]
+}

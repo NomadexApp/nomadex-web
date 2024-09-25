@@ -12,16 +12,16 @@
 	import LimitOrder from '$lib/LimitOrder.svelte';
 
 	const { page } = getStores();
-	const tokenA = <Token>$knownTokens.find((token) => token.ticker === $page.params.tokenA);
-	const tokenB = <Token>$knownTokens.find((token) => token.ticker === 'VOI');
+	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);
+	const tokenB = <Token>$knownTokens.find((token) => token.symbol === 'VOI');
 
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
 
-	if (tokenA?.ticker === 'VOI' && tokenB?.type === TokenType.ARC200) {
+	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
 		arc200Token = tokenB;
-	} else if (tokenB?.ticker === 'VOI' && tokenA?.type === TokenType.ARC200) {
+	} else if (tokenB?.symbol === 'VOI' && tokenA?.type === TokenType.ARC200) {
 		voiToken = tokenB;
 		arc200Token = tokenA;
 	} else if (browser) {
@@ -29,7 +29,7 @@
 	}
 
 	if (arc200Token) {
-		lastActiveLimitOrderPair.set(arc200Token.ticker);
+		lastActiveLimitOrderPair.set(arc200Token.symbol);
 	}
 
 	let limitOrders: {
@@ -139,15 +139,15 @@
 						<span class="name mb-0 w-full flex gap-4">
 							<span class="w-16 flex flex-wrap gap-2">
 								<span>Price</span>
-								<span class="">{tokenB.ticker}</span>
+								<span class="">{tokenB.symbol}</span>
 							</span>
 							<span class="w-24 tflex flex-wrap gap-2">
 								<span>Amount</span>
-								<span class="">{tokenA.ticker}</span>
+								<span class="">{tokenA.symbol}</span>
 							</span>
 							<span class="w-16 flex flex-wrap gap-2 text-right">
 								<span>Total</span>
-								<span class="">{tokenB.ticker}</span>
+								<span class="">{tokenB.symbol}</span>
 							</span>
 						</span>
 					</div>
