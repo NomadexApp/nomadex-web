@@ -8,9 +8,9 @@
 	import type { Pool } from '$lib';
 	import algosdk from 'algosdk';
 	import { readableNumber } from './CurrencyNumber.svelte';
-	import { getArc200Balance, getBalance, nodeClient } from './_shared';
-	import { SwapEvents, type SwapTxn } from './events';
-	import { Arc200Interface } from './utils';
+	import { getBalance, nodeClient } from '../_shared';
+	import { SwapEvents, type SwapTxn } from '../utils/events';
+	import { MySmartAsset } from '../MySmartAsset';
 
 	export let pool: Pool & { balances: { [k: string]: any } };
 	export let userLptBalance: number;
@@ -118,8 +118,8 @@
 
 		const poolAddress = algosdk.getApplicationAddress(currentPool.poolId);
 		const voiBalance = currentPool.balances.algo ?? (await getBalance(poolAddress));
-		const arc200Balance = Number(currentPool.balances.arc200 ?? (await getArc200Balance(currentPool.arc200Asset.assetId, poolAddress)));
-		const lptSupply = Number(currentPool.balances.lpt ?? (await Arc200Interface.arc200_totalSupply(currentPool.poolId)));
+		const arc200Balance = Number(currentPool.balances.arc200 ?? (await MySmartAsset.from(currentPool.arc200Asset.assetId).arc200BalanceOf(poolAddress)));
+		const lptSupply = Number(currentPool.balances.lpt ?? (await MySmartAsset.from(currentPool.poolId).arc200TotalSupply()));
 
 		const dataPoints = [
 			{

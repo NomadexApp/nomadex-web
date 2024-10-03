@@ -1,6 +1,5 @@
-<script lang="ts">
-	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import { PoolConnector } from '$lib/PoolConnector';
+<!-- <script lang="ts">
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import { getStores } from '$app/stores';
 	import {
 		knownPools,
@@ -8,14 +7,13 @@
 		TokenType,
 		type Token,
 		type Pool,
-		saveVoiArc200PoolToList,
 	} from '$lib';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { onChainStateWatcher, watchArc200Balance } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
-	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
+	import { nodeClient } from '$lib/_shared';
 	import { convertDecimals } from '$lib/numbers';
 
 	const { page } = getStores();
@@ -108,7 +106,7 @@
 				matchedPool.arc200Asset.assetId,
 				matchedPool.poolId,
 				undefined,
-				nodeClientAllowsCompile
+				nodeClient
 			);
 			await connector.invoke('updatePool');
 			console.log('updated');
@@ -231,7 +229,6 @@
 				</form>
 			{/if}
 		{:else if typeof $arc200Balance !== 'undefined'}
-			<!--  -->
 			{#if Number($arc200Balance || 0) >= 1}
 				<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px] mt-40">
 					<h4 class="text-left">Create Liquidity Pool (VOI/{arc200Token.symbol})</h4>
@@ -262,4 +259,4 @@
 			{/if}
 		{/if}
 	</div>
-</section>
+</section> -->

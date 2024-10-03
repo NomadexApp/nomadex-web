@@ -3,11 +3,11 @@
 </script>
 
 <script lang="ts">
-	import { contracts, knownPools, TokenType, type Pool, type Token } from '$lib';
-	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
-	import { connectedAccount, getTransactionSignerAccount } from '$lib/UseWallet.svelte';
+	import { TokenType, type Pool, type Token } from '$lib';
+	import { nodeClient } from '$lib/_shared';
+	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
-	import { convertDecimals } from '$lib/numbers';
+	import { convertDecimals } from '$lib/utils/numbers';
 	import { get } from 'svelte/store';
 	import { SmartAssetClient } from '../../../../../contracts/clients/SmartAssetClient';
 	import { PoolClient } from '../../../../../contracts/clients/PoolClient';

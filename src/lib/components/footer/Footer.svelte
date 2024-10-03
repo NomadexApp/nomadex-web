@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import Logo from '$lib/Logo.svelte';
+	import Logo from '$lib/components/Logo.svelte';
 
 	let scrollY = 0;
 

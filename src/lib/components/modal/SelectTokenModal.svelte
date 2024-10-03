@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { Token } from '$lib';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import { getArc200Balances } from '$lib/_shared';
-	import { convertDecimals } from '$lib/numbers';
+	import { convertDecimals } from '$lib/utils/numbers';
 	import TextInput from '../form/TextInput.svelte';
 
 	export let close: Function;
@@ -25,20 +23,20 @@
 	// $: $connectedAccount && getBalances(filteredTokens);
 
 	async function getBalances(tokens: Token[]) {
-		const requests: any[] = [];
-		for (const token of tokens) {
-			if ($connectedAccount && typeof balances[token.id] !== 'number') {
-				requests.push({
-					tokenType: 'ARC200',
-					assetId: token.id,
-					address: $connectedAccount,
-				});
-			}
-		}
-		const jsonResponse = await getArc200Balances(requests);
-		if (jsonResponse?.[$connectedAccount]) {
-			balances = jsonResponse?.[$connectedAccount];
-		}
+		// const requests: any[] = [];
+		// for (const token of tokens) {
+		// 	if ($connectedAccount && typeof balances[token.id] !== 'number') {
+		// 		requests.push({
+		// 			tokenType: 'ARC200',
+		// 			assetId: token.id,
+		// 			address: $connectedAccount,
+		// 		});
+		// 	}
+		// }
+		// const jsonResponse = await getArc200Balances(requests);
+		// if (jsonResponse?.[$connectedAccount]) {
+		// 	balances = jsonResponse?.[$connectedAccount];
+		// }
 	}
 
 	$: finalTokensList = [...filteredTokens].sort(

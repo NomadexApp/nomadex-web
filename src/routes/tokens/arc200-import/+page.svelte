@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import { goto } from '$app/navigation';
-	import { TokenType, knownTokens, saveArc200TokenToList } from '$lib';
-	import { Arc200Interface } from '$lib/utils';
+	import { TokenType, knownTokens } from '$lib';
+	import { MySmartAsset } from '$lib/MySmartAsset';
 
 	let appId = 0;
 
@@ -14,10 +14,9 @@
 		let remove = () => {};
 
 		try {
-			const symbol = await Arc200Interface.arc200_symbol(appId);
-			const decimals = await Arc200Interface.arc200_decimals(appId);
+			const symbol = await MySmartAsset.from(appId).arc200Symbol();
+			const decimals = await MySmartAsset.from(appId).arc200Decimals();
 			if (typeof symbol === 'string' && symbol.length && Number.isInteger(Number(decimals))) {
-				await saveArc200TokenToList(symbol, appId, Number(decimals));
 				$knownTokens = [
 					...$knownTokens,
 					{
@@ -45,20 +44,10 @@
 		<div class="br" />
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>ARC200 Token ID:</div>
-			<input
-				class="input input-secondary bg-[#00000040]"
-				type="number"
-				max={1e10}
-				min={0}
-				step={1}
-				bind:value={appId}
-			/>
+			<input class="input input-secondary bg-[#00000040]" type="number" max={1e10} min={0} step={1} bind:value={appId} />
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
-			<button
-				class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}"
-				on:click={isValid && $connectedAccount ? importArc200Token : () => {}}>Import Token</button
-			>
+			<button class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}" on:click={isValid && $connectedAccount ? importArc200Token : () => {}}>Import Token</button>
 		</div>
 	</div>
 </section>

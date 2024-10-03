@@ -28,7 +28,7 @@
 			},
 		],
 		algod: {
-			baseServer: 'https://mainnet-api.voi.nodely.dev', // HACK: Use voimain as default
+			baseServer: 'https://voimain-api.nomadex.app',
 			port: '',
 			token: '',
 		},
@@ -113,7 +113,12 @@
 
 	export function getTransactionSignerAccount() {
 		const account = get(connectedAccount);
-		if (!account) return <{ addr: string; signer }>(<unknown>undefined);
+		if (!account) {
+			return {
+				addr: 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ',
+				signer: algosdk.makeEmptyTransactionSigner(),
+			};
+		}
 		const signer: algosdk.TransactionSigner = (txnGroup: algosdk.Transaction[], indexesToSign: number[]) => {
 			return signTransactions([txnGroup]);
 		};

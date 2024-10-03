@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { type Token, knownTokens, TokenType, knownPools, type Pool } from '$lib';
+	import { type Token, knownTokens, knownPools } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 	import algosdk from 'algosdk';
-	import { convertDecimals } from '$lib/numbers';
+	import { convertDecimals } from '$lib/utils/numbers';
 	import LiquidityForm from '$lib/components/form/LiquidityForm.svelte';
 	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
@@ -114,25 +114,7 @@
 	async function changeLiquidity() {
 		const prev = disabled;
 		disabled = true;
-		// const algoArc200PoolConnector = new PoolConnector(pool.arc200Asset.assetId, pool.poolId);
-
-		// const liquidityActionData = {
-		// 	address: $connectedAccount,
-		// 	pool_id: pool.poolId,
-		// 	arc200_id: pool.arc200Asset.assetId,
-		// 	arc200_symbol: pool.arc200Asset.symbol,
-		// };
-
-		// if (action === 'add') {
-		// 	const algoAmount = BigInt(Math.floor(inputTokenA * tokenA.unit));
-		// 	const arc200Amount = BigInt(Math.floor(inputTokenB * tokenB.unit));
-		// 	const txnId = await algoArc200PoolConnector.invoke('mint', algoAmount, arc200Amount);
-		// 	pageContentRefresh(0);
-		// } else if (action === 'remove') {
-		// 	const lptAmount = BigInt(Math.floor(inputTokenLpt * 1e6));
-		// 	const txnId = await algoArc200PoolConnector.invoke('burn', lptAmount);
-		// 	pageContentRefresh(0);
-		// }
+		// TODO
 		disabled = prev;
 	}
 
@@ -268,7 +250,6 @@
 						openModal(ConnectWallet, {});
 					}
 				}}
-				handleTokenChange={(token, index) => setSelectedToken(token, index)}
 			/>
 		</ChangeLiquidity>
 	</BalanceSubscriber>

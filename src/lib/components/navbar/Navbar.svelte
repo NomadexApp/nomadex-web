@@ -2,11 +2,10 @@
 	import Logo from '$lib/components/logo/Logo.svelte';
 	import MdAccountBalanceWallet from '$lib/icons/MdAccountBalanceWallet.svelte';
 	import { getStores } from '$app/stores';
-	import UseWallet, { connectedAccount, walletDisconnect } from '$lib/UseWallet.svelte';
+	import UseWallet, { connectedAccount, walletDisconnect } from '$lib/components/UseWallet.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
-	import { lastActiveAnalyticsPair, lastActiveLimitOrderPair, lastActiveSwapPair } from '$lib/stores';
-	import { addNotification } from '$lib/Notify.svelte';
+	import { addNotification } from '$lib/components/Notify.svelte';
 	import { getAccountBalance } from '$lib/stores/onchain';
 
 	const { page } = getStores();
@@ -25,12 +24,7 @@
 		<div class="space hidden sm:block" />
 		<ul>
 			<li class="first">
-				<a
-					class:active={$page.url.pathname.startsWith('/swap/')}
-					href="/swap/"
-				>
-					Swap
-				</a>
+				<a class:active={$page.url.pathname.startsWith('/swap/')} href="/swap/"> Swap </a>
 			</li>
 
 			<li>
@@ -42,21 +36,11 @@
 			</li>
 
 			<li>
-				<a
-					class:active={$page.url.pathname.startsWith('/limit')}
-					href="/limit/_/buy"
-				>
-					Limit
-				</a>
+				<a class:active={$page.url.pathname.startsWith('/limit')} href="/limit/_/buy"> Limit </a>
 			</li>
 
 			<li>
-				<a
-					class:active={$page.url.pathname.startsWith('/analytics')}
-					href="/analytics/"
-				>
-					Analytics
-				</a>
+				<a class:active={$page.url.pathname.startsWith('/analytics')} href="/analytics/"> Analytics </a>
 			</li>
 		</ul>
 		<div class="actions ml-auto flex gap-2">
@@ -79,18 +63,12 @@
 						{$connectedAccount.slice(0, 3)}...{$connectedAccount.slice(-3)}
 					</span>
 				</span>
-				<button
-					class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary"
-					on:click={() => walletDisconnect()}
-				>
+				<button class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary" on:click={() => walletDisconnect()}>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Disconnect
 				</button>
 			{:else}
-				<button
-					class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary"
-					on:click={() => openModal(ConnectWallet, {})}
-				>
+				<button class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary" on:click={() => openModal(ConnectWallet, {})}>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Connect Wallet
 				</button>

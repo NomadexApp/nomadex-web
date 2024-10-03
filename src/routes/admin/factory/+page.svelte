@@ -1,7 +1,7 @@
 <script lang="ts">
 	import algosdk from 'algosdk';
-	import { connectedAccount, getTransactionSignerAccount } from '$lib/UseWallet.svelte';
-	import { nodeClientAllowsCompile } from '$lib/_shared';
+	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
+	import { nodeClient } from '$lib/_shared';
 	import { PoolFactoryClient } from '../../../contracts/clients/PoolFactoryClient';
 	import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';
 	import { contracts } from '$lib';
@@ -20,7 +20,7 @@
 				id: appId,
 				sender: signer,
 			},
-			nodeClientAllowsCompile
+			nodeClient
 		);
 
 		if (appId) {
@@ -44,7 +44,7 @@
 					id: appId,
 					sender: signer,
 				},
-				nodeClientAllowsCompile
+				nodeClient
 			);
 
 			await newClient.appClient.fundAppAccount(new AlgoAmount({ algos: 0.2 }));

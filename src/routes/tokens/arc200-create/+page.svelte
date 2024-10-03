@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
-	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
+	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/components/UseWallet.svelte';
+	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { SmartAssetClient } from '../../../contracts/clients/SmartAssetClient';
 	import { goto } from '$app/navigation';
-	import { addNotification } from '$lib/Notify.svelte';
+	import { addNotification } from '$lib/components/Notify.svelte';
 	import { knownTokens } from '$lib';
 
 	let manager = $connectedAccount;
@@ -41,7 +41,7 @@
 					resolveBy: 'id',
 					sender: getTransactionSignerAccount(),
 				},
-				nodeClientAllowsCompile
+				nodeClient
 			);
 
 			remove = addNotification('pending', 'Deploying token contract');
@@ -81,7 +81,6 @@
 
 			remove();
 			addNotification('success', `Created token ${appId}`, 10000);
-			// await saveArc200TokenToList(symbol, appId, decimals);
 			goto(`/tokens/arc200-${appId}`);
 		} catch (e) {
 			console.error((<Error>e).message);
@@ -109,13 +108,7 @@
 		<div class="br" />
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Manager Adress:</div>
-			<input
-				class="input input-secondary bg-[#00000040]"
-				type="text"
-				on:keypress|preventDefault
-				on:paste|preventDefault
-				bind:value={$connectedAccount}
-			/>
+			<input class="input input-secondary bg-[#00000040]" type="text" on:keypress|preventDefault on:paste|preventDefault bind:value={$connectedAccount} />
 		</div>
 		{#if !algosdk.isValidAddress(manager)}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
@@ -132,33 +125,18 @@
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Decimals:</div>
-			<input
-				class="input input-secondary bg-[#00000040]"
-				type="number"
-				max={18}
-				min={0}
-				step={1}
-				bind:value={decimals}
-			/>
+			<input class="input input-secondary bg-[#00000040]" type="number" max={18} min={0} step={1} bind:value={decimals} />
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Total Supply</div>
-			<input
-				class="input input-secondary bg-[#00000040]"
-				type="number"
-				min={0}
-				max={2 ** 64}
-				step={1}
-				bind:value={totalSupply}
-			/>
+			<input class="input input-secondary bg-[#00000040]" type="number" min={0} max={2 ** 64} step={1} bind:value={totalSupply} />
 		</div>
 		<div>
 			Total Supply: {totalSupply.toLocaleString('en')}{decimals ? '.' : ''}{Array(decimals).fill('0').join('')}
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
-			<button
-				class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}"
-				on:click={isValid && $connectedAccount ? createArc200Token : () => {}}>Create ARC200 Token</button
+			<button class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}" on:click={isValid && $connectedAccount ? createArc200Token : () => {}}
+				>Create ARC200 Token</button
 			>
 		</div>
 	</div>

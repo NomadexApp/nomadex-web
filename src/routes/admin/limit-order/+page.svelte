@@ -1,6 +1,6 @@
-<script lang="ts">
-	import { connectedAccount, getTransactionSignerAccount } from '$lib/UseWallet.svelte';
-	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
+<!-- <script lang="ts">
+	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
+	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { LimitOrders001Client } from '../../../contracts/clients/LimitOrders001Client';
 	import { onMount } from 'svelte';
@@ -31,7 +31,7 @@
 				id: appId,
 				sender: signer,
 			},
-			nodeClientAllowsCompile
+			nodeClient
 		);
 
 		if (appId) {
@@ -55,7 +55,7 @@
 					id: appId,
 					sender: signer,
 				},
-				nodeClientAllowsCompile
+				nodeClient
 			);
 
 			await newClient.appClient.fundAppAccount(new AlgoAmount({ algos: 0.2 }));
@@ -181,4 +181,4 @@
 {/if}
 
 <style>
-</style>
+</style> -->

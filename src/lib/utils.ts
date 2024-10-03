@@ -1,93 +1,5 @@
-import algosdk from 'algosdk';
-import Contract from 'arc200js';
-import { indexerClient, nodeClient } from './_shared';
 import { goto } from '$app/navigation';
 import { writable } from 'svelte/store';
-
-export class Arc200Interface {
-	static async arc200_name(appId: number) {
-		const contract = new Contract(appId, nodeClient, indexerClient);
-		const response = await contract.arc200_name();
-		if (response.success) {
-			return response.returnValue;
-		} else {
-			throw Error('failed to fetch arc200 name');
-		}
-	}
-
-	static async arc200_symbol(appId: number) {
-		const contract = new Contract(appId, nodeClient, indexerClient);
-		const response = await contract.arc200_symbol();
-		if (response.success) {
-			return response.returnValue;
-		} else {
-			throw Error('failed to fetch arc200 symbol');
-		}
-	}
-
-	static async arc200_totalSupply(appId: number) {
-		const contract = new Contract(appId, nodeClient, indexerClient);
-		const response = await contract.arc200_totalSupply();
-		if (response.success) {
-			return response.returnValue;
-		} else {
-			throw Error('failed to fetch arc200 total supply');
-		}
-	}
-
-	static async arc200_decimals(appId: number) {
-		const contract = new Contract(appId, nodeClient, indexerClient);
-		const response = await contract.arc200_decimals();
-		if (response.success) {
-			return response.returnValue;
-		} else {
-			throw Error('failed to fetch arc200 decimals');
-		}
-	}
-
-	static async arc200_balanceOf(appId: number, owner: string) {
-		const contract = new Contract(appId, nodeClient, indexerClient);
-		const response = await contract.arc200_balanceOf(owner);
-		if (response.success) {
-			return response.returnValue;
-		} else {
-			throw Error('failed to fetch arc200 balance');
-		}
-	}
-
-	static async arc200_transfer(appId: number, from: string, addrTo: string, amt: bigint) {
-		const contract = new Contract(appId, nodeClient, indexerClient, {
-			acc: { addr: from, sk: Uint8Array.from([]) },
-			simulate: true,
-		});
-		const res: any = await contract.arc200_transfer(addrTo, amt, true, false);
-		return <algosdk.Transaction[]>(
-			res.txns?.map((txn) => algosdk.decodeUnsignedTransaction(Buffer.from(txn, 'base64'))).filter(Boolean)
-		);
-	}
-
-	static async arc200_transferFrom(appId: number, from: string, addrFrom: string, addrTo: string, amt: bigint) {
-		const contract = new Contract(appId, nodeClient, indexerClient, {
-			acc: { addr: from, sk: Uint8Array.from([]) },
-			simulate: true,
-		});
-		const res: any = await contract.arc200_transferFrom(addrFrom, addrTo, amt, true, false);
-		return <algosdk.Transaction[]>(
-			res.txns?.map((txn) => algosdk.decodeUnsignedTransaction(Buffer.from(txn, 'base64'))).filter(Boolean)
-		);
-	}
-
-	static async arc200_approve(appId: number, from: string, addrTo: string, amt: bigint) {
-		const contract = new Contract(appId, nodeClient, indexerClient, {
-			acc: { addr: from, sk: Uint8Array.from([]) },
-			simulate: true,
-		});
-		const res: any = await contract.arc200_approve(addrTo, amt, true, false);
-		return <algosdk.Transaction[]>(
-			res.txns?.map((txn) => algosdk.decodeUnsignedTransaction(Buffer.from(txn, 'base64'))).filter(Boolean)
-		);
-	}
-}
 
 export async function hardGoto(target: string) {
 	goto(`/loading?from=${location.pathname}&at=${Date.now()}`, { replaceState: true });
@@ -145,15 +57,5 @@ export function timeAgo(timestamp: number): string {
 	} else {
 		const years = Math.floor(seconds / 31536000);
 		return `${years}yr${years !== 1 ? 's' : ''} ago`;
-	}
-}
-
-
-export function getLastTxnId(txns: Uint8Array[]) {
-	txns = (txns || <Uint8Array[]>[]).filter(Boolean);
-	const txn = txns?.slice(-1)?.[0];
-	if (txn) {
-		const decodedTxn = algosdk.decodeSignedTransaction(txn);
-		return decodedTxn.txn.txID();
 	}
 }

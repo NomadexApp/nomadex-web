@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { contracts, knownTokens, TokenType, type Token } from '$lib';
-	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
+	import { nodeClient } from '$lib/_shared';
 	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
-	import { getTransactionSignerAccount } from '$lib/UseWallet.svelte';
+	import { getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
 	import { PoolFactoryClient } from '../../../contracts/clients/PoolFactoryClient';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
@@ -31,7 +31,7 @@
 				resolveBy: 'id',
 				sender: signer,
 			},
-			nodeClientAllowsCompile
+			nodeClient
 		);
 
 		await client.setFee({
@@ -49,7 +49,7 @@
 				resolveBy: 'id',
 				sender: signer,
 			},
-			nodeClientAllowsCompile
+			nodeClient
 		);
 		const aType = tokenA.type === TokenType.Default ? 0 : tokenA.type === TokenType.ASA ? 1 : tokenA.type === TokenType.ARC200 ? 2 : -1;
 

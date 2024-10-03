@@ -1,10 +1,10 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { type Token, knownTokens, TokenType, knownPools, contracts } from '$lib';
 	import Dropdown from '$lib/Dropdown.svelte';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 	import { onNumberKeyPress } from '$lib/inputs';
 	import MdSwapVert from '$lib/icons/MdSwapVert.svelte';
@@ -203,4 +203,4 @@
 			opacity: 1;
 		}
 	}
-</style>
+</style> -->

@@ -30,5 +30,10 @@ export class SmartAsset extends Contract.extend(Arc200, Ownable) {
     assert(!this.initialized.value && !this.balances(this.txn.sender).exists, 'already initialized');
     this.initialized.value = true;
     this.balances(this.txn.sender).value = this.totalSupply.value;
+    this.arc200_Transfer.log({
+      from: globals.zeroAddress,
+      to: this.txn.sender,
+      value: this.totalSupply.value
+    });
   }
 }

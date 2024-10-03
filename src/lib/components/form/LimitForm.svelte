@@ -3,7 +3,7 @@
 	import ActionButton from '$lib/components/form/ActionButton.svelte';
 	import FormTitle from '$lib/components/form/FormTitle.svelte';
 	import SwapInfo from '$lib/components/form/SwapInfo.svelte';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import type { Token } from '$lib';
 
 	export let tokenABalance: number | bigint = 0n;

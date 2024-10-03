@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getSwapEvents, type SwapTxn, getDepositEvents } from '$lib/events';
+	import { getSwapEvents, type SwapTxn, getDepositEvents } from '$lib/utils/events';
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
 	import { browser } from '$app/environment';
 	import { TokenType, knownPools, type Token, knownTokens, type Pool } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { convertDecimals } from '$lib/numbers';
-	import { openModal } from './components/modal/Modal.svelte';
-	import SelectTokenModal from './components/modal/SelectTokenModal.svelte';
-	import { pageContentRefresh } from './utils';
+	import { convertDecimals } from '$lib/utils/numbers';
+	import { openModal } from './modal/Modal.svelte';
+	import SelectTokenModal from './modal/SelectTokenModal.svelte';
+	import { pageContentRefresh } from '../utils';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);

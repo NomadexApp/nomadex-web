@@ -1,6 +1,6 @@
 import { nodeClient } from '$lib/_shared';
+import { MySmartAsset } from '$lib/MySmartAsset';
 import { readable, writable } from 'svelte/store';
-import { Arc200Interface } from '$lib/utils';
 
 type AppState = {
 	appId: number;
@@ -145,7 +145,7 @@ export function watchArc200Balance(
 
 	const update = async () => {
 		try {
-			const balance = await Arc200Interface.arc200_balanceOf(appId, address);
+			const balance = await MySmartAsset.from(appId).arc200BalanceOf(address);
 			if (typeof balance === 'bigint') {
 				store.set(balance);
 			}
@@ -175,7 +175,7 @@ export function watchPoolTotalSupply(appId: number, duration = 15_000): ReturnTy
 
 	const update = async () => {
 		try {
-			const supply = await Arc200Interface.arc200_totalSupply(appId);
+			const supply = await MySmartAsset.from(appId).arc200TotalSupply();
 			if (typeof supply === 'bigint') {
 				store.set(supply);
 			}

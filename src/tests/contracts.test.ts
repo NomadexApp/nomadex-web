@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { nodeClientAllowsCompile } from "$lib/_shared";
+import { nodeClient } from "$lib/_shared";
 import algosdk from "algosdk";
 import { PoolFactoryClient } from "../contracts/clients/PoolFactoryClient";
 import { SCALE } from "../contracts/pool/constants";
@@ -23,7 +23,7 @@ async function deployFactory() {
         id: 0,
         resolveBy: 'id',
         sender: account
-    }, nodeClientAllowsCompile);
+    }, nodeClient);
 
     console.log('deploying factory...');
     const appCreateResponse = await factory.create.createApplication({
@@ -51,12 +51,12 @@ async function createAsa(symbol: string) {
         freeze: account.addr,
         assetURL: 'http://localhost',
         defaultFrozen: false,
-        suggestedParams: await nodeClientAllowsCompile.getTransactionParams().do(),
+        suggestedParams: await nodeClient.getTransactionParams().do(),
     });
 
-    await nodeClientAllowsCompile.sendRawTransaction([txn.signTxn(account.sk)]).do();
+    await nodeClient.sendRawTransaction([txn.signTxn(account.sk)]).do();
     console.log('Txn:', txn.txID());
-    let resp = await algosdk.waitForConfirmation(nodeClientAllowsCompile, txn.txID(), 3);
+    let resp = await algosdk.waitForConfirmation(nodeClient, txn.txID(), 3);
     const asaId = resp['asset-index'];
 
     console.log('Craeted ASA:', asaId);
@@ -80,7 +80,7 @@ async function createPool(factoryId: number, factory: PoolFactoryClient, alphaId
                 from: account.addr,
                 to: algosdk.getApplicationAddress(factoryId),
                 amount: 2_000_000,
-                suggestedParams: await nodeClientAllowsCompile.getTransactionParams().do(),
+                suggestedParams: await nodeClient.getTransactionParams().do(),
             }),
         },
         {
@@ -108,14 +108,14 @@ async function testAlgoAsaLiquidity(poolId: number, pool: PoolClient, asaId: num
             from: account.addr,
             to: algosdk.getApplicationAddress(Number(poolId)),
             amount: 1_000_000,
-            suggestedParams: await nodeClientAllowsCompile.getTransactionParams().do(),
+            suggestedParams: await nodeClient.getTransactionParams().do(),
         }),
         betaTxn: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
             assetIndex: asaId,
             from: account.addr,
             to: algosdk.getApplicationAddress(Number(poolId)),
             amount: 1_000_000,
-            suggestedParams: await nodeClientAllowsCompile.getTransactionParams().do(),
+            suggestedParams: await nodeClient.getTransactionParams().do(),
         })
     }, { sendParams: { populateAppCallResources: true } });
 
@@ -139,14 +139,14 @@ async function testAsaAsaLiquidity(poolId: number, pool: PoolClient, asaId: numb
             from: account.addr,
             to: algosdk.getApplicationAddress(Number(poolId)),
             amount: 1_000_000,
-            suggestedParams: await nodeClientAllowsCompile.getTransactionParams().do(),
+            suggestedParams: await nodeClient.getTransactionParams().do(),
         }),
         betaTxn: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
             assetIndex: asaId2,
             from: account.addr,
             to: algosdk.getApplicationAddress(Number(poolId)),
             amount: 1_000_000,
-            suggestedParams: await nodeClientAllowsCompile.getTransactionParams().do(),
+            suggestedParams: await nodeClient.getTransactionParams().do(),
         })
     }, { sendParams: { populateAppCallResources: true } });
 
@@ -162,7 +162,7 @@ async function testAsaAsaLiquidity(poolId: number, pool: PoolClient, asaId: numb
 }
 
 async function main() {
-    console.log('Balance:', (await nodeClientAllowsCompile.accountInformation(account.addr).do()).amount / 1e6);
+    console.log('Balance:', (await nodeClient.accountInformation(account.addr).do()).amount / 1e6);
 
     const factoryId = await deployFactory();
 
@@ -170,7 +170,7 @@ async function main() {
         id: factoryId,
         resolveBy: 'id',
         sender: account
-    }, nodeClientAllowsCompile);
+    }, nodeClient);
 
     const asa1Id = await createAsa('ASA1');
     const asa2Id = await createAsa('ASA2');
@@ -181,7 +181,7 @@ async function main() {
         id: Number(pool1Id),
         resolveBy: 'id',
         sender: account
-    }, nodeClientAllowsCompile);
+    }, nodeClient);
 
     await testAlgoAsaLiquidity(pool1Id, pool1, asa1Id);
 
@@ -191,7 +191,7 @@ async function main() {
         id: Number(pool2Id),
         resolveBy: 'id',
         sender: account
-    }, nodeClientAllowsCompile);
+    }, nodeClient);
 
     await testAsaAsaLiquidity(pool2Id, pool2, asa1Id, asa2Id);
 
@@ -203,7 +203,7 @@ async function main() {
             from: account.addr,
             to: algosdk.getApplicationAddress(Number(pool2Id)),
             amount: 1_000_000,
-            suggestedParams: await nodeClientAllowsCompile.getTransactionParams().do(),
+            suggestedParams: await nodeClient.getTransactionParams().do(),
         }),
         minBetaAmount: 100_000
     }, { sendParams: { populateAppCallResources: true } });
@@ -218,7 +218,7 @@ async function main() {
             from: account.addr,
             to: algosdk.getApplicationAddress(Number(pool2Id)),
             amount: Number(swapResp1.return),
-            suggestedParams: await nodeClientAllowsCompile.getTransactionParams().do(),
+            suggestedParams: await nodeClient.getTransactionParams().do(),
         }),
         minAlphaAmount: 100_000
     }, { sendParams: { populateAppCallResources: true } });

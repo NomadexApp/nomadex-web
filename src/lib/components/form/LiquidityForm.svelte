@@ -3,11 +3,9 @@
 	import ActionButton from '$lib/components/form/ActionButton.svelte';
 	import FormTitle from '$lib/components/form/FormTitle.svelte';
 	import SwapInfo from '$lib/components/form/SwapInfo.svelte';
-	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
-	import { openModal } from '../modal/Modal.svelte';
-	import { knownTokens, type Pool, type Token } from '$lib';
-	import { readableNumber } from '$lib/CurrencyNumber.svelte';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { type Pool, type Token } from '$lib';
+	import { readableNumber } from '$lib/components/CurrencyNumber.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 
 	export let tokenLptBalance: number | bigint = 0n;
@@ -28,7 +26,6 @@
 	export let onInputTokenA = () => {};
 	export let onInputTokenB = () => {};
 	export let handleSubmit = () => {};
-	export let handleTokenChange: (token: Token, index: number) => void = () => {};
 </script>
 
 <div class="form">

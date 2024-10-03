@@ -3,8 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { pageContentRefresh } from '$lib/utils';
-	import { calculateInTokens, calculateOutTokens } from '$lib/howMuch';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { calculateInTokens, calculateOutTokens } from '$lib/utils/howMuch';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import SwapForm from '$lib/components/form/SwapForm.svelte';
 	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';

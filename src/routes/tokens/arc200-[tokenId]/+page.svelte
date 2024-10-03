@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { connectedAccount, getTransactionSignerAccount } from '$lib/UseWallet.svelte';
-	import { nodeClient } from '$lib/_shared';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
-	import { SmartAssetClient } from '../../../contracts/clients/SmartAssetClient';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import Contract from 'arc200js';
 	import { goto } from '$app/navigation';
-	import { knownPools, knownTokens, saveArc200TokenToList } from '$lib';
+	import { MySmartAsset } from '$lib/MySmartAsset';
 
 	let appId = Number($page.params.tokenId);
 	let currentManager = '';
@@ -21,34 +18,17 @@
 	onMount(async () => {
 		loading = true;
 		try {
-			const client = new SmartAssetClient(
-				{
-					id: appId,
-					resolveBy: 'id',
-					sender: getTransactionSignerAccount(),
-				},
-				nodeClient
-			);
+			const client = new MySmartAsset(appId);
 
-			const contract = new Contract(appId, nodeClient, undefined);
+			name = await client.arc200Name();
 
-			const arc200_name = await contract.arc200_name();
-			name = arc200_name.success ? arc200_name.returnValue : '';
+			symbol = await client.arc200Symbol();
 
-			const arc200_symbol = await contract.arc200_symbol();
-			symbol = arc200_symbol.success ? arc200_symbol.returnValue : '';
+			decimals = await client.arc200Decimals();
 
-			const arc200_decimals = await contract.arc200_decimals();
-			decimals = arc200_decimals.success ? Number(arc200_decimals.returnValue) : 0;
+			totalSupply = Number(await client.arc200TotalSupply());
 
-			const arc200_totalSupply = await contract.arc200_totalSupply();
-			totalSupply = arc200_totalSupply.success ? Number(arc200_totalSupply.returnValue / 10n ** BigInt(decimals)) : 0;
-
-			const state = await client.getGlobalState();
-			if (state.warden) {
-				manager = algosdk.encodeAddress(state.warden.asByteArray());
-				currentManager = manager;
-			}
+			manager = await client.manager();
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -57,10 +37,6 @@
 	});
 
 	async function createVoiPool() {
-		const token = $knownTokens.find((tok) => tok.id === appId);
-		if (!token) {
-			await saveArc200TokenToList(symbol, appId, decimals);
-		}
 		goto(`/pools/VOI-${symbol}`);
 	}
 </script>
@@ -71,13 +47,7 @@
 		<div class="br" />
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Arc200 Token Id:</div>
-			<input
-				class="input input-secondary bg-[#00000040]"
-				on:keypress|preventDefault
-				on:paste|preventDefault
-				type="number"
-				value={appId}
-			/>
+			<input class="input input-secondary bg-[#00000040]" on:keypress|preventDefault on:paste|preventDefault type="number" value={appId} />
 		</div>
 
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
@@ -112,7 +82,7 @@
 			{/if}
 		{/if}
 
-		{#if $connectedAccount && symbol}
+		<!-- {#if $connectedAccount && symbol}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
 				<button class="btn btn-primary" class:btn-outline={loading} disabled={loading} on:click={createVoiPool}>
 					{#if $knownPools.find((pool) => pool.arc200Asset.assetId === appId)}
@@ -123,7 +93,7 @@
 					VOI/{symbol} Pool
 				</button>
 			</div>
-		{/if}
+		{/if} -->
 	</div>
 </section>
 

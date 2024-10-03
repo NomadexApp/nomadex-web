@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
-	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
+	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/components/UseWallet.svelte';
+	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
 	import { SmartAssetClient } from '../../../contracts/clients/SmartAssetClient';
 	import { goto } from '$app/navigation';
-	import { addNotification } from '$lib/Notify.svelte';
+	import { addNotification } from '$lib/components/Notify.svelte';
 	import { knownTokens } from '$lib';
 
 	let name = '';
@@ -64,7 +64,6 @@
 
 			remove();
 			addNotification('success', `Created token ${appId}`, 10000);
-			// await saveArc200TokenToList(symbol, appId, decimals);
 			goto(`/tokens/asa-${appId}`);
 		} catch (e) {
 			console.error((<Error>e).message);

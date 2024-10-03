@@ -3,13 +3,12 @@
 	import { contracts, knownTokens, TokenType, type Token } from '$lib';
 	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
-	import { convertDecimals } from '$lib/numbers';
+	import { convertDecimals } from '$lib/utils/numbers';
 	import { getStores } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import PoolChartContext from '$lib/PoolChartContext.svelte';
 	import { lastActiveLimitOrderPair } from '$lib/stores';
-	import LimitOrder from '$lib/LimitOrder.svelte';
+	import LimitOrder from '$lib/components/LimitOrder.svelte';
 
 	const { page } = getStores();
 	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);
@@ -49,15 +48,13 @@
 		try {
 			const { boxes: boxesNames } = await nodeClient.getApplicationBoxes(contracts.orderbookLimitOrderApp).do();
 
-			const boxes = await Promise.all(
-				boxesNames.map((box) => nodeClient.getApplicationBoxByName(contracts.orderbookLimitOrderApp, box.name).do())
-			);
+			const boxes = await Promise.all(boxesNames.map((box) => nodeClient.getApplicationBoxByName(contracts.orderbookLimitOrderApp, box.name).do()));
 
 			limitOrders = boxes
 				.map((box) => {
-					const [maker, arc200Id, algoAmount, arc200Amount, isDirectionFromArc200ToAlgo] = <
-						[string, bigint, bigint, bigint, bigint]
-					>algosdk.ABITupleType.from('(address,uint64,uint64,uint256,uint8)').decode(box.value);
+					const [maker, arc200Id, algoAmount, arc200Amount, isDirectionFromArc200ToAlgo] = <[string, bigint, bigint, bigint, bigint]>(
+						algosdk.ABITupleType.from('(address,uint64,uint64,uint256,uint8)').decode(box.value)
+					);
 					return {
 						orderId: Number('0x' + Buffer.from(box.name).toString('hex')),
 						name: box.name,
@@ -106,8 +103,7 @@
 				orders[order.arc200Id].buyOrders = [...(orders[order.arc200Id].buyOrders ?? []), order];
 			}
 		}
-		const getPrice = (o: (typeof limitOrders)[0]) =>
-			Number(convertDecimals(o.arc200Amount, o.arc200Token.decimals, 6)) / o.algoAmount;
+		const getPrice = (o: (typeof limitOrders)[0]) => Number(convertDecimals(o.arc200Amount, o.arc200Token.decimals, 6)) / o.algoAmount;
 
 		for (const key in orders) {
 			const sellOrders = orders[key].sellOrders.sort((a, b) => b.orderId - a.orderId);
@@ -156,10 +152,7 @@
 			{@const sellOrders = sortedLimitOrders[key].sellOrders}
 			{@const buyOrders = sortedLimitOrders[key].buyOrders}
 			<div class="flex flex-col text-sm max-h-[700px]">
-				<div
-					class="half flex-grow flex flex-col py-1 justify-start max-h-[215px] overflow-y-scroll"
-					use:scrollIntoView
-				>
+				<div class="half flex-grow flex flex-col py-1 justify-start max-h-[215px] overflow-y-scroll" use:scrollIntoView>
 					{#each Array(Math.max(buyOrders.length, 7 - buyOrders.length))
 						.fill(undefined)
 						.concat(buyOrders) as limitOrder}

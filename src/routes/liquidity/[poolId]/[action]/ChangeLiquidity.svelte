@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { contracts, knownPools, TokenType, type Pool, type Token } from '$lib';
-	import { nodeClient, nodeClientAllowsCompile } from '$lib/_shared';
-	import { connectedAccount, getTransactionSignerAccount } from '$lib/UseWallet.svelte';
+	import { nodeClient } from '$lib/_shared';
+	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
 	import { PoolClient } from '../../../../contracts/clients/PoolClient';
-	import { convertDecimals } from '$lib/numbers';
+	import { convertDecimals } from '$lib/utils/numbers';
 	import { get } from 'svelte/store';
 	import { SmartAssetClient } from '../../../../contracts/clients/SmartAssetClient';
 	import { PoolFactoryClient } from '../../../../contracts/clients/PoolFactoryClient';
@@ -103,7 +103,7 @@
 				resolveBy: 'id',
 				sender: getTransactionSignerAccount(),
 			},
-			nodeClientAllowsCompile
+			nodeClient
 		);
 		await factoryClient.setPoolManager(
 			{
@@ -119,7 +119,7 @@
 				resolveBy: 'id',
 				sender: getTransactionSignerAccount(),
 			},
-			nodeClientAllowsCompile
+			nodeClient
 		);
 
 		const resp = await poolClient.update.updateApplication({});

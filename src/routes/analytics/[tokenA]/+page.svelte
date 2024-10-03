@@ -1,8 +1,8 @@
 <script lang="ts">
-	import PoolChartContext from '$lib/PoolChartContext.svelte';
-	import CurrencyNumber from '$lib/CurrencyNumber.svelte';
+	import PoolChartContext from '$lib/components/PoolChartContext.svelte';
+	import CurrencyNumber from '$lib/components/CurrencyNumber.svelte';
 	import { timeAgo } from '$lib/utils';
-	import { convertDecimals } from '$lib/numbers';
+	import { convertDecimals } from '$lib/utils/numbers';
 	import { lastActiveAnalyticsPair } from '$lib/stores';
 </script>
 

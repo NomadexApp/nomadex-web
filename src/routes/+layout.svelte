@@ -4,16 +4,15 @@
 	import Navbar from '$lib/components/navbar/Navbar.svelte';
 	import Footer from '$lib/components/footer/Footer.svelte';
 	import Modal, { component, props } from '$lib/components/modal/Modal.svelte';
-	import Notify from '$lib/Notify.svelte';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import Notify from '$lib/components/Notify.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import { pageContentRefresh, pageContentRefreshPending } from '$lib/utils';
 	import '$lib/stores/onchain';
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import '$lib/firebase';
 	import { arePoolsLoaded, getListOfArc200Tokens, knownTokens } from '$lib/index';
-	import Logo from '$lib/Logo.svelte';
+	import Logo from '$lib/components/Logo.svelte';
 
 	onMount(async () => {
 		getListOfArc200Tokens();

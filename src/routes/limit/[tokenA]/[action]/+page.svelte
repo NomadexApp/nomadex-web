@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { onMount } from 'svelte';
 	import { contracts, knownTokens, TokenType, type Token } from '$lib';
 	import { nodeClient } from '$lib/_shared';
@@ -14,8 +14,8 @@
 	import { LimitOrderType, LimitOrders001ClientConnector } from '$lib/LimitOrderConnector';
 	import { pageContentRefresh } from '$lib/utils';
 	import { onChainStateWatcher, watchArc200Balance } from '$lib/stores/onchain';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import CurrencyNumber from '$lib/CurrencyNumber.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
+	import CurrencyNumber from '$lib/components/CurrencyNumber.svelte';
 	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
 	import Join from '$lib/components/join/Join.svelte';
@@ -436,4 +436,4 @@
 		width: 100%;
 		min-height: calc(100vh - 300px);
 	}
-</style>
+</style> -->

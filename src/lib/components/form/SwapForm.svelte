@@ -6,10 +6,9 @@
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import MdSwapVert from '$lib/icons/MdSwapVert.svelte';
-	import { TokenType, knownTokens, type Token } from '$lib';
-	import { readableNumber } from '$lib/CurrencyNumber.svelte';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
-	import { convertDecimals } from '$lib/numbers';
+	import { knownTokens, type Token } from '$lib';
+	import { readableNumber } from '$lib/components/CurrencyNumber.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 
 	export let tokenABalance: number | bigint = 0n;
 	export let tokenBBalance: number | bigint = 0n;

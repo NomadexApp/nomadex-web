@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { walletConnect } from '$lib/UseWallet.svelte';
+	import { walletConnect } from '$lib/components/UseWallet.svelte';
 	import QRCodeIcon from '$lib/icons/IoMdQrScanner.svelte';
 	import { WalletId } from '@txnlab/use-wallet';
 

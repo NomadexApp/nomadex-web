@@ -1,11 +1,11 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { onMount } from 'svelte';
 	import { contracts, knownTokens, type Token } from '$lib';
 	import type { AccountState } from '$lib/stores/onchain';
 	import { getUnnamedResourcesAccessedFromComposer, indexerClient, nodeClient } from '$lib/_shared';
 	import { writable } from 'svelte/store';
 	import algosdk from 'algosdk';
-	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/UseWallet.svelte';
+	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/components/UseWallet.svelte';
 	import Contract from 'arc200js';
 	import { LimitOrders001Client } from '../../../../contracts/clients/LimitOrders001Client';
 
@@ -200,4 +200,4 @@
 	:global(html) {
 		background-color: theme(colors.gray.100);
 	}
-</style>
+</style> -->

@@ -10,8 +10,8 @@
 
 	let searchText = '';
 
-	import PoolInfo from '$lib/PoolInfo.svelte';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import PoolInfo from '$lib/components/PoolInfo.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
 
 	import { onMount } from 'svelte';

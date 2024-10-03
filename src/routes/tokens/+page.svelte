@@ -4,7 +4,6 @@
 	import { onChainStateWatcher, type AccountState } from '$lib/stores/onchain';
 	import { goto } from '$app/navigation';
 	import algosdk from 'algosdk';
-	import { Arc200Interface } from '$lib/utils';
 
 	const poolsState: Record<string, AccountState> = {};
 

@@ -1648,6 +1648,22 @@ bootstrap:
 	byte 0x746f74616c5f737570706c79 // "total_supply"
 	app_global_get
 	box_put
+
+	// src/contracts/SmartAsset.algo.ts:33
+	// this.arc200_Transfer.log({
+	//       from: globals.zeroAddress,
+	//       to: this.txn.sender,
+	//       value: this.totalSupply.value
+	//     })
+	byte 0x7983c35c // arc200_Transfer(address,address,uint256)
+	global ZeroAddress
+	txn Sender
+	concat
+	byte 0x746f74616c5f737570706c79 // "total_supply"
+	app_global_get
+	concat
+	concat
+	log
 	retsub
 
 *create_NoOp:

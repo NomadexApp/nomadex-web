@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onNumberKeyPress } from '$lib/inputs';
+	import { onNumberKeyPress } from '$lib/utils/inputs';
 
 	export let pretext = '';
 	export let posttext = '';

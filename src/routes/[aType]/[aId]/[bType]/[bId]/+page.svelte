@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { type Token, knownTokens, knownPools, type Pool } from '$lib';
 	import { getStores } from '$app/stores';
-	import { connectedAccount } from '$lib/UseWallet.svelte';
+	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
 	import SwapPage from './SwapPage.svelte';
 	import BalanceSubscriber from '../../../../liquidity/[poolId]/[action]/BalanceSubscriber.svelte';
-	import { convertDecimals } from '$lib/numbers';
+	import { convertDecimals } from '$lib/utils/numbers';
 	import Swap from './Swap.svelte';
 
 	const { page } = getStores();
