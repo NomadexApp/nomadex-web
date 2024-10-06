@@ -153,7 +153,9 @@
 
 	let impact = 0;
 
-	// $: impact = Number((((poolTokenABalance * 0.99 + inputTokenA) / (poolTokenBBalance - inputTokenB) / ((poolTokenABalance * 0.99) / poolTokenBBalance) - 1) * 100 || 0).toFixed(2));
+	$: impact = Number(
+		(((poolTokenABalanceInRange + inputTokenA) / (poolTokenBBalanceInRange - inputTokenB) / (poolTokenABalanceInRange / poolTokenBBalanceInRange) - 1) * 100).toFixed(2)
+	);
 
 	let lastPoolArc200Balance = 0n;
 	let lastPoolAlgoBalance = 0;
