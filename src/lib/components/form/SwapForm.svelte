@@ -6,7 +6,7 @@
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import MdSwapVert from '$lib/icons/MdSwapVert.svelte';
-	import { knownTokens, type Token } from '$lib';
+	import { knownTokens, type Pool, type Token } from '$lib';
 	import { readableNumber } from '$lib/components/CurrencyNumber.svelte';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 
@@ -22,6 +22,7 @@
 	export let impact = 1;
 	export let tokenA: Token;
 	export let tokenB: Token;
+	export let pool: Pool;
 	export let disabled = false;
 	export let onInputTokenA = () => {};
 	export let onInputTokenB = () => {};
@@ -33,24 +34,28 @@
 
 	let swapInfo: [string, string][] = [];
 
-	$: swapInfo = [
-		[
-			'Pool balance',
-			`${readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString()} ${tokenA.symbol} / ${readableNumber(Number(poolTokenBBalance) || 0).toLocaleString()} ${tokenB.symbol}`,
-		],
-		['Min received', `${(tokenAInput && tokenBInput ? minReceived : 0).toLocaleString()} ${tokenB.symbol}`],
-		...(tokenAInput && tokenBInput
-			? [
-					<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.symbol}`],
-					<[string, string]>[
-						`Price of ${tokenA.symbol}`,
-						`${Number((Number(Math.floor((tokenBInput || 0) * 1e6)) / Number(Math.floor((tokenAInput || 0) * 1e6))).toFixed(4))} ${tokenB.symbol}`,
-					],
-			  ]
-			: []),
-		['Price impact', `${tokenAInput && tokenBInput ? impact : 0}%`],
-		['Slippage', `${slippage * 100}%`],
-	];
+	$: swapInfo = pool
+		? [
+				[
+					'Pool balance',
+					`${readableNumber(Number(poolTokenABalance ?? 0)).toLocaleString()} ${tokenA.symbol} / ${readableNumber(Number(poolTokenBBalance) || 0).toLocaleString()} ${
+						tokenB.symbol
+					}`,
+				],
+				['Min received', `${(tokenAInput && tokenBInput ? minReceived : 0).toLocaleString()} ${tokenB.symbol}`],
+				...(tokenAInput && tokenBInput
+					? [
+							<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.symbol}`],
+							<[string, string]>[
+								`Price of ${tokenA.symbol}`,
+								`${Number((Number(Math.floor((tokenBInput || 0) * 1e6)) / Number(Math.floor((tokenAInput || 0) * 1e6))).toFixed(4))} ${tokenB.symbol}`,
+							],
+					  ]
+					: []),
+				['Price impact', `${tokenAInput && tokenBInput ? impact : 0}%`],
+				['Slippage', `${slippage * 100}%`],
+		  ]
+		: [];
 </script>
 
 <div class="form pt-8">
@@ -60,6 +65,7 @@
 		posttext={`balance ${tokenABalance.toLocaleString()} ${tokenA.symbol}`}
 		token={tokenA.symbol}
 		showMax
+		disabled={!pool}
 		decimals={tokenA.decimals}
 		bind:value={tokenAInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
@@ -69,7 +75,6 @@
 			onInputTokenA();
 		}}
 		on:click={() => {
-			if (tokenA.id === 0) return;
 			openModal(SelectTokenModal, {
 				tokens: $knownTokens.filter((tok) => tok.id && tok.id !== tokenA.id),
 				handleSelect(token) {
@@ -87,12 +92,12 @@
 		pretext="You receive"
 		token={tokenB.symbol}
 		posttext={`balance ${tokenBBalance.toLocaleString()} ${tokenB.symbol}`}
+		disabled={!pool}
 		decimals={tokenB.decimals}
 		bind:value={tokenBInput}
 		on:keydown={(e) => disabled && e.preventDefault()}
 		on:keyup={onInputTokenB}
 		on:click={() => {
-			if (tokenB.id === 0) return;
 			openModal(SelectTokenModal, {
 				tokens: $knownTokens.filter((tok) => tok.id && tok.id !== tokenB.id),
 				handleSelect(token) {

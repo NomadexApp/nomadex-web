@@ -94,7 +94,7 @@ export async function getListOfArc200Tokens() {
 
 	knownPools.update((pools) => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId)));
 	knownTokens.update((toks) => {
-		const tokens = toks.slice(0, 1).concat(validTokens.toSorted((a, b) => {
+		const tokens = toks.slice(0, 0).concat(validTokens.toSorted((a, b) => {
 			return a.id - b.id;
 		}));
 		return tokens;

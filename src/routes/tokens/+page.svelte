@@ -43,7 +43,7 @@
 					on:keydown
 				>
 					<div class="flex justify-between">
-						<span class="flex w-full items-center gap-2">
+						<a href="/tokens/{token.id}/{token.type === TokenType.ARC200 ? 'smart' : token.type === TokenType.ASA ? 'asa' : ''}" class="flex w-full items-center gap-2">
 							<span class="name text-lg text-bold">
 								{#if token.id}
 									{token.symbol}
@@ -53,7 +53,7 @@
 							</span>
 							<span class="flex-grow" />
 							<span>{token.type}</span>
-						</span>
+						</a>
 
 						<!-- {#if token.type === TokenType.ARC200}
 							(arc200)

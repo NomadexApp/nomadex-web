@@ -25,7 +25,7 @@
 		for (const key in subscriptions) {
 			const token = subscriptions[key];
 			const addr = key.split(':')[0];
-			if (addr === 'undefined') continue;
+			if (!addr || addr === 'undefined') continue;
 
 			const unsub = setInterval(fetchBalance, duration * 1000);
 			fetchBalance();

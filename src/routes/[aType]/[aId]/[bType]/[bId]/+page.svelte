@@ -26,19 +26,17 @@
 		if (match) pool = match;
 	}
 
-	if (!pool || !tokenA || !tokenB) {
-		console.error('pool not found');
-	} else {
+	if (pool && tokenA && tokenB) {
 		[alphaToken, betaToken] = pool.assets;
 	}
 
-	$: poolTokenAKey = `${algosdk.getApplicationAddress(pool.poolId)}:${tokenA.id}`;
-	$: poolTokenBKey = `${algosdk.getApplicationAddress(pool.poolId)}:${tokenB.id}`;
+	$: poolTokenAKey = pool ? `${algosdk.getApplicationAddress(pool.poolId)}:${tokenA.id}` : '';
+	$: poolTokenBKey = pool ? `${algosdk.getApplicationAddress(pool.poolId)}:${tokenB.id}` : '';
 	$: userTokenAKey = `${$connectedAccount}:${tokenA.id}`;
 	$: userTokenBKey = `${$connectedAccount}:${tokenB.id}`;
 </script>
 
-{#if alphaToken && betaToken}
+{#if tokenA && tokenB}
 	<BalanceSubscriber
 		subscriptions={{
 			[userTokenAKey]: tokenA,

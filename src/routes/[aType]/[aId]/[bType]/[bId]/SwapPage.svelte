@@ -15,6 +15,7 @@
 	export let alphaToken: Token;
 	export let betaToken: Token;
 	export let pool: Pool;
+	betaToken;
 
 	export let userTokenABalanceInRange = 0;
 	export let userTokenBBalanceInRange = 0;
@@ -61,7 +62,7 @@
 	let timeout: NodeJS.Timeout;
 
 	async function onInputTokenA() {
-		if (!tokenA || !tokenB) return;
+		if (!tokenA || !tokenB || !pool) return;
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenB = 0;
@@ -86,7 +87,7 @@
 	}
 
 	async function onInputTokenB() {
-		if (!tokenA || !tokenB) return;
+		if (!tokenA || !tokenB || !pool) return;
 		clearTimeout(timeout);
 		disabled = true;
 		inputTokenA = 0;
@@ -111,7 +112,7 @@
 	}
 
 	async function swap() {
-		if (!tokenA || !tokenB) return;
+		if (!tokenA || !tokenB || !pool) return;
 		const prev = disabled;
 		disabled = true;
 		const tokenAAmount = Math.floor(inputTokenA * tokenA.unit);
@@ -155,9 +156,9 @@
 	// }
 </script>
 
-{#if alphaToken && betaToken}
+{#if tokenA && tokenB}
 	<SwapForm
-		disabled={!inputTokenB || !inputTokenA}
+		disabled={!inputTokenB || !inputTokenA || !pool}
 		tokenABalance={userTokenABalanceInRange}
 		tokenBBalance={userTokenBBalanceInRange}
 		poolTokenABalance={poolTokenABalanceInRange}
@@ -169,6 +170,7 @@
 		bind:slippage
 		{tokenA}
 		{tokenB}
+		{pool}
 		{onInputTokenA}
 		{onInputTokenB}
 		handleSwitchPlaces={() => {

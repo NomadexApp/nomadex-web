@@ -44,7 +44,7 @@
 	<section>
 		<Navbar />
 		<article>
-			{#if $arePoolsLoaded || true}
+			{#if $arePoolsLoaded}
 				<div class="w-full flex flex-col">
 					{#if $pageContentRefreshPending}
 						<section class="flex flex-col justify-center items-center h-full max-h-[70vh]">
@@ -70,13 +70,6 @@
 			</Modal>
 		{/if}
 	</section>
-{/if}
-{#if false}
-	<div class="testnet-overlay" style="">
-		<div style="display: block; width: 100px;" class="text-primary">
-			<Logo />
-		</div>
-	</div>
 {/if}
 
 <div class="page-background second" style={hueStyle} />
