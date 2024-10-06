@@ -6,7 +6,7 @@
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import MdSwapVert from '$lib/icons/MdSwapVert.svelte';
-	import { knownTokens, type Pool, type Token } from '$lib';
+	import { knownPools, knownTokens, type Pool, type Token } from '$lib';
 	import { readableNumber } from '$lib/components/CurrencyNumber.svelte';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 
@@ -64,7 +64,7 @@
 		pretext="You pay"
 		posttext={`balance ${tokenABalance.toLocaleString()} ${tokenA.symbol}`}
 		token={tokenA.symbol}
-		showMax
+		showMax={!!pool}
 		disabled={!pool}
 		decimals={tokenA.decimals}
 		bind:value={tokenAInput}
@@ -76,7 +76,7 @@
 		}}
 		on:click={() => {
 			openModal(SelectTokenModal, {
-				tokens: $knownTokens.filter((tok) => tok.id && tok.id !== tokenA.id),
+				tokens: $knownTokens.filter((tok) => tok.id !== tokenB.id),
 				handleSelect(token) {
 					handleTokenChange(token, 0);
 				},
@@ -99,7 +99,16 @@
 		on:keyup={onInputTokenB}
 		on:click={() => {
 			openModal(SelectTokenModal, {
-				tokens: $knownTokens.filter((tok) => tok.id && tok.id !== tokenB.id),
+				tokens: $knownPools
+					.map((p) => {
+						if (p.assets[0].id === p.assets[1].id) return;
+						if (p.assets[0].id === tokenA.id) {
+							return p.assets[1];
+						} else if (p.assets[1].id === tokenA.id) {
+							return p.assets[0];
+						}
+					})
+					.filter(Boolean),
 				handleSelect(token) {
 					handleTokenChange(token, 1);
 				},
