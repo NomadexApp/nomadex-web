@@ -12,6 +12,8 @@
 	import { SmartAssetClient } from '../../../../../contracts/clients/SmartAssetClient';
 	import { PoolClient } from '../../../../../contracts/clients/PoolClient';
 
+	export let onUpdate = () => {};
+
 	async function buildDepositTxn(pool: { id: number }, token: { id: number; type: TokenType }, amount: bigint) {
 		if (token.type === TokenType.Default) {
 			return algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -88,6 +90,7 @@
 			);
 		}
 
+		onUpdate();
 		return resp.return;
 	}
 </script>

@@ -57,7 +57,7 @@
 		{@const poolTokenABalanceInRange = Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6)) / 1e6}
 		{@const poolTokenBBalanceInRange = Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) / 1e6}
 
-		<Swap let:handleSwap>
+		<Swap let:handleSwap onUpdate={updateBalances}>
 			<SwapPage
 				{tokenA}
 				{tokenB}

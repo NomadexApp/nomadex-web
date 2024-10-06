@@ -185,7 +185,7 @@
 		{@const maxBalanceError = Number(inputTokenA) > userTokenABalanceInRange || Number(inputTokenB) > userTokenBBalanceInRange}
 		{@const maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError}
 
-		<ChangeLiquidity let:addLiquidity let:removeLiquidity>
+		<ChangeLiquidity let:addLiquidity let:removeLiquidity onUpdate={updateBalances}>
 			<LiquidityForm
 				{action}
 				{pool}

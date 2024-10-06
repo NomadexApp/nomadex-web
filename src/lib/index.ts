@@ -1,5 +1,8 @@
 import { PUBLIC_NETWORK } from '$env/static/public';
 import { get, writable } from 'svelte/store';
+import { PoolFactoryClient } from '../contracts/clients/PoolFactoryClient';
+import { nodeClient } from './_shared';
+import algosdk from 'algosdk';
 
 export enum TokenType {
 	Default = 0,
@@ -24,6 +27,7 @@ export type Pool = {
 };
 
 
+export const platformFee = writable<bigint>();
 export const knownTokens = writable<Token[]>([
 	{ symbol: 'VOI', id: 0, type: TokenType.Default, decimals: 6, unit: 1e6 },
 ]);
@@ -91,6 +95,17 @@ export async function getListOfArc200Tokens() {
 	})).filter(p => p.assets.reduce((a, r) => !!r && !!a, true));
 
 	console.log('Pools:', validPools);
+
+	const factory = new PoolFactoryClient({
+		id: contracts.poolFcatory,
+		resolveBy: 'id',
+	}, nodeClient);
+	const state = await factory.getGlobalState();
+	const buff = state.platformFee?.asByteArray();
+	if (!buff) return;
+	platformFee.set(<bigint>algosdk.ABIType.from('uint256').decode(buff));
+
+	console.log('Platform Fee:', get(platformFee));
 
 	knownPools.update((pools) => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId)));
 	knownTokens.update((toks) => {

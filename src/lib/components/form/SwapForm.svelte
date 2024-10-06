@@ -6,9 +6,10 @@
 	import SelectTokenModal from '$lib/components/modal/SelectTokenModal.svelte';
 	import { openModal } from '../modal/Modal.svelte';
 	import MdSwapVert from '$lib/icons/MdSwapVert.svelte';
-	import { knownPools, knownTokens, type Pool, type Token } from '$lib';
+	import { knownPools, knownTokens, platformFee, type Pool, type Token } from '$lib';
 	import { readableNumber } from '$lib/components/CurrencyNumber.svelte';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
+	import { SCALE } from '../../../contracts/pool/constants';
 
 	export let tokenABalance: number | bigint = 0n;
 	export let tokenBBalance: number | bigint = 0n;
@@ -29,6 +30,7 @@
 	export let handleSwitchPlaces = () => {};
 	export let handleSwap = () => {};
 	export let handleTokenChange: (token: Token, index: number) => void = () => {};
+	export let fee = 0;
 
 	let editingSlippage = false;
 
@@ -45,7 +47,7 @@
 				['Min received', `${(tokenAInput && tokenBInput ? minReceived : 0).toLocaleString()} ${tokenB.symbol}`],
 				...(tokenAInput && tokenBInput
 					? [
-							<[string, string]>['Fee', `${Number(((tokenBInput || 0) * 0.01).toFixed(4))} ${tokenB.symbol}`],
+							<[string, string]>['Fee', `${fee.toLocaleString()} ${tokenB.symbol}`],
 							<[string, string]>[
 								`Price of ${tokenA.symbol}`,
 								`${Number((Number(Math.floor((tokenBInput || 0) * 1e6)) / Number(Math.floor((tokenAInput || 0) * 1e6))).toFixed(4))} ${tokenB.symbol}`,

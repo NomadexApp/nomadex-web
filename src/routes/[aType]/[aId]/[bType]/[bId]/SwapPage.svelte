@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Token, type Pool } from '$lib';
+	import { type Token, type Pool, platformFee } from '$lib';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { pageContentRefresh } from '$lib/utils';
@@ -9,6 +9,7 @@
 	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
 	import type { SwapAlphaBetaOpts } from './Swap.svelte';
+	import { convertDecimals } from '$lib/utils/numbers';
 
 	export let tokenA: Token;
 	export let tokenB: Token;
@@ -30,6 +31,8 @@
 	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
 
 	let slippage = browser ? JSON.parse(localStorage.getItem('slippage') ?? '0.025') : 0.025;
+
+	let fee = 0;
 
 	$: browser && localStorage.setItem('slippage', JSON.stringify(slippage));
 
@@ -73,15 +76,22 @@
 			tm = timeout;
 		});
 		loading = true;
+		const retWithoutFee = calculateOutTokens(
+			BigInt(Math.floor(inputTokenA * tokenA.unit)),
+			poolTokenABalance, //
+			poolTokenBBalance, //
+			0n
+		);
 		const ret = calculateOutTokens(
 			BigInt(Math.floor(inputTokenA * tokenA.unit)),
 			poolTokenABalance, //
 			poolTokenBBalance, //
-			BigInt(pool.swapFee)
+			BigInt(pool.swapFee) + $platformFee
 		);
 		loading = false;
 		if (tm && tm === timeout) {
 			inputTokenB = Number((Number(ret) / tokenB.unit).toFixed(tokenB.decimals));
+			fee = Number(convertDecimals(retWithoutFee - ret, tokenB.decimals, 6)) / 1e6;
 			disabled = !inputTokenB;
 		}
 	}
@@ -99,14 +109,18 @@
 		});
 		loading = true;
 		const outAmount = BigInt(Math.floor(inputTokenB * tokenB.unit));
-		let ret = calculateInTokens(outAmount, poolTokenABalance, poolTokenBBalance, BigInt(pool.swapFee));
-		const outToken = calculateOutTokens(ret, poolTokenABalance, poolTokenBBalance, BigInt(pool.swapFee));
+		let ret = calculateInTokens(outAmount, poolTokenABalance, poolTokenBBalance, BigInt(pool.swapFee) + $platformFee);
+		let outToken = calculateOutTokens(ret, poolTokenABalance, poolTokenBBalance, BigInt(pool.swapFee) + $platformFee);
 		if (ret > 0n && outToken < outAmount) {
 			ret += 1n;
 		}
+		const outTokenWithoutFee = calculateOutTokens(ret, poolTokenABalance, poolTokenBBalance, 0n);
+		outToken = calculateOutTokens(ret, poolTokenABalance, poolTokenBBalance, BigInt(pool.swapFee) + $platformFee);
+
 		loading = false;
 		if (tm && tm === timeout) {
 			inputTokenA = Number((Math.ceil(Number(ret)) / tokenA.unit).toFixed(tokenA.decimals));
+			fee = Number(convertDecimals(outTokenWithoutFee - outToken, tokenB.decimals, 6)) / 1e6;
 			disabled = !inputTokenB;
 		}
 	}
@@ -154,11 +168,13 @@
 	// $: if ($poolArc200Balance && $currentPoolState.amount && ($poolArc200Balance !== lastPoolArc200Balance || $currentPoolState.amount !== lastPoolAlgoBalance)) {
 	// 	change();
 	// }
+
+	$: maxError = inputTokenA > userTokenABalanceInRange;
 </script>
 
 {#if tokenA && tokenB}
 	<SwapForm
-		disabled={!inputTokenB || !inputTokenA || !pool}
+		disabled={!inputTokenB || !inputTokenA || !pool || maxError}
 		tokenABalance={userTokenABalanceInRange}
 		tokenBBalance={userTokenBBalanceInRange}
 		poolTokenABalance={poolTokenABalanceInRange}
@@ -173,6 +189,7 @@
 		{pool}
 		{onInputTokenA}
 		{onInputTokenB}
+		{fee}
 		handleSwitchPlaces={() => {
 			if (!tokens) return;
 			updateRoute(tokenB, tokenA);
