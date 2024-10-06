@@ -1,5 +1,5 @@
 import { PUBLIC_NETWORK } from '$env/static/public';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 export enum TokenType {
 	Default = 0,
@@ -17,35 +17,23 @@ export type Token = {
 
 export type Pool = {
 	id: number;
-	type: TokenType.ARC200;
+	type: TokenType;
 	poolId: number;
 	assets: [Token, Token];
-	swapFee: number;
+	swapFee: string;
 };
 
 
 export const knownTokens = writable<Token[]>([
 	{ symbol: 'VOI', id: 0, type: TokenType.Default, decimals: 6, unit: 1e6 },
 ]);
-// { symbol: 'ARC200', id: 722730128, type: TokenType.ARC200, decimals: 6, unit: 1e6 },
-// { symbol: 'ASA', id: 722745795, type: TokenType.ASA, decimals: 6, unit: 1e6 },
-// { symbol: 'NEW', id: 722854721, type: TokenType.ASA, decimals: 6, unit: 1e6 },
 
-export const knownPools = writable<Pool[]>([
-]);
-// { id: 27705276, poolId: 27705276, swapFee: 1e12, arc200Asset: { symbol: 'VIA', assetId: 6779767, decimals: 6, unit: 1e6 } }
-// { id: 722854523, type: TokenType.ARC200, poolId: 722854523, swapFee: 2e12, assets: [get(knownTokens)[0], get(knownTokens)[1]], },
-// { id: 722854579, type: TokenType.ARC200, poolId: 722854579, swapFee: 2e12, assets: [get(knownTokens)[0], get(knownTokens)[2]], },
-// { id: 722854637, type: TokenType.ARC200, poolId: 722854637, swapFee: 2e12, assets: [get(knownTokens)[2], get(knownTokens)[1]], },
-// { id: 722854800, type: TokenType.ARC200, poolId: 722854800, swapFee: 2e12, assets: [get(knownTokens)[2], get(knownTokens)[3]], },
+export const knownPools = writable<Pool[]>([]);
 
 export const arePoolsLoaded = writable(false);
 
 export const contracts = {
-	orderbookLimitOrderApp: 26171479,
-	poolFcatory: 722854430,
-	arc200Token: 722730128,
-	asaToken: 722745795
+	poolFcatory: 2059,
 };
 
 export const contractsConstants = {
@@ -53,62 +41,60 @@ export const contractsConstants = {
 };
 
 export async function getListOfArc200Tokens() {
-	const tokensSnap: { id: number, symbol: string, decimals: number }[] = await (await fetch(`https://${PUBLIC_NETWORK}-rapi.nomadex.app/smart-assets`)).json();
+	const tokensSnap: { id: number, symbol: string, decimals: number, type: number }[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/tokens`)).json();
 	const tokens = tokensSnap.map((token) => {
 		return {
 			id: token.id,
 			symbol: token.symbol,
 			decimals: token.decimals,
+			type: token.type,
 		};
 	});
-	const validTokens: Token[] = tokens
+	const validTokens: Token[] = get(knownTokens).slice(0, 1).concat(tokens
 		.filter((token) => 0 <= token.decimals && token.decimals <= 18)
 		.map((token) => ({
 			id: token.id,
 			symbol: token.symbol,
-			type: TokenType.ARC200,
+			type: <TokenType>token.type,
 			decimals: token.decimals,
 			unit: 10 ** token.decimals,
-		}));
+		})));
+
+
 
 	console.log('Tokens:', validTokens);
 
-	// const poolsSnap: { pool_id: number, swap_fee: string, arc200_id: number }[] = await (await fetch('https://api.nomadex.app/pools')).json();
+	const poolsSnap: {
+		id: number,
+		alphaId: number,
+		alphaType: number,
+		betaId: number,
+		betaType: number,
+		swapFee: string
+	}[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools`)).json();
+	const pools = poolsSnap.map((pool) => {
+		return {
+			id: pool.id,
+			alphaId: pool.alphaId,
+			alphaType: pool.alphaType,
+			betaId: pool.betaId,
+			betaType: pool.betaType,
+			swapFee: pool.swapFee,
+		};
+	});
+	const validPools: Pool[] = pools.map((pool) => ({
+		id: pool.id,
+		poolId: pool.id,
+		swapFee: pool.swapFee,
+		type: TokenType.ARC200,
+		assets: <[Token, Token]>[pool.alphaId, pool.betaId].map(id => validTokens.find(t => t.id === id))
+	})).filter(p => p.assets.reduce((a, r) => !!r && !!a, true));
 
-	// const pools = poolsSnap.map((pool) => {
-	// 	return {
-	// 		id: pool.pool_id,
-	// 		arc200Asset: <Token>validTokens.find((token) => token.id === pool.arc200_id),
-	// 	};
-	// });
-	// const validPools: Pool[] = pools
-	// 	.filter((pool) => pool.arc200Asset)
-	// 	.map((token) => ({
-	// 		id: token.id,
-	// 		poolId: token.id,
-	// 		swapFee: 1_000_000_000_000,
-	// 		arc200Asset: {
-	// 			assetId: token.arc200Asset.id,
-	// 			symbol: token.arc200Asset.symbol,
-	// 			unit: token.arc200Asset.unit,
-	// 			decimals: token.arc200Asset.decimals,
-	// 		},
-	// 	}));
+	console.log('Pools:', validPools);
 
-	// console.log('Pools:', validPools);
-
-	// knownPools.update((pools) => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId)));
+	knownPools.update((pools) => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId)));
 	knownTokens.update((toks) => {
 		const tokens = toks.slice(0, 1).concat(validTokens.toSorted((a, b) => {
-			// const prefer = ['VIA', 'UNIT', 'POINTS', 'Tacos', 'NOM', 'ROCKET'];
-			// if (prefer.includes(a.symbol) && prefer.includes(b.symbol)) {
-			// 	return prefer.indexOf(a.symbol) - prefer.indexOf(b.symbol);
-			// } else if (prefer.includes(a.symbol)) {
-			// 	return -1;
-			// } else if (prefer.includes(b.symbol)) {
-			// 	return 1;
-			// }
-
 			return a.id - b.id;
 		}));
 		return tokens;

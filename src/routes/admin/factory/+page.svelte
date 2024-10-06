@@ -55,15 +55,15 @@
 </script>
 
 {#if owner === $connectedAccount}
-	<section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3 text-black">
+	<section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
 		<div class="h-full flex flex-col justify-start items-center gap-3 w-full">
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
 				<div>App Id:</div>
-				<input class="input input-primary" type="number" bind:value={appId} />
+				<input class="input bg-gray-200 bg-opacity-5" type="number" bind:value={appId} />
 			</div>
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
 				<div>Owner:</div>
-				<input class="input input-primary" type="text" bind:value={owner} />
+				<input class="input bg-gray-200 bg-opacity-5" type="text" bind:value={owner} />
 			</div>
 			{#if !appId}
 				<div class="w-full max-w-[610px] flex flex-col justify-center">

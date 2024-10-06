@@ -42,7 +42,7 @@
 		let txns: SwapTxn[] = [];
 		for (let i = 0; i < 10; i++) {
 			try {
-				txns = await SwapEvents.loadTxns(currentPool.poolId, currentRound - 800_000, currentRound);
+				txns = await SwapEvents.loadTxns(currentPool.poolId, 0, currentRound);
 				break;
 			} catch (e) {
 				//
