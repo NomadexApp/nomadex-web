@@ -24,7 +24,7 @@
 		<div class="space hidden sm:block" />
 		<ul>
 			<li class="first">
-				<a class:active={$page.url.pathname.startsWith('/swap/')} href="/swap/"> Swap </a>
+				<a class:active={$page.url.pathname.match(/\/\d+\/\d+\/\d+\/\d+/)} href="/"> Swap </a>
 			</li>
 
 			<li>
@@ -35,13 +35,13 @@
 				<a class:active={$page.url.pathname.startsWith('/tokens')} href="/tokens">Token</a>
 			</li>
 
-			<li>
+			<!-- <li>
 				<a class:active={$page.url.pathname.startsWith('/limit')} href="/limit/_/buy"> Limit </a>
-			</li>
+			</li> -->
 
-			<li>
+			<!-- <li>
 				<a class:active={$page.url.pathname.startsWith('/analytics')} href="/analytics/"> Analytics </a>
-			</li>
+			</li> -->
 		</ul>
 		<div class="actions ml-auto flex gap-2">
 			<!-- <UseWallet /> -->

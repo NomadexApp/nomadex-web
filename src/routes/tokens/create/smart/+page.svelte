@@ -2,7 +2,7 @@
 	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/components/UseWallet.svelte';
 	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
-	import { SmartAssetClient } from '../../../contracts/clients/SmartAssetClient';
+	import { SmartAssetClient } from '../../../../contracts/clients/SmartAssetClient';
 	import { goto } from '$app/navigation';
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { knownTokens } from '$lib';

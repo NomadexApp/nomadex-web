@@ -32,8 +32,7 @@
 	<div class="flex flex-col justify-center items-center gap-2 pt-4 relative">
 		<div class="flex justify-between items-center max-w-[800px] w-full">
 			<h4 class="text-xl font-bold w-full mb-0">Tokens</h4>
-			<a href="/tokens/arc200-import" class="btn btn-sm btn-ghost">Import</a>
-			<a href="/tokens/arc200-create" class="btn btn-sm btn-ghost">Create</a>
+			<a href="/tokens/create" class="btn btn-sm btn-ghost">Create</a>
 		</div>
 		<div class="tokens max-w-[800px]">
 			{#each $knownTokens as token}
