@@ -3,6 +3,7 @@ import { get, writable } from 'svelte/store';
 import { PoolFactoryClient } from '../contracts/clients/PoolFactoryClient';
 import { nodeClient } from './_shared';
 import algosdk from 'algosdk';
+import { SCALE } from '../contracts/pool/constants';
 
 export enum TokenType {
 	Default = 0,
@@ -24,6 +25,9 @@ export type Pool = {
 	poolId: number;
 	assets: [Token, Token];
 	swapFee: string;
+	tvl: number;
+	volume: number;
+	apr: number;
 };
 
 
@@ -74,7 +78,8 @@ export async function getListOfArc200Tokens() {
 		alphaType: number,
 		betaId: number,
 		betaType: number,
-		swapFee: string
+		swapFee: string,
+		balances: [string, string],
 	}[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools`)).json();
 	const pools = poolsSnap.map((pool) => {
 		return {
@@ -84,6 +89,7 @@ export async function getListOfArc200Tokens() {
 			betaId: pool.betaId,
 			betaType: pool.betaType,
 			swapFee: pool.swapFee,
+			balances: pool.balances,
 		};
 	});
 	const validPools: Pool[] = pools.map((pool) => ({
@@ -91,7 +97,11 @@ export async function getListOfArc200Tokens() {
 		poolId: pool.id,
 		swapFee: pool.swapFee,
 		type: TokenType.ARC200,
-		assets: <[Token, Token]>[pool.alphaId, pool.betaId].map(id => validTokens.find(t => t.id === id))
+		assets: <[Token, Token]>[pool.alphaId, pool.betaId].map(id => validTokens.find(t => t.id === id)),
+		balances: pool.balances,
+		tvl: 0,
+		volume: 0,
+		apr: 0,
 	})).filter(p => p.assets.reduce((a, r) => !!r && !!a, true));
 
 	console.log('Pools:', validPools);
@@ -105,7 +115,19 @@ export async function getListOfArc200Tokens() {
 	if (!buff) return;
 	platformFee.set(<bigint>algosdk.ABIType.from('uint256').decode(buff));
 
-	console.log('Platform Fee:', get(platformFee));
+	console.log('Platform Fee (%):', (Number(get(platformFee)) * 100) / SCALE);
+
+	for (const pool of validPools) {
+		const [alpha, beta] = pool.assets;
+		const algoIdx = [alpha, beta].findIndex(a => a.id === 0);
+		if (algoIdx > -1) {
+			if (pool['balances'].reduce((acc, x) => acc && Number(x), true)) {
+				pool.tvl = Number(pool['balances'][algoIdx]) * 2;
+			} else {
+				pool.tvl = Number(pool['balances'][algoIdx]);
+			}
+		}
+	}
 
 	knownPools.update((pools) => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId)));
 	knownTokens.update((toks) => {

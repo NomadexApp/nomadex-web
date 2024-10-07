@@ -8,6 +8,8 @@
 	import { get } from 'svelte/store';
 	import { SmartAssetClient } from '../../../../contracts/clients/SmartAssetClient';
 	import { PoolFactoryClient } from '../../../../contracts/clients/PoolFactoryClient';
+	import { page } from '$app/stores';
+	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
 
 	export let onUpdate = () => {};
 
@@ -100,36 +102,65 @@
 		return resp.return;
 	}
 
+	const factoryClient = new PoolFactoryClient(
+		{
+			id: contracts.poolFcatory,
+			resolveBy: 'id',
+			sender: getTransactionSignerAccount(),
+		},
+		nodeClient
+	);
 	async function updateContract() {
-		const factoryClient = new PoolFactoryClient(
-			{
-				id: contracts.poolFcatory,
-				resolveBy: 'id',
-				sender: getTransactionSignerAccount(),
-			},
-			nodeClient
-		);
-		await factoryClient.setPoolManager(
+		const { transaction } = await factoryClient.setPoolManager(
 			{
 				manager: $connectedAccount,
-				poolId: $knownPools[1].id,
+				poolId: Number($page.params.poolId),
 			},
-			{ sendParams: { populateAppCallResources: true } }
+			{ sendParams: { skipSending: true } }
 		);
 		console.log('updated manager');
 		const poolClient = new PoolClient(
 			{
-				id: $knownPools[0].id,
+				id: Number($page.params.poolId),
 				resolveBy: 'id',
 				sender: getTransactionSignerAccount(),
 			},
 			nodeClient
 		);
 
-		const resp = await poolClient.update.updateApplication({});
-		console.log('Updated:', resp);
+		const composer = await poolClient
+			.compose()
+			.update.updateApplication({})
+			.grant({ manager: algosdk.getApplicationAddress(contracts.poolFcatory).toString() });
+		let atc = await composer.atc();
+		let txns: algosdk.Transaction[] = [];
+		for (const txn of [transaction, ...atc.buildGroup().map((t) => t.txn)]) {
+			txn.group = undefined;
+			txns.push(txn);
+		}
+		atc = new algosdk.AtomicTransactionComposer();
+		for (const txn of txns) {
+			atc.addTransaction({ txn, signer: algosdk.makeEmptyTransactionSigner() });
+		}
+		atc = await populateAppCallResources(atc, nodeClient);
+		txns = atc.buildGroup().map((t) => t.txn);
+		const signed = await getTransactionSignerAccount().signer(
+			txns,
+			txns.map((_, i) => i)
+		);
+
+		const { txId } = await nodeClient.sendRawTransaction(signed).do();
+
+		const res = await algosdk.waitForConfirmation(nodeClient, txId, 3);
+
+		console.log('Updated:', res);
 	}
 </script>
 
-<!-- <button on:click={updateContract}>Update Contract</button> -->
 <slot {addLiquidity} {removeLiquidity} />
+{#await factoryClient.getGlobalState() then res}
+	{#if algosdk.encodeAddress(res.warden?.asByteArray() ?? Uint8Array.from([])) === $connectedAccount}
+		<br />
+		<button class="text-sm absolute left-[50vw] translate-x-[-50%]" on:click={updateContract}>Update Contract</button>
+	{/if}
+{/await}

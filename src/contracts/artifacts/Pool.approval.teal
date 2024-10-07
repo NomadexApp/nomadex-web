@@ -2357,11 +2357,13 @@ handleAddLiquidity:
 	frame_bury 8 // ratioAlpha: unsafe uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:33
-	// ratioBeta = (betaAmount * <uint256>SCALE) / betaBalance
+	// ratioBeta = (betaAmount * <uint256>SCALE) / (betaBalance - betaAmount)
 	frame_dig -2 // betaAmount: uint256
 	byte 0x00000000000000000000000000000000000000000000000000005af3107a4000
 	b*
 	frame_dig 1 // betaBalance: unsafe uint256
+	frame_dig -2 // betaAmount: uint256
+	b-
 	b/
 	frame_bury 9 // ratioBeta: unsafe uint256
 
@@ -2593,7 +2595,7 @@ removeLiquidity:
 	frame_bury 1 // betaBalance: unsafe uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:59
-	// assert(alphaBalance > <uint256>0 && betaBalance > <uint256>0, 'atleast one amount is zero')
+	// assert(alphaBalance > <uint256>0 && betaBalance > <uint256>0, 'at least one amount is zero')
 	frame_dig 0 // alphaBalance: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
@@ -2605,7 +2607,7 @@ removeLiquidity:
 	&&
 
 *skip_and3:
-	// atleast one amount is zero
+	// at least one amount is zero
 	assert
 
 	// src/contracts/pool/2/Pool21.algo.ts:61
@@ -2730,7 +2732,7 @@ removeLiquidity:
 	frame_bury 5 // withdrawBeta: uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:72
-	// assert(withdrawAlpha > 0 && withdrawBeta > 0, 'atleast one withdrawal amount is zero')
+	// assert(withdrawAlpha > 0 && withdrawBeta > 0, 'at least one withdrawal amount is zero')
 	frame_dig 4 // withdrawAlpha: uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
@@ -2742,7 +2744,7 @@ removeLiquidity:
 	&&
 
 *skip_and4:
-	// atleast one withdrawal amount is zero
+	// at least one withdrawal amount is zero
 	assert
 
 	// src/contracts/pool/2/Pool21.algo.ts:74

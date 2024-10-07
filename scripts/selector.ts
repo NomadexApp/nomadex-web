@@ -6,7 +6,10 @@ const methods = [
     'arc200_Transfer(address,address,uint256)',
     'arc200_Approval(address,address,uint256)',
     'PoolCreated(uint64,uint64,uint8,uint64,uint8,uint256)',
-    'PoolBootstrap(uint64)'
+    'PoolBootstrap(uint64)',
+    'Swap(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))',
+    'Deposit(address,(uint256,uint256),uint256,(uint256,uint256))',
+    'Withdraw(address,uint256,(uint256,uint256),(uint256,uint256))',
 ];
 
 for (const signature of methods) {
