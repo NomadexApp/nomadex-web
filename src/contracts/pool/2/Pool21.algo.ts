@@ -30,7 +30,7 @@ export abstract class Pool21 extends Pool1 {
       lptToMint = sqrt(alphaNormalized * betaNormalized);
     } else {
       const ratioAlpha = (alphaAmount * <uint256>SCALE) / (alphaBalance - alphaAmount);
-      const ratioBeta = (betaAmount * <uint256>SCALE) / betaBalance;
+      const ratioBeta = (betaAmount * <uint256>SCALE) / (betaBalance - betaAmount);
       const ratio = ratioAlpha < ratioBeta ? ratioAlpha : ratioBeta;
 
       lptToMint = (issuedLptBefore * ratio) / <uint256>SCALE;
@@ -56,7 +56,7 @@ export abstract class Pool21 extends Pool1 {
     let alphaBalance: uint256 = this.alphaBalance();
     let betaBalance: uint256 = this.betaBalance();
 
-    assert(alphaBalance > <uint256>0 && betaBalance > <uint256>0, 'atleast one amount is zero');
+    assert(alphaBalance > <uint256>0 && betaBalance > <uint256>0, 'at least one amount is zero');
 
     const txnFees = <uint256>(4 * globals.minTxnFee);
     if (this.alphaType.value === ALGO) {
@@ -69,7 +69,7 @@ export abstract class Pool21 extends Pool1 {
     const withdrawAlpha: uint256 = (alphaBalance * lptAmount) / issuedLptBefore;
     const withdrawBeta: uint256 = (betaBalance * lptAmount) / issuedLptBefore;
 
-    assert(withdrawAlpha > 0 && withdrawBeta > 0, 'atleast one withdrawal amount is zero');
+    assert(withdrawAlpha > 0 && withdrawBeta > 0, 'at least one withdrawal amount is zero');
 
     assert(this.transfer(this.txn.sender, this.app.address, lptAmount));
 
