@@ -85,6 +85,7 @@
 			}
 		);
 		console.log('bootstrap done');
+		window.location.href = `/liquidity/${poolId}/add`;
 	}
 </script>
 
