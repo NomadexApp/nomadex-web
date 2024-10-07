@@ -29,15 +29,15 @@
 
 			const unsub = setInterval(fetchBalance, duration * 1000);
 			fetchBalance();
-			unsubsCalls.push(trigger.subscribe(() => fetchBalance()));
+			unsubsCalls.push(trigger.subscribe(() => fetchBalance(true)));
 
-			async function fetchBalance() {
+			async function fetchBalance(force = false) {
 				try {
 					let info: Record<string, any>;
 					let timestamp = Date.now();
 					switch (token.type) {
 						case TokenType.Default: {
-							if (!$globalAccountIndex[key] || Date.now() - $globalAccountIndex[key].timestamp > duration * 1000) {
+							if (!$globalAccountIndex[key] || Date.now() - $globalAccountIndex[key].timestamp > duration * 1000 || force) {
 								info = await nodeClient.accountInformation(addr).do();
 							} else {
 								info = $globalAccountIndex[key].info;
@@ -53,7 +53,7 @@
 							break;
 						}
 						case TokenType.ASA: {
-							if (!$globalAccountIndex[key] || Date.now() - $globalAccountIndex[key].timestamp > duration * 1000) {
+							if (!$globalAccountIndex[key] || Date.now() - $globalAccountIndex[key].timestamp > duration * 1000 || force) {
 								info = await nodeClient.accountInformation(addr).do();
 							} else {
 								info = $globalAccountIndex[key].info;
@@ -72,7 +72,7 @@
 							break;
 						}
 						case TokenType.ARC200: {
-							if ($globalBalanceIndex[key] && Date.now() - $globalBalanceIndex[key].timestamp <= duration * 1000) {
+							if ($globalBalanceIndex[key] && Date.now() - $globalBalanceIndex[key].timestamp <= duration * 1000 && !force) {
 								result[key] = $globalBalanceIndex[key].balance;
 								return;
 							}

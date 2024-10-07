@@ -48,7 +48,7 @@ export const contractsConstants = {
 	orderbookLimitOrderAppFeePercent: 1,
 };
 
-export async function getListOfArc200Tokens() {
+export async function loadTokensAndPools() {
 	const tokensSnap: { id: number, symbol: string, decimals: number, type: number }[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/tokens`)).json();
 	const tokens = tokensSnap.map((token) => {
 		return {
@@ -80,6 +80,7 @@ export async function getListOfArc200Tokens() {
 		betaType: number,
 		swapFee: string,
 		balances: [string, string],
+		apr: number,
 	}[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools`)).json();
 	const pools = poolsSnap.map((pool) => {
 		return {
@@ -90,6 +91,7 @@ export async function getListOfArc200Tokens() {
 			betaType: pool.betaType,
 			swapFee: pool.swapFee,
 			balances: pool.balances,
+			apr: pool.apr,
 		};
 	});
 	const validPools: Pool[] = pools.map((pool) => ({
@@ -101,7 +103,7 @@ export async function getListOfArc200Tokens() {
 		balances: pool.balances,
 		tvl: 0,
 		volume: 0,
-		apr: 0,
+		apr: pool.apr,
 	})).filter(p => p.assets.reduce((a, r) => !!r && !!a, true));
 
 	console.log('Pools:', validPools);
@@ -129,15 +131,20 @@ export async function getListOfArc200Tokens() {
 		}
 	}
 
-	knownPools.update((pools) => pools.slice(0, 0).concat(validPools.sort((a, b) => a.poolId - b.poolId).sort((a, b) => {
+	knownPools.update(() => validPools.sort((a, b) => a.poolId - b.poolId).sort((a, b) => {
 		return b.tvl - a.tvl;
-	})));
-	knownTokens.update((toks) => {
-		const tokens = toks.slice(0, 0).concat(validTokens.toSorted((a, b) => {
-			return a.id - b.id;
-		}));
-		return tokens;
-	});
+	}));
+	knownTokens.update(() => validTokens.toSorted((a, b) => {
+		return a.id - b.id;
+	}));
 
 	arePoolsLoaded.set(true);
+}
+
+export async function tokensAndPoolsRefresh() {
+	try {
+		await loadTokensAndPools();
+	} catch (e) {
+		// 
+	}
 }

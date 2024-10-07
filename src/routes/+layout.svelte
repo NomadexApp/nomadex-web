@@ -11,11 +11,11 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { arePoolsLoaded, getListOfArc200Tokens, knownTokens } from '$lib/index';
-	import Logo from '$lib/components/Logo.svelte';
+	import { arePoolsLoaded, knownTokens, tokensAndPoolsRefresh } from '$lib/index';
 
 	onMount(async () => {
-		getListOfArc200Tokens();
+		tokensAndPoolsRefresh();
+		setInterval(tokensAndPoolsRefresh, 1000 * 60);
 	});
 
 	$: {

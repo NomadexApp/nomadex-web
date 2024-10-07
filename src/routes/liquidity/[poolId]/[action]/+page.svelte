@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Token, knownTokens, knownPools } from '$lib';
+	import { type Token, knownTokens, knownPools, tokensAndPoolsRefresh } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
@@ -185,7 +185,14 @@
 		{@const maxBalanceError = Number(inputTokenA) > userTokenABalanceInRange || Number(inputTokenB) > userTokenBBalanceInRange}
 		{@const maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError}
 
-		<ChangeLiquidity let:addLiquidity let:removeLiquidity onUpdate={updateBalances}>
+		<ChangeLiquidity
+			let:addLiquidity
+			let:removeLiquidity
+			onUpdate={() => {
+				updateBalances();
+				tokensAndPoolsRefresh();
+			}}
+		>
 			<LiquidityForm
 				{action}
 				{pool}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Token, knownTokens, knownPools, type Pool } from '$lib';
+	import { type Token, knownTokens, knownPools, type Pool, tokensAndPoolsRefresh } from '$lib';
 	import { getStores } from '$app/stores';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
@@ -57,7 +57,13 @@
 		{@const poolTokenABalanceInRange = Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6)) / 1e6}
 		{@const poolTokenBBalanceInRange = Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) / 1e6}
 
-		<Swap let:handleSwap onUpdate={updateBalances}>
+		<Swap
+			let:handleSwap
+			onUpdate={() => {
+				updateBalances();
+				tokensAndPoolsRefresh();
+			}}
+		>
 			<SwapPage
 				{tokenA}
 				{tokenB}
