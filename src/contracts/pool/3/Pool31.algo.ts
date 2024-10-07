@@ -44,13 +44,11 @@ export abstract class Pool31 extends Pool2 {
     );
     assert(this.betaTransfer(this.txn.sender, amountOut));
     assert(this.betaTransfer(this.factory.value.address, platformFeeAmount));
-    const finalAlphaBalance = alphaBalance;
-    const finalBetaBalance = betaBalance - amountOut - platformFeeAmount;
     this.Swap.log({
       sender: this.txn.sender,
       inAmts: [alphaAmount, 0],
       outAmts: [0, amountOut],
-      poolBals: [finalAlphaBalance, finalBetaBalance],
+      poolBals: [alphaBalance, <uint256>(betaBalance - amountOut - platformFeeAmount)],
     });
     return amountOut;
   }
@@ -80,13 +78,11 @@ export abstract class Pool31 extends Pool2 {
     );
     assert(this.alphaTransfer(this.txn.sender, amountOut));
     assert(this.alphaTransfer(this.factory.value.address, platformFeeAmount));
-    const finalAlphaBalance = alphaBalance - amountOut - platformFeeAmount;
-    const finalBetaBalance = betaBalance;
     this.Swap.log({
       sender: this.txn.sender,
       inAmts: [0, betaAmount],
       outAmts: [amountOut, 0],
-      poolBals: [finalAlphaBalance, finalBetaBalance],
+      poolBals: [<uint256>(alphaBalance - amountOut - platformFeeAmount), betaBalance],
     });
     return amountOut;
   }

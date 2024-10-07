@@ -39,14 +39,11 @@ export abstract class Pool21 extends Pool1 {
     assert(lptToMint > <uint256>0);
     assert(this.transfer(this.app.address, this.txn.sender, lptToMint));
 
-    const finalAlphaBalance: uint256 = alphaBalance + alphaAmount;
-    const finalBetaBalance: uint256 = betaBalance + betaAmount;
-
     this.Deposit.log({
       sender: this.txn.sender,
       inAmts: [alphaAmount, betaAmount],
       outLpt: lptToMint,
-      poolBals: [finalAlphaBalance, finalBetaBalance],
+      poolBals: [alphaBalance, betaBalance],
     });
 
     return true;
