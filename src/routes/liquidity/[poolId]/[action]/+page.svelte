@@ -85,7 +85,7 @@
 		if (!inputTokenA) return;
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = false;
-		const ratio = Number(poolTokenBBalance) / Number(poolTokenABalance);
+		const ratio = Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) / Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6));
 		if (ratio) {
 			inputTokenB = Number(Math.floor(inputTokenA * ratio * tokenB.unit) / tokenB.unit);
 			disabled = !inputTokenB;
@@ -103,7 +103,7 @@
 		loading = true;
 		loading = false;
 
-		const ratio = Number(poolTokenABalance) / Number(poolTokenBBalance);
+		const ratio = Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6)) / Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6));
 
 		if (ratio) {
 			inputTokenA = Number(Math.floor(inputTokenB * ratio * tokenA.unit) / tokenA.unit);
