@@ -11,6 +11,7 @@
 	import { page } from '$app/stores';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
 	import { PUBLIC_NETWORK } from '$env/static/public';
+	import { addNotification } from '$lib/components/Notify.svelte';
 
 	export let onUpdate = () => {};
 
@@ -53,6 +54,8 @@
 
 	type AddLiquidityOpts = { pool: Pool; tokenA: Token; tokenB: Token; inputTokenA: number; inputTokenB: number };
 	async function addLiquidity({ pool, tokenA, tokenB, inputTokenA, inputTokenB }: AddLiquidityOpts) {
+		const remove = addNotification('pending', `Adding liquidity...`);
+
 		const poolClient = new PoolClient(
 			{
 				id: pool.id,
@@ -62,25 +65,34 @@
 			nodeClient
 		);
 
-		const alphaTxn = await buildDepositTxn(pool, tokenA, convertDecimals(inputTokenA * 1e6, 6, tokenA.decimals));
-		const betaTxn = await buildDepositTxn(pool, tokenB, convertDecimals(inputTokenB * 1e6, 6, tokenB.decimals));
+		try {
+			const alphaTxn = await buildDepositTxn(pool, tokenA, convertDecimals(inputTokenA * 1e6, 6, tokenA.decimals));
+			const betaTxn = await buildDepositTxn(pool, tokenB, convertDecimals(inputTokenB * 1e6, 6, tokenB.decimals));
 
-		const resp = await poolClient.addLiquidity(
-			{
-				alphaTxn: alphaTxn,
-				betaTxn: betaTxn,
-			},
-			{
-				sendParams: { populateAppCallResources: true },
-			}
-		);
+			const resp = await poolClient.addLiquidity(
+				{
+					alphaTxn: alphaTxn,
+					betaTxn: betaTxn,
+				},
+				{
+					sendParams: { populateAppCallResources: true },
+				}
+			);
 
-		onUpdate();
-		return resp.return;
+			onUpdate();
+
+			return resp.return;
+		} catch (e) {
+			console.error(e);
+		} finally {
+			remove();
+		}
 	}
 
 	type RemoveLiquidityOpts = { pool: Pool; inputTokenLpt: number };
 	async function removeLiquidity({ pool, inputTokenLpt }: RemoveLiquidityOpts) {
+		const remove = addNotification('pending', `Removing liquidity...`);
+
 		const poolClient = new PoolClient(
 			{
 				id: pool.id,
@@ -90,17 +102,23 @@
 			nodeClient
 		);
 
-		const resp = await poolClient.removeLiquidity(
-			{
-				lptAmount: convertDecimals(inputTokenLpt * 1e6, 6, 6),
-			},
-			{
-				sendParams: { populateAppCallResources: true },
-			}
-		);
+		try {
+			const resp = await poolClient.removeLiquidity(
+				{
+					lptAmount: convertDecimals(inputTokenLpt * 1e6, 6, 6),
+				},
+				{
+					sendParams: { populateAppCallResources: true },
+				}
+			);
 
-		onUpdate();
-		return resp.return;
+			onUpdate();
+			return resp.return;
+		} catch (e) {
+			console.error(e);
+		} finally {
+			remove();
+		}
 	}
 
 	const factoryClient = new PoolFactoryClient(

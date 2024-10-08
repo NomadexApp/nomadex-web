@@ -11,6 +11,7 @@
 	import { get } from 'svelte/store';
 	import { SmartAssetClient } from '../../../../../contracts/clients/SmartAssetClient';
 	import { PoolClient } from '../../../../../contracts/clients/PoolClient';
+	import { addNotification } from '$lib/components/Notify.svelte';
 
 	export let onUpdate = () => {};
 
@@ -52,6 +53,8 @@
 	}
 
 	async function handleSwap({ pool, tokenA, tokenB, inputTokenA, minOfTokenB, isDirectionAlphaToBeta }: SwapAlphaBetaOpts) {
+		const remove = addNotification('pending', `Swapping ${isDirectionAlphaToBeta ? tokenA.symbol : tokenB.symbol} for ${isDirectionAlphaToBeta ? tokenB.symbol : tokenA.symbol}...`);
+
 		const poolClient = new PoolClient(
 			{
 				id: pool.id,
@@ -72,26 +75,32 @@
 
 		let resp: { return?: bigint | undefined };
 
-		if (isDirectionAlphaToBeta) {
-			resp = await poolClient.swapAlphaToBeta(
-				{
-					alphaTxn: args.txn,
-					minBetaAmount: args.minAmount,
-				},
-				opts
-			);
-		} else {
-			resp = await poolClient.swapBetaToAlpha(
-				{
-					betaTxn: args.txn,
-					minAlphaAmount: args.minAmount,
-				},
-				opts
-			);
-		}
+		try {
+			if (isDirectionAlphaToBeta) {
+				resp = await poolClient.swapAlphaToBeta(
+					{
+						alphaTxn: args.txn,
+						minBetaAmount: args.minAmount,
+					},
+					opts
+				);
+			} else {
+				resp = await poolClient.swapBetaToAlpha(
+					{
+						betaTxn: args.txn,
+						minAlphaAmount: args.minAmount,
+					},
+					opts
+				);
+			}
 
-		onUpdate();
-		return resp.return;
+			onUpdate();
+			return resp.return;
+		} catch (e) {
+			console.error(e);
+		} finally {
+			remove();
+		}
 	}
 </script>
 
