@@ -140,7 +140,7 @@
 
 	<ActionButton on:click={handleSwap} disabled={Boolean($connectedAccount) && disabled}>
 		{#if $connectedAccount}
-			Swap
+			{pool ? 'Swap' : 'Pool not found'}
 		{:else}
 			Connect to a Wallet
 		{/if}

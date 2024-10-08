@@ -45,7 +45,7 @@ export const contracts = {
 		poolFcatory: 2773,
 	},
 	voimain: {
-		poolFcatory: 0,
+		poolFcatory: 411751,
 	},
 };
 
