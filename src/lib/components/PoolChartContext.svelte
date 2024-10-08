@@ -1,45 +1,27 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getSwapEvents, type SwapTxn, getDepositEvents } from '$lib/utils/events';
+	import { type SwapTxn } from '$lib/utils/events';
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
 	import { browser } from '$app/environment';
-	import { TokenType, knownPools, type Token, knownTokens, type Pool } from '$lib';
+	import { knownPools, knownTokens, type Pool } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { convertDecimals } from '$lib/utils/numbers';
 	import { openModal } from './modal/Modal.svelte';
 	import SelectTokenModal from './modal/SelectTokenModal.svelte';
 	import { pageContentRefresh } from '../utils';
+	import { ABITupleType } from 'algosdk';
 
 	const { page } = getStores();
-	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);
-	const tokenB = <Token>$knownTokens.find((token) => token.symbol === 'VOI');
+	const pool = <Pool>$knownPools.find((p) => p.id === Number($page.params.poolId));
+	if (!pool) {
+		throw Error('Pool not found!');
+	}
 
-	let voiToken: Token = <any>undefined;
-	let arc200Token: Token = <any>undefined;
-	let matchedPool: Pool = <any>undefined;
+	const [tokenA, tokenB] = pool.assets;
 
 	export let price = 0;
 	export let context = 'analytics';
-
-	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.ARC200) {
-		voiToken = tokenA;
-		arc200Token = tokenB;
-	} else if (tokenB?.symbol === 'VOI' && tokenA?.type === TokenType.ARC200) {
-		voiToken = tokenB;
-		arc200Token = tokenA;
-	} else if (browser) {
-		goto(`/`);
-	}
-
-	if (voiToken && arc200Token) {
-		const match = $knownPools.find((pool) => pool.arc200Asset.assetId === arc200Token.id);
-		if (match) matchedPool = match;
-	}
-
-	if (!matchedPool) {
-		throw Error('pool not found');
-	}
 
 	enum Timescale {
 		'15m' = 15 * 60,
@@ -66,62 +48,93 @@
 		txn: SwapTxn;
 	}[] = [];
 	let pricingDirection: string = `${tokenA.symbol}/${tokenB.symbol}`;
-	let timescale = browser
-		? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m']))
-		: Timescale['15m'];
+	let timescale = browser ? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m'])) : Timescale['15m'];
 	let logarithmic = false;
 
 	$: browser && localStorage.setItem('timescale', JSON.stringify(timescale));
 
-	async function loadSwapEvents() {
-		swapEvents = await getSwapEvents(matchedPool.poolId);
-		generateDataByTime(pricingDirection, timescale);
-	}
+	async function loadEvents() {
+		const response = await fetch(`https://voitest-analytics.nomadex.app/pools/${$page.params.poolId}`);
+		const jsonResponse: { round: number; time: number; appId: number; txid: string; logs: string[] }[] = await response.json();
+		if (!jsonResponse) return console.log('Events response not defined');
+		const allSwapEvents: [string, [bigint, bigint], [bigint, bigint], [bigint, bigint], string, number, number][] = [];
+		const allDepositEvents: [string, bigint | [bigint, bigint], bigint | [bigint, bigint], [bigint, bigint], string, number, number][] = [];
+		for (const event of jsonResponse ?? []) {
+			for (const log of event.logs ?? []) {
+				const buff = Uint8Array.from(Buffer.from(log, 'base64'));
+				if (log.startsWith('cEjQ6')) {
+					// Swap
+					allSwapEvents.push(<any>[
+						...(<any>ABITupleType.from(`(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))`).decode(buff.slice(4))),
+						event.txid,
+						event.round,
+						event.time,
+					]);
+				} else if (log.startsWith('PQE+f')) {
+					// Deposit
+					allDepositEvents.push(<any>[
+						...(<any>ABITupleType.from(`(address,(uint256,uint256),uint256,(uint256,uint256))`).decode(buff.slice(4))),
+						event.txid,
+						event.round,
+						event.time,
+					]);
+				} else if (log.startsWith('po5lX')) {
+					// Withdraw
+					allDepositEvents.push(<any>[
+						...(<any>ABITupleType.from(`(address,uint256,(uint256,uint256),(uint256,uint256))`).decode(buff.slice(4))),
+						event.txid,
+						event.round,
+						event.time,
+					]);
+				}
+			}
+		}
 
-	async function loadDepositEvents() {
-		depositEvents = await getDepositEvents(matchedPool.poolId);
+		swapEvents = allSwapEvents.map((event) => ({
+			sender: event[0],
+			fromAmount: Number(event[1][0] < event[1][1] ? event[1][1] : event[1][0]),
+			toAmount: Number(event[2][0] < event[2][1] ? event[2][1] : event[2][0]),
+			direction: event[1][0] < event[1][1] ? 1 : 0,
+			poolBals: event[3],
+			txn: <any>{ id: event[4], 'confirmed-round': event[5], 'round-time': event[6] },
+		}));
+
+		depositEvents = allDepositEvents.map((event) => ({
+			sender: event[0],
+			adding: event[1] instanceof Array,
+			lpt: <bigint>(event[1] instanceof Array ? event[2] : event[1]),
+			amts: <[bigint, bigint]>(event[1] instanceof Array ? event[1] : event[2]),
+			poolBals: event[3],
+			txn: <any>{ id: event[4], 'confirmed-round': event[5], 'round-time': event[6] },
+		}));
+
 		generateDataByTime(pricingDirection, timescale);
 	}
 
 	onMount(() => {
 		if (context === 'limit') return;
-		loadSwapEvents();
-		loadDepositEvents();
-		if (!['VIA', 'POINTS'].includes(arc200Token.symbol)) {
-			const interval = setInterval(() => {
-				loadSwapEvents();
-				loadDepositEvents();
-			}, 120_000);
-			return () => {
-				clearInterval(interval);
-			};
-		}
+		loadEvents();
+		const interval = setInterval(() => {
+			loadEvents();
+		}, 30_000);
+		return () => clearInterval(interval);
 	});
-
-	const getFromTokenFromEvent = (event: (typeof swapEvents)[0]) => {
-		return event.direction === 0 ? voiToken : arc200Token;
-	};
-
-	const getToTokenFromEvent = (event: (typeof swapEvents)[0]) => {
-		return event.direction === 0 ? arc200Token : voiToken;
-	};
 
 	let priceData: PriceCandleData[] = [];
 
 	async function generateDataByTime(priceOf: string, duration = timescale) {
 		const _priceData: PriceCandleData[] = [];
 		const events = [...swapEvents].filter((e) => (e.direction === 0 ? e.fromAmount : e.toAmount) > 10);
+		console.log('events:', events);
 
 		if (!events.length) return;
 
-		let pricingCurrency = priceOf === `VOI/${arc200Token.symbol}` ? 0 : 1;
+		let pricingCurrency = priceOf === `VOI/${tokenB.symbol}` ? 0 : 1;
 
 		const getTime = (event: (typeof events)[0]) => event.txn['round-time'];
 		const getPrice = (event: (typeof events)[0]) => {
-			let viaPrice =
-				Number(convertDecimals(event.poolBals[0], 6, 6)) /
-				Number(convertDecimals(event.poolBals[1], arc200Token.decimals, 6));
-			viaPrice = viaPrice < 0.001 && arc200Token.symbol === 'VIA' ? 0 : viaPrice;
+			let viaPrice = Number(convertDecimals(event.poolBals[0], 6, 6)) / Number(convertDecimals(event.poolBals[1], tokenB.decimals, 6));
+			viaPrice = viaPrice < 0.001 && tokenB.symbol === 'VIA' ? 0 : viaPrice;
 
 			if (viaPrice) {
 				return pricingCurrency === 0 ? 1 / viaPrice : viaPrice;
@@ -129,9 +142,7 @@
 				const voiAmount = event.direction === 0 ? event.fromAmount : event.toAmount;
 				const viaAmount = event.direction === 0 ? event.toAmount : event.fromAmount;
 
-				return pricingCurrency === 0
-					? viaAmount / arc200Token.unit / (voiAmount / voiToken.unit)
-					: voiAmount / voiToken.unit / (viaAmount / arc200Token.unit);
+				return pricingCurrency === 0 ? viaAmount / tokenB.unit / (voiAmount / tokenA.unit) : voiAmount / tokenA.unit / (viaAmount / tokenB.unit);
 			}
 		};
 
@@ -145,11 +156,7 @@
 
 		let close = -1;
 
-		for (
-			let time = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000) + 0.1;
-			time < Math.floor(Date.now() / 1000);
-			time += duration
-		) {
+		for (let time = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000) + 0.1; time < Math.floor(Date.now() / 1000); time += duration) {
 			const matchingEvents = events.filter((e) => getTime(e) >= time && getTime(e) < time + duration);
 			if (matchingEvents.length) {
 				for (const event of matchingEvents) {
@@ -283,39 +290,13 @@
 		{/if}
 	</div>
 	{#if context !== 'limit'}
-		<div
-			class="chart-container min-w-[250px] w-full overflow-hidden bg-[#00000033] rounded-[8px]"
-			bind:clientWidth={chartWidth}
-			style="min-height: {chartWidth / 2.6}px;"
-		>
-			<CandleChart
-				label={`Price of ${pricingDirection.split('/').join(' in ')}`}
-				{logarithmic}
-				data={priceData.slice(-80)}
-			/>
+		<div class="chart-container min-w-[250px] w-full overflow-hidden bg-[#00000033] rounded-[8px]" bind:clientWidth={chartWidth} style="min-height: {chartWidth / 2.6}px;">
+			<CandleChart label={`Price of ${pricingDirection.split('/').join(' in ')}`} {logarithmic} data={priceData.slice(-80)} />
 		</div>
 	{/if}
 
-	<slot
-		name="swap-events"
-		{tokenA}
-		{tokenB}
-		{arc200Token}
-		{voiToken}
-		{swapEvents}
-		{getFromTokenFromEvent}
-		{getToTokenFromEvent}
-	/>
-	<slot
-		name="liquidity-events"
-		{tokenA}
-		{tokenB}
-		{arc200Token}
-		{voiToken}
-		{depositEvents}
-		{getFromTokenFromEvent}
-		{getToTokenFromEvent}
-	/>
+	<slot name="swap-events" {tokenA} {tokenB} {swapEvents} />
+	<slot name="liquidity-events" {tokenA} {tokenB} {depositEvents} />
 </section>
 
 <style>

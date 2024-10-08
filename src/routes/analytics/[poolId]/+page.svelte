@@ -3,18 +3,14 @@
 	import CurrencyNumber from '$lib/components/CurrencyNumber.svelte';
 	import { timeAgo } from '$lib/utils';
 	import { convertDecimals } from '$lib/utils/numbers';
-	import { lastActiveAnalyticsPair } from '$lib/stores';
 </script>
 
 <PoolChartContext>
-	<svelte:fragment slot="swap-events" let:arc200Token let:swapEvents let:getFromTokenFromEvent let:getToTokenFromEvent>
-		{@const _a = (() => arc200Token.symbol && lastActiveAnalyticsPair.set(arc200Token.symbol))()}
+	<svelte:fragment slot="swap-events" let:swapEvents let:tokenA let:tokenB>
 		<div class="br" />
-		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[768px]">
+		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[900px]">
 			{#if swapEvents?.length}
-				{@const someSwapEvents = [...swapEvents]
-					.sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
-					.slice(0, 100)}
+				{@const someSwapEvents = [...swapEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']).slice(0, 100)}
 				<div class="w-full event font-bold p-3 px-0 flex justify-start items-center gap-1 max-w-[800px]">
 					<h4 class="text-lg text-left w-full mb-1 max-w-[724px] font-medium">Swap Txns</h4>
 					<span class="flex-grow" />
@@ -26,20 +22,15 @@
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"> Sender </span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">From Amt.</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">To Amt.</span>
+						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-32 sm:w-32 text-left">From Amt.</span>
+						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-32 sm:w-32 text-left">To Amt.</span>
 					</div>
 					<div class="max-h-[400px] overflow-y-auto">
 						{#each someSwapEvents as event}
-							{@const fromAmount = Number(event.fromAmount / getFromTokenFromEvent(event).unit)}
-							{@const toAmount = Number(event.toAmount / getToTokenFromEvent(event).unit)}
+							{@const fromAmount = Number(event.fromAmount) / (event.direction ? tokenB.unit : tokenA.unit)}
+							{@const toAmount = Number(event.toAmount) / (event.direction ? tokenA.unit : tokenB.unit)}
 							<div class="w-full event hover:invert-[10%] p-2 px-6 flex justify-start items-center gap-1 max-w-[800px]">
-								<a
-									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
-									href="https://avmexplorer.com/tx/{event.txn.id}"
-									target="_blank"
-									referrerpolicy="no-referrer"
-								>
+								<a class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28" href="https://avmexplorer.com/tx/{event.txn.id}" target="_blank" referrerpolicy="no-referrer">
 									{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 								</a>
 								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">
@@ -61,13 +52,13 @@
 								>
 									{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 								</a>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
+								<span class="flex-grow text-[0.8rem] sm:text-[1rem] text-nowrap w-32 sm:w-32 text-justify">
 									<CurrencyNumber amount={fromAmount} />
-									{event.direction ? arc200Token.symbol : 'VOI'}
+									{event.direction ? tokenB.symbol : tokenA.symbol}
 								</span>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
+								<span class="flex-grow text-[0.8rem] sm:text-[1rem] text-nowrap w-32 sm:w-32 text-justify">
 									<CurrencyNumber amount={toAmount} />
-									{event.direction ? 'VOI' : arc200Token.symbol}
+									{event.direction ? tokenA.symbol : tokenB.symbol}
 								</span>
 							</div>
 						{/each}
@@ -77,13 +68,11 @@
 		</div>
 	</svelte:fragment>
 
-	<svelte:fragment slot="liquidity-events" let:arc200Token let:depositEvents>
+	<svelte:fragment slot="liquidity-events" let:tokenA let:tokenB let:depositEvents>
 		<div class="br" />
-		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[768px]">
+		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[900px]">
 			{#if depositEvents?.length}
-				{@const someDepositEvents = [...depositEvents]
-					.sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
-					.slice(0, 100)}
+				{@const someDepositEvents = [...depositEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']).slice(0, 100)}
 				<div class="w-full event font-bold p-3 px-0 flex justify-start items-center gap-1 max-w-[800px]">
 					<h4 class="text-lg text-left w-full mb-1 max-w-[724px] font-medium">Change Liquidity Txns</h4>
 					<span class="flex-grow" />
@@ -94,21 +83,16 @@
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
 						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"> Sender </span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">Amt.</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-left">Amt.</span>
+						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-32 sm:w-32 text-left">Amt.</span>
+						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-32 sm:w-32 text-left">Amt.</span>
 					</div>
 					<div class="max-h-[400px] overflow-y-auto">
 						{#each someDepositEvents as event}
-							{@const voiAmount = Number(convertDecimals(event.amts[0], 6, 6)) / 1e6}
-							{@const arc200Amount = Number(convertDecimals(event.amts[1], arc200Token.decimals, 6)) / 1e6}
+							{@const alphaAmount = Number(convertDecimals(event.amts[0], tokenA.decimals, 6)) / 1e6}
+							{@const betaAmount = Number(convertDecimals(event.amts[1], tokenB.decimals, 6)) / 1e6}
 							{@const changeSign = event.adding ? '+' : '-'}
 							<div class="w-full event hover:invert-[10%] p-2 px-6 flex justify-start items-center gap-1 max-w-[800px]">
-								<a
-									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"
-									href="https://avmexplorer.com/tx/{event.txn.id}"
-									target="_blank"
-									referrerpolicy="no-referrer"
-								>
+								<a class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28" href="https://avmexplorer.com/tx/{event.txn.id}" target="_blank" referrerpolicy="no-referrer">
 									{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 								</a>
 								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">
@@ -130,13 +114,13 @@
 								>
 									{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
 								</a>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-									{changeSign}<CurrencyNumber amount={voiAmount} />
-									VOI
+								<span class="flex-grow text-[0.8rem] sm:text-[1rem] text-nowrap w-32 sm:w-32 text-justify">
+									{changeSign}<CurrencyNumber amount={alphaAmount} />
+									{tokenA.symbol}
 								</span>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-20 sm:w-28 text-justify">
-									{changeSign}<CurrencyNumber amount={arc200Amount} />
-									{arc200Token.symbol}
+								<span class="flex-grow text-[0.8rem] sm:text-[1rem] text-nowrap w-32 sm:w-32 text-justify">
+									{changeSign}<CurrencyNumber amount={betaAmount} />
+									{tokenB.symbol}
 								</span>
 							</div>
 						{/each}

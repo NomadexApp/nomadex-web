@@ -7,6 +7,7 @@
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { getAccountBalance } from '$lib/stores/onchain';
+	import { knownPools } from '$lib';
 
 	const { page } = getStores();
 	let scrollY = 0;
@@ -39,9 +40,9 @@
 				<a class:active={$page.url.pathname.startsWith('/limit')} href="/limit/_/buy"> Limit </a>
 			</li> -->
 
-			<!-- <li>
-				<a class:active={$page.url.pathname.startsWith('/analytics')} href="/analytics/"> Analytics </a>
-			</li> -->
+			<li>
+				<a class:active={$page.url.pathname.startsWith('/analytics')} href="/analytics/{$knownPools?.[0]?.id ?? 0}"> Analytics </a>
+			</li>
 		</ul>
 		<div class="actions ml-auto flex gap-2">
 			<!-- <UseWallet /> -->
