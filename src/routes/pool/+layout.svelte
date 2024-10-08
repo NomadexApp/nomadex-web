@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getStores } from '$app/stores';
+	import { PUBLIC_NETWORK } from '$env/static/public';
 	import { knownPools, type Pool } from '$lib';
 	// import { getPoolBalances } from '$lib/_shared';
 	import FormTitle from '$lib/components/form/FormTitle.svelte';
@@ -12,53 +13,53 @@
 
 	import PoolInfo from '$lib/components/PoolInfo.svelte';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
-	import algosdk from 'algosdk';
 
 	import { onMount } from 'svelte';
 
-	let balances: { [a: string]: { [p: string]: string } } = {};
+	let poolBalances: { [k: string]: { alpha: bigint; beta: bigint; lpt: bigint; issuedLpt: bigint } };
 
 	onMount(async () => {
 		// const response = await getPoolBalances($connectedAccount);
 		// balances = response.balances;
 	});
 
-	let poolBalances: { [k: string]: { algo: number; arc200: bigint; lpt: bigint } } = {};
-
-	// async function fetchBalances(pool: Pool) {
-	// 	if (poolBalances[pool.poolId]) return poolBalances[pool.poolId];
-	// 	const poolAddress = algosdk.getApplicationAddress(pool.poolId);
-
-	// 	poolBalances = {
-	// 		...poolBalances,
-	// 		[pool.poolId]: {
-	// 			algo: Number(balances[poolAddress][0]),
-	// 			arc200: BigInt(balances[poolAddress][pool.arc200Asset.assetId]),
-	// 			lpt: BigInt(10 ** 20) - BigInt(balances[poolAddress][pool.poolId]),
-	// 		},
-	// 	};
-	// }
+	async function fetchBalances() {
+		console.log('bfetch');
+		if (!$connectedAccount) return;
+		console.log('fetch');
+		const response = await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$connectedAccount}`);
+		const jsonResponse = await response.json();
+		poolBalances = {};
+		for (const pool of jsonResponse) {
+			const issuedLpt = BigInt(pool.balance.issuedLpt);
+			const lpt = BigInt(pool.balance.lpt);
+			poolBalances[pool.id] = {
+				alpha: (BigInt(pool.balance.alpha) * lpt) / issuedLpt,
+				beta: (BigInt(pool.balance.beta) * lpt) / issuedLpt,
+				lpt: lpt,
+				issuedLpt: issuedLpt,
+			};
+		}
+		poolBalances = poolBalances;
+	}
 
 	$: my = Boolean($page.url.pathname.match('/your-positions'));
 	$: all = Boolean($page.url.pathname.match('/pool/all'));
 
-	$: filteredPools = balances
-		? searchText && !my
-			? $knownPools.filter(
-					(pool) =>
-						pool.assets.find((asset) => asset.symbol.toLowerCase().match(searchText.toLowerCase()) || asset.id.toString() === searchText) || pool.poolId.toString() === searchText
-			  )
-			: $knownPools
-					.filter((p) => (my ? Number(balances[$connectedAccount]?.[p.poolId] || 0) : true))
-					.sort((a, b) => Number(balances[algosdk.getApplicationAddress(b.poolId)]?.[0] || 0) - Number(balances[algosdk.getApplicationAddress(a.poolId)]?.[0] || 0))
-					.slice(0, my || all ? 500 : 10)
-		: [];
+	$: if (my) fetchBalances();
 
-	$: if (balances) {
-		for (const pool of filteredPools) {
-			// fetchBalances(pool);
+	function filterPools(searchText: string, my: boolean, pools: Pool[], _: any) {
+		if (my) return pools.filter((p) => poolBalances?.[p.poolId]);
+		if (searchText) {
+			return pools.filter((p) => {
+				const asset = p.assets.find((a) => a.symbol.toLowerCase().match(searchText.toLowerCase()) || a.id.toString() === searchText) || p.poolId.toString() === searchText;
+				return asset;
+			});
 		}
+		return pools.slice(0, 10);
 	}
+
+	$: filteredPools = filterPools(searchText, my, $knownPools, poolBalances);
 </script>
 
 <form class="max-w-[90vw] overflow-hidden">
@@ -106,11 +107,10 @@
 			<div>&nbsp;</div>
 		</div>
 
-		{#each filteredPools.sort((pool, pool1) => poolBalances[pool1.poolId]?.algo - poolBalances[pool.poolId]?.algo) as pool (pool.poolId)}
-			<PoolInfo pool={{ ...pool, balances: poolBalances[pool.poolId] ?? { algo: 0, arc200: 0, lpt: 0 } }} {my} userLptBalance={0} />
-			<!-- userLptBalance={$connectedAccount ? Number(balances[$connectedAccount][pool.poolId] || 0) : 0} -->
+		{#each filteredPools as pool (pool.poolId)}
+			<PoolInfo {pool} {my} balances={poolBalances?.[pool.poolId]} />
 		{:else}
-			{#if !balances}
+			{#if !poolBalances}
 				<div class="w-full flex justify-center p-4 pb-8">
 					<span class="loading" />
 				</div>
