@@ -54,6 +54,11 @@ export const contractsConstants = {
 };
 
 export async function loadTokensAndPools() {
+	const factoryId = contracts[PUBLIC_NETWORK].poolFcatory;
+	if (!factoryId) {
+		arePoolsLoaded.set(true);
+		return;
+	}
 	const tokensSnap: { id: number, symbol: string, decimals: number, type: number }[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/tokens`)).json();
 	const tokens = tokensSnap.map((token) => {
 		return {
@@ -114,7 +119,7 @@ export async function loadTokensAndPools() {
 	console.log('Pools:', validPools);
 
 	const factory = new PoolFactoryClient({
-		id: contracts[PUBLIC_NETWORK].poolFcatory,
+		id: factoryId,
 		resolveBy: 'id',
 	}, nodeClient);
 	const state = await factory.getGlobalState();
