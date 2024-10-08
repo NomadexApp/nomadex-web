@@ -1241,7 +1241,7 @@ withdraw:
 
 // noop(uint64)void
 *abi_route_noop:
-	// _: uint64
+	// _n: uint64
 	txna ApplicationArgs 1
 	btoi
 
@@ -1250,7 +1250,7 @@ withdraw:
 	int 1
 	return
 
-// noop(_: uint64): void
+// noop(_n: uint64): void
 noop:
 	proto 1 0
 	retsub

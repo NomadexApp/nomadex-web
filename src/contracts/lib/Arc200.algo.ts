@@ -167,7 +167,7 @@ export abstract class Arc200 extends Contract {
     return true;
   }
 
-  noop(number: uint64): void {
+  noop(_n: uint64): void {
     // 
   }
 }

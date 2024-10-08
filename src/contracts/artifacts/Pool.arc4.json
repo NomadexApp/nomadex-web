@@ -206,7 +206,7 @@
       "name": "noop",
       "args": [
         {
-          "name": "number",
+          "name": "_n",
           "type": "uint64"
         }
       ],

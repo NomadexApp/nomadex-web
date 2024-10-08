@@ -1195,7 +1195,7 @@ createAllowanceBox:
 
 // noop(uint64)void
 *abi_route_noop:
-	// number: uint64
+	// _n: uint64
 	txna ApplicationArgs 1
 	btoi
 
@@ -1204,7 +1204,7 @@ createAllowanceBox:
 	int 1
 	return
 
-// noop(number: uint64): void
+// noop(_n: uint64): void
 noop:
 	proto 1 0
 	retsub
