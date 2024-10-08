@@ -180,7 +180,23 @@
       }
     },
     {
-      "name": "extract",
+      "name": "setPoolFee",
+      "args": [
+        {
+          "name": "poolId",
+          "type": "uint64"
+        },
+        {
+          "name": "fee",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "withdraw",
       "args": [
         {
           "name": "to",
@@ -200,7 +216,7 @@
       },
       "events": [
         {
-          "name": "Extract",
+          "name": "Withdraw",
           "args": [
             {
               "name": "to",
@@ -227,7 +243,7 @@
       "name": "noop",
       "args": [
         {
-          "name": "number",
+          "name": "_",
           "type": "uint64"
         }
       ],
@@ -278,7 +294,7 @@
       "desc": ""
     },
     {
-      "name": "Extract",
+      "name": "Withdraw",
       "args": [
         {
           "name": "to",

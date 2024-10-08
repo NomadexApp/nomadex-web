@@ -20,7 +20,7 @@ export class PoolFactory extends Ownable {
     poolId: AppID,
   }>();
 
-  Extract = new EventLogger<{
+  Withdraw = new EventLogger<{
     to: Address;
     amount: uint256,
     asaId: uint64,
@@ -126,18 +126,19 @@ export class PoolFactory extends Ownable {
   }
 
   setFee(fee: uint64): boolean {
-    assert(this.warden.value === this.txn.sender);
+    assert(this.warden.value === this.txn.sender, "unauthorized");
     this.bootstrapFee.value = fee;
     return true;
   }
 
   setPlatformFee(fee: uint256): boolean {
-    assert(this.warden.value === this.txn.sender);
+    assert(this.warden.value === this.txn.sender, "unauthorized");
     this.platformFee.value = fee;
     return true;
   }
 
   setPoolManager(poolId: AppID, manager: Address): void {
+    assert(this.warden.value === this.txn.sender, "unauthorized");
     sendMethodCall<[Address], void>({
       name: 'grant',
       methodArgs: [manager],
@@ -147,8 +148,19 @@ export class PoolFactory extends Ownable {
     });
   }
 
-  extract(to: Address, amount: uint256, id: [uint64, uint64]): void {
-    assert(this.txn.sender === this.warden.value, "denied");
+  setPoolFee(poolId: AppID, fee: uint256): void {
+    assert(this.warden.value === this.txn.sender, "unauthorized");
+    sendMethodCall<[uint256], boolean>({
+      name: 'setFees',
+      methodArgs: [fee],
+      sender: this.app.address,
+      applicationID: poolId,
+      fee: globals.minTxnFee
+    });
+  }
+
+  withdraw(to: Address, amount: uint256, id: [uint64, uint64]): void {
+    assert(this.txn.sender === this.warden.value, "unauthorized");
     if (id[0] > 0) {
       sendAssetTransfer({
         xferAsset: AssetID.fromUint64(id[0]),
@@ -173,7 +185,7 @@ export class PoolFactory extends Ownable {
         fee: globals.minTxnFee,
       });
     }
-    this.Extract.log({
+    this.Withdraw.log({
       to: to,
       amount: amount,
       asaId: id[0],
@@ -181,7 +193,7 @@ export class PoolFactory extends Ownable {
     });
   }
 
-  noop(number: uint64): void {
+  noop(_: uint64): void {
     // 
   }
 }

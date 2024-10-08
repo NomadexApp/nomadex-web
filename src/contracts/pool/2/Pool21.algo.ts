@@ -13,24 +13,24 @@ export abstract class Pool21 extends Pool1 {
   }
 
   protected handleAddLiquidity(alphaAmount: uint256, betaAmount: uint256): boolean {
-    assert(alphaAmount > 0 && betaAmount > 0, 'atleast one amount is zero');
+    assert(alphaAmount > 0 && betaAmount > 0, 'amount must be > zero');
 
     const alphaBalance = this.alphaBalance();
     const betaBalance = this.betaBalance();
-    const issuedLptBefore = this.totalSupply.value - this.arc200_balanceOf(this.app.address);
+    const issuedLptBefore = <uint256>(this.totalSupply.value - this.arc200_balanceOf(this.app.address));
     let lptToMint = <uint256>0;
 
     if (issuedLptBefore === <uint256>0) {
       const alphaDecimals = this.alphaDecimals();
       const betaDecimals = this.betaDecimals();
 
-      const alphaNormalized = (alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals);
-      const betaNormalized = (betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals);
+      const alphaNormalized = <uint64>((alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals));
+      const betaNormalized = <uint64>((betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals));
 
-      lptToMint = sqrt(alphaNormalized * betaNormalized);
+      lptToMint = <uint256>sqrt(alphaNormalized * betaNormalized);
     } else {
-      const ratioAlpha = (alphaAmount * <uint256>SCALE) / (alphaBalance - alphaAmount);
-      const ratioBeta = (betaAmount * <uint256>SCALE) / (betaBalance - betaAmount);
+      const ratioAlpha = <uint256>((alphaAmount * <uint256>SCALE) / (alphaBalance - alphaAmount));
+      const ratioBeta = <uint256>((betaAmount * <uint256>SCALE) / (betaBalance - betaAmount));
       const ratio = ratioAlpha < ratioBeta ? ratioAlpha : ratioBeta;
 
       lptToMint = (issuedLptBefore * ratio) / <uint256>SCALE;
@@ -53,7 +53,7 @@ export abstract class Pool21 extends Pool1 {
     let alphaBalance: uint256 = this.alphaBalance();
     let betaBalance: uint256 = this.betaBalance();
 
-    assert(alphaBalance > <uint256>0 && betaBalance > <uint256>0, 'at least one amount is zero');
+    assert(alphaBalance > <uint256>0 && betaBalance > <uint256>0, 'balance must be > zero');
 
     const txnFees = <uint256>(4 * globals.minTxnFee);
     if (this.alphaType.value === ALGO) {
@@ -63,23 +63,22 @@ export abstract class Pool21 extends Pool1 {
     }
 
     const issuedLptBefore: uint256 = this.totalSupply.value - this.arc200_balanceOf(this.app.address);
-    const withdrawAlpha: uint256 = (alphaBalance * lptAmount) / issuedLptBefore;
-    const withdrawBeta: uint256 = (betaBalance * lptAmount) / issuedLptBefore;
+    const alphaAmount: uint256 = (alphaBalance * lptAmount) / issuedLptBefore;
+    const betaAmount: uint256 = (betaBalance * lptAmount) / issuedLptBefore;
 
-    assert(withdrawAlpha > 0 && withdrawBeta > 0, 'at least one withdrawal amount is zero');
+    assert(alphaAmount > 0 && betaAmount > 0, 'amount must be > zero');
 
     assert(this.transfer(this.txn.sender, this.app.address, lptAmount));
+    assert(this.alphaTransfer(this.txn.sender, alphaAmount));
+    assert(this.betaTransfer(this.txn.sender, betaAmount));
 
-    assert(this.alphaTransfer(this.txn.sender, withdrawAlpha));
-    assert(this.betaTransfer(this.txn.sender, withdrawBeta));
-
-    const finalBalanceX: uint256 = alphaBalance - withdrawAlpha;
-    const finalBalanceY: uint256 = betaBalance - withdrawBeta;
+    const finalBalanceX: uint256 = alphaBalance - alphaAmount;
+    const finalBalanceY: uint256 = betaBalance - betaAmount;
 
     this.Withdraw.log({
       sender: this.txn.sender,
       inLpt: lptAmount,
-      outAmts: [withdrawAlpha, withdrawBeta],
+      outAmts: [alphaAmount, betaAmount],
       poolBals: [finalBalanceX, finalBalanceY],
     });
 

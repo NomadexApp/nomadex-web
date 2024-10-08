@@ -1705,65 +1705,12 @@ transferSmartAssetTo:
 	getbit
 	retsub
 
-// transferSmartAssetFrom(from: Address, to: Address, amount: uint256, assetId: uint64): boolean
-transferSmartAssetFrom:
-	proto 4 1
-
-	// src/contracts/pool/1/Pool12.algo.ts:55
-	// return sendMethodCall<[Address, Address, uint256], boolean>({
-	//             sender: this.app.address,
-	//             name: 'arc200_transferFrom',
-	//             applicationID: AppID.fromUint64(assetId),
-	//             methodArgs: [from, to, amount],
-	//             fee: globals.minTxnFee,
-	//         });
-	itxn_begin
-	int appl
-	itxn_field TypeEnum
-	method "arc200_transferFrom(address,address,uint256)bool"
-	itxn_field ApplicationArgs
-
-	// src/contracts/pool/1/Pool12.algo.ts:56
-	// sender: this.app.address
-	global CurrentApplicationAddress
-	itxn_field Sender
-
-	// src/contracts/pool/1/Pool12.algo.ts:58
-	// applicationID: AppID.fromUint64(assetId)
-	frame_dig -4 // assetId: uint64
-	itxn_field ApplicationID
-
-	// src/contracts/pool/1/Pool12.algo.ts:59
-	// methodArgs: [from, to, amount]
-	frame_dig -1 // from: Address
-	itxn_field ApplicationArgs
-	frame_dig -2 // to: Address
-	itxn_field ApplicationArgs
-	frame_dig -3 // amount: uint256
-	itxn_field ApplicationArgs
-
-	// src/contracts/pool/1/Pool12.algo.ts:60
-	// fee: globals.minTxnFee
-	global MinTxnFee
-	itxn_field Fee
-
-	// Submit inner transaction
-	itxn_submit
-	itxn NumLogs
-	int 1
-	-
-	itxnas Logs
-	extract 4 0
-	int 0
-	getbit
-	retsub
-
 // getBalance(type: uint8, assetId: uint64): uint256
 getBalance:
 	proto 2 1
 
 	// *if10_condition
-	// src/contracts/pool/1/Pool12.algo.ts:65
+	// src/contracts/pool/1/Pool12.algo.ts:55
 	// ALGO === type
 	int 0
 	frame_dig -1 // type: uint8
@@ -1771,7 +1718,7 @@ getBalance:
 	bz *if10_end
 
 	// *if10_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:65
+	// src/contracts/pool/1/Pool12.algo.ts:55
 	// return <uint256>(this.app.address.balance - this.app.address.minBalance);
 	global CurrentApplicationAddress
 	acct_params_get AcctBalance
@@ -1785,7 +1732,7 @@ getBalance:
 
 *if10_end:
 	// *if11_condition
-	// src/contracts/pool/1/Pool12.algo.ts:66
+	// src/contracts/pool/1/Pool12.algo.ts:56
 	// ASA === type
 	int 1
 	frame_dig -1 // type: uint8
@@ -1793,7 +1740,7 @@ getBalance:
 	bz *if11_end
 
 	// *if11_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:66
+	// src/contracts/pool/1/Pool12.algo.ts:56
 	// return <uint256>this.app.address.assetBalance(assetId);
 	global CurrentApplicationAddress
 	frame_dig -2 // assetId: uint64
@@ -1804,7 +1751,7 @@ getBalance:
 
 *if11_end:
 	// *if12_condition
-	// src/contracts/pool/1/Pool12.algo.ts:67
+	// src/contracts/pool/1/Pool12.algo.ts:57
 	// SMART === type
 	int 2
 	frame_dig -1 // type: uint8
@@ -1812,7 +1759,7 @@ getBalance:
 	bz *if12_end
 
 	// *if12_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:68
+	// src/contracts/pool/1/Pool12.algo.ts:58
 	// return sendMethodCall<[Address], uint256>({
 	//                 sender: this.app.address,
 	//                 name: 'arc200_balanceOf',
@@ -1826,22 +1773,22 @@ getBalance:
 	method "arc200_balanceOf(address)uint256"
 	itxn_field ApplicationArgs
 
-	// src/contracts/pool/1/Pool12.algo.ts:69
+	// src/contracts/pool/1/Pool12.algo.ts:59
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/pool/1/Pool12.algo.ts:71
+	// src/contracts/pool/1/Pool12.algo.ts:61
 	// applicationID: AppID.fromUint64(assetId)
 	frame_dig -2 // assetId: uint64
 	itxn_field ApplicationID
 
-	// src/contracts/pool/1/Pool12.algo.ts:72
+	// src/contracts/pool/1/Pool12.algo.ts:62
 	// methodArgs: [this.app.address]
 	global CurrentApplicationAddress
 	itxn_field ApplicationArgs
 
-	// src/contracts/pool/1/Pool12.algo.ts:73
+	// src/contracts/pool/1/Pool12.algo.ts:63
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1856,7 +1803,7 @@ getBalance:
 	retsub
 
 *if12_end:
-	// src/contracts/pool/1/Pool12.algo.ts:76
+	// src/contracts/pool/1/Pool12.algo.ts:66
 	// return <uint256>0;
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	retsub
@@ -1866,7 +1813,7 @@ getDecimals:
 	proto 2 1
 
 	// *if13_condition
-	// src/contracts/pool/1/Pool12.algo.ts:80
+	// src/contracts/pool/1/Pool12.algo.ts:70
 	// ALGO === type
 	int 0
 	frame_dig -1 // type: uint8
@@ -1874,14 +1821,14 @@ getDecimals:
 	bz *if13_end
 
 	// *if13_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:80
+	// src/contracts/pool/1/Pool12.algo.ts:70
 	// return <uint8>6;
 	int 6
 	retsub
 
 *if13_end:
 	// *if14_condition
-	// src/contracts/pool/1/Pool12.algo.ts:81
+	// src/contracts/pool/1/Pool12.algo.ts:71
 	// ASA === type
 	int 1
 	frame_dig -1 // type: uint8
@@ -1889,7 +1836,7 @@ getDecimals:
 	bz *if14_end
 
 	// *if14_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:81
+	// src/contracts/pool/1/Pool12.algo.ts:71
 	// return <uint8>AssetID.fromUint64(assetId).decimals;
 	frame_dig -2 // assetId: uint64
 	asset_params_get AssetDecimals
@@ -1898,7 +1845,7 @@ getDecimals:
 
 *if14_end:
 	// *if15_condition
-	// src/contracts/pool/1/Pool12.algo.ts:82
+	// src/contracts/pool/1/Pool12.algo.ts:72
 	// SMART === type
 	int 2
 	frame_dig -1 // type: uint8
@@ -1906,7 +1853,7 @@ getDecimals:
 	bz *if15_end
 
 	// *if15_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:83
+	// src/contracts/pool/1/Pool12.algo.ts:73
 	// return sendMethodCall<[], uint8>({
 	//                 sender: this.app.address,
 	//                 name: 'arc200_decimals',
@@ -1920,19 +1867,19 @@ getDecimals:
 	method "arc200_decimals()uint8"
 	itxn_field ApplicationArgs
 
-	// src/contracts/pool/1/Pool12.algo.ts:84
+	// src/contracts/pool/1/Pool12.algo.ts:74
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/pool/1/Pool12.algo.ts:86
+	// src/contracts/pool/1/Pool12.algo.ts:76
 	// applicationID: AppID.fromUint64(assetId)
 	frame_dig -2 // assetId: uint64
 	itxn_field ApplicationID
 
-	// src/contracts/pool/1/Pool12.algo.ts:87
+	// src/contracts/pool/1/Pool12.algo.ts:77
 	// methodArgs: []
-	// src/contracts/pool/1/Pool12.algo.ts:88
+	// src/contracts/pool/1/Pool12.algo.ts:78
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1948,7 +1895,7 @@ getDecimals:
 	retsub
 
 *if15_end:
-	// src/contracts/pool/1/Pool12.algo.ts:90
+	// src/contracts/pool/1/Pool12.algo.ts:80
 	// return <uint8>0;
 	int 0
 	retsub
@@ -1957,7 +1904,7 @@ getDecimals:
 alphaBalance:
 	proto 0 1
 
-	// src/contracts/pool/1/Pool12.algo.ts:94
+	// src/contracts/pool/1/Pool12.algo.ts:84
 	// return this.getBalance(this.alphaType.value, this.alphaId.value);
 	byte 0x616c7068615f6964 // "alpha_id"
 	app_global_get
@@ -1971,7 +1918,7 @@ alphaBalance:
 betaBalance:
 	proto 0 1
 
-	// src/contracts/pool/1/Pool12.algo.ts:98
+	// src/contracts/pool/1/Pool12.algo.ts:88
 	// return this.getBalance(this.betaType.value, this.betaId.value);
 	byte 0x626574615f6964 // "beta_id"
 	app_global_get
@@ -1985,7 +1932,7 @@ betaBalance:
 alphaDecimals:
 	proto 0 1
 
-	// src/contracts/pool/1/Pool12.algo.ts:102
+	// src/contracts/pool/1/Pool12.algo.ts:92
 	// return this.getDecimals(this.alphaType.value, this.alphaId.value);
 	byte 0x616c7068615f6964 // "alpha_id"
 	app_global_get
@@ -1999,7 +1946,7 @@ alphaDecimals:
 betaDecimals:
 	proto 0 1
 
-	// src/contracts/pool/1/Pool12.algo.ts:106
+	// src/contracts/pool/1/Pool12.algo.ts:96
 	// return this.getDecimals(this.betaType.value, this.betaId.value);
 	byte 0x626574615f6964 // "beta_id"
 	app_global_get
@@ -2014,7 +1961,7 @@ alphaTransfer:
 	proto 2 1
 
 	// *if16_condition
-	// src/contracts/pool/1/Pool12.algo.ts:110
+	// src/contracts/pool/1/Pool12.algo.ts:100
 	// this.alphaType.value === ALGO
 	byte 0x616c7068615f74797065 // "alpha_type"
 	app_global_get
@@ -2024,7 +1971,7 @@ alphaTransfer:
 	bz *if16_end
 
 	// *if16_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:111
+	// src/contracts/pool/1/Pool12.algo.ts:101
 	// return this.transferAlgoTo(to, amount);
 	frame_dig -2 // amount: uint256
 	frame_dig -1 // to: Address
@@ -2033,7 +1980,7 @@ alphaTransfer:
 
 *if16_end:
 	// *if17_condition
-	// src/contracts/pool/1/Pool12.algo.ts:113
+	// src/contracts/pool/1/Pool12.algo.ts:103
 	// this.alphaType.value === ASA
 	byte 0x616c7068615f74797065 // "alpha_type"
 	app_global_get
@@ -2043,7 +1990,7 @@ alphaTransfer:
 	bz *if17_end
 
 	// *if17_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:114
+	// src/contracts/pool/1/Pool12.algo.ts:104
 	// return this.transferAsaTo(to, amount, this.alphaId.value);
 	byte 0x616c7068615f6964 // "alpha_id"
 	app_global_get
@@ -2054,7 +2001,7 @@ alphaTransfer:
 
 *if17_end:
 	// *if18_condition
-	// src/contracts/pool/1/Pool12.algo.ts:116
+	// src/contracts/pool/1/Pool12.algo.ts:106
 	// this.alphaType.value === SMART
 	byte 0x616c7068615f74797065 // "alpha_type"
 	app_global_get
@@ -2064,7 +2011,7 @@ alphaTransfer:
 	bz *if18_end
 
 	// *if18_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:117
+	// src/contracts/pool/1/Pool12.algo.ts:107
 	// return this.transferSmartAssetTo(to, amount, this.alphaId.value);
 	byte 0x616c7068615f6964 // "alpha_id"
 	app_global_get
@@ -2074,7 +2021,7 @@ alphaTransfer:
 	retsub
 
 *if18_end:
-	// src/contracts/pool/1/Pool12.algo.ts:119
+	// src/contracts/pool/1/Pool12.algo.ts:109
 	// return false;
 	int 0
 	retsub
@@ -2084,7 +2031,7 @@ betaTransfer:
 	proto 2 1
 
 	// *if19_condition
-	// src/contracts/pool/1/Pool12.algo.ts:123
+	// src/contracts/pool/1/Pool12.algo.ts:113
 	// this.betaType.value === ALGO
 	byte 0x626574615f74797065 // "beta_type"
 	app_global_get
@@ -2094,7 +2041,7 @@ betaTransfer:
 	bz *if19_end
 
 	// *if19_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:124
+	// src/contracts/pool/1/Pool12.algo.ts:114
 	// return this.transferAlgoTo(to, amount);
 	frame_dig -2 // amount: uint256
 	frame_dig -1 // to: Address
@@ -2103,7 +2050,7 @@ betaTransfer:
 
 *if19_end:
 	// *if20_condition
-	// src/contracts/pool/1/Pool12.algo.ts:126
+	// src/contracts/pool/1/Pool12.algo.ts:116
 	// this.betaType.value === ASA
 	byte 0x626574615f74797065 // "beta_type"
 	app_global_get
@@ -2113,7 +2060,7 @@ betaTransfer:
 	bz *if20_end
 
 	// *if20_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:127
+	// src/contracts/pool/1/Pool12.algo.ts:117
 	// return this.transferAsaTo(to, amount, this.betaId.value);
 	byte 0x626574615f6964 // "beta_id"
 	app_global_get
@@ -2124,7 +2071,7 @@ betaTransfer:
 
 *if20_end:
 	// *if21_condition
-	// src/contracts/pool/1/Pool12.algo.ts:129
+	// src/contracts/pool/1/Pool12.algo.ts:119
 	// this.betaType.value === SMART
 	byte 0x626574615f74797065 // "beta_type"
 	app_global_get
@@ -2134,7 +2081,7 @@ betaTransfer:
 	bz *if21_end
 
 	// *if21_consequent
-	// src/contracts/pool/1/Pool12.algo.ts:130
+	// src/contracts/pool/1/Pool12.algo.ts:120
 	// return this.transferSmartAssetTo(to, amount, this.betaId.value);
 	byte 0x626574615f6964 // "beta_id"
 	app_global_get
@@ -2144,7 +2091,7 @@ betaTransfer:
 	retsub
 
 *if21_end:
-	// src/contracts/pool/1/Pool12.algo.ts:132
+	// src/contracts/pool/1/Pool12.algo.ts:122
 	// return false;
 	int 0
 	retsub
@@ -2153,7 +2100,7 @@ betaTransfer:
 extendBudget:
 	proto 0 0
 
-	// src/contracts/pool/1/Pool12.algo.ts:136
+	// src/contracts/pool/1/Pool12.algo.ts:126
 	// sendMethodCall<[uint64], void>({
 	//             name: 'noop',
 	//             methodArgs: [0],
@@ -2167,23 +2114,23 @@ extendBudget:
 	method "noop(uint64)void"
 	itxn_field ApplicationArgs
 
-	// src/contracts/pool/1/Pool12.algo.ts:138
+	// src/contracts/pool/1/Pool12.algo.ts:128
 	// methodArgs: [0]
 	byte 0x0000000000000000
 	itxn_field ApplicationArgs
 
-	// src/contracts/pool/1/Pool12.algo.ts:139
+	// src/contracts/pool/1/Pool12.algo.ts:129
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/pool/1/Pool12.algo.ts:140
+	// src/contracts/pool/1/Pool12.algo.ts:130
 	// applicationID: this.factory.value
 	byte 0x666163746f7279 // "factory"
 	app_global_get
 	itxn_field ApplicationID
 
-	// src/contracts/pool/1/Pool12.algo.ts:141
+	// src/contracts/pool/1/Pool12.algo.ts:131
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -2255,7 +2202,7 @@ handleAddLiquidity:
 	dupn 10
 
 	// src/contracts/pool/2/Pool21.algo.ts:16
-	// assert(alphaAmount > 0 && betaAmount > 0, 'atleast one amount is zero')
+	// assert(alphaAmount > 0 && betaAmount > 0, 'amount must be > zero')
 	frame_dig -1 // alphaAmount: uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
@@ -2267,7 +2214,7 @@ handleAddLiquidity:
 	&&
 
 *skip_and2:
-	// atleast one amount is zero
+	// amount must be > zero
 	assert
 
 	// src/contracts/pool/2/Pool21.algo.ts:18
@@ -2281,7 +2228,7 @@ handleAddLiquidity:
 	frame_bury 1 // betaBalance: unsafe uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:20
-	// issuedLptBefore = this.totalSupply.value - this.arc200_balanceOf(this.app.address)
+	// issuedLptBefore = <uint256>(this.totalSupply.value - this.arc200_balanceOf(this.app.address))
 	byte 0x746f74616c5f737570706c79 // "total_supply"
 	app_global_get
 	global CurrentApplicationAddress
@@ -2314,7 +2261,7 @@ handleAddLiquidity:
 	frame_bury 5 // betaDecimals: unsafe uint8
 
 	// src/contracts/pool/2/Pool21.algo.ts:27
-	// alphaNormalized = (alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals)
+	// alphaNormalized = <uint64>((alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals))
 	frame_dig -1 // alphaAmount: uint256
 	int 6
 	callsub powOfTen
@@ -2322,10 +2269,27 @@ handleAddLiquidity:
 	frame_dig 4 // alphaDecimals: unsafe uint8
 	callsub powOfTen
 	b/
-	frame_bury 6 // alphaNormalized: unsafe uint256
+	dup
+	bitlen
+	int 64
+	<=
+
+	// <uint64>((alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals)) overflowed 64 bits
+	assert
+	byte 0xFFFFFFFFFFFFFFFF
+	b&
+	dup
+	len
+	dup
+	int 8
+	-
+	swap
+	substring3
+	btoi
+	frame_bury 6 // alphaNormalized: uint64
 
 	// src/contracts/pool/2/Pool21.algo.ts:28
-	// betaNormalized = (betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals)
+	// betaNormalized = <uint64>((betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals))
 	frame_dig -2 // betaAmount: uint256
 	int 6
 	callsub powOfTen
@@ -2333,20 +2297,38 @@ handleAddLiquidity:
 	frame_dig 5 // betaDecimals: unsafe uint8
 	callsub powOfTen
 	b/
-	frame_bury 7 // betaNormalized: unsafe uint256
+	dup
+	bitlen
+	int 64
+	<=
+
+	// <uint64>((betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals)) overflowed 64 bits
+	assert
+	byte 0xFFFFFFFFFFFFFFFF
+	b&
+	dup
+	len
+	dup
+	int 8
+	-
+	swap
+	substring3
+	btoi
+	frame_bury 7 // betaNormalized: uint64
 
 	// src/contracts/pool/2/Pool21.algo.ts:30
-	// lptToMint = sqrt(alphaNormalized * betaNormalized)
-	frame_dig 6 // alphaNormalized: unsafe uint256
-	frame_dig 7 // betaNormalized: unsafe uint256
-	b*
-	bsqrt
+	// lptToMint = <uint256>sqrt(alphaNormalized * betaNormalized)
+	frame_dig 6 // alphaNormalized: uint64
+	frame_dig 7 // betaNormalized: uint64
+	*
+	sqrt
+	itob
 	frame_bury 3 // lptToMint: unsafe uint256
 	b *if22_end
 
 *if22_else:
 	// src/contracts/pool/2/Pool21.algo.ts:32
-	// ratioAlpha = (alphaAmount * <uint256>SCALE) / (alphaBalance - alphaAmount)
+	// ratioAlpha = <uint256>((alphaAmount * <uint256>SCALE) / (alphaBalance - alphaAmount))
 	frame_dig -1 // alphaAmount: uint256
 	byte 0x00000000000000000000000000000000000000000000000000005af3107a4000
 	b*
@@ -2357,7 +2339,7 @@ handleAddLiquidity:
 	frame_bury 8 // ratioAlpha: unsafe uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:33
-	// ratioBeta = (betaAmount * <uint256>SCALE) / (betaBalance - betaAmount)
+	// ratioBeta = <uint256>((betaAmount * <uint256>SCALE) / (betaBalance - betaAmount))
 	frame_dig -2 // betaAmount: uint256
 	byte 0x00000000000000000000000000000000000000000000000000005af3107a4000
 	b*
@@ -2581,7 +2563,7 @@ removeLiquidity:
 	frame_bury 1 // betaBalance: unsafe uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:56
-	// assert(alphaBalance > <uint256>0 && betaBalance > <uint256>0, 'at least one amount is zero')
+	// assert(alphaBalance > <uint256>0 && betaBalance > <uint256>0, 'balance must be > zero')
 	frame_dig 0 // alphaBalance: unsafe uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
@@ -2593,7 +2575,7 @@ removeLiquidity:
 	&&
 
 *skip_and3:
-	// at least one amount is zero
+	// balance must be > zero
 	assert
 
 	// src/contracts/pool/2/Pool21.algo.ts:58
@@ -2668,7 +2650,7 @@ removeLiquidity:
 	frame_bury 3 // issuedLptBefore: uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:66
-	// withdrawAlpha: uint256 = (alphaBalance * lptAmount) / issuedLptBefore
+	// alphaAmount: uint256 = (alphaBalance * lptAmount) / issuedLptBefore
 	frame_dig 0 // alphaBalance: unsafe uint256
 	frame_dig -1 // lptAmount: uint256
 	b*
@@ -2690,10 +2672,10 @@ removeLiquidity:
 	-
 	swap
 	substring3
-	frame_bury 4 // withdrawAlpha: uint256
+	frame_bury 4 // alphaAmount: uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:67
-	// withdrawBeta: uint256 = (betaBalance * lptAmount) / issuedLptBefore
+	// betaAmount: uint256 = (betaBalance * lptAmount) / issuedLptBefore
 	frame_dig 1 // betaBalance: unsafe uint256
 	frame_dig -1 // lptAmount: uint256
 	b*
@@ -2715,22 +2697,22 @@ removeLiquidity:
 	-
 	swap
 	substring3
-	frame_bury 5 // withdrawBeta: uint256
+	frame_bury 5 // betaAmount: uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:69
-	// assert(withdrawAlpha > 0 && withdrawBeta > 0, 'at least one withdrawal amount is zero')
-	frame_dig 4 // withdrawAlpha: uint256
+	// assert(alphaAmount > 0 && betaAmount > 0, 'amount must be > zero')
+	frame_dig 4 // alphaAmount: uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	dup
 	bz *skip_and4
-	frame_dig 5 // withdrawBeta: uint256
+	frame_dig 5 // betaAmount: uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	&&
 
 *skip_and4:
-	// at least one withdrawal amount is zero
+	// amount must be > zero
 	assert
 
 	// src/contracts/pool/2/Pool21.algo.ts:71
@@ -2741,31 +2723,31 @@ removeLiquidity:
 	callsub transfer
 	assert
 
-	// src/contracts/pool/2/Pool21.algo.ts:73
-	// assert(this.alphaTransfer(this.txn.sender, withdrawAlpha))
-	frame_dig 4 // withdrawAlpha: uint256
+	// src/contracts/pool/2/Pool21.algo.ts:72
+	// assert(this.alphaTransfer(this.txn.sender, alphaAmount))
+	frame_dig 4 // alphaAmount: uint256
 	txn Sender
 	callsub alphaTransfer
 	assert
 
-	// src/contracts/pool/2/Pool21.algo.ts:74
-	// assert(this.betaTransfer(this.txn.sender, withdrawBeta))
-	frame_dig 5 // withdrawBeta: uint256
+	// src/contracts/pool/2/Pool21.algo.ts:73
+	// assert(this.betaTransfer(this.txn.sender, betaAmount))
+	frame_dig 5 // betaAmount: uint256
 	txn Sender
 	callsub betaTransfer
 	assert
 
-	// src/contracts/pool/2/Pool21.algo.ts:76
-	// finalBalanceX: uint256 = alphaBalance - withdrawAlpha
+	// src/contracts/pool/2/Pool21.algo.ts:75
+	// finalBalanceX: uint256 = alphaBalance - alphaAmount
 	frame_dig 0 // alphaBalance: unsafe uint256
-	frame_dig 4 // withdrawAlpha: uint256
+	frame_dig 4 // alphaAmount: uint256
 	b-
 	dup
 	bitlen
 	int 256
 	<=
 
-	// alphaBalance - withdrawAlpha overflowed 256 bits
+	// alphaBalance - alphaAmount overflowed 256 bits
 	assert
 	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 	b&
@@ -2778,17 +2760,17 @@ removeLiquidity:
 	substring3
 	frame_bury 6 // finalBalanceX: uint256
 
-	// src/contracts/pool/2/Pool21.algo.ts:77
-	// finalBalanceY: uint256 = betaBalance - withdrawBeta
+	// src/contracts/pool/2/Pool21.algo.ts:76
+	// finalBalanceY: uint256 = betaBalance - betaAmount
 	frame_dig 1 // betaBalance: unsafe uint256
-	frame_dig 5 // withdrawBeta: uint256
+	frame_dig 5 // betaAmount: uint256
 	b-
 	dup
 	bitlen
 	int 256
 	<=
 
-	// betaBalance - withdrawBeta overflowed 256 bits
+	// betaBalance - betaAmount overflowed 256 bits
 	assert
 	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 	b&
@@ -2801,19 +2783,19 @@ removeLiquidity:
 	substring3
 	frame_bury 7 // finalBalanceY: uint256
 
-	// src/contracts/pool/2/Pool21.algo.ts:79
+	// src/contracts/pool/2/Pool21.algo.ts:78
 	// this.Withdraw.log({
 	//       sender: this.txn.sender,
 	//       inLpt: lptAmount,
-	//       outAmts: [withdrawAlpha, withdrawBeta],
+	//       outAmts: [alphaAmount, betaAmount],
 	//       poolBals: [finalBalanceX, finalBalanceY],
 	//     })
 	byte 0xa68e655c // Withdraw(address,uint256,(uint256,uint256),(uint256,uint256))
 	txn Sender
 	frame_dig -1 // lptAmount: uint256
 	concat
-	frame_dig 4 // withdrawAlpha: uint256
-	frame_dig 5 // withdrawBeta: uint256
+	frame_dig 4 // alphaAmount: uint256
+	frame_dig 5 // betaAmount: uint256
 	concat
 	concat
 	frame_dig 6 // finalBalanceX: uint256
@@ -2823,7 +2805,7 @@ removeLiquidity:
 	concat
 	log
 
-	// src/contracts/pool/2/Pool21.algo.ts:86
+	// src/contracts/pool/2/Pool21.algo.ts:85
 	// return true;
 	int 1
 
@@ -3314,54 +3296,15 @@ computeOutTokens:
 	popn 2
 	retsub
 
-// computeFeeTokens(alphaAmount: uint256, alphaSupply: uint256, betaSupply: uint256, fee: uint256): uint256
-computeFeeTokens:
-	proto 4 1
-
-	// Push empty bytes after the frame pointer to reserve space for local variables
-	byte 0x
-	dup
-
-	// src/contracts/pool/3/Pool31.algo.ts:16
-	// amountWithoutFee = this.computeOutTokens(alphaAmount, alphaSupply, betaSupply, <uint256>0)
-	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	frame_dig -3 // betaSupply: uint256
-	frame_dig -2 // alphaSupply: uint256
-	frame_dig -1 // alphaAmount: uint256
-	callsub computeOutTokens
-	frame_bury 0 // amountWithoutFee: unsafe uint256
-
-	// src/contracts/pool/3/Pool31.algo.ts:17
-	// amountWithFee = this.computeOutTokens(alphaAmount, alphaSupply, betaSupply, fee)
-	frame_dig -4 // fee: uint256
-	frame_dig -3 // betaSupply: uint256
-	frame_dig -2 // alphaSupply: uint256
-	frame_dig -1 // alphaAmount: uint256
-	callsub computeOutTokens
-	frame_bury 1 // amountWithFee: unsafe uint256
-
-	// src/contracts/pool/3/Pool31.algo.ts:19
-	// return <uint256>(amountWithoutFee - amountWithFee);
-	frame_dig 0 // amountWithoutFee: unsafe uint256
-	frame_dig 1 // amountWithFee: unsafe uint256
-	b-
-
-	// set the subroutine return value
-	frame_bury 0
-
-	// pop all local variables from the stack
-	popn 1
-	retsub
-
 // handleSwapAlphaToBeta(alphaAmount: uint256, minBetaAmount: uint256): uint256
 handleSwapAlphaToBeta:
 	proto 2 1
 
 	// Push empty bytes after the frame pointer to reserve space for local variables
 	byte 0x
-	dupn 4
+	dupn 5
 
-	// src/contracts/pool/3/Pool31.algo.ts:23
+	// src/contracts/pool/3/Pool31.algo.ts:16
 	// alphaBalance: uint256 = this.alphaBalance()
 	callsub alphaBalance
 	dup
@@ -3382,7 +3325,7 @@ handleSwapAlphaToBeta:
 	substring3
 	frame_bury 0 // alphaBalance: uint256
 
-	// src/contracts/pool/3/Pool31.algo.ts:24
+	// src/contracts/pool/3/Pool31.algo.ts:17
 	// betaBalance: uint256 = this.betaBalance()
 	callsub betaBalance
 	dup
@@ -3403,28 +3346,21 @@ handleSwapAlphaToBeta:
 	substring3
 	frame_bury 1 // betaBalance: uint256
 
-	// src/contracts/pool/3/Pool31.algo.ts:25
+	// src/contracts/pool/3/Pool31.algo.ts:18
 	// assert(alphaBalance > 0)
 	frame_dig 0 // alphaBalance: uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/pool/3/Pool31.algo.ts:26
-	// assert(betaBalance > 0)
-	frame_dig 1 // betaBalance: uint256
-	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	b>
-	assert
-
-	// src/contracts/pool/3/Pool31.algo.ts:27
+	// src/contracts/pool/3/Pool31.algo.ts:19
 	// assert(betaBalance > minBetaAmount)
 	frame_dig 1 // betaBalance: uint256
 	frame_dig -2 // minBetaAmount: uint256
 	b>
 	assert
 
-	// src/contracts/pool/3/Pool31.algo.ts:29
+	// src/contracts/pool/3/Pool31.algo.ts:21
 	// platformFee = this.factory.value.globalState('platform_fee') as uint256
 	byte 0x666163746f7279 // "factory"
 	app_global_get
@@ -3435,7 +3371,7 @@ handleSwapAlphaToBeta:
 	assert
 	frame_bury 2 // platformFee: uint256
 
-	// src/contracts/pool/3/Pool31.algo.ts:30
+	// src/contracts/pool/3/Pool31.algo.ts:22
 	// amountOut: uint256 = this.computeOutTokens(
 	//       alphaAmount,
 	//       alphaBalance - alphaAmount,
@@ -3502,35 +3438,15 @@ handleSwapAlphaToBeta:
 	substring3
 	frame_bury 3 // amountOut: uint256
 
-	// src/contracts/pool/3/Pool31.algo.ts:36
-	// assert(amountOut > 0)
-	frame_dig 3 // amountOut: uint256
-	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	b>
-	assert
-
-	// src/contracts/pool/3/Pool31.algo.ts:37
-	// assert(amountOut >= minBetaAmount)
-	frame_dig 3 // amountOut: uint256
-	frame_dig -2 // minBetaAmount: uint256
-	b>=
-	assert
-
-	// src/contracts/pool/3/Pool31.algo.ts:38
-	// assert(amountOut < betaBalance)
-	frame_dig 3 // amountOut: uint256
-	frame_dig 1 // betaBalance: uint256
-	b<
-	assert
-
-	// src/contracts/pool/3/Pool31.algo.ts:39
-	// platformFeeAmount = this.computeFeeTokens(
+	// src/contracts/pool/3/Pool31.algo.ts:28
+	// amountWOPFee: uint256 = this.computeOutTokens(
 	//       alphaAmount,
 	//       alphaBalance - alphaAmount,
 	//       betaBalance,
-	//       platformFee
+	//       this.swapFee.value
 	//     )
-	frame_dig 2 // platformFee: uint256
+	byte 0x737761705f666565 // "swap_fee"
+	app_global_get
 	frame_dig 1 // betaBalance: uint256
 	frame_dig 0 // alphaBalance: uint256
 	frame_dig -1 // alphaAmount: uint256
@@ -3552,25 +3468,62 @@ handleSwapAlphaToBeta:
 	swap
 	substring3
 	frame_dig -1 // alphaAmount: uint256
-	callsub computeFeeTokens
-	frame_bury 4 // platformFeeAmount: unsafe uint256
+	callsub computeOutTokens
+	dup
+	bitlen
+	int 256
+	<=
 
-	// src/contracts/pool/3/Pool31.algo.ts:45
+	// this.computeOutTokens(\n      alphaAmount,\n      alphaBalance - alphaAmount,\n      betaBalance,\n      this.swapFee.value\n    ) overflowed 256 bits
+	assert
+	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+	b&
+	dup
+	len
+	dup
+	int 32
+	-
+	swap
+	substring3
+	frame_bury 4 // amountWOPFee: uint256
+
+	// src/contracts/pool/3/Pool31.algo.ts:34
+	// platformFeeAmt = <uint256>(<uint256>amountWOPFee - <uint256>amountOut)
+	frame_dig 4 // amountWOPFee: uint256
+	frame_dig 3 // amountOut: uint256
+	b-
+	frame_bury 5 // platformFeeAmt: unsafe uint256
+
+	// src/contracts/pool/3/Pool31.algo.ts:35
+	// assert(amountOut >= minBetaAmount)
+	frame_dig 3 // amountOut: uint256
+	frame_dig -2 // minBetaAmount: uint256
+	b>=
+	assert
+
+	// src/contracts/pool/3/Pool31.algo.ts:36
+	// assert(amountOut < betaBalance)
+	frame_dig 3 // amountOut: uint256
+	frame_dig 1 // betaBalance: uint256
+	b<
+	assert
+
+	// src/contracts/pool/3/Pool31.algo.ts:37
 	// assert(this.betaTransfer(this.txn.sender, amountOut))
 	frame_dig 3 // amountOut: uint256
 	txn Sender
 	callsub betaTransfer
 	assert
 
-	// src/contracts/pool/3/Pool31.algo.ts:46
-	// assert(this.betaTransfer(this.factory.value.address, platformFeeAmount))
-	frame_dig 4 // platformFeeAmount: unsafe uint256
+	// src/contracts/pool/3/Pool31.algo.ts:38
+	// assert(this.betaTransfer(this.factory.value.address, platformFeeAmt))
+	frame_dig 5 // platformFeeAmt: unsafe uint256
 	dup
 	bitlen
 	int 256
 	<=
 
-	// platformFeeAmount overflowed 256 bits
+	// platformFeeAmt overflowed 256 bits
 	assert
 	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 	b&
@@ -3588,12 +3541,12 @@ handleSwapAlphaToBeta:
 	callsub betaTransfer
 	assert
 
-	// src/contracts/pool/3/Pool31.algo.ts:47
+	// src/contracts/pool/3/Pool31.algo.ts:39
 	// this.Swap.log({
 	//       sender: this.txn.sender,
 	//       inAmts: [alphaAmount, 0],
 	//       outAmts: [0, amountOut],
-	//       poolBals: [alphaBalance, <uint256>(betaBalance - amountOut - platformFeeAmount)],
+	//       poolBals: [alphaBalance, <uint256>(betaBalance - amountWOPFee)],
 	//     })
 	byte 0x7048d0ea // Swap(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))
 	txn Sender
@@ -3607,16 +3560,14 @@ handleSwapAlphaToBeta:
 	concat
 	frame_dig 0 // alphaBalance: uint256
 	frame_dig 1 // betaBalance: uint256
-	frame_dig 3 // amountOut: uint256
-	b-
-	frame_dig 4 // platformFeeAmount: unsafe uint256
+	frame_dig 4 // amountWOPFee: uint256
 	b-
 	dup
 	bitlen
 	int 256
 	<=
 
-	// <uint256>(betaBalance - amountOut - platformFeeAmount) overflowed 256 bits
+	// <uint256>(betaBalance - amountWOPFee) overflowed 256 bits
 	assert
 	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 	b&
@@ -3632,7 +3583,7 @@ handleSwapAlphaToBeta:
 	concat
 	log
 
-	// src/contracts/pool/3/Pool31.algo.ts:53
+	// src/contracts/pool/3/Pool31.algo.ts:45
 	// return amountOut;
 	frame_dig 3 // amountOut: uint256
 
@@ -3640,7 +3591,7 @@ handleSwapAlphaToBeta:
 	frame_bury 0
 
 	// pop all local variables from the stack
-	popn 4
+	popn 5
 	retsub
 
 // handleSwapBetaToAlpha(betaAmount: uint256, minAlphaAmount: uint256): uint256
@@ -3649,9 +3600,9 @@ handleSwapBetaToAlpha:
 
 	// Push empty bytes after the frame pointer to reserve space for local variables
 	byte 0x
-	dupn 4
+	dupn 5
 
-	// src/contracts/pool/3/Pool31.algo.ts:57
+	// src/contracts/pool/3/Pool31.algo.ts:49
 	// alphaBalance: uint256 = this.alphaBalance()
 	callsub alphaBalance
 	dup
@@ -3672,7 +3623,7 @@ handleSwapBetaToAlpha:
 	substring3
 	frame_bury 0 // alphaBalance: uint256
 
-	// src/contracts/pool/3/Pool31.algo.ts:58
+	// src/contracts/pool/3/Pool31.algo.ts:50
 	// betaBalance: uint256 = this.betaBalance()
 	callsub betaBalance
 	dup
@@ -3693,28 +3644,21 @@ handleSwapBetaToAlpha:
 	substring3
 	frame_bury 1 // betaBalance: uint256
 
-	// src/contracts/pool/3/Pool31.algo.ts:59
-	// assert(alphaBalance > 0)
-	frame_dig 0 // alphaBalance: uint256
-	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	b>
-	assert
-
-	// src/contracts/pool/3/Pool31.algo.ts:60
+	// src/contracts/pool/3/Pool31.algo.ts:51
 	// assert(alphaBalance > minAlphaAmount)
 	frame_dig 0 // alphaBalance: uint256
 	frame_dig -2 // minAlphaAmount: uint256
 	b>
 	assert
 
-	// src/contracts/pool/3/Pool31.algo.ts:61
+	// src/contracts/pool/3/Pool31.algo.ts:52
 	// assert(betaBalance > 0)
 	frame_dig 1 // betaBalance: uint256
 	byte 0x0000000000000000000000000000000000000000000000000000000000000000
 	b>
 	assert
 
-	// src/contracts/pool/3/Pool31.algo.ts:63
+	// src/contracts/pool/3/Pool31.algo.ts:54
 	// platformFee = this.factory.value.globalState('platform_fee') as uint256
 	byte 0x666163746f7279 // "factory"
 	app_global_get
@@ -3725,7 +3669,7 @@ handleSwapBetaToAlpha:
 	assert
 	frame_bury 2 // platformFee: uint256
 
-	// src/contracts/pool/3/Pool31.algo.ts:64
+	// src/contracts/pool/3/Pool31.algo.ts:55
 	// amountOut: uint256 = this.computeOutTokens(
 	//       betaAmount,
 	//       betaBalance - betaAmount,
@@ -3792,35 +3736,15 @@ handleSwapBetaToAlpha:
 	substring3
 	frame_bury 3 // amountOut: uint256
 
-	// src/contracts/pool/3/Pool31.algo.ts:70
-	// assert(amountOut > 0)
-	frame_dig 3 // amountOut: uint256
-	byte 0x0000000000000000000000000000000000000000000000000000000000000000
-	b>
-	assert
-
-	// src/contracts/pool/3/Pool31.algo.ts:71
-	// assert(amountOut >= minAlphaAmount)
-	frame_dig 3 // amountOut: uint256
-	frame_dig -2 // minAlphaAmount: uint256
-	b>=
-	assert
-
-	// src/contracts/pool/3/Pool31.algo.ts:72
-	// assert(amountOut < alphaBalance)
-	frame_dig 3 // amountOut: uint256
-	frame_dig 0 // alphaBalance: uint256
-	b<
-	assert
-
-	// src/contracts/pool/3/Pool31.algo.ts:73
-	// platformFeeAmount = this.computeFeeTokens(
+	// src/contracts/pool/3/Pool31.algo.ts:61
+	// amountWOPFee: uint256 = this.computeOutTokens(
 	//       betaAmount,
 	//       betaBalance - betaAmount,
 	//       alphaBalance,
-	//       platformFee
+	//       this.swapFee.value
 	//     )
-	frame_dig 2 // platformFee: uint256
+	byte 0x737761705f666565 // "swap_fee"
+	app_global_get
 	frame_dig 0 // alphaBalance: uint256
 	frame_dig 1 // betaBalance: uint256
 	frame_dig -1 // betaAmount: uint256
@@ -3842,25 +3766,62 @@ handleSwapBetaToAlpha:
 	swap
 	substring3
 	frame_dig -1 // betaAmount: uint256
-	callsub computeFeeTokens
-	frame_bury 4 // platformFeeAmount: unsafe uint256
+	callsub computeOutTokens
+	dup
+	bitlen
+	int 256
+	<=
 
-	// src/contracts/pool/3/Pool31.algo.ts:79
+	// this.computeOutTokens(\n      betaAmount,\n      betaBalance - betaAmount,\n      alphaBalance,\n      this.swapFee.value\n    ) overflowed 256 bits
+	assert
+	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+	b&
+	dup
+	len
+	dup
+	int 32
+	-
+	swap
+	substring3
+	frame_bury 4 // amountWOPFee: uint256
+
+	// src/contracts/pool/3/Pool31.algo.ts:67
+	// platformFeeAmt = <uint256>(<uint256>amountWOPFee - <uint256>amountOut)
+	frame_dig 4 // amountWOPFee: uint256
+	frame_dig 3 // amountOut: uint256
+	b-
+	frame_bury 5 // platformFeeAmt: unsafe uint256
+
+	// src/contracts/pool/3/Pool31.algo.ts:68
+	// assert(amountOut >= minAlphaAmount)
+	frame_dig 3 // amountOut: uint256
+	frame_dig -2 // minAlphaAmount: uint256
+	b>=
+	assert
+
+	// src/contracts/pool/3/Pool31.algo.ts:69
+	// assert(amountOut < alphaBalance)
+	frame_dig 3 // amountOut: uint256
+	frame_dig 0 // alphaBalance: uint256
+	b<
+	assert
+
+	// src/contracts/pool/3/Pool31.algo.ts:70
 	// assert(this.alphaTransfer(this.txn.sender, amountOut))
 	frame_dig 3 // amountOut: uint256
 	txn Sender
 	callsub alphaTransfer
 	assert
 
-	// src/contracts/pool/3/Pool31.algo.ts:80
-	// assert(this.alphaTransfer(this.factory.value.address, platformFeeAmount))
-	frame_dig 4 // platformFeeAmount: unsafe uint256
+	// src/contracts/pool/3/Pool31.algo.ts:71
+	// assert(this.alphaTransfer(this.factory.value.address, platformFeeAmt))
+	frame_dig 5 // platformFeeAmt: unsafe uint256
 	dup
 	bitlen
 	int 256
 	<=
 
-	// platformFeeAmount overflowed 256 bits
+	// platformFeeAmt overflowed 256 bits
 	assert
 	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 	b&
@@ -3878,12 +3839,12 @@ handleSwapBetaToAlpha:
 	callsub alphaTransfer
 	assert
 
-	// src/contracts/pool/3/Pool31.algo.ts:81
+	// src/contracts/pool/3/Pool31.algo.ts:72
 	// this.Swap.log({
 	//       sender: this.txn.sender,
 	//       inAmts: [0, betaAmount],
 	//       outAmts: [amountOut, 0],
-	//       poolBals: [<uint256>(alphaBalance - amountOut - platformFeeAmount), betaBalance],
+	//       poolBals: [<uint256>(alphaBalance - amountWOPFee), betaBalance],
 	//     })
 	byte 0x7048d0ea // Swap(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))
 	txn Sender
@@ -3896,16 +3857,14 @@ handleSwapBetaToAlpha:
 	concat
 	concat
 	frame_dig 0 // alphaBalance: uint256
-	frame_dig 3 // amountOut: uint256
-	b-
-	frame_dig 4 // platformFeeAmount: unsafe uint256
+	frame_dig 4 // amountWOPFee: uint256
 	b-
 	dup
 	bitlen
 	int 256
 	<=
 
-	// <uint256>(alphaBalance - amountOut - platformFeeAmount) overflowed 256 bits
+	// <uint256>(alphaBalance - amountWOPFee) overflowed 256 bits
 	assert
 	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 	b&
@@ -3922,7 +3881,7 @@ handleSwapBetaToAlpha:
 	concat
 	log
 
-	// src/contracts/pool/3/Pool31.algo.ts:87
+	// src/contracts/pool/3/Pool31.algo.ts:78
 	// return amountOut;
 	frame_dig 3 // amountOut: uint256
 
@@ -3930,7 +3889,7 @@ handleSwapBetaToAlpha:
 	frame_bury 0
 
 	// pop all local variables from the stack
-	popn 4
+	popn 5
 	retsub
 
 // swapAlphaToBeta(txn,uint256)uint256

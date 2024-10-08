@@ -51,16 +51,6 @@ export abstract class Pool12 extends Pool11 {
         });
     }
 
-    protected transferSmartAssetFrom(from: Address, to: Address, amount: uint256, assetId: uint64): boolean {
-        return sendMethodCall<[Address, Address, uint256], boolean>({
-            sender: this.app.address,
-            name: 'arc200_transferFrom',
-            applicationID: AppID.fromUint64(assetId),
-            methodArgs: [from, to, amount],
-            fee: globals.minTxnFee,
-        });
-    }
-
     protected getBalance(type: uint8, assetId: uint64): uint256 {
         if (ALGO === type) return <uint256>(this.app.address.balance - this.app.address.minBalance);
         if (ASA === type) return <uint256>this.app.address.assetBalance(assetId);

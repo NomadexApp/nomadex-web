@@ -557,11 +557,11 @@ createPool:
 
 	// src/contracts/PoolFactory.algo.ts:84
 	// approvalProgram: Pool.approvalProgramPages()
-	byte b64 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
+	byte b64 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
 	itxn_field ApprovalProgramPages
-	byte b64 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
+	byte b64 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
 	itxn_field ApprovalProgramPages
-	byte b64 RDYaCEkVIxJEFzYaBxc2GgZJFSMSRBc2GgUXNhoESRUhBxJENhoDSRUiEkQ2GgJJFSISRDYaAReIAAIjQ4oJACuL/mcnEYv9ZycSi/xnJxOAAQZnJwsnDIEKIQSUFqNJkyQORCisSRVJIglMUmcnECUnBSVPAlRnJwqL/2cnCIv7ZycJi/lnJwaL+hZXBwFnJweL+BZXBwFnJw2L92eJiAACI0OKAAAxACtkEkQnEGQlUyMTRCcQIycFJU8CVGcyCicLZL8nBmQXIxJBAAonCGQpMgqI9bVEJwdkFyMSQQAKJwlkKTIKiPWiRImABCRqIzU2GgCOAf8AAIAEZX0T7IAEtq4aJScWgATsmWBBJw6ABLuzGfMnD4AEtUIhJScVgAROIqO6gAQzbo1fgARmMEL7gAS8SlQAgATJjdBVJxeABGdDQDGABHn1sI2ABHCAR2mABFQuDwuABM4xijqABMWxls6ABALB8tCABL7HbYc2GgCOF++X76bvte/P7+zwHPDp8UfxcvIf8x7zLPNk84zzwvQZ9DT0XPhX+nj9ov38/vwAgARG92UzNhoAjgHzwQCABCSHwyw2GgCOAfPKAA==
+	byte b64 FSEGEkQ2GgNJFSISRDYaAkkVIhJENhoBF4gAAiNDigkAK4v+ZycRi/1nJxKL/GcnE4ABBmcnDCcNgQohBJQWo0mTJA5EKKxJFUkiCUxSZycQJScFJU8CVGcnC4v/ZycIi/tnJwmL+WcnBov6FlcHAWcnB4v4FlcHAWcnCov3Z4mIAAIjQ4oAADEAK2QSRCcQZCVTIxNEJxAjJwUlTwJUZzIKJwxkvycGZBcjEkEACicIZCkyCoj12EQnB2QXIxJBAAonCWQpMgqI9cVEiYAEJGojNTYaAI4B/wAAgARlfRPsgAS2rholJxWABOyZYEEnDoAEu7MZ8ycPgAS1QiElgARKlo+PgAROIqO6gAQzbo1fgARmMEL7gAS8SlQAgATJjdBVJxaABGdDQDGABHn1sI2ABHCAR2mABFQuDwuABM4xijqABMWxls6ABALB8tCABL7HbYc2GgCOF++278Xv1O/u8AvwO/EI8WbxkfI+8z3zS/OD86vz4fQ49FP0e/hq+ov9nv34/vgAgARG92UzNhoAjgHz4ACABCSHwyw2GgCOAfPpAA==
 	itxn_field ApprovalProgramPages
 
 	// src/contracts/PoolFactory.algo.ts:85
@@ -773,11 +773,13 @@ setFee:
 	proto 1 1
 
 	// src/contracts/PoolFactory.algo.ts:129
-	// assert(this.warden.value === this.txn.sender)
+	// assert(this.warden.value === this.txn.sender, "unauthorized")
 	byte 0x77617264656e // "warden"
 	app_global_get
 	txn Sender
 	==
+
+	// unauthorized
 	assert
 
 	// src/contracts/PoolFactory.algo.ts:130
@@ -822,11 +824,13 @@ setPlatformFee:
 	proto 1 1
 
 	// src/contracts/PoolFactory.algo.ts:135
-	// assert(this.warden.value === this.txn.sender)
+	// assert(this.warden.value === this.txn.sender, "unauthorized")
 	byte 0x77617264656e // "warden"
 	app_global_get
 	txn Sender
 	==
+
+	// unauthorized
 	assert
 
 	// src/contracts/PoolFactory.algo.ts:136
@@ -866,6 +870,16 @@ setPoolManager:
 	proto 2 0
 
 	// src/contracts/PoolFactory.algo.ts:141
+	// assert(this.warden.value === this.txn.sender, "unauthorized")
+	byte 0x77617264656e // "warden"
+	app_global_get
+	txn Sender
+	==
+
+	// unauthorized
+	assert
+
+	// src/contracts/PoolFactory.algo.ts:142
 	// sendMethodCall<[Address], void>({
 	//       name: 'grant',
 	//       methodArgs: [manager],
@@ -879,22 +893,22 @@ setPoolManager:
 	method "grant(address)void"
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:143
+	// src/contracts/PoolFactory.algo.ts:144
 	// methodArgs: [manager]
 	frame_dig -2 // manager: Address
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:144
+	// src/contracts/PoolFactory.algo.ts:145
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:145
+	// src/contracts/PoolFactory.algo.ts:146
 	// applicationID: poolId
 	frame_dig -1 // poolId: AppID
 	itxn_field ApplicationID
 
-	// src/contracts/PoolFactory.algo.ts:146
+	// src/contracts/PoolFactory.algo.ts:147
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -903,8 +917,88 @@ setPoolManager:
 	itxn_submit
 	retsub
 
-// extract(address,uint256,(uint64,uint64))void
-*abi_route_extract:
+// setPoolFee(uint64,uint256)void
+*abi_route_setPoolFee:
+	// fee: uint256
+	txna ApplicationArgs 2
+	dup
+	len
+	int 32
+	==
+
+	// argument 0 (fee) for setPoolFee must be a uint256
+	assert
+
+	// poolId: uint64
+	txna ApplicationArgs 1
+	btoi
+
+	// execute setPoolFee(uint64,uint256)void
+	callsub setPoolFee
+	int 1
+	return
+
+// setPoolFee(poolId: AppID, fee: uint256): void
+setPoolFee:
+	proto 2 0
+
+	// src/contracts/PoolFactory.algo.ts:152
+	// assert(this.warden.value === this.txn.sender, "unauthorized")
+	byte 0x77617264656e // "warden"
+	app_global_get
+	txn Sender
+	==
+
+	// unauthorized
+	assert
+
+	// src/contracts/PoolFactory.algo.ts:153
+	// sendMethodCall<[uint256], boolean>({
+	//       name: 'setFees',
+	//       methodArgs: [fee],
+	//       sender: this.app.address,
+	//       applicationID: poolId,
+	//       fee: globals.minTxnFee
+	//     })
+	itxn_begin
+	int appl
+	itxn_field TypeEnum
+	method "setFees(uint256)bool"
+	itxn_field ApplicationArgs
+
+	// src/contracts/PoolFactory.algo.ts:155
+	// methodArgs: [fee]
+	frame_dig -2 // fee: uint256
+	itxn_field ApplicationArgs
+
+	// src/contracts/PoolFactory.algo.ts:156
+	// sender: this.app.address
+	global CurrentApplicationAddress
+	itxn_field Sender
+
+	// src/contracts/PoolFactory.algo.ts:157
+	// applicationID: poolId
+	frame_dig -1 // poolId: AppID
+	itxn_field ApplicationID
+
+	// src/contracts/PoolFactory.algo.ts:158
+	// fee: globals.minTxnFee
+	global MinTxnFee
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+	itxn NumLogs
+	int 1
+	-
+	itxnas Logs
+	extract 4 0
+	int 0
+	getbit
+	retsub
+
+// withdraw(address,uint256,(uint64,uint64))void
+*abi_route_withdraw:
 	// id: (uint64,uint64)
 	txna ApplicationArgs 3
 	dup
@@ -912,7 +1006,7 @@ setPoolManager:
 	int 16
 	==
 
-	// argument 0 (id) for extract must be a (uint64,uint64)
+	// argument 0 (id) for withdraw must be a (uint64,uint64)
 	assert
 
 	// amount: uint256
@@ -922,7 +1016,7 @@ setPoolManager:
 	int 32
 	==
 
-	// argument 1 (amount) for extract must be a uint256
+	// argument 1 (amount) for withdraw must be a uint256
 	assert
 
 	// to: address
@@ -932,30 +1026,30 @@ setPoolManager:
 	int 32
 	==
 
-	// argument 2 (to) for extract must be a address
+	// argument 2 (to) for withdraw must be a address
 	assert
 
-	// execute extract(address,uint256,(uint64,uint64))void
-	callsub extract
+	// execute withdraw(address,uint256,(uint64,uint64))void
+	callsub withdraw
 	int 1
 	return
 
-// extract(to: Address, amount: uint256, id: [uint64, uint64]): void
-extract:
+// withdraw(to: Address, amount: uint256, id: [uint64, uint64]): void
+withdraw:
 	proto 3 0
 
-	// src/contracts/PoolFactory.algo.ts:151
-	// assert(this.txn.sender === this.warden.value, "denied")
+	// src/contracts/PoolFactory.algo.ts:163
+	// assert(this.txn.sender === this.warden.value, "unauthorized")
 	txn Sender
 	byte 0x77617264656e // "warden"
 	app_global_get
 	==
 
-	// denied
+	// unauthorized
 	assert
 
 	// *if4_condition
-	// src/contracts/PoolFactory.algo.ts:152
+	// src/contracts/PoolFactory.algo.ts:164
 	// id[0] > 0
 	frame_dig -3 // id: [uint64, uint64]
 	extract 0 8
@@ -965,7 +1059,7 @@ extract:
 	bz *if4_elseif1_condition
 
 	// *if4_consequent
-	// src/contracts/PoolFactory.algo.ts:153
+	// src/contracts/PoolFactory.algo.ts:165
 	// sendAssetTransfer({
 	//         xferAsset: AssetID.fromUint64(id[0]),
 	//         sender: this.app.address,
@@ -977,24 +1071,24 @@ extract:
 	int axfer
 	itxn_field TypeEnum
 
-	// src/contracts/PoolFactory.algo.ts:154
+	// src/contracts/PoolFactory.algo.ts:166
 	// xferAsset: AssetID.fromUint64(id[0])
 	frame_dig -3 // id: [uint64, uint64]
 	extract 0 8
 	btoi
 	itxn_field XferAsset
 
-	// src/contracts/PoolFactory.algo.ts:155
+	// src/contracts/PoolFactory.algo.ts:167
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:156
+	// src/contracts/PoolFactory.algo.ts:168
 	// assetReceiver: to
 	frame_dig -1 // to: Address
 	itxn_field AssetReceiver
 
-	// src/contracts/PoolFactory.algo.ts:157
+	// src/contracts/PoolFactory.algo.ts:169
 	// assetAmount: <uint64>amount
 	frame_dig -2 // amount: uint256
 	dup
@@ -1008,7 +1102,7 @@ extract:
 	btoi
 	itxn_field AssetAmount
 
-	// src/contracts/PoolFactory.algo.ts:158
+	// src/contracts/PoolFactory.algo.ts:170
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1018,7 +1112,7 @@ extract:
 	b *if4_end
 
 *if4_elseif1_condition:
-	// src/contracts/PoolFactory.algo.ts:160
+	// src/contracts/PoolFactory.algo.ts:172
 	// id[1] > 0
 	frame_dig -3 // id: [uint64, uint64]
 	extract 8 8
@@ -1028,7 +1122,7 @@ extract:
 	bz *if4_else
 
 	// *if4_elseif1_consequent
-	// src/contracts/PoolFactory.algo.ts:161
+	// src/contracts/PoolFactory.algo.ts:173
 	// sendMethodCall<[Address, uint256], uint256>({
 	//         applicationID: AppID.fromUint64(id[1]),
 	//         sender: this.app.address,
@@ -1042,26 +1136,26 @@ extract:
 	method "arc200_transfer(address,uint256)uint256"
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:162
+	// src/contracts/PoolFactory.algo.ts:174
 	// applicationID: AppID.fromUint64(id[1])
 	frame_dig -3 // id: [uint64, uint64]
 	extract 8 8
 	btoi
 	itxn_field ApplicationID
 
-	// src/contracts/PoolFactory.algo.ts:163
+	// src/contracts/PoolFactory.algo.ts:175
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:165
+	// src/contracts/PoolFactory.algo.ts:177
 	// methodArgs: [to, amount]
 	frame_dig -1 // to: Address
 	itxn_field ApplicationArgs
 	frame_dig -2 // amount: uint256
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:166
+	// src/contracts/PoolFactory.algo.ts:178
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1076,7 +1170,7 @@ extract:
 	b *if4_end
 
 *if4_else:
-	// src/contracts/PoolFactory.algo.ts:169
+	// src/contracts/PoolFactory.algo.ts:181
 	// sendPayment({
 	//         sender: this.app.address,
 	//         receiver: to,
@@ -1087,17 +1181,17 @@ extract:
 	int pay
 	itxn_field TypeEnum
 
-	// src/contracts/PoolFactory.algo.ts:170
+	// src/contracts/PoolFactory.algo.ts:182
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:171
+	// src/contracts/PoolFactory.algo.ts:183
 	// receiver: to
 	frame_dig -1 // to: Address
 	itxn_field Receiver
 
-	// src/contracts/PoolFactory.algo.ts:172
+	// src/contracts/PoolFactory.algo.ts:184
 	// amount: <uint64>amount
 	frame_dig -2 // amount: uint256
 	dup
@@ -1111,7 +1205,7 @@ extract:
 	btoi
 	itxn_field Amount
 
-	// src/contracts/PoolFactory.algo.ts:173
+	// src/contracts/PoolFactory.algo.ts:185
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1120,14 +1214,14 @@ extract:
 	itxn_submit
 
 *if4_end:
-	// src/contracts/PoolFactory.algo.ts:176
-	// this.Extract.log({
+	// src/contracts/PoolFactory.algo.ts:188
+	// this.Withdraw.log({
 	//       to: to,
 	//       amount: amount,
 	//       asaId: id[0],
 	//       smartAssetId: id[1]
 	//     })
-	byte 0xa2663d93 // Extract(address,uint256,uint64,uint64)
+	byte 0xebb76dd8 // Withdraw(address,uint256,uint64,uint64)
 	frame_dig -1 // to: Address
 	frame_dig -2 // amount: uint256
 	concat
@@ -1147,7 +1241,7 @@ extract:
 
 // noop(uint64)void
 *abi_route_noop:
-	// number: uint64
+	// _: uint64
 	txna ApplicationArgs 1
 	btoi
 
@@ -1156,7 +1250,7 @@ extract:
 	int 1
 	return
 
-// noop(number: uint64): void
+// noop(_: uint64): void
 noop:
 	proto 1 0
 	retsub
@@ -1177,10 +1271,11 @@ noop:
 	method "setFee(uint64)bool"
 	method "setPlatformFee(uint256)bool"
 	method "setPoolManager(uint64,address)void"
-	method "extract(address,uint256,(uint64,uint64))void"
+	method "setPoolFee(uint64,uint256)void"
+	method "withdraw(address,uint256,(uint64,uint64))void"
 	method "noop(uint64)void"
 	txna ApplicationArgs 0
-	match *abi_route_manager *abi_route_grant *abi_route_createPool *abi_route_poolBootstrap *abi_route_setFee *abi_route_setPlatformFee *abi_route_setPoolManager *abi_route_extract *abi_route_noop
+	match *abi_route_manager *abi_route_grant *abi_route_createPool *abi_route_poolBootstrap *abi_route_setFee *abi_route_setPlatformFee *abi_route_setPoolManager *abi_route_setPoolFee *abi_route_withdraw *abi_route_noop
 
 	// this contract does not implement the given ABI method for call NoOp
 	err
