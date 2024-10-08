@@ -24,8 +24,8 @@ export abstract class Pool21 extends Pool1 {
       const alphaDecimals = this.alphaDecimals();
       const betaDecimals = this.betaDecimals();
 
-      const alphaNormalized = <uint64>((alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals));
-      const betaNormalized = <uint64>((betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals));
+      const alphaNormalized = <uint256>((alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals));
+      const betaNormalized = <uint256>((betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals));
 
       lptToMint = <uint256>sqrt(alphaNormalized * betaNormalized);
     } else {

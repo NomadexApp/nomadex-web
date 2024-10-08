@@ -2261,7 +2261,7 @@ handleAddLiquidity:
 	frame_bury 5 // betaDecimals: unsafe uint8
 
 	// src/contracts/pool/2/Pool21.algo.ts:27
-	// alphaNormalized = <uint64>((alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals))
+	// alphaNormalized = <uint256>((alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals))
 	frame_dig -1 // alphaAmount: uint256
 	int 6
 	callsub powOfTen
@@ -2269,27 +2269,10 @@ handleAddLiquidity:
 	frame_dig 4 // alphaDecimals: unsafe uint8
 	callsub powOfTen
 	b/
-	dup
-	bitlen
-	int 64
-	<=
-
-	// <uint64>((alphaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>alphaDecimals)) overflowed 64 bits
-	assert
-	byte 0xFFFFFFFFFFFFFFFF
-	b&
-	dup
-	len
-	dup
-	int 8
-	-
-	swap
-	substring3
-	btoi
-	frame_bury 6 // alphaNormalized: uint64
+	frame_bury 6 // alphaNormalized: unsafe uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:28
-	// betaNormalized = <uint64>((betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals))
+	// betaNormalized = <uint256>((betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals))
 	frame_dig -2 // betaAmount: uint256
 	int 6
 	callsub powOfTen
@@ -2297,32 +2280,14 @@ handleAddLiquidity:
 	frame_dig 5 // betaDecimals: unsafe uint8
 	callsub powOfTen
 	b/
-	dup
-	bitlen
-	int 64
-	<=
-
-	// <uint64>((betaAmount * this.powOfTen(DECIMALS)) / this.powOfTen(<uint64>betaDecimals)) overflowed 64 bits
-	assert
-	byte 0xFFFFFFFFFFFFFFFF
-	b&
-	dup
-	len
-	dup
-	int 8
-	-
-	swap
-	substring3
-	btoi
-	frame_bury 7 // betaNormalized: uint64
+	frame_bury 7 // betaNormalized: unsafe uint256
 
 	// src/contracts/pool/2/Pool21.algo.ts:30
 	// lptToMint = <uint256>sqrt(alphaNormalized * betaNormalized)
-	frame_dig 6 // alphaNormalized: uint64
-	frame_dig 7 // betaNormalized: uint64
-	*
-	sqrt
-	itob
+	frame_dig 6 // alphaNormalized: unsafe uint256
+	frame_dig 7 // betaNormalized: unsafe uint256
+	b*
+	bsqrt
 	frame_bury 3 // lptToMint: unsafe uint256
 	b *if22_end
 
