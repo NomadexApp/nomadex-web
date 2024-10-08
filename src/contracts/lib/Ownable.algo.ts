@@ -30,7 +30,7 @@ export abstract class Ownable extends Contract {
   }
 
   grant(manager: Address): void {
-    assert(this.txn.sender === this.warden.value, 'only manager can grant');
+    assert(this.txn.sender === this.warden.value, 'unauthorized');
     if (manager === globals.zeroAddress) {
       this.warden.delete();
     } else {
