@@ -25,16 +25,16 @@
 				<h3 class="mb-2">App</h3>
 				<ul class="font-thin text-gray-400">
 					<li>
-						<a href="/swap/VOI-VIA">Swap</a>
+						<a href="/">Swap</a>
 					</li>
 					<li>
-						<a href="/pools">Liquidity Pools</a>
+						<a href="/pool">Liquidity Pools</a>
 					</li>
-					<li>
+					<!-- <li>
 						<a href="/limit/VIA/buy">Limit Orders</a>
-					</li>
+					</li> -->
 					<li>
-						<a href="/analytics/VIA">Analytics</a>
+						<a href="/analytics">Analytics</a>
 					</li>
 				</ul>
 			</div>
