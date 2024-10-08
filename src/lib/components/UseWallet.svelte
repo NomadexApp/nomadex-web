@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import { get, writable } from 'svelte/store';
 	import { NetworkId, WalletManager, WalletId } from '@txnlab/use-wallet';
+	import { PUBLIC_NETWORK, PUBLIC_WALLET_CONNECT_PROJECT_ID } from '$env/static/public';
 
 	export const connectedAccount = writable<string>();
 
@@ -28,7 +29,7 @@
 			},
 		],
 		algod: {
-			baseServer: 'https://voimain-api.nomadex.app',
+			baseServer: `https://${PUBLIC_NETWORK}-api.nomadex.app`,
 			port: '',
 			token: '',
 		},
@@ -139,7 +140,6 @@
 <script lang="ts">
 	import algosdk from 'algosdk';
 	import { onMount } from 'svelte';
-	import { PUBLIC_WALLET_CONNECT_PROJECT_ID } from '$env/static/public';
 	import { addNotification } from './Notify.svelte';
 
 	onMount(async () => {
