@@ -198,13 +198,13 @@ grant:
 	proto 1 0
 
 	// src/contracts/lib/Ownable.algo.ts:33
-	// assert(this.txn.sender === this.warden.value, 'only manager can grant')
+	// assert(this.txn.sender === this.warden.value, 'unauthorized')
 	txn Sender
 	byte 0x77617264656e // "warden"
 	app_global_get
 	==
 
-	// only manager can grant
+	// unauthorized
 	assert
 
 	// *if1_condition
