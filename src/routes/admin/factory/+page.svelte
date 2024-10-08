@@ -5,8 +5,9 @@
 	import { PoolFactoryClient } from '../../../contracts/clients/PoolFactoryClient';
 	import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';
 	import { contracts } from '$lib';
+	import { PUBLIC_NETWORK } from '$env/static/public';
 
-	let appId = contracts.poolFcatory;
+	let appId = contracts[PUBLIC_NETWORK].poolFcatory;
 	let feePercent = 1;
 	let owner = 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ';
 	const SCALE = 100_000_000_000_000;

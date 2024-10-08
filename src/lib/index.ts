@@ -41,7 +41,12 @@ export const knownPools = writable<Pool[]>([]);
 export const arePoolsLoaded = writable(false);
 
 export const contracts = {
-	poolFcatory: 2059,
+	voitest: {
+		poolFcatory: 2657,
+	},
+	voimain: {
+		poolFcatory: 0,
+	},
 };
 
 export const contractsConstants = {
@@ -109,7 +114,7 @@ export async function loadTokensAndPools() {
 	console.log('Pools:', validPools);
 
 	const factory = new PoolFactoryClient({
-		id: contracts.poolFcatory,
+		id: contracts[PUBLIC_NETWORK].poolFcatory,
 		resolveBy: 'id',
 	}, nodeClient);
 	const state = await factory.getGlobalState();

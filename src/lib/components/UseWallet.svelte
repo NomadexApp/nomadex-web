@@ -119,8 +119,15 @@
 				signer: algosdk.makeEmptyTransactionSigner(),
 			};
 		}
-		const signer: algosdk.TransactionSigner = (txnGroup: algosdk.Transaction[], indexesToSign: number[]) => {
-			return signTransactions([txnGroup]);
+		const signer: algosdk.TransactionSigner = async (txnGroup: algosdk.Transaction[], indexesToSign: number[]) => {
+			const remove = addNotification('pending', 'Waiting for transactions approval in your wallet...');
+			try {
+				const ret = await signTransactions([txnGroup]);
+				remove();
+				return ret;
+			} finally {
+				remove();
+			}
 		};
 		return {
 			addr: account as Readonly<string>,
@@ -133,6 +140,7 @@
 	import algosdk from 'algosdk';
 	import { onMount } from 'svelte';
 	import { PUBLIC_WALLET_CONNECT_PROJECT_ID } from '$env/static/public';
+	import { addNotification } from './Notify.svelte';
 
 	onMount(async () => {
 		await walletConnect(true);

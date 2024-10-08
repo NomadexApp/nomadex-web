@@ -10,6 +10,7 @@
 	import { PoolFactoryClient } from '../../../../contracts/clients/PoolFactoryClient';
 	import { page } from '$app/stores';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
+	import { PUBLIC_NETWORK } from '$env/static/public';
 
 	export let onUpdate = () => {};
 
@@ -104,7 +105,7 @@
 
 	const factoryClient = new PoolFactoryClient(
 		{
-			id: contracts.poolFcatory,
+			id: contracts[PUBLIC_NETWORK].poolFcatory,
 			resolveBy: 'id',
 			sender: getTransactionSignerAccount(),
 		},
@@ -131,7 +132,7 @@
 		const composer = await poolClient
 			.compose()
 			.update.updateApplication({})
-			.grant({ manager: algosdk.getApplicationAddress(contracts.poolFcatory).toString() });
+			.grant({ manager: algosdk.getApplicationAddress(contracts[PUBLIC_NETWORK].poolFcatory).toString() });
 		let atc = await composer.atc();
 		let txns: algosdk.Transaction[] = [];
 		for (const txn of [transaction, ...atc.buildGroup().map((t) => t.txn)]) {
