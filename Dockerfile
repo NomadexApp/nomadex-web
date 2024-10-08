@@ -1,15 +1,18 @@
-FROM node:22-alpine AS builder
-WORKDIR /app
-COPY package*.json .
-RUN npm i
-COPY . .
-RUN npm run build
-
 FROM node:22-alpine
 WORKDIR /app
-COPY --from=builder /app/build build/
-COPY --from=builder /app/node_modules node_modules/
-COPY package.json .
+
+ARG PUBLIC_WALLET_CONNECT_PROJECT_ID
+ARG PUBLIC_NETWORK
+
+ENV PUBLIC_WALLET_CONNECT_PROJECT_ID ${PUBLIC_WALLET_CONNECT_PROJECT_ID}
+ENV PUBLIC_NETWORK ${PUBLIC_NETWORK}
+
+COPY package*.json .
+RUN npm i --force
+COPY . .
+
+RUN npm run build
+
 EXPOSE 3000
 ENV NODE_ENV=production
 CMD [ "node", "build" ]

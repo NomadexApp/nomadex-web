@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { contracts, knownPools, TokenType, type Pool, type Token } from '$lib';
+	import { contracts, TokenType, type Pool, type Token } from '$lib';
 	import { nodeClient } from '$lib/_shared';
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';

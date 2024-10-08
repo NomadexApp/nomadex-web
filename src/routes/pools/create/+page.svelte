@@ -6,7 +6,6 @@
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
 	import { PoolFactoryClient } from '../../../contracts/clients/PoolFactoryClient';
-	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
 	import { PUBLIC_NETWORK } from '$env/static/public';
 	import ActionButton from '$lib/components/form/ActionButton.svelte';
 	import TokenInput from '$lib/components/form/TokenInput.svelte';
@@ -191,9 +190,6 @@
 		flex-direction: column;
 		gap: 1rem;
 	}
-	input:focus-within {
-		color: white;
-	}
 	@keyframes fadein {
 		from {
 			opacity: 0;
@@ -201,17 +197,5 @@
 		to {
 			opacity: 1;
 		}
-	}
-	form {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		max-width: 400px;
-		margin: 0 auto;
-		gap: 1rem;
-	}
-	input {
-		background-color: transparent;
-		padding: 0.25rem;
 	}
 </style>
