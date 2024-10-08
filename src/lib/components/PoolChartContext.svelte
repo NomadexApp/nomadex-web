@@ -3,7 +3,7 @@
 	import { type SwapTxn } from '$lib/utils/events';
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
 	import { browser } from '$app/environment';
-	import { knownPools, knownTokens, type Pool } from '$lib';
+	import { knownPools, knownTokens, TokenType, type Pool } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { convertDecimals } from '$lib/utils/numbers';
@@ -47,7 +47,7 @@
 		poolBals: [bigint, bigint];
 		txn: SwapTxn;
 	}[] = [];
-	let pricingDirection: string = `${tokenA.symbol}/${tokenB.symbol}`;
+	let pricingDirection: string = `${tokenB.symbol}/${tokenA.symbol}`;
 	let timescale = browser ? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m'])) : Timescale['15m'];
 	let logarithmic = false;
 
@@ -208,9 +208,11 @@
 			class="currency flex justify-center items-center mt-[0.1rem] p-2 py-0 w-[2.2rem] h-[1.8rem] rounded text-white bg-transparent"
 			on:click={() => {
 				openModal(SelectTokenModal, {
-					tokens: $knownTokens.filter((token) => token.symbol !== 'VOI'),
+					tokens: $knownPools.filter((pool) => pool.assets[0].type === TokenType.Default).map((t) => t.assets[1]),
 					handleSelect(token) {
-						goto(`/${context}/${token.symbol}${context === 'limit' ? `/${$page.params.action}` : ''}`);
+						const pool = $knownPools.find((pool) => pool.assets[1].id === token.id);
+						if (!pool) return;
+						goto(`/analytics/${pool.id}`);
 						pageContentRefresh();
 					},
 				});
@@ -221,7 +223,7 @@
 			</svg>
 		</button>
 		<h1 class="text-3xl">
-			{tokenA.symbol}
+			{tokenB.symbol}
 		</h1>
 	</div>
 	<div class="flex flex-wrap gap-4 justify-between items-center w-full max-w-[900px]">
@@ -229,7 +231,7 @@
 			<div class="cursor-pointer flex flex-col">
 				<span class="text-2xl">
 					Price ≈ {price < 0.1 ? Number(price.toFixed(10)) : price.toLocaleString('en')}
-					{pricingDirection.split('/')[1]}
+					{pricingDirection.split('/')[0]}
 				</span>
 				<span />
 			</div>
