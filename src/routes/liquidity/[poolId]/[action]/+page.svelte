@@ -71,8 +71,8 @@
 		const ratio = convertDecimals(inputTokenLpt * 1e6, 6, 20) / BigInt(LPT_TOTAL_SUPPLY - BigInt(poolLptBalance));
 		loading = false;
 
-		inputTokenA = Number((ratio * BigInt(poolTokenABalance)) / BigInt(1e14)) / 1e6;
-		inputTokenB = Number((ratio * BigInt(poolTokenBBalance)) / BigInt(1e14)) / 1e6;
+		inputTokenA = Number((ratio * BigInt(poolTokenABalance)) / BigInt(1e14)) / 10 ** tokenA.decimals;
+		inputTokenB = Number((ratio * BigInt(poolTokenBBalance)) / BigInt(1e14)) / 10 ** tokenB.decimals;
 		disabled = !inputTokenB || !inputTokenA;
 	}
 

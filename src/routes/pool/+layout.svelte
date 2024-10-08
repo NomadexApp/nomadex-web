@@ -24,9 +24,7 @@
 	});
 
 	async function fetchBalances() {
-		console.log('bfetch');
 		if (!$connectedAccount) return;
-		console.log('fetch');
 		const response = await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$connectedAccount}`);
 		const jsonResponse = await response.json();
 		poolBalances = {};
