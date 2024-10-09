@@ -89,8 +89,8 @@
 				let isOptedIn = false;
 
 				try {
-					const info = nodeClient.accountAssetInformation($connectedAccount, token.id).do();
-					if (info['asset-holding'].amount) isOptedIn = true;
+					const info = await nodeClient.accountAssetInformation($connectedAccount, token.id).do();
+					if (typeof info?.['asset-holding']?.amount !== 'undefined') isOptedIn = true;
 				} catch (e) {}
 
 				if (!isOptedIn) {
