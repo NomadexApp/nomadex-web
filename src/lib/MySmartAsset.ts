@@ -1,4 +1,4 @@
-import { makeEmptyTransactionSigner } from "algosdk";
+import algosdk, { makeEmptyTransactionSigner } from "algosdk";
 import { SmartAssetClient } from "../contracts/clients/SmartAssetClient";
 import { nodeClient } from "./_shared";
 import type { TransactionSignerAccount } from "@algorandfoundation/algokit-utils/types/account";
@@ -95,5 +95,16 @@ export class MySmartAsset {
             allowUnnamedResources: true
         });
         return allowance;
+    }
+
+
+    async hasBox(owner: string, spender = algosdk.encodeAddress(new Uint8Array(32))): Promise<boolean> {
+        const composer = this.client.compose();
+        const ret = await composer.hasBox({ owner, spender }).simulate({
+            allowMoreLogging: true,
+            allowEmptySignatures: true,
+            allowUnnamedResources: true
+        });
+        return ret.returns[0];
     }
 }

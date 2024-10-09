@@ -10,11 +10,13 @@ const methods = [
     'Swap(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))',
     'Deposit(address,(uint256,uint256),uint256,(uint256,uint256))',
     'Withdraw(address,uint256,(uint256,uint256),(uint256,uint256))',
+    'hasBalance(address)bool',
+    'createBalanceBox(address)bool',
 ];
 
 for (const signature of methods) {
     const hash = sha512_256(signature);
     const selHex = hash.slice(0, 8);
-    const selector = Buffer.from(selHex, 'hex').toString('base64');
+    const selector = Buffer.from(selHex, 'hex').toString('hex');
     console.log(signature, selector);
 }

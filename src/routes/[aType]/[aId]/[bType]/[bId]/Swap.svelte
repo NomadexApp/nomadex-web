@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import { TokenType, type Pool, type Token } from '$lib';
+	import { contracts, TokenType, type Pool, type Token } from '$lib';
 	import { nodeClient } from '$lib/_shared';
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
@@ -12,6 +12,9 @@
 	import { SmartAssetClient } from '../../../../../contracts/clients/SmartAssetClient';
 	import { PoolClient } from '../../../../../contracts/clients/PoolClient';
 	import { addNotification } from '$lib/components/Notify.svelte';
+	import { MySmartAsset } from '$lib/MySmartAsset';
+	import { PUBLIC_NETWORK } from '$env/static/public';
+	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
 
 	export let onUpdate = () => {};
 
@@ -53,7 +56,10 @@
 	}
 
 	async function handleSwap({ pool, tokenA, tokenB, inputTokenA, minOfTokenB, isDirectionAlphaToBeta }: SwapAlphaBetaOpts) {
-		const remove = addNotification('pending', `Swapping ${isDirectionAlphaToBeta ? tokenA.symbol : tokenB.symbol} for ${isDirectionAlphaToBeta ? tokenB.symbol : tokenA.symbol}...`);
+		const remove = addNotification(
+			'pending',
+			`Swapping ${isDirectionAlphaToBeta ? tokenA.symbol : tokenB.symbol} for ${isDirectionAlphaToBeta ? tokenB.symbol : tokenA.symbol}...`
+		);
 
 		const poolClient = new PoolClient(
 			{
@@ -75,27 +81,108 @@
 
 		let resp: { return?: bigint | undefined };
 
+		const params = await nodeClient.getTransactionParams().do();
+
+		async function makeOptinTxns(token: Token): Promise<algosdk.Transaction[]> {
+			const txns: algosdk.Transaction[] = [];
+			if (token.type === TokenType.ASA) {
+				let isOptedIn = false;
+
+				try {
+					const info = nodeClient.accountAssetInformation($connectedAccount, token.id).do();
+					if (info['asset-holding'].amount) isOptedIn = true;
+				} catch (e) {}
+
+				if (!isOptedIn) {
+					txns.push(
+						algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+							assetIndex: token.id,
+							from: $connectedAccount,
+							to: $connectedAccount,
+							amount: 0,
+							suggestedParams: params,
+						})
+					);
+				}
+			} else if (token.type === TokenType.ARC200) {
+				const factoryAddress = algosdk.getApplicationAddress(contracts[PUBLIC_NETWORK].poolFcatory);
+				const factoryBalance = await MySmartAsset.from(token.id).arc200BalanceOf(factoryAddress);
+				const userBalance = await MySmartAsset.from(token.id).arc200BalanceOf($connectedAccount);
+				const getTxns = async (address: string) => [
+					algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+						from: $connectedAccount,
+						to: algosdk.getApplicationAddress(token.id),
+						amount: 28500,
+						suggestedParams: params,
+					}),
+					(
+						await MySmartAsset.from(token.id).client.arc200Transfer(
+							{
+								to: address,
+								value: 0,
+							},
+							{ sendParams: { skipSending: true } }
+						)
+					).transaction,
+				];
+				if (factoryBalance <= 1n) {
+					txns.push(...(await getTxns(factoryAddress)));
+				}
+				if (userBalance <= 1n) {
+					txns.push(...(await getTxns($connectedAccount)));
+				}
+			}
+			return txns;
+		}
+
 		try {
+			const txns: algosdk.Transaction[] = [];
+			const optinTxns = await makeOptinTxns(isDirectionAlphaToBeta ? tokenB : tokenA);
+			txns.push(...optinTxns);
+
 			if (isDirectionAlphaToBeta) {
-				resp = await poolClient.swapAlphaToBeta(
+				const { transactions } = await poolClient.swapAlphaToBeta(
 					{
 						alphaTxn: args.txn,
 						minBetaAmount: args.minAmount,
 					},
-					opts
+					{
+						sendParams: { skipSending: true },
+					}
 				);
+				txns.push(...transactions);
 			} else {
-				resp = await poolClient.swapBetaToAlpha(
+				const { transactions } = await poolClient.swapBetaToAlpha(
 					{
 						betaTxn: args.txn,
 						minAlphaAmount: args.minAmount,
 					},
-					opts
+					{
+						sendParams: { skipSending: true },
+					}
 				);
+				txns.push(...transactions);
 			}
 
+			let atc = new algosdk.AtomicTransactionComposer();
+			const mpt = algosdk.makeEmptyTransactionSigner();
+			for (const txn of txns) {
+				txn.group = undefined;
+				atc.addTransaction({ txn: txn, signer: mpt });
+			}
+			atc.buildGroup();
+			atc = await populateAppCallResources(atc, nodeClient);
+			const finalTxns = atc.buildGroup().map(({ txn }) => txn);
+			const signed = await getTransactionSignerAccount().signer(finalTxns, []);
+
+			await nodeClient.sendRawTransaction(signed).do();
+			const result = await algosdk.waitForConfirmation(nodeClient, finalTxns.at(-1)?.txID() ?? '', 3);
+
 			onUpdate();
-			return resp.return;
+			const log: Uint8Array = result.logs.find((log: Uint8Array) => log.length === 36);
+			if (log) {
+				return <bigint>algosdk.ABIType.from('uint256').decode(log.slice(4));
+			}
 		} catch (e) {
 			console.error(e);
 		} finally {
