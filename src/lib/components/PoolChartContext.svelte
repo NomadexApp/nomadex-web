@@ -110,7 +110,7 @@
 		}));
 
 		console.log({
-			jsonResponse
+			jsonResponse,
 		});
 
 		generateDataByTime(pricingDirection, timescale);
@@ -184,6 +184,7 @@
 				close = _close;
 				price = _close;
 			} else {
+				if (close < 0) continue;
 				_priceData.push({
 					x: time * 1000,
 					o: close,
