@@ -19,13 +19,13 @@
 				<table class="table-auto w-full max-w-[900px] bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
 					<thead>
 						<tr>
-							<th class="text-left px-4 py-3">TxId</th>
-							<th class="text-left px-4 py-3">Time</th>
-							<th class="text-left px-4 py-3">Round</th>
-							<th class="text-left px-4 py-3">Sender</th>
-							<th class="text-left px-4 py-3">Amount</th>
-							<th class="text-center px-4 py-3">&nbsp;</th>
-							<th class="text-right px-4 py-3">Amount</th>
+							<th class="text-white text-opacity-70 text-left px-4 py-3">TxId</th>
+							<th class="text-white text-opacity-70 text-left px-4 py-3">Time</th>
+							<th class="text-white text-opacity-70 text-left px-4 py-3">Round</th>
+							<th class="text-white text-opacity-70 text-left px-4 py-3">Sender</th>
+							<th class="text-white text-opacity-70 text-left px-4 py-3">Amount</th>
+							<th class="text-white text-opacity-70 text-center px-4 py-3"></th>
+							<th class="text-white text-opacity-70 text-right px-4 py-3">Amount</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -38,12 +38,12 @@
 							{@const betaAmount = isLiquidityTxn ? Number(convertDecimals(event['amts'][1], tokenB.decimals, 6)) / 1e6 : 0}
 							<tr>
 								<td class="text-left px-4 py-2">
-									<a class="flex-grow text-[0.8rem] sm:text-[1rem]" href="https://avmexplorer.com/tx/{event.txn.id}" target="_blank" referrerpolicy="no-referrer">
+									<a class="text-white flex-grow text-[0.8rem] sm:text-[1rem]" href="https://avmexplorer.com/tx/{event.txn.id}" target="_blank" referrerpolicy="no-referrer">
 										{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 									</a>
 								</td>
 								<td class="text-center px-4 py-2">
-									<span class="flex-grow text-[0.8rem] sm:text-[1rem] hidden lg:flex">
+									<span class="text-white text-opacity-70 flex-grow text-[0.8rem] sm:text-[1rem] hidden lg:flex">
 										{timeAgo(event.txn['round-time'] * 1000)}
 									</span>
 								</td>
@@ -52,14 +52,14 @@
 										href="https://avmexplorer.com/block/{event.txn['confirmed-round']}"
 										target="_blank"
 										referrerpolicy="no-referrer"
-										class="flex-grow text-[0.8rem] sm:text-[1rem] hidden lg:flex"
+										class="text-white text-opacity-70 flex-grow text-[0.8rem] sm:text-[1rem] hidden lg:flex"
 									>
 										{event.txn['confirmed-round']}
 									</a>
 								</td>
 								<td class="text-center px-4 py-2">
 									<a
-										class="flex-grow text-[0.8rem] sm:text-[1rem] hidden min-[380px]:flex"
+										class="text-white text-opacity-70 flex-grow text-[0.8rem] sm:text-[1rem] hidden min-[380px]:flex"
 										href="https://avmexplorer.com/address/{event.sender}"
 										target="_blank"
 										referrerpolicy="no-referrer"
@@ -80,10 +80,8 @@
 									{#if isSwapTxn}
 										<span class="opacity-70">→</span>
 									{:else if event['adding']}
-										<!-- isLiquidityTxn ? (event['adding'] ? '+' : '―') : '+' -->
 										<span class="opacity-70 text-xl text-green-400">+</span>
 									{:else}
-										<!-- isLiquidityTxn ? (event['adding'] ? '+' : '―') : '+' -->
 										<span class="opacity-70 text-3xl font-thin text-red-400">-</span>
 									{/if}
 								</td>
