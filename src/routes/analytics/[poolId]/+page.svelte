@@ -84,7 +84,7 @@
 										<span class="opacity-70 text-xl text-green-400">+</span>
 									{:else}
 										<!-- isLiquidityTxn ? (event['adding'] ? '+' : '―') : '+' -->
-										<span class="opacity-70 text-red-400">―</span>
+										<span class="opacity-70 text-3xl font-thin text-red-400">-</span>
 									{/if}
 								</td>
 								<td class="text-right px-4 py-2">
