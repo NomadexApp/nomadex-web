@@ -6,126 +6,100 @@
 </script>
 
 <PoolChartContext>
-	<svelte:fragment slot="swap-events" let:swapEvents let:tokenA let:tokenB>
+	<svelte:fragment slot="all-events" let:events let:tokenA let:tokenB>
 		<div class="br" />
 		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[900px]">
-			{#if swapEvents?.length}
-				{@const someSwapEvents = [...swapEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']).slice(0, 100)}
-				<div class="w-full event font-bold p-3 px-0 flex justify-start items-center gap-1 max-w-[800px]">
-					<h4 class="text-lg text-left w-full mb-1 max-w-[724px] font-medium">Swap Txns</h4>
+			{#if events?.length}
+				{@const someEvents = [...events].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']).slice(0, 100)}
+				<div class="w-full event font-bold p-3 px-0 flex justify-start items-center gap-1 max-w-[900px]">
+					<h4 class="text-lg text-left w-full mb-1 max-w-[724px] font-medium">Transactions</h4>
 					<span class="flex-grow" />
 				</div>
 
-				<div class="bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
-					<div class="w-full event font-bold p-3 px-6 flex justify-start items-center gap-1 max-w-[800px]">
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"> Sender </span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-32 sm:w-32 text-left">From Amt.</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-32 sm:w-32 text-left">To Amt.</span>
-					</div>
-					<div class="max-h-[400px] overflow-y-auto">
-						{#each someSwapEvents as event}
-							{@const fromAmount = Number(event.fromAmount) / (event.direction ? tokenB.unit : tokenA.unit)}
-							{@const toAmount = Number(event.toAmount) / (event.direction ? tokenA.unit : tokenB.unit)}
-							<div class="w-full event hover:invert-[10%] p-2 px-6 flex justify-start items-center gap-1 max-w-[800px]">
-								<a class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28" href="https://avmexplorer.com/tx/{event.txn.id}" target="_blank" referrerpolicy="no-referrer">
-									{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
-								</a>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">
-									{timeAgo(event.txn['round-time'] * 1000)}
-								</span>
-								<a
-									href="https://avmexplorer.com/block/{event.txn['confirmed-round']}"
-									target="_blank"
-									referrerpolicy="no-referrer"
-									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
-								>
-									{event.txn['confirmed-round']}
-								</a>
-								<a
-									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"
-									href="https://avmexplorer.com/address/{event.sender}"
-									target="_blank"
-									referrerpolicy="no-referrer"
-								>
-									{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
-								</a>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] text-nowrap w-32 sm:w-32 text-justify">
-									<CurrencyNumber amount={fromAmount} />
-									{event.direction ? tokenB.symbol : tokenA.symbol}
-								</span>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] text-nowrap w-32 sm:w-32 text-justify">
-									<CurrencyNumber amount={toAmount} />
-									{event.direction ? tokenA.symbol : tokenB.symbol}
-								</span>
-							</div>
+				<table class="table-auto w-[900px] bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
+					<thead>
+						<tr>
+							<th class="text-left px-4 py-3">TxId</th>
+							<th class="text-left px-4 py-3">Time</th>
+							<th class="text-left px-4 py-3">Round</th>
+							<th class="text-left px-4 py-3">Sender</th>
+							<th class="text-left px-4 py-3">Amount</th>
+							<th class="text-center px-4 py-3">&nbsp;</th>
+							<th class="text-right px-4 py-3">Amount</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each someEvents as event}
+							{@const isLiquidityTxn = typeof event['lpt'] !== 'undefined'}
+							{@const isSwapTxn = !isLiquidityTxn}
+							{@const fromAmount = isSwapTxn ? Number(event['fromAmount']) / (event['direction'] ? tokenB.unit : tokenA.unit) : 0}
+							{@const toAmount = isSwapTxn ? Number(event['toAmount']) / (event['direction'] ? tokenA.unit : tokenB.unit) : 0}
+							{@const alphaAmount = isLiquidityTxn ? Number(convertDecimals(event['amts'][0], tokenA.decimals, 6)) / 1e6 : 0}
+							{@const betaAmount = isLiquidityTxn ? Number(convertDecimals(event['amts'][1], tokenB.decimals, 6)) / 1e6 : 0}
+							<tr>
+								<td class="text-left px-4 py-2">
+									<a class="flex-grow text-[0.8rem] sm:text-[1rem]" href="https://avmexplorer.com/tx/{event.txn.id}" target="_blank" referrerpolicy="no-referrer">
+										{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
+									</a>
+								</td>
+								<td class="text-center px-4 py-2">
+									<span class="flex-grow text-[0.8rem] sm:text-[1rem] hidden lg:flex">
+										{timeAgo(event.txn['round-time'] * 1000)}
+									</span>
+								</td>
+								<td class="text-center px-4 py-2">
+									<a
+										href="https://avmexplorer.com/block/{event.txn['confirmed-round']}"
+										target="_blank"
+										referrerpolicy="no-referrer"
+										class="flex-grow text-[0.8rem] sm:text-[1rem] hidden lg:flex"
+									>
+										{event.txn['confirmed-round']}
+									</a>
+								</td>
+								<td class="text-center px-4 py-2">
+									<a
+										class="flex-grow text-[0.8rem] sm:text-[1rem] hidden min-[380px]:flex"
+										href="https://avmexplorer.com/address/{event.sender}"
+										target="_blank"
+										referrerpolicy="no-referrer"
+									>
+										{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
+									</a>
+								</td>
+								<td class="text-left px-4 py-2">
+									{#if isSwapTxn}
+										<span class="opacity-50">{event['direction'] ? tokenB.symbol : tokenA.symbol}</span>
+										<CurrencyNumber amount={fromAmount} />
+									{:else}
+										<span class="opacity-50">{event['direction'] ? tokenB.symbol : tokenA.symbol}</span>
+										<CurrencyNumber amount={alphaAmount} />
+									{/if}
+								</td>
+								<td class="text-center px-4 py-2">
+									{#if isSwapTxn}
+										<span class="opacity-70">→</span>
+									{:else if event['adding']}
+										<!-- isLiquidityTxn ? (event['adding'] ? '+' : '―') : '+' -->
+										<span class="opacity-70 text-xl text-green-400">+</span>
+									{:else}
+										<!-- isLiquidityTxn ? (event['adding'] ? '+' : '―') : '+' -->
+										<span class="opacity-70 text-red-400">―</span>
+									{/if}
+								</td>
+								<td class="text-right px-4 py-2">
+									{#if isSwapTxn}
+										<CurrencyNumber amount={toAmount} />
+										<span class="opacity-50">{event['direction'] ? tokenA.symbol : tokenB.symbol}</span>
+									{:else}
+										<CurrencyNumber amount={betaAmount} />
+										<span class="opacity-50">{event['direction'] ? tokenA.symbol : tokenB.symbol}</span>
+									{/if}
+								</td>
+							</tr>
 						{/each}
-					</div>
-				</div>
-			{/if}
-		</div>
-	</svelte:fragment>
-
-	<svelte:fragment slot="liquidity-events" let:tokenA let:tokenB let:depositEvents>
-		<div class="br" />
-		<div class="events gap-0 justify-center items-center w-full sm:w-[calc(100vw-400px)] max-w-[900px]">
-			{#if depositEvents?.length}
-				{@const someDepositEvents = [...depositEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']).slice(0, 100)}
-				<div class="w-full event font-bold p-3 px-0 flex justify-start items-center gap-1 max-w-[800px]">
-					<h4 class="text-lg text-left w-full mb-1 max-w-[724px] font-medium">Change Liquidity Txns</h4>
-					<span class="flex-grow" />
-				</div>
-				<div class="bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
-					<div class="w-full event font-bold p-3 px-6 flex justify-start items-center gap-1 max-w-[800px]">
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28"> TxId </span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Time</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">Round</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"> Sender </span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-32 sm:w-32 text-left">Amt.</span>
-						<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-32 sm:w-32 text-left">Amt.</span>
-					</div>
-					<div class="max-h-[400px] overflow-y-auto">
-						{#each someDepositEvents as event}
-							{@const alphaAmount = Number(convertDecimals(event.amts[0], tokenA.decimals, 6)) / 1e6}
-							{@const betaAmount = Number(convertDecimals(event.amts[1], tokenB.decimals, 6)) / 1e6}
-							{@const changeSign = event.adding ? '+' : '-'}
-							<div class="w-full event hover:invert-[10%] p-2 px-6 flex justify-start items-center gap-1 max-w-[800px]">
-								<a class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28" href="https://avmexplorer.com/tx/{event.txn.id}" target="_blank" referrerpolicy="no-referrer">
-									{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
-								</a>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex">
-									{timeAgo(event.txn['round-time'] * 1000)}
-								</span>
-								<a
-									href="https://avmexplorer.com/block/{event.txn['confirmed-round']}"
-									target="_blank"
-									referrerpolicy="no-referrer"
-									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden lg:flex"
-								>
-									{event.txn['confirmed-round']}
-								</a>
-								<a
-									class="flex-grow text-[0.8rem] sm:text-[1rem] w-16 sm:w-28 hidden min-[380px]:flex"
-									href="https://avmexplorer.com/address/{event.sender}"
-									target="_blank"
-									referrerpolicy="no-referrer"
-								>
-									{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
-								</a>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] text-nowrap w-32 sm:w-32 text-justify">
-									{changeSign}<CurrencyNumber amount={alphaAmount} />
-									{tokenA.symbol}
-								</span>
-								<span class="flex-grow text-[0.8rem] sm:text-[1rem] text-nowrap w-32 sm:w-32 text-justify">
-									{changeSign}<CurrencyNumber amount={betaAmount} />
-									{tokenB.symbol}
-								</span>
-							</div>
-						{/each}
-					</div>
-				</div>
+					</tbody>
+				</table>
 			{/if}
 		</div>
 		<div class="br" />

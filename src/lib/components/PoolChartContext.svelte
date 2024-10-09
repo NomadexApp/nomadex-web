@@ -303,8 +303,7 @@
 		</div>
 	{/if}
 
-	<slot name="swap-events" {tokenA} {tokenB} {swapEvents} />
-	<slot name="liquidity-events" {tokenA} {tokenB} {depositEvents} />
+	<slot name="all-events" {tokenA} {tokenB} events={[...swapEvents, ...depositEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])} />
 </section>
 
 <style>
