@@ -299,7 +299,7 @@
 	</div>
 	{#if context !== 'limit'}
 		<div class="chart-container min-w-[250px] w-full overflow-hidden bg-[#00000033] rounded-[8px]" bind:clientWidth={chartWidth} style="min-height: {chartWidth / 2.6}px;">
-			<CandleChart label={`Price of ${pricingDirection.split('/').join(' in ')}`} {logarithmic} data={priceData.slice(-80)} />
+			<CandleChart label={`Price of ${pricingDirection.split('/').join(' in ')}`} {logarithmic} data={priceData.slice(-50)} />
 		</div>
 	{/if}
 
