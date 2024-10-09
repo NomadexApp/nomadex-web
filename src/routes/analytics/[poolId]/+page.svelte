@@ -16,7 +16,7 @@
 					<span class="flex-grow" />
 				</div>
 
-				<table class="table-auto w-[900px] bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
+				<table class="table-auto w-full max-w-[900px] bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
 					<thead>
 						<tr>
 							<th class="text-left px-4 py-3">TxId</th>

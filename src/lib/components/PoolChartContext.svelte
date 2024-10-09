@@ -109,10 +109,6 @@
 			txn: <any>{ id: event[4], 'confirmed-round': event[5], 'round-time': event[6] },
 		}));
 
-		console.log({
-			jsonResponse,
-		});
-
 		generateDataByTime(pricingDirection, timescale);
 	}
 
