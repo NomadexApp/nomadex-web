@@ -26,7 +26,7 @@ export type Pool = {
 	assets: [Token, Token];
 	swapFee: string;
 	tvl: number;
-	volume: number;
+	volume: [bigint, bigint];
 	apr: number;
 };
 
@@ -90,6 +90,7 @@ export async function loadTokensAndPools() {
 		betaType: number,
 		swapFee: string,
 		balances: [string, string],
+		volume: [string, string],
 		apr: number,
 	}[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools`)).json();
 	const pools = poolsSnap.map((pool) => {
@@ -101,6 +102,7 @@ export async function loadTokensAndPools() {
 			betaType: pool.betaType,
 			swapFee: pool.swapFee,
 			balances: pool.balances,
+			volume: pool.volume,
 			apr: pool.apr,
 		};
 	});
@@ -112,7 +114,7 @@ export async function loadTokensAndPools() {
 		assets: <[Token, Token]>[pool.alphaId, pool.betaId].map(id => validTokens.find(t => t.id === id)),
 		balances: pool.balances,
 		tvl: 0,
-		volume: 0,
+		volume: <[bigint, bigint]>[BigInt(pool.volume[0]), BigInt(pool.volume[1])],
 		apr: pool.apr,
 	})).filter(p => p.assets.reduce((a, r) => !!r && !!a, true));
 
