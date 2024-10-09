@@ -108,27 +108,32 @@
 				const factoryAddress = algosdk.getApplicationAddress(contracts[PUBLIC_NETWORK].poolFcatory);
 				const factoryBalance = await MySmartAsset.from(token.id).arc200BalanceOf(factoryAddress);
 				const userBalance = await MySmartAsset.from(token.id).arc200BalanceOf($connectedAccount);
-				const getTxns = async (address: string) => [
-					algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-						from: $connectedAccount,
-						to: algosdk.getApplicationAddress(token.id),
-						amount: 28500,
-						suggestedParams: params,
-					}),
-					(
-						await MySmartAsset.from(token.id).client.arc200Transfer(
-							{
-								to: address,
-								value: 0,
+				const getTxns = async (address: string) => {
+					const client = new SmartAssetClient(
+						{
+							id: token.id,
+							resolveBy: 'id',
+							sender: {
+								addr: $connectedAccount,
+								signer: algosdk.makeEmptyTransactionSigner(),
 							},
-							{ sendParams: { skipSending: true } }
-						)
-					).transaction,
-				];
-				if (factoryBalance <= 1n) {
+						},
+						nodeClient
+					);
+					return [
+						algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+							from: $connectedAccount,
+							to: algosdk.getApplicationAddress(token.id),
+							amount: 28500,
+							suggestedParams: params,
+						}),
+						(await client.arc200Transfer({ to: address, value: 0 }, { sendParams: { skipSending: true } })).transaction,
+					];
+				};
+				if (factoryBalance < 1n) {
 					txns.push(...(await getTxns(factoryAddress)));
 				}
-				if (userBalance <= 1n) {
+				if (userBalance < 1n) {
 					txns.push(...(await getTxns($connectedAccount)));
 				}
 			}
