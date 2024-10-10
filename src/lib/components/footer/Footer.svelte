@@ -41,9 +41,9 @@
 			<div class="">
 				<h3 class="mb-2">Links</h3>
 				<ul class="font-thin text-gray-400">
-					<li><a target="_blank" href="//twitter.com/nomadex_app">Twitter</a></li>
-					<li><a target="_blank" href="//">Discord</a></li>
-					<li><a target="_blank" href="//github.com/webdevalgo">Github</a></li>
+					<li><a target="_blank" href="https://twitter.com/nomadex_app">Twitter</a></li>
+					<li><a target="_blank" href="https://discord.gg/2h3YnM6Y">Discord</a></li>
+					<li><a target="_blank" href="https://github.com/webdevalgo">Github</a></li>
 				</ul>
 			</div>
 		</div>
