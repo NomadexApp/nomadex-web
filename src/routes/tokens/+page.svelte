@@ -53,12 +53,8 @@
 								{/if}
 							</span>
 							<span class="flex-grow" />
-							<span>{token.type}</span>
+							<span>{token.id}</span>
 						</a>
-
-						<!-- {#if token.type === TokenType.ARC200}
-							(arc200)
-						{/if} -->
 					</div>
 				</div>
 			{/each}
