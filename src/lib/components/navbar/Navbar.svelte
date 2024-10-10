@@ -19,7 +19,7 @@
 	<nav class="navbar flex flex-col sm:flex-row text-gray-100 max-w-screen-2xl mx-auto">
 		<div class="navbar-brand">
 			<div class="logo-wrapper">
-				<a class="text-primary" href="/"><Logo /></a>
+				<a class="text-primary" aria-label="Nomadex" href="/"><Logo /></a>
 			</div>
 		</div>
 		<div class="space hidden sm:block" />

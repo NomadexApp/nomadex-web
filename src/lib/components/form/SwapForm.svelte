@@ -86,7 +86,7 @@
 		}}
 	/>
 	<div class="flex justify-center px-1">
-		<button type="reset" class="btn btn-ghost btn-link text-white btn-sm opacity-80" on:click={handleSwitchPlaces}>
+		<button name="flip" type="reset" class="btn btn-ghost btn-link text-white btn-sm opacity-80" on:click={handleSwitchPlaces}>
 			<span class="block h-6"><MdSwapVert /></span>
 		</button>
 	</div>
