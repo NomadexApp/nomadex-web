@@ -35,10 +35,6 @@
 			loading = false;
 		}
 	});
-
-	async function createVoiPool() {
-		goto(`/pools/VOI-${symbol}`);
-	}
 </script>
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
