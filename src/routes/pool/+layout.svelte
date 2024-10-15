@@ -60,72 +60,74 @@
 	$: filteredPools = filterPools(searchText, my, $knownPools, poolBalances);
 </script>
 
-<form class="max-w-[90vw] overflow-hidden">
-	<div class="flex justify-between items-center">
-		<FormTitle>Liquidity Pools</FormTitle>
-		<div>
-			<a href="/pools/create" class="btn btn-ghost">Create Pool</a>
+{#if !$page.params.poolId}
+	<form class="max-w-[90vw] overflow-hidden">
+		<div class="flex justify-between items-center">
+			<FormTitle>Liquidity Pools</FormTitle>
+			<div>
+				<a href="/pools/create" class="btn btn-ghost">Create Pool</a>
+			</div>
 		</div>
-	</div>
-	{#if !all}
-		<p>
-			Liquidity providers earn a fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by removing your
-			liquidity.
-		</p>
-		<div class="br" />
+		{#if !all}
+			<p>
+				Liquidity providers earn a fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by removing your
+				liquidity.
+			</p>
+			<div class="br" />
 
-		{#if $connectedAccount}
-			<Join
-				items={[
-					{ id: 'pools', name: 'Pools', href: '/pool' },
-					{ id: 'your-positions', name: 'Your Positions', href: '/pool/your-positions' },
-				]}
-				active={$page.url.pathname.match(/\/pool\/your-positions\/?/) ? 'your-positions' : 'pools'}
-			/>
+			{#if $connectedAccount}
+				<Join
+					items={[
+						{ id: 'pools', name: 'Pools', href: '/pool' },
+						{ id: 'your-positions', name: 'Your Positions', href: '/pool/your-positions' },
+					]}
+					active={$page.url.pathname.match(/\/pool\/your-positions\/?/) ? 'your-positions' : 'pools'}
+				/>
+				<div class="br" />
+			{/if}
+		{:else}
 			<div class="br" />
 		{/if}
-	{:else}
-		<div class="br" />
-	{/if}
-	<br class="sm:hidden" />
+		<br class="sm:hidden" />
 
-	{#if $page.url.pathname.match(/\/pool\/?$/)}
-		<h3 class="text-xl mb-2">Search pool</h3>
-		<TextInput placeholder="Search by name or id" bind:value={searchText} />
-		<div class="br" />
-		<h3 class="text-xl mb-2">Popular pools</h3>
-	{/if}
+		{#if $page.url.pathname.match(/\/pool\/?$/)}
+			<h3 class="text-xl mb-2">Search pool</h3>
+			<TextInput placeholder="Search by name or id" bind:value={searchText} />
+			<div class="br" />
+			<h3 class="text-xl mb-2">Popular pools</h3>
+		{/if}
 
-	<div class="pools mb-8 text-base sm:bg-[#00000033] sm:rounded-[8px] flex flex-col gap-2">
-		<div class="pool hidden sm:grid">
-			<div>Name</div>
-			<div>{my ? 'Value' : 'TVL'}</div>
-			<div class="inline-flex items-start">VOL<span class="text-xs -mt-1 text-gray-300">7d</span></div>
-			<div>APY</div>
-			<div>&nbsp;</div>
+		<div class="pools mb-8 text-base sm:bg-[#00000033] sm:rounded-[8px] flex flex-col gap-2">
+			<div class="pool hidden sm:grid">
+				<div>Name</div>
+				<div>{my ? 'Value' : 'TVL'}</div>
+				<div class="inline-flex items-start">VOL<span class="text-xs -mt-1 text-gray-300">7d</span></div>
+				<div>APY</div>
+				<div>&nbsp;</div>
+			</div>
+
+			{#each filteredPools as pool (pool.poolId)}
+				<PoolInfo {pool} {my} balances={poolBalances?.[pool.poolId]} />
+			{:else}
+				{#if !poolBalances}
+					<div class="w-full flex justify-center p-4 pb-8">
+						<span class="loading" />
+					</div>
+				{/if}
+			{/each}
 		</div>
-
-		{#each filteredPools as pool (pool.poolId)}
-			<PoolInfo {pool} {my} balances={poolBalances?.[pool.poolId]} />
-		{:else}
-			{#if !poolBalances}
-				<div class="w-full flex justify-center p-4 pb-8">
-					<span class="loading" />
-				</div>
-			{/if}
-		{/each}
-	</div>
-</form>
-{#if !my && !all}
-	<div class="flex justify-center">
-		<a href="/pool/all"><button class="btn btn-ghost">All Pools</button></a>
-	</div>
+	</form>
+	{#if !my && !all}
+		<div class="flex justify-center">
+			<a href="/pool/all"><button class="btn btn-ghost">All Pools</button></a>
+		</div>
+	{/if}
+	<div class="br" />
+	<div class="br" />
+	<div class="br" />
+	<div class="br" />
+	<div class="br" />
 {/if}
-<div class="br" />
-<div class="br" />
-<div class="br" />
-<div class="br" />
-<div class="br" />
 
 <slot />
 
