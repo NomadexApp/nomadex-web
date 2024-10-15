@@ -261,6 +261,45 @@
       }
     },
     {
+      "name": "registerOnline",
+      "args": [
+        {
+          "name": "selectionPk",
+          "type": "byte[]"
+        },
+        {
+          "name": "stateProofPk",
+          "type": "byte[]"
+        },
+        {
+          "name": "votePk",
+          "type": "byte[]"
+        },
+        {
+          "name": "voteFirst",
+          "type": "uint64"
+        },
+        {
+          "name": "voteLast",
+          "type": "uint64"
+        },
+        {
+          "name": "voteKeyDilution",
+          "type": "uint64"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "registerOffline",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
       "name": "removeLiquidity",
       "args": [
         {

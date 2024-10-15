@@ -42,4 +42,37 @@ export abstract class Pool11 extends Contract.extend(Arc200, Ownable) {
     this.swapFee.value = fee;
     return true;
   }
+
+  registerOnline(
+    selectionPk: bytes,
+    stateProofPk: bytes,
+    votePk: bytes,
+    voteFirst: uint64,
+    voteLast: uint64,
+    voteKeyDilution: uint64
+  ): void {
+    const factoryManager = this.factory.value.globalState('warden') as Address;
+    assert(this.txn.sender === this.warden.value || this.txn.sender === factoryManager);
+
+    sendOnlineKeyRegistration({
+      sender: this.app.address,
+      selectionPK: selectionPk,
+      stateProofPK: stateProofPk,
+      votePK: votePk,
+      voteFirst: voteFirst,
+      voteLast: voteLast,
+      voteKeyDilution: voteKeyDilution,
+      fee: globals.minTxnFee,
+    });
+  }
+
+  registerOffline(): void {
+    const factoryManager = this.factory.value.globalState('warden') as Address;
+    assert(this.txn.sender === this.warden.value || this.txn.sender === factoryManager);
+
+    sendOfflineKeyRegistration({
+      sender: this.app.address,
+      fee: globals.minTxnFee,
+    });
+  }
 }

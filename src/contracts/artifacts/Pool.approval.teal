@@ -1468,6 +1468,194 @@ setFees:
 	int 1
 	retsub
 
+// registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void
+*abi_route_registerOnline:
+	// voteKeyDilution: uint64
+	txna ApplicationArgs 6
+	btoi
+
+	// voteLast: uint64
+	txna ApplicationArgs 5
+	btoi
+
+	// voteFirst: uint64
+	txna ApplicationArgs 4
+	btoi
+
+	// votePk: byte[]
+	txna ApplicationArgs 3
+	extract 2 0
+
+	// stateProofPk: byte[]
+	txna ApplicationArgs 2
+	extract 2 0
+
+	// selectionPk: byte[]
+	txna ApplicationArgs 1
+	extract 2 0
+
+	// execute registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void
+	callsub registerOnline
+	int 1
+	return
+
+// registerOnline(selectionPk: bytes, stateProofPk: bytes, votePk: bytes, voteFirst: uint64, voteLast: uint64, voteKeyDilution: uint64): void
+registerOnline:
+	proto 6 0
+
+	// Push empty bytes after the frame pointer to reserve space for local variables
+	byte 0x
+
+	// src/contracts/pool/1/Pool11.algo.ts:54
+	// factoryManager = this.factory.value.globalState('warden') as Address
+	byte 0x666163746f7279 // "factory"
+	app_global_get
+	byte 0x77617264656e // "warden"
+	app_global_get_ex
+
+	// global state value does not exist: this.factory.value.globalState('warden')
+	assert
+	frame_bury 0 // factoryManager: address
+
+	// src/contracts/pool/1/Pool11.algo.ts:55
+	// assert(this.txn.sender === this.warden.value || this.txn.sender === factoryManager)
+	txn Sender
+	byte 0x77617264656e // "warden"
+	app_global_get
+	==
+	dup
+	bnz *skip_or16
+	txn Sender
+	frame_dig 0 // factoryManager: address
+	==
+	||
+
+*skip_or16:
+	assert
+
+	// src/contracts/pool/1/Pool11.algo.ts:57
+	// sendOnlineKeyRegistration({
+	//       sender: this.app.address,
+	//       selectionPK: selectionPk,
+	//       stateProofPK: stateProofPk,
+	//       votePK: votePk,
+	//       voteFirst: voteFirst,
+	//       voteLast: voteLast,
+	//       voteKeyDilution: voteKeyDilution,
+	//       fee: globals.minTxnFee,
+	//     })
+	itxn_begin
+	int keyreg
+	itxn_field TypeEnum
+
+	// src/contracts/pool/1/Pool11.algo.ts:58
+	// sender: this.app.address
+	global CurrentApplicationAddress
+	itxn_field Sender
+
+	// src/contracts/pool/1/Pool11.algo.ts:59
+	// selectionPK: selectionPk
+	frame_dig -1 // selectionPk: bytes
+	itxn_field SelectionPK
+
+	// src/contracts/pool/1/Pool11.algo.ts:60
+	// stateProofPK: stateProofPk
+	frame_dig -2 // stateProofPk: bytes
+	itxn_field StateProofPK
+
+	// src/contracts/pool/1/Pool11.algo.ts:61
+	// votePK: votePk
+	frame_dig -3 // votePk: bytes
+	itxn_field VotePK
+
+	// src/contracts/pool/1/Pool11.algo.ts:62
+	// voteFirst: voteFirst
+	frame_dig -4 // voteFirst: uint64
+	itxn_field VoteFirst
+
+	// src/contracts/pool/1/Pool11.algo.ts:63
+	// voteLast: voteLast
+	frame_dig -5 // voteLast: uint64
+	itxn_field VoteLast
+
+	// src/contracts/pool/1/Pool11.algo.ts:64
+	// voteKeyDilution: voteKeyDilution
+	frame_dig -6 // voteKeyDilution: uint64
+	itxn_field VoteKeyDilution
+
+	// src/contracts/pool/1/Pool11.algo.ts:65
+	// fee: globals.minTxnFee
+	global MinTxnFee
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+	retsub
+
+// registerOffline()void
+*abi_route_registerOffline:
+	// execute registerOffline()void
+	callsub registerOffline
+	int 1
+	return
+
+// registerOffline(): void
+registerOffline:
+	proto 0 0
+
+	// Push empty bytes after the frame pointer to reserve space for local variables
+	byte 0x
+
+	// src/contracts/pool/1/Pool11.algo.ts:70
+	// factoryManager = this.factory.value.globalState('warden') as Address
+	byte 0x666163746f7279 // "factory"
+	app_global_get
+	byte 0x77617264656e // "warden"
+	app_global_get_ex
+
+	// global state value does not exist: this.factory.value.globalState('warden')
+	assert
+	frame_bury 0 // factoryManager: address
+
+	// src/contracts/pool/1/Pool11.algo.ts:71
+	// assert(this.txn.sender === this.warden.value || this.txn.sender === factoryManager)
+	txn Sender
+	byte 0x77617264656e // "warden"
+	app_global_get
+	==
+	dup
+	bnz *skip_or17
+	txn Sender
+	frame_dig 0 // factoryManager: address
+	==
+	||
+
+*skip_or17:
+	assert
+
+	// src/contracts/pool/1/Pool11.algo.ts:73
+	// sendOfflineKeyRegistration({
+	//       sender: this.app.address,
+	//       fee: globals.minTxnFee,
+	//     })
+	itxn_begin
+	int keyreg
+	itxn_field TypeEnum
+
+	// src/contracts/pool/1/Pool11.algo.ts:74
+	// sender: this.app.address
+	global CurrentApplicationAddress
+	itxn_field Sender
+
+	// src/contracts/pool/1/Pool11.algo.ts:75
+	// fee: globals.minTxnFee
+	global MinTxnFee
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+	retsub
+
 // getAlgoBalance(address: Address): uint256
 getAlgoBalance:
 	proto 1 1
@@ -4373,13 +4561,15 @@ bootstrap:
 	method "manager()address"
 	method "grant(address)void"
 	method "setFees(uint256)bool"
+	method "registerOnline(byte[],byte[],byte[],uint64,uint64,uint64)void"
+	method "registerOffline()void"
 	method "removeLiquidity(uint256)bool"
 	method "addLiquidity(txn,txn)bool"
 	method "swapAlphaToBeta(txn,uint256)uint256"
 	method "swapBetaToAlpha(txn,uint256)uint256"
 	method "bootstrap()void"
 	txna ApplicationArgs 0
-	match *abi_route_arc200_name *abi_route_arc200_symbol *abi_route_arc200_decimals *abi_route_arc200_totalSupply *abi_route_arc200_balanceOf *abi_route_arc200_allowance *abi_route_arc200_transfer *abi_route_arc200_approve *abi_route_arc200_transferFrom *abi_route_supportsInterface *abi_route_zeroAddress *abi_route_hasBox *abi_route_createBalanceBox *abi_route_createAllowanceBox *abi_route_noop *abi_route_manager *abi_route_grant *abi_route_setFees *abi_route_removeLiquidity *abi_route_addLiquidity *abi_route_swapAlphaToBeta *abi_route_swapBetaToAlpha *abi_route_bootstrap
+	match *abi_route_arc200_name *abi_route_arc200_symbol *abi_route_arc200_decimals *abi_route_arc200_totalSupply *abi_route_arc200_balanceOf *abi_route_arc200_allowance *abi_route_arc200_transfer *abi_route_arc200_approve *abi_route_arc200_transferFrom *abi_route_supportsInterface *abi_route_zeroAddress *abi_route_hasBox *abi_route_createBalanceBox *abi_route_createAllowanceBox *abi_route_noop *abi_route_manager *abi_route_grant *abi_route_setFees *abi_route_registerOnline *abi_route_registerOffline *abi_route_removeLiquidity *abi_route_addLiquidity *abi_route_swapAlphaToBeta *abi_route_swapBetaToAlpha *abi_route_bootstrap
 
 	// this contract does not implement the given ABI method for call NoOp
 	err
