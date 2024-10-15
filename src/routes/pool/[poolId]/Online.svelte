@@ -17,7 +17,7 @@
 		voteKeyDilution: number;
 	};
 	async function registerOnline({ pool, selectionPk, stateProofPk, votePk, voteFirst, voteLast, voteKeyDilution }: AddLiquidityOpts) {
-		const remove = addNotification('pending', `Adding liquidity...`);
+		const remove = addNotification('pending', `Register online...`);
 
 		const poolClient = new PoolClient(
 			{
