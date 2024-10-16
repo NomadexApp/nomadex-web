@@ -17,9 +17,9 @@
 				</div>
 
 				<table class="table-auto w-full max-w-[900px] bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
-					<thead>
+					<thead class="hidden sm:table-header-group">
 						<tr>
-							<th class="text-left px-4 py-3 hidden min-[380px]:table-cell">TxId</th>
+							<th class="text-left px-4 py-3 hidden sm:table-cell">TxId</th>
 							<th class="text-left px-4 py-3 hidden sm:table-cell">Sender</th>
 							<th class="text-left px-4 py-3 hidden lg:table-cell">Time</th>
 							<th class="text-left px-4 py-3 hidden lg:table-cell">Round</th>
@@ -37,7 +37,7 @@
 							{@const alphaAmount = isLiquidityTxn ? Number(convertDecimals(event['amts'][0], tokenA.decimals, 6)) / 1e6 : 0}
 							{@const betaAmount = isLiquidityTxn ? Number(convertDecimals(event['amts'][1], tokenB.decimals, 6)) / 1e6 : 0}
 							<tr>
-								<td class="text-left px-4 py-2 hidden min-[380px]:table-cell">
+								<td class="text-left px-4 py-2 hidden sm:table-cell">
 									<a class="text-white flex-grow text-[0.8rem] sm:text-[1rem]" href="https://avmexplorer.com/tx/{event.txn.id}" target="_blank" referrerpolicy="no-referrer">
 										{event.txn.id.slice(0, 3)}...{event.txn.id.slice(-3)}
 									</a>
@@ -67,7 +67,7 @@
 										{event.txn['confirmed-round']}
 									</a>
 								</td>
-								<td class="text-left px-4 py-2 text-nowrap">
+								<td class="text-left text-xs sm:text-[1rem] pl-4 py-2 text-nowrap">
 									{#if isSwapTxn}
 										<span class="opacity-50">{event['direction'] ? tokenB.symbol : tokenA.symbol}</span>
 										<CurrencyNumber amount={fromAmount} />
@@ -76,7 +76,7 @@
 										<CurrencyNumber amount={alphaAmount} />
 									{/if}
 								</td>
-								<td class="text-center px-4 py-2">
+								<td class="text-center px-0 py-0 w-0">
 									{#if isSwapTxn}
 										<span class="opacity-70">→</span>
 									{:else if event['adding']}
@@ -85,7 +85,7 @@
 										<span class="opacity-70 text-3xl font-thin text-red-400">-</span>
 									{/if}
 								</td>
-								<td class="text-right px-4 py-2 text-nowrap">
+								<td class="text-right text-xs sm:text-[1rem] pr-4 py-2 text-nowrap">
 									{#if isSwapTxn}
 										<CurrencyNumber amount={toAmount} />
 										<span class="opacity-50">{event['direction'] ? tokenA.symbol : tokenB.symbol}</span>
