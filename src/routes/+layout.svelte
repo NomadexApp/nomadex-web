@@ -23,21 +23,11 @@
 		pageContentRefresh();
 	}
 
-	let hue = Math.floor(Date.now() / 1000) % 360;
-	function nextHue(hue: number, x: number) {
-		return (hue + 45 * x) % 360;
-	}
-
-	$: hueStyle = `
-		--hue1: ${nextHue(hue, 0)};
-		--hue2: ${nextHue(hue, 1)};
-		--hue3: ${nextHue(hue, 2)};
-		--hue4: ${nextHue(hue, 3)};
-		--hue5: ${nextHue(hue, 4)};
-		--hue6: ${nextHue(hue, 5)};
-		--hue7: ${nextHue(hue, 6)};
-		--hue8: ${nextHue(hue, 7)};
-	`;
+	$: hueStyle =
+		Array(8)
+			.fill(0)
+			.map((_, i) => `--hue${i + 1}: ${(Math.floor(Date.now() / 1000) + i * 45) % 360};`)
+			.join('') + `--time: 360s;--zoom:${Math.floor(Date.now() / 300_000) % 2 === 0 ? 1000 : 3000}%;`;
 </script>
 
 {#if browser && $knownTokens.length}

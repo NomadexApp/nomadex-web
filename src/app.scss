@@ -26,14 +26,13 @@ body {
 	padding: 0;
 	font-family: 'Rubik', sans-serif;
 	font-optical-sizing: auto;
+	color: white;
 }
 
 .page-background {
-	--color: var(--color-light-8);
-	background: linear-gradient(0deg, transparent 44%, var(--color) 45%, var(--color) 55%, transparent 56%),
-		linear-gradient(90deg, transparent 44%, var(--color) 45%, var(--color) 55%, transparent 56%);
+	--color: var(--gray10);
 	background-size: 0.6rem 0.6rem;
-	background-color: var(--color-light-8);
+	background-color: var(--gray10);
 	opacity: 1;
 	position: fixed;
 	top: 0;
@@ -44,30 +43,36 @@ body {
 }
 
 .page-background.second {
-	// background: linear-gradient(270deg, #93e8d2, #362274);
-	background: linear-gradient(to bottom, #222222 0px, transparent 90%),
+	background: linear-gradient(to bottom, #232323 0px, transparent 90%),
 		linear-gradient(
 			to right,
-			hsl(var(--hue1) 50% 50% / 40%),
-			hsl(var(--hue2) 50% 50% / 40%),
-			hsl(var(--hue3) 50% 50% / 40%),
-			hsl(var(--hue4) 50% 50% / 40%),
-			hsl(var(--hue5) 50% 50% / 40%),
-			hsl(var(--hue6) 50% 50% / 40%),
-			hsl(var(--hue7) 50% 50% / 40%),
-			hsl(var(--hue8) 50% 50% / 40%),
-			hsl(var(--hue1) 50% 50% / 40%),
-			hsl(var(--hue2) 50% 50% / 40%),
-			hsl(var(--hue3) 50% 50% / 40%)
+			hsl(var(--hue1) 50% 60% / 100%),
+			hsl(var(--hue2) 50% 60% / 100%),
+			hsl(var(--hue3) 50% 60% / 100%),
+			hsl(var(--hue4) 50% 60% / 100%),
+			hsl(var(--hue5) 50% 60% / 100%),
+			hsl(var(--hue6) 50% 60% / 100%),
+			hsl(var(--hue7) 50% 60% / 100%),
+			hsl(var(--hue8) 50% 60% / 100%),
+			hsl(var(--hue1) 50% 60% / 100%),
+			hsl(var(--hue2) 50% 60% / 100%),
+			hsl(var(--hue3) 50% 60% / 100%)
 		);
 	opacity: 1;
-	background-size: 8000% 100%;
 
-	-webkit-animation: AnimationName 358s linear infinite;
-	-moz-animation: AnimationName 358s linear infinite;
-	-o-animation: AnimationName 358s linear infinite;
-	animation: AnimationName 358s linear infinite;
+	background-size: var(--zoom) 100%;
+
+	-webkit-animation: AnimationName var(--time) linear infinite;
+	-moz-animation: AnimationName var(--time) linear infinite;
+	-o-animation: AnimationName var(--time) linear infinite;
+	animation: AnimationName var(--time) linear infinite;
 	z-index: -9;
+}
+
+@media (max-width: 600px) {
+	.page-background.second {
+		background-size: 4000% 100%;
+	}
 }
 
 @-webkit-keyframes AnimationName {
