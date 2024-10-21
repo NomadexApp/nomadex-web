@@ -77,7 +77,7 @@
 						<button class="btn btn-ghost bg-[#00000040]" on:click={() => registerOffline({ pool })}> Register Offline </button>
 					</div>
 				</div>
-				<div class="br" />
+				<div class="br"></div>
 			</form>
 		</Online>
 	{:else}

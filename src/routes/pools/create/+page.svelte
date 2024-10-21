@@ -99,7 +99,7 @@
 			window.location.href = `/liquidity/${poolId}/add`;
 		} catch (e) {
 			remove();
-			addNotification('error', (<Error>e).message, 15000);
+			addNotification('error', (e as Error).message, 15000);
 		}
 	}
 

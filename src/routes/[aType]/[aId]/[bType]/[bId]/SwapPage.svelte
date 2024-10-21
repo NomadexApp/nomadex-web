@@ -145,7 +145,7 @@
 			console.log('Swap:', got);
 			updateBalances();
 		} catch (e) {
-			console.error((<Error>e).message);
+			console.error((e as Error).message);
 		}
 		pageContentRefresh(0);
 		disabled = prev;

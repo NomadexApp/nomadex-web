@@ -103,7 +103,7 @@
 						}
 					}
 				} catch (e) {
-					console.error((<Error>e)?.message);
+					console.error((e as Error)?.message);
 				}
 			}
 

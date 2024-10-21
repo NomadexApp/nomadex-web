@@ -38,7 +38,7 @@
 				<div class="w-full flex flex-col">
 					{#if $pageContentRefreshPending}
 						<section class="flex flex-col justify-center items-center h-full max-h-[70vh]">
-							<span class="loading" />
+							<span class="loading"></span>
 						</section>
 					{:else}
 						<slot />
@@ -46,7 +46,7 @@
 				</div>
 			{:else}
 				<div class="flex h-screen max-h-[70vh] w-full justify-center items-center">
-					<span class="loading loading-ring text-primary w-[2.5rem]" />
+					<span class="loading loading-ring text-primary w-[2.5rem]"></span>
 				</div>
 			{/if}
 		</article>
@@ -62,7 +62,7 @@
 	</section>
 {/if}
 
-<div class="page-background second" style={hueStyle} />
+<div class="page-background second" style={hueStyle}></div>
 
 <style>
 	:global(body) {
@@ -82,17 +82,5 @@
 		display: flex;
 		/* clip-path: polygon(15px 0%, calc(100% - 15px) 0%, 100% 25%, 100% 100%, 0 100%, 0 25%); */
 		padding: 1rem;
-	}
-	.testnet-overlay {
-		position: fixed;
-		background: black;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		z-index: 1000;
-		display: flex;
-		justify-content: center;
-		align-items: center;
 	}
 </style>

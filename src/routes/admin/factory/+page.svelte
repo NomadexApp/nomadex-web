@@ -71,7 +71,7 @@
 					<button class="btn btn-primary btn-sm" on:click={deployFactory}>DEPLOY</button>
 				</div>
 			{:else}
-				<div class="br" />
+				<div class="br"></div>
 				<div class="w-full max-w-[610px] flex flex-col justify-center">
 					<button class="btn btn-primary btn-sm" on:click={deployFactory}>Update Contract</button>
 				</div>

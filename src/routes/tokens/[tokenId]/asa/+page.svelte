@@ -47,8 +47,8 @@
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
 	<div class="h-full flex flex-col justify-start items-center gap-3 w-full">
-		<div class="br" />
-		<div class="br" />
+		<div class="br"></div>
+		<div class="br"></div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>ASA Id:</div>
 			<input class="input input-secondary bg-[#00000040]" on:keypress|preventDefault on:paste|preventDefault type="number" value={appId} />

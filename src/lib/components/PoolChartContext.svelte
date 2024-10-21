@@ -12,9 +12,10 @@
 	import { pageContentRefresh } from '../utils';
 	import { ABITupleType } from 'algosdk';
 	import { PUBLIC_NETWORK } from '$env/static/public';
+	import { Timescale } from '$lib/chart/type';
 
 	const { page } = getStores();
-	const pool = <Pool>$knownPools.find((p) => p.id === Number($page.params.poolId));
+	const pool = $knownPools.find((p) => p.id === Number($page.params.poolId)) as Pool;
 	if (!pool) {
 		throw Error('Pool not found!');
 	}
@@ -23,14 +24,6 @@
 
 	export let price = 0;
 	export let context = 'analytics';
-
-	enum Timescale {
-		'15m' = 15 * 60,
-		'30m' = 30 * 60,
-		'1hr' = 60 * 60,
-		'4hr' = 4 * 60 * 60,
-		'1d' = 24 * 60 * 60,
-	}
 
 	let swapEvents: {
 		sender: string;
@@ -65,28 +58,28 @@
 				const buff = Uint8Array.from(Buffer.from(log, 'base64'));
 				if (log.startsWith('cEjQ6')) {
 					// Swap
-					allSwapEvents.push(<any>[
-						...(<any>ABITupleType.from(`(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))`).decode(buff.slice(4))),
+					allSwapEvents.push([
+						...(ABITupleType.from(`(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))`).decode(buff.slice(4)) as any),
 						event.txid,
 						event.round,
 						event.time,
-					]);
+					] as any);
 				} else if (log.startsWith('PQE+f')) {
 					// Deposit
-					allDepositEvents.push(<any>[
-						...(<any>ABITupleType.from(`(address,(uint256,uint256),uint256,(uint256,uint256))`).decode(buff.slice(4))),
+					allDepositEvents.push([
+						...(ABITupleType.from(`(address,(uint256,uint256),uint256,(uint256,uint256))`).decode(buff.slice(4)) as any),
 						event.txid,
 						event.round,
 						event.time,
-					]);
+					] as any);
 				} else if (log.startsWith('po5lX')) {
 					// Withdraw
-					allDepositEvents.push(<any>[
-						...(<any>ABITupleType.from(`(address,uint256,(uint256,uint256),(uint256,uint256))`).decode(buff.slice(4))),
+					allDepositEvents.push([
+						...(ABITupleType.from(`(address,uint256,(uint256,uint256),(uint256,uint256))`).decode(buff.slice(4)) as any),
 						event.txid,
 						event.round,
 						event.time,
-					]);
+					] as any);
 				}
 			}
 		}
@@ -97,16 +90,16 @@
 			toAmount: Number(event[2][0] < event[2][1] ? event[2][1] : event[2][0]),
 			direction: event[1][0] < event[1][1] ? 1 : 0,
 			poolBals: event[3],
-			txn: <any>{ id: event[4], 'confirmed-round': event[5], 'round-time': event[6] },
+			txn: { id: event[4], 'confirmed-round': event[5], 'round-time': event[6] } as any,
 		}));
 
 		depositEvents = allDepositEvents.map((event) => ({
 			sender: event[0],
 			adding: event[1] instanceof Array,
-			lpt: <bigint>(event[1] instanceof Array ? event[2] : event[1]),
-			amts: <[bigint, bigint]>(event[1] instanceof Array ? event[1] : event[2]),
+			lpt: (event[1] instanceof Array ? event[2] : event[1]) as bigint,
+			amts: (event[1] instanceof Array ? event[1] : event[2]) as [bigint, bigint],
 			poolBals: event[3],
-			txn: <any>{ id: event[4], 'confirmed-round': event[5], 'round-time': event[6] },
+			txn: { id: event[4], 'confirmed-round': event[5], 'round-time': event[6] } as any,
 		}));
 
 		generateDataByTime(pricingDirection, timescale);

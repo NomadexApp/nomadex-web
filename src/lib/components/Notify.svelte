@@ -114,7 +114,7 @@
 						{:else if notification.type === 'error'}
 							<ErrorIcon />
 						{:else if notification.type === 'pending'}
-							<span class="loading w-5 ml-[0.17rem] mt-[0.17rem]" />
+							<span class="loading w-5 ml-[0.17rem] mt-[0.17rem]"></span>
 						{:else if notification.type === 'success'}
 							<SuccessIcon />
 						{/if}

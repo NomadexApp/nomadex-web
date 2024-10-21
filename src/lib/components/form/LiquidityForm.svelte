@@ -101,7 +101,7 @@
 	/>
 </div>
 
-<div class="br" />
+<div class="br"></div>
 <div class="flex justify-center text-sm">
 	<a class="hover:underline underline-offset-4 text-[#ffffff]" href="/liquidity/{pool.id}/{action === 'remove' ? 'add' : 'remove'}" on:click={() => pageContentRefresh()}>
 		{action === 'remove' ? 'Add' : 'Remove'} Liquidity

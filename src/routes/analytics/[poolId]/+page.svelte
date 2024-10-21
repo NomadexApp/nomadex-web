@@ -7,13 +7,13 @@
 
 <PoolChartContext>
 	<svelte:fragment slot="all-events" let:events let:tokenA let:tokenB>
-		<div class="br" />
+		<div class="br"></div>
 		<div class="events gap-0 justify-center items-center w-full max-w-[900px]">
 			{#if events?.length}
 				{@const someEvents = [...events].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']).slice(0, 100)}
 				<div class="w-full event font-bold p-3 px-0 flex justify-start items-center gap-1 max-w-[900px]">
 					<h4 class="text-lg text-left w-full mb-1 max-w-[724px] font-medium">Transactions</h4>
-					<span class="flex-grow" />
+					<span class="flex-grow"></span>
 				</div>
 
 				<table class="table-auto w-full max-w-[900px] bg-[#00000033] backdrop-blur-[5px] rounded-[8px]">
@@ -24,7 +24,7 @@
 							<th class="text-left px-4 py-3 hidden lg:table-cell">Time</th>
 							<th class="text-left px-4 py-3 hidden lg:table-cell">Round</th>
 							<th class="text-left px-4 py-3">Amount</th>
-							<th class="text-center px-4 py-3" />
+							<th class="text-center px-4 py-3"></th>
 							<th class="text-right px-4 py-3">Amount</th>
 						</tr>
 					</thead>
@@ -100,9 +100,9 @@
 				</table>
 			{/if}
 		</div>
-		<div class="br" />
-		<div class="br" />
-		<div class="br" />
+		<div class="br"></div>
+		<div class="br"></div>
+		<div class="br"></div>
 	</svelte:fragment>
 </PoolChartContext>
 

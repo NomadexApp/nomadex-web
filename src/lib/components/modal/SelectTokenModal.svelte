@@ -47,7 +47,7 @@
 <form>
 	<h3 class="text-2xl mb-4">Select a token</h3>
 	<TextInput placeholder="Search by name or id" bind:value={tokenSearch} />
-	<div class="br" />
+	<div class="br"></div>
 	<span class="block text-xl mb-4">
 		{#if tokenSearch}Matched tokens{:else}Tokens{/if}
 	</span>

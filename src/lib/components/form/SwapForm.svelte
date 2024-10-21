@@ -47,11 +47,11 @@
 				['Min received', `${(tokenAInput && tokenBInput ? minReceived : 0).toLocaleString()} ${tokenB.symbol}`],
 				...(tokenAInput && tokenBInput
 					? [
-							<[string, string]>['Fee', `${fee.toLocaleString()} ${tokenB.symbol}`],
-							<[string, string]>[
+							['Fee', `${fee.toLocaleString()} ${tokenB.symbol}`] as [string, string],
+							[
 								`Price of ${tokenA.symbol}`,
 								`${Number((Number(Math.floor((tokenBInput || 0) * 1e6)) / Number(Math.floor((tokenAInput || 0) * 1e6))).toFixed(4))} ${tokenB.symbol}`,
-							],
+							] as [string, string],
 					  ]
 					: []),
 				['Price impact', `${tokenAInput && tokenBInput ? impact : 0}%`],

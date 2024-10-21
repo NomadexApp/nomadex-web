@@ -114,7 +114,7 @@ export async function loadTokensAndPools() {
 		assets: <[Token, Token]>[pool.alphaId, pool.betaId].map(id => validTokens.find(t => t.id === id)),
 		balances: pool.balances,
 		tvl: 0,
-		volume: <[bigint, bigint]>[BigInt(pool.volume[0]), BigInt(pool.volume[1])],
+		volume: [BigInt(pool.volume[0]), BigInt(pool.volume[1])] as [bigint, bigint],
 		apr: pool.apr,
 	})).filter(p => p.assets.reduce((a, r) => !!r && !!a, true));
 
@@ -127,7 +127,7 @@ export async function loadTokensAndPools() {
 	const state = await factory.getGlobalState();
 	const buff = state.platformFee?.asByteArray();
 	if (!buff) return;
-	platformFee.set(<bigint>algosdk.ABIType.from('uint256').decode(buff));
+	platformFee.set(algosdk.ABIType.from('uint256').decode(buff) as bigint);
 
 	console.log('Platform Fee (%):', (Number(get(platformFee)) * 100) / SCALE);
 

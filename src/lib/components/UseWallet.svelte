@@ -71,7 +71,7 @@
 					group.map((_, i) => i)
 				);
 
-				if (resp) signed.push(...(<Uint8Array[]>resp));
+				if (resp) signed.push(...(resp as Uint8Array[]));
 			}
 
 			return signed;
@@ -85,7 +85,7 @@
 		const signed = await signTransactions(txnGroups);
 
 		const groups = txnGroups.map((group) => {
-			return <Uint8Array[]>group
+			return group
 				.map((txn) => {
 					const txId = txn.txID();
 					const matchedTxn = signed.find((signedTxn) => {
@@ -96,7 +96,7 @@
 					});
 					return matchedTxn;
 				})
-				.filter(Boolean);
+				.filter(Boolean) as Uint8Array[];
 		});
 
 		for (const group of groups) {
@@ -104,7 +104,7 @@
 			try {
 				await algosdk.waitForConfirmation(client, txId, 1);
 			} catch (error) {
-				console.warn((<Error>error).message);
+				console.warn((error as Error).message);
 			}
 		}
 

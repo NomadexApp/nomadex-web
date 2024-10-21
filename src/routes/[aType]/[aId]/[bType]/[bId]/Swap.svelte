@@ -186,7 +186,7 @@
 			onUpdate();
 			const log: Uint8Array = result.logs.find((log: Uint8Array) => log.length === 36);
 			if (log) {
-				return <bigint>algosdk.ABIType.from('uint256').decode(log.slice(4));
+				return algosdk.ABIType.from('uint256').decode(log.slice(4)) as bigint;
 			}
 		} catch (e) {
 			console.error(e);

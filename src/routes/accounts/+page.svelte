@@ -40,7 +40,7 @@
 
 		'G632RRW2BBNFGVFZJSX737VJFM536TPLY54XTQUAXQADUL2HB4FULT4I4A',
 		'7KA2VKJHXN3XS6CC4HICONHMGTZORJKBQOV5JIYQAAFKQRZMPMCCXBVRBI',
-		'MRJG32XT7I4WWX54TQTJFXSOXMHNM764BLA5KDPWJXRQRU53R57QGFFX4I'
+		'MRJG32XT7I4WWX54TQTJFXSOXMHNM764BLA5KDPWJXRQRU53R57QGFFX4I',
 	];
 	const namedWallets = {};
 	let filter = true;
@@ -48,14 +48,15 @@
 	let voiValues = [1, 1.16];
 	let sortBy = 'total';
 
-	$: filtededHolders = (filter ? millionars.filter((mil) => !filteredAddresess.includes(mil.address)) : millionars).map(
-		(h) => ({ ...h, amount: h.amount * voiValues[voiValue % voiValues.length] })
-	);
+	$: filtededHolders = (filter ? millionars.filter((mil) => !filteredAddresess.includes(mil.address)) : millionars).map((h) => ({
+		...h,
+		amount: h.amount * voiValues[voiValue % voiValues.length],
+	}));
 </script>
 
 {#if loading}
 	<div class="h-full flex justify-center items-center">
-		<span class="loading" />
+		<span class="loading"></span>
 	</div>
 {:else}
 	<div class="w-full h-full flex flex-col items-center justify-center p-12">
@@ -63,40 +64,40 @@
 			<button on:click={() => (filter = !filter)}>{filter ? 'Filtered' : 'Unfiltered'}</button>
 			<button on:click={() => voiValue++}>1 VOI = {voiValues[voiValue % voiValues.length]} VIA</button>
 		</div>
-		<div class="br" />
+		<div class="br"></div>
 		<table>
-			<tr class="cursor-pointer">
-				<th>#</th>
-				<th>Address</th>
-				<th class="hidden min-[500px]:table-cell" on:click={() => (sortBy = 'amount')}>Voi Balance</th>
-				<th class="hidden min-[500px]:table-cell" on:click={() => (sortBy = 'viaAmount')}>Via Balance</th>
-				<th on:click={() => (sortBy = 'total')}>Total</th>
-			</tr>
-			{#each [...filtededHolders]
-				.map( (mil) => ({ address: mil.address, amount: mil.amount, viaAmount: mil.viaAmount, total: mil.amount + mil.viaAmount }) )
-				.sort((a, b) => b[sortBy] - a[sortBy]) as millionar, index (millionar.address)}
-				<tr>
-					<td>
-						{`${index + 1}`.padStart(2, '0')}
-					</td>
-					<td>
-						<a
-							href="https://avmexplorer.com/address/{millionar.address}"
-							referrerpolicy="no-referrer"
-							target="_blank"
-						>
-							{#if namedWallets[millionar.address]}
-								{namedWallets[millionar.address]}
-							{:else}
-								{millionar.address.slice(0, 3)}...{millionar.address.slice(-3)}
-							{/if}
-						</a>
-					</td>
-					<td class="hidden min-[500px]:table-cell">{Math.floor(millionar.amount / 1e6).toLocaleString('en')}</td>
-					<td class="hidden min-[500px]:table-cell">{Math.floor(millionar.viaAmount / 1e6).toLocaleString('en')}</td>
-					<td>{Math.floor(millionar.total / 1e6).toLocaleString('en')}</td>
+			<thead>
+				<tr class="cursor-pointer">
+					<th>#</th>
+					<th>Address</th>
+					<th class="hidden min-[500px]:table-cell" on:click={() => (sortBy = 'amount')}>Voi Balance</th>
+					<th class="hidden min-[500px]:table-cell" on:click={() => (sortBy = 'viaAmount')}>Via Balance</th>
+					<th on:click={() => (sortBy = 'total')}>Total</th>
 				</tr>
-			{/each}
+			</thead>
+			<tbody>
+				{#each [...filtededHolders]
+					.map((mil) => ({ address: mil.address, amount: mil.amount, viaAmount: mil.viaAmount, total: mil.amount + mil.viaAmount }))
+					.sort((a, b) => b[sortBy] - a[sortBy]) as millionar, index (millionar.address)}
+					<tr>
+						<td>
+							{`${index + 1}`.padStart(2, '0')}
+						</td>
+						<td>
+							<a href="https://avmexplorer.com/address/{millionar.address}" referrerpolicy="no-referrer" target="_blank">
+								{#if namedWallets[millionar.address]}
+									{namedWallets[millionar.address]}
+								{:else}
+									{millionar.address.slice(0, 3)}...{millionar.address.slice(-3)}
+								{/if}
+							</a>
+						</td>
+						<td class="hidden min-[500px]:table-cell">{Math.floor(millionar.amount / 1e6).toLocaleString('en')}</td>
+						<td class="hidden min-[500px]:table-cell">{Math.floor(millionar.viaAmount / 1e6).toLocaleString('en')}</td>
+						<td>{Math.floor(millionar.total / 1e6).toLocaleString('en')}</td>
+					</tr>
+				{/each}
+			</tbody>
 		</table>
 	</div>
 {/if}

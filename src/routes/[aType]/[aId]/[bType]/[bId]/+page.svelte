@@ -10,10 +10,10 @@
 
 	const { page } = getStores();
 
-	const tokenA = <Token>$knownTokens.find((token) => token.id === Number($page.params.aId));
-	const tokenB = <Token>$knownTokens.find((token) => token.id === Number($page.params.bId));
+	const tokenA = $knownTokens.find((token) => token.id === Number($page.params.aId)) as Token;
+	const tokenB = $knownTokens.find((token) => token.id === Number($page.params.bId)) as Token;
 
-	let pool: Pool = <any>undefined;
+	let pool: Pool = undefined as any;
 
 	let alphaToken: Token;
 	let betaToken: Token;

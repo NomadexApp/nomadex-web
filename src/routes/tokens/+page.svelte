@@ -52,7 +52,7 @@
 									{token.symbol}
 								{/if}
 							</span>
-							<span class="flex-grow" />
+							<span class="flex-grow"></span>
 							<span>{token.id}</span>
 						</a>
 					</div>
@@ -60,9 +60,9 @@
 			{/each}
 		</div>
 	</div>
-	<div class="br" />
-	<div class="br" />
-	<div class="br" />
+	<div class="br"></div>
+	<div class="br"></div>
+	<div class="br"></div>
 </section>
 
 <style lang="postcss">

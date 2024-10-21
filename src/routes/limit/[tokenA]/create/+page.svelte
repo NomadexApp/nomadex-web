@@ -124,8 +124,8 @@
 </script>
 
 <section class="p-4">
-	<div class="br" />
-	<div class="br" />
+	<div class="br"></div>
+	<div class="br"></div>
 	<div class="flex flex-col justify-center gap-2 pt-6 max-w-[800px] mx-auto">
 		<h4 class="text-xl font-bold prose w-full mb-5 text-white">Create a limit Order</h4>
 		{#each limitOrders as limitOrder}

@@ -16,5 +16,5 @@
 </script>
 
 <section class="flex justify-center items-center h-full">
-	<span class="loading text-primary" />
+	<span class="loading text-primary"></span>
 </section>

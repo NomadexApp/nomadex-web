@@ -11,11 +11,11 @@
 	import LimitOrder from '$lib/components/LimitOrder.svelte';
 
 	const { page } = getStores();
-	const tokenA = <Token>$knownTokens.find((token) => token.symbol === $page.params.tokenA);
-	const tokenB = <Token>$knownTokens.find((token) => token.symbol === 'VOI');
+	const tokenA = $knownTokens.find((token) => token.symbol === $page.params.tokenA) as Token;
+	const tokenB = $knownTokens.find((token) => token.symbol === 'VOI') as Token;
 
-	let voiToken: Token = <any>undefined;
-	let arc200Token: Token = <any>undefined;
+	let voiToken: Token = undefined as any;
+	let arc200Token: Token = undefined as any;
 
 	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.ARC200) {
 		voiToken = tokenA;
@@ -61,7 +61,7 @@
 						value: box.value,
 						maker,
 						arc200Id: Number(arc200Id),
-						arc200Token: <Token>$knownTokens.find((t) => t.id === Number(arc200Id)),
+						arc200Token: $knownTokens.find((t) => t.id === Number(arc200Id)) as Token,
 						algoAmount: Number(algoAmount),
 						arc200Amount,
 						isDirectionFromArc200ToAlgo: Number(isDirectionFromArc200ToAlgo),
@@ -125,7 +125,7 @@
 <form class="form flex flex-col justify-start min-h-40 flex-grow w-[275px] text-[12px]">
 	{#if loading}
 		<div class="w-full min-h-44 flex justify-center items-center">
-			<span class="loading text-primary" />
+			<span class="loading text-primary"></span>
 		</div>
 	{:else}
 		{#each Object.keys(sortedLimitOrders).filter((key) => arc200Token.id === Number(key)) as key}
@@ -186,7 +186,7 @@
 					{/each}
 				</div>
 			</div>
-			<div class="br" />
+			<div class="br"></div>
 		{/each}
 	{/if}
 </form>

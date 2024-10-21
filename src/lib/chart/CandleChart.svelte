@@ -62,7 +62,7 @@
 		};
 
 		const chart = new Chart(ctx, {
-			type: <any>'candlestick',
+			type: 'candlestick' as any,
 			options: {
 				responsive: true,
 				maintainAspectRatio: true,
@@ -147,12 +147,12 @@
 
 <div class="canvas-wrapper relative">
 	{#if initializing}
-		<span class="loading text-primary" />
+		<span class="loading text-primary"></span>
 	{:else}
 		{#await updating}
-			<span class="loading text-primary" />
+			<span class="loading text-primary"></span>
 		{:then resp}
-			<canvas use:candleChart={resp} />
+			<canvas use:candleChart={resp}></canvas>
 		{/await}
 	{/if}
 </div>

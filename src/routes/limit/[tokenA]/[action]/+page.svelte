@@ -231,7 +231,7 @@
 	</div>
 	{#if loading}
 		<div class="w-full min-h-44 flex justify-center items-center">
-			<span class="loading text-primary" />
+			<span class="loading text-primary"></span>
 		</div>
 	{:else if Object.keys(sortedLimitOrders).filter((key) => Number(key) === arc200Token.id)?.length}
 		<div class="flex justify-end w-full max-w-[500px] mx-auto">
@@ -352,7 +352,7 @@
 			on:select={() => (inputTokenA = 0)}
 		/>
 	</div>
-	<div class="br" />
+	<div class="br"></div>
 	<div class="max-w-[900px] w-full mx-auto flex gap-2">
 		<LimitForm
 			bind:price={lazyPrice}
@@ -373,13 +373,13 @@
 			}}
 		/>
 	</div>
-	<div class="br" />
+	<div class="br"></div>
 
 	{#if $connectedAccount}
 		<div class="flex flex-col justify-center pt-6 max-w-[500px] w-full mx-auto">
 			{#if loading}
 				<div class="w-full min-h-44 flex justify-center items-center">
-					<span class="loading text-primary" />
+					<span class="loading text-primary"></span>
 				</div>
 			{:else}
 				{#each Object.keys(sortedLimitOrders).filter((key) => Number(key) === arc200Token.id) as key}
@@ -406,16 +406,16 @@
 							{/each}
 						</div>
 
-						<div class="br" />
-						<div class="br" />
+						<div class="br"></div>
+						<div class="br"></div>
 					{/if}
 				{/each}
 			{/if}
 		</div>
 	{/if}
-	<div class="br" />
-	<div class="br" />
-	<div class="br" />
+	<div class="br"></div>
+	<div class="br"></div>
+	<div class="br"></div>
 </section>
 
 <style>

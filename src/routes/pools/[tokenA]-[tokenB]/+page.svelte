@@ -172,7 +172,7 @@
 							Set LP Fee
 						</button>
 					</div>
-					<div class="br" />
+					<div class="br"></div>
 				</form>
 			{/if}
 			{#if [managerAddress, feeControllerAddress].includes($connectedAccount)}
@@ -210,7 +210,7 @@
 							<button class="btn btn-ghost bg-[#00000040]" on:click={registerOffline}>Register Offline</button>
 						</div>
 					</div>
-					<div class="br" />
+					<div class="br"></div>
 					{#if $connectedAccount === managerAddress}
 						<h4 class="text-left">Update Pool Contract (VOI/{arc200Token.symbol})</h4>
 
@@ -224,7 +224,7 @@
 								Update Pool Contract
 							</button>
 						</div>
-						<div class="br" />
+						<div class="br"></div>
 					{/if}
 				</form>
 			{/if}
@@ -249,11 +249,11 @@
 							</button>
 						</div>
 					{/if}
-					<div class="br" />
+					<div class="br"></div>
 				</form>
 			{:else}
 				Not Enough balance to create liquidity pool
-				<div class="br" />
+				<div class="br"></div>
 				Balance: {(Number(convertDecimals($arc200Balance ?? 0n, arc200Token.decimals, 6)) / 1e6).toLocaleString('en')}
 				{arc200Token.symbol}
 			{/if}

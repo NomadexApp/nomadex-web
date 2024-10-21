@@ -7,7 +7,7 @@
 		<div class="flex justify-between">
 			<a href="/tokens/create/asa" class="flex w-full items-center gap-2 cursor-pointer">
 				<span class="name text-lg text-bold"> ASA </span>
-				<span class="flex-grow" />
+				<span class="flex-grow"></span>
             </a>
 		</div>
 	</div>
@@ -16,7 +16,7 @@
 		<div class="flex justify-between">
 			<a href="/tokens/create/smart" class="flex w-full items-center gap-2 cursor-pointer">
 				<span class="name text-lg text-bold"> Smart Asset </span>
-				<span class="flex-grow" />
+				<span class="flex-grow"></span>
             </a>
 		</div>
 	</div>

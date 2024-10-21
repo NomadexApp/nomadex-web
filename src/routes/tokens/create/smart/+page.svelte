@@ -83,7 +83,7 @@
 			addNotification('success', `Created token ${appId}`, 10000);
 			goto(`/tokens/arc200-${appId}`);
 		} catch (e) {
-			console.error((<Error>e).message);
+			console.error((e as Error).message);
 			remove();
 		}
 	}
@@ -104,8 +104,8 @@
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
 	<div class="h-full flex flex-col justify-start items-center gap-3 w-full">
-		<div class="br" />
-		<div class="br" />
+		<div class="br"></div>
+		<div class="br"></div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Manager Adress:</div>
 			<input class="input input-secondary bg-[#00000040]" type="text" on:keypress|preventDefault on:paste|preventDefault bind:value={$connectedAccount} />
