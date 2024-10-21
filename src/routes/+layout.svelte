@@ -55,7 +55,8 @@
 		{#if $component}
 			<Modal let:close>
 				{#if $component}
-					<svelte:component this={$component} {close} {...$props} />
+					{@const Comp = $component}
+					<Comp {close} {...$props} />
 				{/if}
 			</Modal>
 		{/if}

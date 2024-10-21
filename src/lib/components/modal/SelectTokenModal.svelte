@@ -13,11 +13,7 @@
 	let balances = {};
 
 	$: filteredTokens = tokenSearch
-		? tokens.filter(
-				(token) =>
-					token.id.toString() === tokenSearch ||
-					token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
-		  )
+		? tokens.filter((token) => token.id.toString() === tokenSearch || token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`)))
 		: tokens;
 
 	// $: $connectedAccount && getBalances(filteredTokens);
@@ -39,9 +35,7 @@
 		// }
 	}
 
-	$: finalTokensList = [...filteredTokens].sort(
-		(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
-	);
+	$: finalTokensList = [...filteredTokens].sort((a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals);
 </script>
 
 <form>
@@ -57,8 +51,8 @@
 				on:keydown
 				class="token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
 				on:click={() => {
-					close();
 					handleSelect(token);
+					close();
 				}}
 			>
 				<div class="icon avatar w-10 h-10 bg-[#f0f0f005] rounded-full flex justify-center items-center">?</div>

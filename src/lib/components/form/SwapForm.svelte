@@ -52,11 +52,11 @@
 								`Price of ${tokenA.symbol}`,
 								`${Number((Number(Math.floor((tokenBInput || 0) * 1e6)) / Number(Math.floor((tokenAInput || 0) * 1e6))).toFixed(4))} ${tokenB.symbol}`,
 							] as [string, string],
-					  ]
+						]
 					: []),
 				['Price impact', `${tokenAInput && tokenBInput ? impact : 0}%`],
 				['Slippage', `${slippage * 100}%`],
-		  ]
+			]
 		: [];
 </script>
 
