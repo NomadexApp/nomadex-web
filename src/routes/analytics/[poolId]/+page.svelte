@@ -10,7 +10,7 @@
 		<div class="br"></div>
 		<div class="events gap-0 justify-center items-center w-full max-w-[900px]">
 			{#if events?.length}
-				{@const someEvents = [...events].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']).slice(0, 100)}
+				{@const someEvents = [...events].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round']).slice(0, 40)}
 				<div class="w-full event font-bold p-3 px-0 flex justify-start items-center gap-1 max-w-[900px]">
 					<h4 class="text-lg text-left w-full mb-1 max-w-[724px] font-medium">Transactions</h4>
 					<span class="flex-grow"></span>

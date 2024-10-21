@@ -48,7 +48,7 @@
 	$: browser && localStorage.setItem('timescale', JSON.stringify(timescale));
 
 	async function loadEvents() {
-		const response = await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}`);
+		const response = await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=250`);
 		const jsonResponse: { round: number; time: number; appId: number; txid: string; logs: string[] }[] = await response.json();
 		if (!jsonResponse) return console.log('Events response not defined');
 		const allSwapEvents: [string, [bigint, bigint], [bigint, bigint], [bigint, bigint], string, number, number][] = [];
@@ -228,7 +228,7 @@
 					Price ≈ {price < 0.1 ? Number(price.toFixed(10)) : price.toLocaleString('en')}
 					{pricingDirection.split('/')[1]}
 				</span>
-				<span />
+				<span></span>
 			</div>
 			<div>
 				<button
