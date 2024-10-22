@@ -22,13 +22,13 @@
 				<a class="text-primary" aria-label="Nomadex" href="/"><Logo /></a>
 			</div>
 		</div>
-		<div class="space hidden sm:block" />
+		<div class="space hidden sm:block"></div>
 		<ul>
-			<li class="first">
+			<li class="flex">
 				<a class:active={$page.url.pathname.match(/\/\d+\/\d+\/\d+\/\d+/)} href="/"> Swap </a>
 			</li>
 
-			<li>
+			<li class="flex">
 				<a class:active={$page.url.pathname.startsWith('/pool')} href="/pool">Pool</a>
 			</li>
 
@@ -36,11 +36,11 @@
 				<a class:active={$page.url.pathname.startsWith('/tokens')} href="/tokens">Token</a>
 			</li>
 
-			<!-- <li>
+			<!-- <li class="flex">
 				<a class:active={$page.url.pathname.startsWith('/limit')} href="/limit/_/buy"> Limit </a>
 			</li> -->
 
-			<li>
+			<li class="flex">
 				<a class:active={$page.url.pathname.startsWith('/analytics')} href="/analytics/{$knownPools?.[0]?.id ?? 0}"> Analytics </a>
 			</li>
 		</ul>
@@ -53,16 +53,15 @@
 					{:then balance}
 						<span class="text-nowrap">{(balance / 1e6).toLocaleString()} VOI</span>
 					{/await}
-					<span
+					<button
 						class="font-bold"
-						on:keydown
 						on:click={() => {
 							navigator.clipboard.writeText($connectedAccount);
 							addNotification('info', 'Copied to clipboard', 1000);
 						}}
 					>
 						{$connectedAccount.slice(0, 3)}...{$connectedAccount.slice(-3)}
-					</span>
+					</button>
 				</span>
 				<button class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary" on:click={() => walletDisconnect()}>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
@@ -106,10 +105,6 @@
 		background-color: #00000025;
 		-webkit-backdrop-filter: blur(0.5em);
 		backdrop-filter: blur(0.5em);
-	}
-
-	.navbar-wrapper.yellow .logo-wrapper a {
-		color: currentColor;
 	}
 
 	@media (max-width: 639px) {
@@ -194,8 +189,7 @@
 		/* opacity: 0.7; */
 	}
 
-	ul li:not(.hidden) {
-		display: flex;
+	ul li {
 		justify-content: center;
 		align-items: center;
 		padding: 0 0.25rem;
