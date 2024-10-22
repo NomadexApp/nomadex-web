@@ -27,8 +27,8 @@
 	$: hueStyle =
 		Array(8)
 			.fill(0)
-			.map((_, i) => `--hue${i + 1}: ${(Math.floor(Date.now() / 1000) + i * 45) % time};`)
-			.join('') + `--time: ${time}s;--zoom:${Math.floor(Date.now() / 600_000) % 2 === 0 ? 1000 : 3000}%;`;
+			.map((_, i) => `--hue${i + 1}: ${(i * 45) % 360};`)
+			.join('') + `--time: ${time}s;--zoom:${Math.floor(Date.now() / (time * 166.666)) % 2 === 0 ? 1000 : 3000}%;`;
 </script>
 
 {#if browser && $knownTokens.length}
