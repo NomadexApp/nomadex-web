@@ -23,17 +23,21 @@
 		pageContentRefresh();
 	}
 
-	let clock = Date.now();
-	setInterval(() => {
+	let clock = 0;
+	let zoom = 0;
+	function tick() {
 		clock = Date.now();
-	}, 1000);
+		zoom = 860 + Math.sin(((clock / 3000) % 360) * 0.017453292519943295) * 360;
+	}
+	tick();
+	setInterval(tick, 1000);
 
 	const cycle = 3600;
 	$: hueStyle =
 		Array(4)
 			.fill(0)
 			.map((_, i) => `--hue${i + 1}: ${(clock / (cycle * 2.777777777777) + i * 90) % 360};`)
-			.join('') + `--time: ${cycle}s;--zoom:${500 + (Math.floor(clock / 12000) % 500)}%;`;
+			.join('') + `--time: ${cycle}s;--zoom:${Math.floor(zoom)}%;`;
 </script>
 
 {#if browser && $knownTokens.length}
