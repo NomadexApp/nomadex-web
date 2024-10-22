@@ -32,7 +32,7 @@
 	$: hueStyle =
 		Array(4)
 			.fill(0)
-			.map((_, i) => `--hue${i + 1}: ${(clock / (cycle * 1000) + i * 90) % 360};`)
+			.map((_, i) => `--hue${i + 1}: ${(clock / (cycle * 2.777777777777) + i * 90) % 360};`)
 			.join('') + `--time: ${cycle}s;--zoom:${500 + (Math.floor(clock / 12000) % 500)}%;`;
 </script>
 

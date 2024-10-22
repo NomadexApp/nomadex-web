@@ -80,7 +80,7 @@ export async function loadTokensAndPools() {
 
 
 
-	console.log('Tokens:', validTokens);
+	// console.log('Tokens:', validTokens);
 
 	const poolsSnap: {
 		id: number,
@@ -118,7 +118,7 @@ export async function loadTokensAndPools() {
 		apr: pool.apr,
 	})).filter(p => p.assets.reduce((a, r) => !!r && !!a, true));
 
-	console.log('Pools:', validPools);
+	// console.log('Pools:', validPools);
 
 	const factory = new PoolFactoryClient({
 		id: factoryId,
@@ -129,7 +129,7 @@ export async function loadTokensAndPools() {
 	if (!buff) return;
 	platformFee.set(algosdk.ABIType.from('uint256').decode(buff) as bigint);
 
-	console.log('Platform Fee (%):', (Number(get(platformFee)) * 100) / SCALE);
+	// console.log('Platform Fee (%):', (Number(get(platformFee)) * 100) / SCALE);
 
 	for (const pool of validPools) {
 		const [alpha, beta] = pool.assets;
