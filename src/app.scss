@@ -44,28 +44,15 @@ body {
 
 .page-background.second {
 	background: linear-gradient(to bottom, #232323 0px, transparent 90%),
-		linear-gradient(
-			to right,
-			hsl(var(--hue1) 50% 60% / 100%),
-			hsl(var(--hue2) 50% 60% / 100%),
-			hsl(var(--hue3) 50% 60% / 100%),
-			hsl(var(--hue4) 50% 60% / 100%),
-			hsl(var(--hue5) 50% 60% / 100%),
-			hsl(var(--hue6) 50% 60% / 100%),
-			hsl(var(--hue7) 50% 60% / 100%),
-			hsl(var(--hue8) 50% 60% / 100%),
-			hsl(var(--hue1) 50% 60% / 100%),
-			hsl(var(--hue2) 50% 60% / 100%),
-			hsl(var(--hue3) 50% 60% / 100%)
-		);
+		linear-gradient(to right, hsl(var(--hue1) 50% 60% / 100%), hsl(var(--hue2) 50% 60% / 100%), hsl(var(--hue3) 50% 60% / 100%), hsl(var(--hue4) 50% 60% / 100%));
 	opacity: 1;
 
 	background-size: var(--zoom) 100%;
 
-	-webkit-animation: AnimationName var(--time) linear infinite;
-	-moz-animation: AnimationName var(--time) linear infinite;
-	-o-animation: AnimationName var(--time) linear infinite;
-	animation: AnimationName var(--time) linear infinite;
+	// -webkit-animation: AnimationName var(--time) linear infinite;
+	// -moz-animation: AnimationName var(--time) linear infinite;
+	// -o-animation: AnimationName var(--time) linear infinite;
+	// animation: AnimationName var(--time) linear infinite;
 	z-index: -9;
 }
 

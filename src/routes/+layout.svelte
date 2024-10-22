@@ -23,12 +23,17 @@
 		pageContentRefresh();
 	}
 
-	const time = 3600;
+	let clock = Date.now();
+	setInterval(() => {
+		clock = Date.now();
+	}, 1000);
+
+	const cycle = 3600;
 	$: hueStyle =
-		Array(8)
+		Array(4)
 			.fill(0)
-			.map((_, i) => `--hue${i + 1}: ${(i * 45) % 360};`)
-			.join('') + `--time: ${time}s;--zoom:${Math.floor(Date.now() / (time * 166.666)) % 2 === 0 ? 1000 : 3000}%;`;
+			.map((_, i) => `--hue${i + 1}: ${(clock / (cycle * 1000) + i * 90) % 360};`)
+			.join('') + `--time: ${cycle}s;--zoom:${500 + (Math.floor(clock / 12000) % 500)}%;`;
 </script>
 
 {#if browser && $knownTokens.length}
