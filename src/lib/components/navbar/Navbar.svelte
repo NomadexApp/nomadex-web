@@ -8,6 +8,7 @@
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { getAccountBalance } from '$lib/stores/onchain';
 	import { knownPools } from '$lib';
+	import { pageContentRefresh } from '$lib/utils';
 
 	const { page } = getStores();
 	let scrollY = 0;
@@ -41,7 +42,13 @@
 			</li> -->
 
 			<li class="flex">
-				<a class:active={$page.url.pathname.startsWith('/analytics')} href="/analytics/{$knownPools?.[0]?.id ?? 0}"> Analytics </a>
+				<a
+					class:active={$page.url.pathname.startsWith('/analytics')}
+					href="/analytics/{$knownPools?.[0]?.id ?? 0}"
+					on:click={() => pageContentRefresh()}
+				>
+					Analytics
+				</a>
 			</li>
 		</ul>
 		<div class="actions ml-auto flex gap-2">
@@ -63,12 +70,18 @@
 						{$connectedAccount.slice(0, 3)}...{$connectedAccount.slice(-3)}
 					</button>
 				</span>
-				<button class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary" on:click={() => walletDisconnect()}>
+				<button
+					class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary"
+					on:click={() => walletDisconnect()}
+				>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Disconnect
 				</button>
 			{:else}
-				<button class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary" on:click={() => openModal(ConnectWallet, {})}>
+				<button
+					class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary"
+					on:click={() => openModal(ConnectWallet, {})}
+				>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Connect Wallet
 				</button>
