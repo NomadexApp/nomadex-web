@@ -119,7 +119,7 @@
 	async function generateDataByTime(priceOf: string, duration = timescale) {
 		const _priceData: PriceCandleData[] = [];
 		const events = [...swapEvents].filter((e) => (e.direction === 0 ? e.fromAmount : e.toAmount) > 10);
-		console.log('events:', events);
+		// console.log('events:', events);
 
 		if (!events.length) return;
 
@@ -200,6 +200,7 @@
 <section class="flex flex-col items-center gap-2 max-w-[900px] mx-auto">
 	<div class="flex w-full gap-2">
 		<button
+			aria-label="tokens"
 			class="currency flex justify-center items-center mt-[0.1rem] p-2 py-0 w-[2.2rem] h-[1.8rem] rounded text-white bg-transparent"
 			on:click={() => {
 				openModal(SelectTokenModal, {

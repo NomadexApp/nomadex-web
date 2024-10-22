@@ -81,6 +81,7 @@
 			/>
 		</Swap>
 	</BalanceSubscriber>
+	<br /><br /><br /><br /><br />
 {:else}
 	<h3>Token Not Found</h3>
 {/if}
