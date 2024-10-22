@@ -27,6 +27,7 @@
 
 	.field input {
 		padding: 0.25rem 0.5rem;
+		padding-left: 1rem;
 		width: 100%;
 		outline: none;
 		background: transparent;
