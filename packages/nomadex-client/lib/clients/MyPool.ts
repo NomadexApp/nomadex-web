@@ -13,10 +13,7 @@ export class MyPool extends MySmartAsset {
     id: number;
     network: keyof typeof contracts;
     poolClient: PoolClient;
-    signer: {
-        addr: string;
-        signer: TransactionSigner;
-    };
+    signer: { addr: string; signer: TransactionSigner };
     algod: Algodv2;
 
     constructor(id: number, network: keyof typeof contracts, nodeClient: Algodv2, signer?: TransactionSignerAccount) {
@@ -137,50 +134,66 @@ export class MyPool extends MySmartAsset {
         return txns;
     }
 
+    private async addLiquidityHandler(tokenA: Token, tokenB: Token, assetAAmount: bigint, assetBAmount: bigint, send: boolean) {
+        const opts = { id: this.id, resolveBy: 'id' as const, sender: { ...this.signer } };
+        const alphaTxn = await this.buildDepositTxn(tokenA, assetAAmount);
+        const betaTxn = await this.buildDepositTxn(tokenB, assetBAmount);
+        const args = { alphaTxn, betaTxn };
+        const callOpts = { sendParams: { populateAppCallResources: true, skipSending: !send } };
+
+        if (!send) opts.sender.signer = makeEmptyTransactionSigner();
+        const poolClient = new PoolClient(opts, this.algod);
+        const resp = await poolClient.addLiquidity(args, callOpts);
+
+        return resp;
+    }
+
     async addLiquidity(tokenA: Token, tokenB: Token, assetAAmount: bigint, assetBAmount: bigint) {
-        try {
-            const alphaTxn = await this.buildDepositTxn(tokenA, assetAAmount);
-            const betaTxn = await this.buildDepositTxn(tokenB, assetBAmount);
+        const result = await this.addLiquidityHandler(tokenA, tokenB, assetAAmount, assetBAmount, true);
+        return result.return;
+    }
 
-            const resp = await this.poolClient.addLiquidity(
-                {
-                    alphaTxn: alphaTxn,
-                    betaTxn: betaTxn,
-                },
-                {
-                    sendParams: { populateAppCallResources: true },
-                }
-            );
+    async buildAddLiquidityTxns(tokenA: Token, tokenB: Token, assetAAmount: bigint, assetBAmount: bigint) {
+        const result = await this.addLiquidityHandler(tokenA, tokenB, assetAAmount, assetBAmount, false);
+        return result.transactions;
+    }
 
-            return resp.return;
-        } catch (e) {
-            console.error(e);
-        }
+    private async removeLiquidityHandler(lptAmount: bigint, send: boolean) {
+        const opts = { id: this.id, resolveBy: 'id' as const, sender: { ...this.signer } };
+        const args = { lptAmount: lptAmount };
+        const callOpts = { sendParams: { populateAppCallResources: true, skipSending: !send } };
+
+        if (!send) opts.sender.signer = makeEmptyTransactionSigner();
+        const poolClient = new PoolClient(opts, this.algod);
+        const resp = await poolClient.removeLiquidity(args, callOpts);
+
+        return resp;
     }
 
     async removeLiquidity(lptAmount: bigint) {
-        const poolClient = new PoolClient(
-            {
-                id: this.id,
-                resolveBy: 'id',
-                sender: this.signer,
-            },
-            this.algod
-        );
+        const result = await this.removeLiquidityHandler(lptAmount, true);
+        return result.return;
+    }
 
-        const resp = await poolClient.removeLiquidity(
-            {
-                lptAmount: lptAmount,
-            },
-            {
-                sendParams: { populateAppCallResources: true },
-            }
-        );
-
-        return resp.return;
+    async buildRemoveLiquidityTxns(lptAmount: bigint) {
+        const result = await this.removeLiquidityHandler(lptAmount, false);
+        return result.transactions;
     }
 
     async swap(fromToken: Token, toToken: Token, fromAmount: bigint, toAmountMin: bigint, isDirectionAlphaToBeta: boolean) {
+        const finalTxns = await this.buildSwapTxns(fromToken, toToken, fromAmount, toAmountMin, isDirectionAlphaToBeta);
+        const signed = await this.signer.signer(finalTxns, []);
+
+        await this.algod.sendRawTransaction(signed).do();
+        const result = await waitForConfirmation(this.algod, finalTxns.at(-1)?.txID() ?? '', 3);
+
+        const log: Uint8Array = result.logs.find((log: Uint8Array) => log.length === 36);
+        if (log) {
+            return ABIType.from('uint256').decode(log.slice(4)) as bigint;
+        }
+    }
+
+    async buildSwapTxns(fromToken: Token, toToken: Token, fromAmount: bigint, toAmountMin: bigint, isDirectionAlphaToBeta: boolean): Promise<Transaction[]> {
         const poolClient = new PoolClient(
             {
                 id: this.id,
@@ -230,15 +243,6 @@ export class MyPool extends MySmartAsset {
         }
         atc.buildGroup();
         atc = await populateAppCallResources(atc, this.algod);
-        const finalTxns = atc.buildGroup().map(({ txn }) => txn);
-        const signed = await this.signer.signer(finalTxns, []);
-
-        await this.algod.sendRawTransaction(signed).do();
-        const result = await waitForConfirmation(this.algod, finalTxns.at(-1)?.txID() ?? '', 3);
-
-        const log: Uint8Array = result.logs.find((log: Uint8Array) => log.length === 36);
-        if (log) {
-            return ABIType.from('uint256').decode(log.slice(4)) as bigint;
-        }
+        return atc.buildGroup().map(({ txn }) => txn);
     }
 }
