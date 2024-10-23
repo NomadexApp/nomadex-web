@@ -30,7 +30,7 @@
 
 	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
 
-	let slippage = browser ? JSON.parse(localStorage.getItem('slippage') ?? '0.025') : 0.025;
+	let slippage: number = browser ? JSON.parse(localStorage.getItem('slippage') ?? '0.025') : 0.025;
 
 	let fee = 0;
 
@@ -129,17 +129,18 @@
 		if (!tokenA || !tokenB || !pool) return;
 		const prev = disabled;
 		disabled = true;
-		const tokenAAmount = Math.floor(inputTokenA * tokenA.unit);
-		const tokenBAmount = Math.floor(inputTokenB * tokenB.unit);
-		const minOfTokenB = Math.floor(tokenBAmount - Math.round(tokenBAmount * slippage));
+		const amountA = convertDecimals(Math.floor(inputTokenA * 1e6), 6, tokenA.decimals);
+		let amountB = convertDecimals(Math.floor(inputTokenB * 1e6), 6, tokenB.decimals);
+
+		amountB -= (amountB * BigInt(Math.floor(slippage * 1e6))) / BigInt(1e6);
 
 		try {
 			const got = await handleSwap({
 				pool,
 				tokenA,
 				tokenB,
-				inputTokenA,
-				minOfTokenB,
+				amountA,
+				amountB,
 				isDirectionAlphaToBeta: alphaToken.id === tokenA.id,
 			});
 			console.log('Swap:', got);
@@ -154,7 +155,13 @@
 	let impact = 0;
 
 	$: impact = Number(
-		(((poolTokenABalanceInRange + inputTokenA) / (poolTokenBBalanceInRange - inputTokenB) / (poolTokenABalanceInRange / poolTokenBBalanceInRange) - 1) * 100).toFixed(2)
+		(
+			((poolTokenABalanceInRange + inputTokenA) /
+				(poolTokenBBalanceInRange - inputTokenB) /
+				(poolTokenABalanceInRange / poolTokenBBalanceInRange) -
+				1) *
+			100
+		).toFixed(2)
 	);
 
 	let lastPoolArc200Balance = 0n;
