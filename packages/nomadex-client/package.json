@@ -1,0 +1,31 @@
+{
+  "name": "nomadex-client",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "browser": {
+    "crypto": false,
+    "path": false,
+    "fs": false
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "prepublish": "npm run build"
+  },
+  "files": [
+    "dist",
+    "lib"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@algorandfoundation/algokit-utils": "^6.2.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "algosdk": "^2.9.0"
+  }
+}
