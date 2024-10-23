@@ -2,7 +2,7 @@ import { SmartAssetClient } from './clients/SmartAssetClient';
 import { PoolFactoryClient } from './clients/PoolFactoryClient';
 import { PoolClient } from './clients/PoolClient';
 import { MySmartAsset } from './clients/MySmartAsset';
-import { MyPool } from './clients/MyPool';
+import { MyPool, TokenType } from './clients/MyPool';
 
 export {
     SmartAssetClient,
@@ -10,4 +10,5 @@ export {
     PoolClient,
     MySmartAsset,
     MyPool,
+    TokenType
 };

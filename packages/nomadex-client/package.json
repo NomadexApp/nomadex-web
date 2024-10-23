@@ -1,6 +1,6 @@
 {
   "name": "nomadex-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/index.js",
   "browser": {
@@ -14,7 +14,8 @@
   },
   "files": [
     "dist",
-    "lib"
+    "lib",
+    "README.md"
   ],
   "keywords": [],
   "author": "",
