@@ -180,7 +180,7 @@ export class MyPool extends MySmartAsset {
         return resp.return;
     }
 
-    async swap(tokenA: Token, tokenB: Token, assetAAmount: bigint, assetBAmount: bigint, isDirectionAlphaToBeta: boolean) {
+    async swap(fromToken: Token, toToken: Token, fromAmount: bigint, toAmountMin: bigint, isDirectionAlphaToBeta: boolean) {
         const poolClient = new PoolClient(
             {
                 id: this.id,
@@ -191,11 +191,11 @@ export class MyPool extends MySmartAsset {
         );
 
         const args = {
-            txn: await this.buildDepositTxn(tokenA, assetAAmount),
-            minAmount: 0n,
+            txn: await this.buildDepositTxn(fromToken, fromAmount),
+            minAmount: toAmountMin,
         };
         const txns: Transaction[] = [];
-        const optinTxns = await this.makeOptinTxns(isDirectionAlphaToBeta ? tokenB : tokenA);
+        const optinTxns = await this.makeOptinTxns(toToken);
         txns.push(...optinTxns);
 
         if (isDirectionAlphaToBeta) {
