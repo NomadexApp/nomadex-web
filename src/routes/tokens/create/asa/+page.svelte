@@ -64,7 +64,7 @@
 
 			remove();
 			addNotification('success', `Created token ${appId}`, 10000);
-			goto(`/tokens/asa-${appId}`);
+			goto(`/tokens/${appId}/asa`);
 		} catch (e) {
 			console.error((e as Error).message);
 			remove();

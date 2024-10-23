@@ -81,7 +81,7 @@
 
 			remove();
 			addNotification('success', `Created token ${appId}`, 10000);
-			goto(`/tokens/arc200-${appId}`);
+			goto(`/tokens/${appId}/smart`);
 		} catch (e) {
 			console.error((e as Error).message);
 			remove();
