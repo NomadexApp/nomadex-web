@@ -19,10 +19,10 @@
 	let voiToken: Token = <any>undefined;
 	let arc200Token: Token = <any>undefined;
 
-	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.ARC200) {
+	if (tokenA?.symbol === 'VOI' && tokenB?.type === TokenType.SMART) {
 		voiToken = tokenA;
 		arc200Token = tokenB;
-	} else if (tokenB?.symbol === 'VOI' && tokenA?.type === TokenType.ARC200) {
+	} else if (tokenB?.symbol === 'VOI' && tokenA?.type === TokenType.SMART) {
 		voiToken = tokenB;
 		arc200Token = tokenA;
 	} else if (browser) {
@@ -98,7 +98,7 @@
 	}
 
 	const getTokenSuggestions = (token: Token) => {
-		if (token.type === TokenType.ARC200) {
+		if (token.type === TokenType.SMART) {
 			return $knownTokens.slice(1).map((token) => ({ name: token.symbol, value: token }));
 		}
 	};

@@ -1,89 +1,39 @@
 <script lang="ts">
-	import { contracts, TokenType, type Pool, type Token } from '$lib';
+	import { contracts, type Pool, type Token } from '$lib';
 	import { nodeClient } from '$lib/_shared';
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
 	import { PoolClient } from '../../../../contracts/clients/PoolClient';
 	import { convertDecimals } from '$lib/utils/numbers';
-	import { get } from 'svelte/store';
-	import { SmartAssetClient } from '../../../../contracts/clients/SmartAssetClient';
 	import { PoolFactoryClient } from '../../../../contracts/clients/PoolFactoryClient';
 	import { page } from '$app/stores';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
 	import { PUBLIC_NETWORK } from '$env/static/public';
 	import { addNotification } from '$lib/components/Notify.svelte';
+	import { MyPool } from 'nomadex-client';
 
 	export let onUpdate = () => {};
-
-	async function buildDepositTxn(pool: { id: number }, token: { id: number; type: TokenType }, amount: bigint) {
-		if (token.type === TokenType.Default) {
-			return algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-				from: get(connectedAccount),
-				to: algosdk.getApplicationAddress(pool.id),
-				amount: amount, //convertDecimals(inputTokenA * 1e6, 6, tokenA.decimals),
-				suggestedParams: await nodeClient.getTransactionParams().do(),
-			});
-		} else if (token.type === TokenType.ASA) {
-			return algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-				assetIndex: token.id,
-				from: get(connectedAccount),
-				to: algosdk.getApplicationAddress(pool.id),
-				amount: amount, //convertDecimals(inputTokenA * 1e6, 6, tokenA.decimals),
-				suggestedParams: await nodeClient.getTransactionParams().do(),
-			});
-		} else if (token.type === TokenType.ARC200) {
-			const smartAssetClient = new SmartAssetClient(
-				{
-					id: token.id,
-					resolveBy: 'id',
-					sender: getTransactionSignerAccount(),
-				},
-				nodeClient
-			);
-			const { transaction } = await smartAssetClient.arc200Transfer(
-				{
-					to: algosdk.getApplicationAddress(pool.id),
-					value: amount,
-				},
-				{ sendParams: { populateAppCallResources: true, skipSending: true } }
-			);
-			return transaction;
-		}
-		throw Error('');
-	}
 
 	type AddLiquidityOpts = { pool: Pool; tokenA: Token; tokenB: Token; inputTokenA: number; inputTokenB: number };
 	async function addLiquidity({ pool, tokenA, tokenB, inputTokenA, inputTokenB }: AddLiquidityOpts) {
 		const remove = addNotification('pending', `Adding liquidity...`);
 
-		const poolClient = new PoolClient(
-			{
-				id: pool.id,
-				resolveBy: 'id',
-				sender: getTransactionSignerAccount(),
-			},
-			nodeClient
-		);
-
 		try {
-			const alphaTxn = await buildDepositTxn(pool, tokenA, convertDecimals(inputTokenA * 1e6, 6, tokenA.decimals));
-			const betaTxn = await buildDepositTxn(pool, tokenB, convertDecimals(inputTokenB * 1e6, 6, tokenB.decimals));
-
-			const resp = await poolClient.addLiquidity(
-				{
-					alphaTxn: alphaTxn,
-					betaTxn: betaTxn,
-				},
-				{
-					sendParams: { populateAppCallResources: true },
-				}
+			const signer = getTransactionSignerAccount();
+			const poolClient = new MyPool(pool.id, PUBLIC_NETWORK as any, nodeClient as any, signer);
+			const result = await poolClient.addLiquidity(
+				tokenA,
+				tokenB,
+				convertDecimals(Math.floor(inputTokenA * 1e6), 6, tokenA.decimals),
+				convertDecimals(Math.floor(inputTokenB * 1e6), 6, tokenB.decimals)
 			);
-
 			onUpdate();
-
-			return resp.return;
+			return result;
 		} catch (e) {
 			console.error(e);
+			if (e instanceof Error) {
+				addNotification('error', e.message, 15000);
+			}
 		} finally {
 			remove();
 		}
@@ -93,29 +43,17 @@
 	async function removeLiquidity({ pool, inputTokenLpt }: RemoveLiquidityOpts) {
 		const remove = addNotification('pending', `Removing liquidity...`);
 
-		const poolClient = new PoolClient(
-			{
-				id: pool.id,
-				resolveBy: 'id',
-				sender: getTransactionSignerAccount(),
-			},
-			nodeClient
-		);
-
 		try {
-			const resp = await poolClient.removeLiquidity(
-				{
-					lptAmount: convertDecimals(inputTokenLpt * 1e6, 6, 6),
-				},
-				{
-					sendParams: { populateAppCallResources: true },
-				}
-			);
-
+			const signer = getTransactionSignerAccount();
+			const poolClient = new MyPool(pool.id, PUBLIC_NETWORK as any, nodeClient as any, signer);
+			const result = await poolClient.removeLiquidity(convertDecimals(Math.floor(inputTokenLpt * 1e6), 6, 6));
 			onUpdate();
-			return resp.return;
+			return result;
 		} catch (e) {
 			console.error(e);
+			if (e instanceof Error) {
+				addNotification('error', e.message, 15000);
+			}
 		} finally {
 			remove();
 		}

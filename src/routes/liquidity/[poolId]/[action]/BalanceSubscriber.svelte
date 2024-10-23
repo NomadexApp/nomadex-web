@@ -36,7 +36,7 @@
 					let info: Record<string, any>;
 					let timestamp = Date.now();
 					switch (token.type) {
-						case TokenType.Default: {
+						case TokenType.ALGO: {
 							if (!$globalAccountIndex[key] || Date.now() - $globalAccountIndex[key].timestamp > duration * 1000 || force) {
 								info = await nodeClient.accountInformation(addr).do();
 							} else {
@@ -71,7 +71,7 @@
 							result[key] = state.balance;
 							break;
 						}
-						case TokenType.ARC200: {
+						case TokenType.SMART: {
 							if ($globalBalanceIndex[key] && Date.now() - $globalBalanceIndex[key].timestamp <= duration * 1000 && !force) {
 								result[key] = $globalBalanceIndex[key].balance;
 								return;

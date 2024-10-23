@@ -38,11 +38,11 @@
 			{#each $knownTokens as token}
 				<div
 					class="pool hover:bg-[#00000040] bg-[#00000033] backdrop-blur-[5px] p-4 rounded-btn flex flex-col gap-2 w-full max-w-[800px]"
-					class:cursor-pointer={token.type === TokenType.ARC200}
+					class:cursor-pointer={token.type === TokenType.SMART}
 				>
 					<div class="flex justify-between">
 						<a
-							href={token.type === TokenType.Default ? null : `/tokens/${token.id}/${token.type === TokenType.ARC200 ? 'smart' : token.type === TokenType.ASA ? 'asa' : ''}`}
+							href={token.type === TokenType.ALGO ? null : `/tokens/${token.id}/${token.type === TokenType.SMART ? 'smart' : token.type === TokenType.ASA ? 'asa' : ''}`}
 							class="flex w-full items-center gap-2"
 						>
 							<span class="name text-lg text-bold">

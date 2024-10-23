@@ -3,12 +3,11 @@ import { get, writable } from 'svelte/store';
 import { PoolFactoryClient } from '../contracts/clients/PoolFactoryClient';
 import { nodeClient } from './_shared';
 import algosdk from 'algosdk';
-import { SCALE } from '../contracts/pool/constants';
 
 export enum TokenType {
-	Default = 0,
+	ALGO = 0,
 	ASA = 1,
-	ARC200 = 2,
+	SMART = 2,
 }
 
 export type Token = {
@@ -33,7 +32,7 @@ export type Pool = {
 
 export const platformFee = writable<bigint>();
 export const knownTokens = writable<Token[]>([
-	{ symbol: 'VOI', id: 0, type: TokenType.Default, decimals: 6, unit: 1e6 },
+	{ symbol: 'VOI', id: 0, type: TokenType.ALGO, decimals: 6, unit: 1e6 },
 ]);
 
 export const knownPools = writable<Pool[]>([]);
@@ -110,7 +109,7 @@ export async function loadTokensAndPools() {
 		id: pool.id,
 		poolId: pool.id,
 		swapFee: pool.swapFee,
-		type: TokenType.ARC200,
+		type: TokenType.SMART,
 		assets: <[Token, Token]>[pool.alphaId, pool.betaId].map(id => validTokens.find(t => t.id === id)),
 		balances: pool.balances,
 		tvl: 0,
@@ -156,7 +155,9 @@ export async function loadTokensAndPools() {
 export async function tokensAndPoolsRefresh() {
 	try {
 		await loadTokensAndPools();
-	} catch (e) {
-		// 
+	} catch (e: unknown) {
+		if (e) {
+			// 
+		}
 	}
 }

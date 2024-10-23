@@ -58,9 +58,9 @@
 			},
 			nodeClient
 		);
-		const aType = tokenA.type === TokenType.Default ? 0 : tokenA.type === TokenType.ASA ? 1 : tokenA.type === TokenType.ARC200 ? 2 : -1;
+		const aType = tokenA.type === TokenType.ALGO ? 0 : tokenA.type === TokenType.ASA ? 1 : tokenA.type === TokenType.SMART ? 2 : -1;
 
-		const bType = tokenB.type === TokenType.Default ? 0 : tokenB.type === TokenType.ASA ? 1 : tokenB.type === TokenType.ARC200 ? 2 : -1;
+		const bType = tokenB.type === TokenType.ALGO ? 0 : tokenB.type === TokenType.ASA ? 1 : tokenB.type === TokenType.SMART ? 2 : -1;
 
 		const atc = new algosdk.AtomicTransactionComposer();
 

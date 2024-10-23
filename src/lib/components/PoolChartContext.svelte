@@ -204,7 +204,7 @@
 			class="currency flex justify-center items-center mt-[0.1rem] p-2 py-0 w-[2.2rem] h-[1.8rem] rounded text-white bg-transparent"
 			on:click={() => {
 				openModal(SelectTokenModal, {
-					tokens: $knownPools.filter((pool) => pool.assets[0].type === TokenType.Default).map((t) => t.assets[1]),
+					tokens: $knownPools.filter((pool) => pool.assets[0].type === TokenType.ALGO).map((t) => t.assets[1]),
 					handleSelect(token) {
 						const pool = $knownPools.find((pool) => pool.assets[1].id === token.id);
 						if (!pool) return;

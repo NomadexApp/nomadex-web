@@ -85,7 +85,9 @@
 		if (!inputTokenA) return;
 		await new Promise((r) => (timeout = setTimeout(r, 500)));
 		loading = false;
-		const ratio = Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) / Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6));
+		const ratio =
+			Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) /
+			Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6));
 		if (ratio) {
 			inputTokenB = Number(Math.floor(inputTokenA * ratio * tokenB.unit) / tokenB.unit);
 			disabled = !inputTokenB;
@@ -103,7 +105,9 @@
 		loading = true;
 		loading = false;
 
-		const ratio = Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6)) / Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6));
+		const ratio =
+			Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6)) /
+			Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6));
 
 		if (ratio) {
 			inputTokenA = Number(Math.floor(inputTokenB * ratio * tokenA.unit) / tokenA.unit);
@@ -182,7 +186,8 @@
 		{@const poolTokenBBalanceInRange = Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) / 1e6}
 
 		{@const maxLptBalanceError = Number(inputTokenLpt) > userLptBalanceInRange}
-		{@const maxBalanceError = Number(inputTokenA) > userTokenABalanceInRange || Number(inputTokenB) > userTokenBBalanceInRange}
+		{@const maxBalanceError =
+			Number(inputTokenA) > userTokenABalanceInRange || Number(inputTokenB) > userTokenBBalanceInRange}
 		{@const maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError}
 
 		<ChangeLiquidity
@@ -228,23 +233,28 @@
 					})}
 				handleSubmit={async () => {
 					if ($connectedAccount) {
-						console.log(action, disabled);
 						if (!disabled) {
 							try {
 								if (action === 'add') {
-									await addLiquidity({
-										pool,
-										tokenA,
-										tokenB,
-										inputTokenA,
-										inputTokenB,
-									});
+									console.log(
+										'Add:',
+										await addLiquidity({
+											pool,
+											tokenA,
+											tokenB,
+											inputTokenA,
+											inputTokenB,
+										})
+									);
 									updateBalances();
 								} else if (action === 'remove') {
-									await removeLiquidity({
-										pool,
-										inputTokenLpt,
-									});
+									console.log(
+										'Remove:',
+										await removeLiquidity({
+											pool,
+											inputTokenLpt,
+										})
+									);
 									updateBalances();
 								}
 							} catch (e) {
