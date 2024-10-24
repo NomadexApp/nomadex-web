@@ -9,5 +9,8 @@ export function powerOfTen(decimals: number | bigint): bigint {
 }
 
 export function convertDecimals(amount: bigint | number, decimals: bigint | number, targetDecimals: bigint | number) {
+	if (typeof amount === "number") amount = Math.floor(amount);
+	if (typeof decimals === "number") decimals = Math.floor(decimals);
+	if (typeof targetDecimals === "number") targetDecimals = Math.floor(targetDecimals);
 	return (BigInt(amount) * powerOfTen(targetDecimals)) / powerOfTen(decimals);
 }
