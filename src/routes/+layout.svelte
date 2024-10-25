@@ -24,7 +24,7 @@
 	}
 
 	// 5 hours - full cycle
-	const cycle = 3600 * 5;
+	const cycle = 3600 * 7;
 	let clock = 0;
 	let zoom = 0;
 	function tick() {
