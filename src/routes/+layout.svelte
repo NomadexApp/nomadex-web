@@ -23,6 +23,8 @@
 		pageContentRefresh();
 	}
 
+	// 5 hours - full cycle
+	const cycle = 3600 * 5;
 	let clock = 0;
 	let zoom = 0;
 	function tick() {
@@ -32,12 +34,12 @@
 	tick();
 	setInterval(tick, 1000);
 
-	const cycle = 3600;
+	const points = 4;
 	$: hueStyle =
-		Array(4)
+		Array(points)
 			.fill(0)
-			.map((_, i) => `--hue${i + 1}: ${(clock / (cycle * 2.777777777777) + i * 90) % 360};`)
-			.join('') + `--time: ${cycle}s;--zoom:${Math.floor(zoom)}%;`;
+			.map((_, i) => `--hue${i + 1}: ${(clock / ((cycle * 1000) / 360) + i * (360 / points)) % 360};`)
+			.join('') + `--time: ${cycle}s;--zoom: ${Math.floor(zoom)}%;`;
 </script>
 
 {#if browser && $knownTokens.length}

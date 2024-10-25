@@ -48,13 +48,12 @@
 		<div class="absolute bottom-2 left-4 text-sm text-gray-50 opacity-50"><span>{posttext}</span></div>
 	{/if}
 	{#if showMax}
-		<div
+		<button
 			class="absolute bottom-2 right-4 text-sm text-gray-50 opacity-50 cursor-pointer"
 			on:click={() => handleMax()}
-			on:keydown
 		>
 			<span>MAX</span>
-		</div>
+		</button>
 	{/if}
 </div>
 

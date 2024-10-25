@@ -86,7 +86,12 @@
 		}}
 	/>
 	<div class="flex justify-center px-1">
-		<button name="flip" type="reset" class="btn btn-ghost btn-link text-white btn-sm opacity-80" on:click={handleSwitchPlaces}>
+		<button
+			name="flip"
+			type="reset"
+			class="btn btn-ghost btn-link text-white btn-sm opacity-80"
+			on:click={handleSwitchPlaces}
+		>
 			<span class="block h-6"><MdSwapVert /></span>
 		</button>
 	</div>
@@ -120,10 +125,10 @@
 
 	<div class="flex justify-end items-center gap-2 text-[#999999]">
 		<div class="text-[0.8rem] text-[#f0f0f0aa]">Slippage</div>
-		<div on:click={() => (editingSlippage = true)} on:keydown>
+		<div on:click={() => (editingSlippage = true)} on:keydown role="button" tabindex="0">
 			<input
 				type="number"
-				class="no-arrows bg-[#00000040] outline-none p-[1px] px-[2px] text-[0.9rem] w-[3rem] text-center rounded"
+				class="no-arrows bg-[#00000020] outline-none p-[1px] px-[2px] text-[0.9rem] w-[3rem] text-center rounded"
 				min={0.01}
 				max={40}
 				step={0.01}
