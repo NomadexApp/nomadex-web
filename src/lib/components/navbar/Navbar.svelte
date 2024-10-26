@@ -26,7 +26,7 @@
 		<div class="space hidden sm:block"></div>
 		<ul>
 			<li class="flex">
-				<a class:active={$page.url.pathname.match(/\/\d+\/\d+\/\d+\/\d+/)} href="/"> Swap </a>
+				<a class:active={$page.url.pathname.match(/\/\d+\/\d+\/\d+\/\d+/)} href="/">Swap</a>
 			</li>
 
 			<li class="flex">
