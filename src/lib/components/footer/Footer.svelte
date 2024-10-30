@@ -36,6 +36,9 @@
 					<li>
 						<a href="/analytics">Analytics</a>
 					</li>
+					<li>
+						<a href="/voi-contracts">Contracts</a>
+					</li>
 				</ul>
 			</div>
 			<div class="">
