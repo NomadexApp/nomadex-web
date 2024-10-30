@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { nodeClient } from '$lib/_shared';
+	import Button from '$lib/components/button/Button.svelte';
 	import TextInput from '$lib/components/form/TextInput.svelte';
+	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
+	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
+	import MdAccountBalanceWallet from '$lib/icons/MdAccountBalanceWallet.svelte';
 	import { getAccountBalance } from '$lib/stores/onchain';
 	import { pageContentRefresh } from '$lib/utils';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
@@ -90,41 +94,48 @@
 </script>
 
 <form onsubmit={(e) => e.preventDefault()} class="max-w-[500px] w-full mx-auto">
-	{#each contracts ?? [] as contract}
-		<button
-			class="p-4 bg-[#22222244] mb-2 rounded-lg w-full text-left text-[#ffffffcc]"
-			onclick={() => (selectedContract = selectedContract === contract.contractId ? 0 : contract.contractId)}
-		>
-			<div class="id">
-				ID: {contract.contractId}
-			</div>
-			<div>
-				Balance:
-				{#await getAccountBalance(contract.contractAddress)}
-					0
-				{:then b}
-					{(Number(b) / 1e6).toLocaleString()}
-				{/await}
-				Voi
-			</div>
-			{#if true}
+	{#if $connectedAccount}
+		{#each contracts ?? [] as contract}
+			<button
+				class="p-4 bg-[#22222244] mb-2 rounded-lg w-full text-left text-[#ffffffcc]"
+				onclick={() => (selectedContract = selectedContract === contract.contractId ? 0 : contract.contractId)}
+			>
+				<div class="id">
+					ID: {contract.contractId}
+				</div>
 				<div>
-					Owner: <a
-						href="https://explorer.voi.network/explorer/account/{contract.global_owner}/transactions"
-						target="_blank"
+					Balance:
+					{#await getAccountBalance(contract.contractAddress)}
+						0
+					{:then b}
+						{(Number(b) / 1e6).toLocaleString()}
+					{/await}
+					Voi
+				</div>
+				{#if true}
+					<div>
+						Owner: <a
+							href="https://explorer.voi.network/explorer/account/{contract.global_owner}/transactions"
+							target="_blank"
+						>
+							{contract.global_owner.slice(0, 4)}...{contract.global_owner.slice(-4)}
+						</a>
+					</div>
+				{/if}
+			</button>
+			{#if selectedContract === contract.contractId}
+				<div class="mb-6">
+					<TextInput placeholder="Transfer To" bind:value={target} />
+					<button
+						class="mt-2 btn btn-md btn-ghost bg-[#22222244] backdrop-blur-md w-full"
+						onclick={() => transfer(contract.contractId)}>Transfer</button
 					>
-						{contract.global_owner.slice(0, 4)}...{contract.global_owner.slice(-4)}
-					</a>
 				</div>
 			{/if}
+		{/each}
+	{:else}
+		<button class="btn btn-ghost bg-[#00000040] w-full mt-24" onclick={() => openModal(ConnectWallet, {})}>
+			Connect Wallet
 		</button>
-		{#if selectedContract === contract.contractId}
-			<div class="mb-6">
-				<TextInput placeholder="Transfer To" bind:value={target} />
-				<button class="mt-2 btn btn-md btn-ghost bg-[#22222244] backdrop-blur-md w-full" onclick={() => transfer(contract.contractId)}
-					>Transfer</button
-				>
-			</div>
-		{/if}
-	{/each}
+	{/if}
 </form>
