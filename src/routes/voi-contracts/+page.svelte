@@ -97,7 +97,7 @@
 	{#if $connectedAccount}
 		{#each contracts ?? [] as contract}
 			<button
-				class="p-4 bg-[#22222244] mb-2 rounded-lg w-full text-left text-[#ffffffcc]"
+				class="p-4 bg-[#00000033] mb-2 rounded-lg w-full text-left text-[#ffffffcc]"
 				onclick={() => (selectedContract = selectedContract === contract.contractId ? 0 : contract.contractId)}
 			>
 				<div class="id">
@@ -127,7 +127,7 @@
 				<div class="mb-6">
 					<TextInput placeholder="Transfer To" bind:value={target} />
 					<button
-						class="mt-2 btn btn-md btn-ghost bg-[#22222244] backdrop-blur-md w-full"
+						class="mt-2 btn btn-md btn-ghost bg-[#00000033] backdrop-blur-md w-full"
 						onclick={() => transfer(contract.contractId)}>Transfer</button
 					>
 				</div>
