@@ -101,7 +101,12 @@
 				onclick={() => (selectedContract = selectedContract === contract.contractId ? 0 : contract.contractId)}
 			>
 				<div class="id">
-					ID: {contract.contractId}
+					ID: <a
+						href="https://explorer.voi.network/explorer/application/{contract.contractId}/transactions"
+						target="_blank"
+					>
+						{contract.contractId}
+					</a>
 				</div>
 				<div>
 					Balance:
