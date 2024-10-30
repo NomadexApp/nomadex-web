@@ -93,7 +93,7 @@
 	{#each contracts ?? [] as contract}
 		<button
 			class="p-4 bg-[#22222244] mb-2 rounded-lg w-full text-left"
-			onclick={() => (selectedContract = contract.contractId)}
+			onclick={() => (selectedContract = selectedContract === contract.contractId ? 0 : contract.contractId)}
 		>
 			<div class="id">
 				ID: {contract.contractId}
