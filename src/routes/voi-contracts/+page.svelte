@@ -92,7 +92,7 @@
 <form onsubmit={(e) => e.preventDefault()} class="max-w-[500px] w-full mx-auto">
 	{#each contracts ?? [] as contract}
 		<button
-			class="p-4 bg-[#22222244] mb-2 rounded-lg w-full text-left text-gray-300"
+			class="p-4 bg-[#22222244] mb-2 rounded-lg w-full text-left text-[#ffffffcc]"
 			onclick={() => (selectedContract = selectedContract === contract.contractId ? 0 : contract.contractId)}
 		>
 			<div class="id">
