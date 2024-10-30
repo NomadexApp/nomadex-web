@@ -92,7 +92,7 @@
 <form onsubmit={(e) => e.preventDefault()} class="max-w-[500px] w-full mx-auto">
 	{#each contracts ?? [] as contract}
 		<button
-			class="p-4 bg-[#22222244] mb-2 rounded-lg w-full text-left"
+			class="p-4 bg-[#22222244] mb-2 rounded-lg w-full text-left text-gray-300"
 			onclick={() => (selectedContract = selectedContract === contract.contractId ? 0 : contract.contractId)}
 		>
 			<div class="id">
@@ -119,11 +119,10 @@
 			{/if}
 		</button>
 		{#if selectedContract === contract.contractId}
-			<div class="py-4 mb-4">
+			<div class="mb-6">
 				<TextInput placeholder="Transfer To" bind:value={target} />
-				<button
-					class="mt-2 btn btn-md {target ? 'btn-primary' : 'btn-ghost'} w-full"
-					onclick={() => transfer(contract.contractId)}>Transfer</button
+				<button class="mt-2 btn btn-md btn-ghost bg-[#22222244] backdrop-blur-md w-full" onclick={() => transfer(contract.contractId)}
+					>Transfer</button
 				>
 			</div>
 		{/if}
