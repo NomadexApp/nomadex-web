@@ -107,7 +107,7 @@
 		<div class="br"></div>
 		<div class="br"></div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
-			<div>Manager Adress:</div>
+			<div>Manager Address:</div>
 			<input class="input input-secondary bg-[#00000040]" type="text" on:keypress|preventDefault on:paste|preventDefault bind:value={$connectedAccount} />
 		</div>
 		{#if !algosdk.isValidAddress(manager)}

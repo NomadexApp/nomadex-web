@@ -76,7 +76,7 @@
 
 		{#if currentManager}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Manager Adress:</div>
+				<div>Manager Address:</div>
 				<input class="input input-secondary bg-[#00000040]" type="text" bind:value={manager} />
 			</div>
 			{#if algosdk.isValidAddress(manager) && manager !== currentManager}
@@ -88,21 +88,21 @@
 
 		{#if reserve}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Reserve Adress:</div>
+				<div>Reserve Address:</div>
 				<input class="input input-secondary bg-[#00000040]" type="text" bind:value={reserve} />
 			</div>
 		{/if}
 
 		{#if freeze}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Freeze Adress:</div>
+				<div>Freeze Address:</div>
 				<input class="input input-secondary bg-[#00000040]" type="text" bind:value={freeze} />
 			</div>
 		{/if}
 
 		{#if clawback}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Clawback Adress:</div>
+				<div>Clawback Address:</div>
 				<input class="input input-secondary bg-[#00000040]" type="text" bind:value={clawback} />
 			</div>
 		{/if}

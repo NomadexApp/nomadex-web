@@ -68,7 +68,7 @@
 
 		{#if currentManager}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<div>Manager Adress:</div>
+				<div>Manager Address:</div>
 				<input class="input input-secondary bg-[#00000040]" type="text" bind:value={manager} />
 			</div>
 			{#if algosdk.isValidAddress(manager) && manager !== currentManager}
