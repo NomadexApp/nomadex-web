@@ -9,6 +9,10 @@
 	export let showMax = false;
 	export let disabled = false;
 	export let handleMax = () => {};
+
+	$: if (value < 0 || (typeof value === 'string' && `${value}`.match(/[-e]/)) || typeof value === 'object') {
+		value = 0;
+	}
 </script>
 
 <div class="field input-field relative">
