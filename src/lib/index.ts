@@ -25,6 +25,7 @@ export type Pool = {
 	assets: [Token, Token];
 	swapFee: string;
 	tvl: number;
+	balances: [string, string];
 	volume: [bigint, bigint];
 	apr: number;
 };
@@ -134,11 +135,27 @@ export async function loadTokensAndPools() {
 		const [alpha, beta] = pool.assets;
 		const algoIdx = [alpha, beta].findIndex(a => a.id === 0);
 		if (algoIdx > -1) {
-			if (pool['balances'].reduce((acc, x) => acc && Number(x), true)) {
+			if (pool['balances'].reduce((acc, x) => Boolean(acc && Number(x)), true)) {
 				pool.tvl = Number(pool['balances'][algoIdx]) * 2;
 			} else {
 				pool.tvl = Number(pool['balances'][algoIdx]);
 			}
+		}
+	}
+
+	for (const pool of validPools) {
+		if (pool.assets[0].type === TokenType.ALGO) continue;
+		const pools = pool.assets.map((asset) => {
+			if (asset.type !== TokenType.ALGO) {
+				return validPools.find((p) => p.assets[0].id === 0 && p.assets[1].id === asset.id);
+			}
+		});
+		if ((pools[0]?.tvl ?? 0) > (pools[1]?.tvl ?? 0) && pools[0]) {
+			console.log('a', pool.assets[0].symbol, pool.assets[1].symbol);
+			pool.tvl = 2 * (Number(pool.balances[0]) * Number(pools[0].balances[0])) / Number(pools[0].balances[1]);
+		} else if (pools[1]) {
+			console.log('b', pool.assets[0].symbol, pool.assets[1].symbol);
+			pool.tvl = 2 * (Number(pool.balances[1]) * Number(pools[1].balances[0])) / Number(pools[1].balances[1]);
 		}
 	}
 
