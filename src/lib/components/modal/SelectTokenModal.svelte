@@ -13,7 +13,11 @@
 	let balances = {};
 
 	$: filteredTokens = tokenSearch
-		? tokens.filter((token) => token.id.toString() === tokenSearch || token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`)))
+		? tokens.filter(
+				(token) =>
+					token.id.toString() === tokenSearch ||
+					token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
+			)
 		: tokens;
 
 	// $: $connectedAccount && getBalances(filteredTokens);
@@ -35,7 +39,9 @@
 		// }
 	}
 
-	$: finalTokensList = [...filteredTokens].sort((a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals);
+	$: finalTokensList = [...filteredTokens].sort(
+		(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
+	);
 </script>
 
 <form>
@@ -55,7 +61,16 @@
 					close();
 				}}
 			>
-				<div class="icon avatar w-10 h-10 bg-[#f0f0f005] rounded-full flex justify-center items-center">?</div>
+				<div class="icon avatar w-10 h-10 bg-[#f0f0f005] rounded-full flex justify-center items-center">
+					<object
+						title={token.symbol}
+						data="/tokens/{token.id}.png"
+						type="image/png"
+						class="hidden sm:flex icon avatar w-7 h-7 bg-[#3a635f] rounded-full justify-center items-center"
+					>
+						?
+					</object>
+				</div>
 				<div class="flex flex-col text-sm flex-grow">
 					<span class="name">{token.symbol}</span>
 					<span class="symbol text-gray-200">{token.id}</span>
