@@ -102,7 +102,7 @@
 				<div>Name</div>
 				<div>{my ? 'Value' : 'TVL'}</div>
 				<div class="inline-flex items-start">VOL<span class="text-xs -mt-1 text-gray-300">7d</span></div>
-				<div>APY</div>
+				<div>APR</div>
 				<div>&nbsp;</div>
 			</div>
 
