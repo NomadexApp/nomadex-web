@@ -20,25 +20,6 @@
 			)
 		: tokens;
 
-	// $: $connectedAccount && getBalances(filteredTokens);
-
-	async function getBalances(tokens: Token[]) {
-		// const requests: any[] = [];
-		// for (const token of tokens) {
-		// 	if ($connectedAccount && typeof balances[token.id] !== 'number') {
-		// 		requests.push({
-		// 			tokenType: 'ARC200',
-		// 			assetId: token.id,
-		// 			address: $connectedAccount,
-		// 		});
-		// 	}
-		// }
-		// const jsonResponse = await getArc200Balances(requests);
-		// if (jsonResponse?.[$connectedAccount]) {
-		// 	balances = jsonResponse?.[$connectedAccount];
-		// }
-	}
-
 	$: finalTokensList = [...filteredTokens].sort(
 		(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
 	);
@@ -53,9 +34,8 @@
 	</span>
 	<div class="tokens flex flex-col gap-2 mb-4 overflow-y-auto max-h-96">
 		{#each finalTokensList as token}
-			<div
-				on:keydown
-				class="token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
+			<button
+				class="text-left token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
 				on:click={() => {
 					handleSelect(token);
 					close();
@@ -81,7 +61,7 @@
 						{token.symbol}
 					</div>
 				{/if}
-			</div>
+			</button>
 		{/each}
 	</div>
 </form>

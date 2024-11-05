@@ -13,6 +13,7 @@
 	import { ABITupleType } from 'algosdk';
 	import { PUBLIC_NETWORK } from '$env/static/public';
 	import { Timescale } from '$lib/chart/type';
+	import SelectPoolModal from './modal/SelectPoolModal.svelte';
 
 	const { page } = getStores();
 	const pool = $knownPools.find((p) => p.id === Number($page.params.poolId)) as Pool;
@@ -42,24 +43,39 @@
 		txn: SwapTxn;
 	}[] = [];
 	let pricingDirection: string = `${tokenB.symbol}/${tokenA.symbol}`;
-	let timescale = browser ? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m'])) : Timescale['15m'];
+	let timescale = browser
+		? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m']))
+		: Timescale['15m'];
 	let logarithmic = false;
 
 	$: browser && localStorage.setItem('timescale', JSON.stringify(timescale));
 
 	async function loadEvents() {
-		const response = await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=250`);
-		const jsonResponse: { round: number; time: number; appId: number; txid: string; logs: string[] }[] = await response.json();
+		const response = await fetch(
+			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=250`
+		);
+		const jsonResponse: { round: number; time: number; appId: number; txid: string; logs: string[] }[] =
+			await response.json();
 		if (!jsonResponse) return console.log('Events response not defined');
 		const allSwapEvents: [string, [bigint, bigint], [bigint, bigint], [bigint, bigint], string, number, number][] = [];
-		const allDepositEvents: [string, bigint | [bigint, bigint], bigint | [bigint, bigint], [bigint, bigint], string, number, number][] = [];
+		const allDepositEvents: [
+			string,
+			bigint | [bigint, bigint],
+			bigint | [bigint, bigint],
+			[bigint, bigint],
+			string,
+			number,
+			number,
+		][] = [];
 		for (const event of jsonResponse ?? []) {
 			for (const log of event.logs ?? []) {
 				const buff = Uint8Array.from(Buffer.from(log, 'base64'));
 				if (log.startsWith('cEjQ6')) {
 					// Swap
 					allSwapEvents.push([
-						...(ABITupleType.from(`(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))`).decode(buff.slice(4)) as any),
+						...(ABITupleType.from(`(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))`).decode(
+							buff.slice(4)
+						) as any),
 						event.txid,
 						event.round,
 						event.time,
@@ -67,7 +83,9 @@
 				} else if (log.startsWith('PQE+f')) {
 					// Deposit
 					allDepositEvents.push([
-						...(ABITupleType.from(`(address,(uint256,uint256),uint256,(uint256,uint256))`).decode(buff.slice(4)) as any),
+						...(ABITupleType.from(`(address,(uint256,uint256),uint256,(uint256,uint256))`).decode(
+							buff.slice(4)
+						) as any),
 						event.txid,
 						event.round,
 						event.time,
@@ -75,7 +93,9 @@
 				} else if (log.startsWith('po5lX')) {
 					// Withdraw
 					allDepositEvents.push([
-						...(ABITupleType.from(`(address,uint256,(uint256,uint256),(uint256,uint256))`).decode(buff.slice(4)) as any),
+						...(ABITupleType.from(`(address,uint256,(uint256,uint256),(uint256,uint256))`).decode(
+							buff.slice(4)
+						) as any),
 						event.txid,
 						event.round,
 						event.time,
@@ -127,7 +147,9 @@
 
 		const getTime = (event: (typeof events)[0]) => event.txn['round-time'];
 		const getPrice = (event: (typeof events)[0]) => {
-			let viaPrice = Number(convertDecimals(event.poolBals[0], 6, 6)) / Number(convertDecimals(event.poolBals[1], tokenB.decimals, 6));
+			let viaPrice =
+				Number(convertDecimals(event.poolBals[0], 6, 6)) /
+				Number(convertDecimals(event.poolBals[1], tokenB.decimals, 6));
 			viaPrice = viaPrice < 0.001 && tokenB.symbol === 'VIA' ? 0 : viaPrice;
 
 			if (viaPrice) {
@@ -136,7 +158,9 @@
 				const voiAmount = event.direction === 0 ? event.fromAmount : event.toAmount;
 				const viaAmount = event.direction === 0 ? event.toAmount : event.fromAmount;
 
-				return pricingCurrency === 0 ? viaAmount / tokenB.unit / (voiAmount / tokenA.unit) : voiAmount / tokenA.unit / (viaAmount / tokenB.unit);
+				return pricingCurrency === 0
+					? viaAmount / tokenB.unit / (voiAmount / tokenA.unit)
+					: voiAmount / tokenA.unit / (viaAmount / tokenB.unit);
 			}
 		};
 
@@ -150,7 +174,11 @@
 
 		let close = -1;
 
-		for (let time = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000) + 0.1; time < Math.floor(Date.now() / 1000); time += duration) {
+		for (
+			let time = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000) + 0.1;
+			time < Math.floor(Date.now() / 1000);
+			time += duration
+		) {
 			const matchingEvents = events.filter((e) => getTime(e) >= time && getTime(e) < time + duration);
 			if (matchingEvents.length) {
 				for (const event of matchingEvents) {
@@ -203,12 +231,11 @@
 			aria-label="tokens"
 			class="currency flex justify-center items-center mt-[0.1rem] p-2 py-0 w-[2.2rem] h-[1.8rem] rounded text-white bg-transparent"
 			on:click={() => {
-				openModal(SelectTokenModal, {
-					tokens: $knownPools.filter((pool) => pool.assets[0].type === TokenType.ALGO).map((t) => t.assets[1]),
-					handleSelect(token) {
-						const pool = $knownPools.find((pool) => pool.assets[1].id === token.id);
-						if (!pool) return;
-						goto(`/analytics/${pool.id}`);
+				openModal(SelectPoolModal, {
+					pools: [...$knownPools],
+					handleSelect(p) {
+						if (!p) return;
+						goto(`/analytics/${p.id}`);
 						pageContentRefresh();
 					},
 				});
@@ -288,12 +315,25 @@
 		{/if}
 	</div>
 	{#if context !== 'limit'}
-		<div class="chart-container min-w-[250px] w-full overflow-hidden bg-[#00000033] rounded-[8px]" bind:clientWidth={chartWidth} style="min-height: {chartWidth / 2.6}px;">
-			<CandleChart label={`Price of ${pricingDirection.split('/').join(' in ')}`} {logarithmic} data={priceData.slice(-50)} />
+		<div
+			class="chart-container min-w-[250px] w-full overflow-hidden bg-[#00000033] rounded-[8px]"
+			bind:clientWidth={chartWidth}
+			style="min-height: {chartWidth / 2.6}px;"
+		>
+			<CandleChart
+				label={`Price of ${pricingDirection.split('/').join(' in ')}`}
+				{logarithmic}
+				data={priceData.slice(-50)}
+			/>
 		</div>
 	{/if}
 
-	<slot name="all-events" {tokenA} {tokenB} events={[...swapEvents, ...depositEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])} />
+	<slot
+		name="all-events"
+		{tokenA}
+		{tokenB}
+		events={[...swapEvents, ...depositEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])}
+	/>
 </section>
 
 <style>
