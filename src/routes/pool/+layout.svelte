@@ -50,7 +50,10 @@
 		if (my) return pools.filter((p) => poolBalances?.[p.poolId]);
 		if (searchText) {
 			return pools.filter((p) => {
-				const asset = p.assets.find((a) => a.symbol.toLowerCase().match(searchText.toLowerCase()) || a.id.toString() === searchText) || p.poolId.toString() === searchText;
+				const asset =
+					p.assets.find(
+						(a) => a.symbol.toLowerCase().match(searchText.toLowerCase()) || a.id.toString() === searchText
+					) || p.poolId.toString() === searchText;
 				return asset;
 			});
 		}
@@ -70,8 +73,8 @@
 		</div>
 		{#if !all}
 			<p>
-				Liquidity providers earn a fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by removing your
-				liquidity.
+				Liquidity providers earn a fee on all trades proportional to their share of the pool. Fees are added to the
+				pool, accrue in real time and can be claimed by removing your liquidity.
 			</p>
 			<div class="br"></div>
 
@@ -107,7 +110,7 @@
 			</div>
 
 			{#each filteredPools as pool (pool.poolId)}
-				<PoolInfo {pool} {my} balances={poolBalances?.[pool.poolId]} />
+				<PoolInfo {pool} {my} balances={poolBalances?.[pool.poolId]} online={pool.online} />
 			{:else}
 				{#if !poolBalances}
 					<div class="w-full flex justify-center p-4 pb-8">

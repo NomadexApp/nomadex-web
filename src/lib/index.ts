@@ -28,6 +28,7 @@ export type Pool = {
 	balances: [string, string];
 	volume: [bigint, bigint];
 	apr: number;
+	online: boolean;
 };
 
 
@@ -92,6 +93,7 @@ export async function loadTokensAndPools() {
 		balances: [string, string],
 		volume: [string, string],
 		apr: number,
+		online: boolean,
 	}[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools`)).json();
 	const pools = poolsSnap.map((pool) => {
 		return {
@@ -104,6 +106,7 @@ export async function loadTokensAndPools() {
 			balances: pool.balances,
 			volume: pool.volume,
 			apr: pool.apr,
+			online: pool.online,
 		};
 	});
 	const validPools: Pool[] = pools.map((pool) => ({
@@ -116,6 +119,7 @@ export async function loadTokensAndPools() {
 		tvl: 0,
 		volume: [BigInt(pool.volume[0]), BigInt(pool.volume[1])] as [bigint, bigint],
 		apr: pool.apr,
+		online: pool.online ?? false,
 	})).filter(p => p.assets.reduce((a, r) => !!r && !!a, true));
 
 	// console.log('Pools:', validPools);

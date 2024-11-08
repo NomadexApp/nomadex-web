@@ -12,6 +12,7 @@
 		  }
 		| undefined;
 	export let my = false;
+	export let online = false;
 
 	const [tokenA, tokenB] = pool.assets;
 
@@ -19,7 +20,7 @@
 </script>
 
 <div class="pool sm:grid bg-[#00000033] sm:bg-transparent rounded-[8px]">
-	<div class="name flex gap-2 w-full">
+	<div class="name flex gap-0 w-full">
 		<object
 			title={tokenA.symbol}
 			data="/tokens/{tokenA.id}.png"
@@ -32,10 +33,13 @@
 			title={tokenB.symbol}
 			data="/tokens/{tokenB.id}.png"
 			type="image/png"
-			class="hidden sm:flex icon avatar w-7 h-7 bg-[#594480] rounded-full justify-center items-center -translate-x-5"
+			class="hidden sm:flex icon avatar w-7 h-7 bg-[#594480] rounded-full justify-center items-center -translate-x-3"
 		>
 			?
 		</object>
+		<div class="inline-flex justify-center items-center mr-2">
+			<span class="inline-flex w-2 h-2 rounded-full {online ? 'bg-green-500' : 'bg-gray-500'}"></span>
+		</div>
 
 		<span class="text-nowrap inline-flex items-center">
 			{tokenA.symbol}<span class="text-gray-300 mx-1">/</span>{tokenB.symbol}
