@@ -4,13 +4,37 @@
 	import { nodeClient } from '$lib/_shared';
 	import { PoolFactoryClient } from '../../../contracts/clients/PoolFactoryClient';
 	import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';
-	import { contracts } from '$lib';
+	import { contracts, knownTokens } from '$lib';
 	import { PUBLIC_NETWORK } from '$env/static/public';
+	import { onMount } from 'svelte';
+	import { convertDecimals } from '$lib/utils/numbers';
+	import { TokenType } from 'nomadex-client';
 
 	let appId = contracts[PUBLIC_NETWORK].poolFcatory;
 	let feePercent = 1;
-	let owner = 'DYX2V5XF4IKOHE55Z63XAHVBJTMYM723HK5WJZ72BDZ5AFEFKJ5YP4DOQQ';
+	let owner = '';
+	let nextOwner = '';
 	const SCALE = 100_000_000_000_000;
+
+	let feeTokenId = 0;
+	let feeAmount = 0;
+	let feeWithdrawTo = '';
+
+	onMount(async () => {
+		const client = new PoolFactoryClient(
+			{
+				resolveBy: 'id',
+				id: appId,
+			},
+			nodeClient
+		);
+		const state = await client.getGlobalState();
+		const pubkey = state.warden?.asByteArray();
+		if (!pubkey) return;
+		owner = algosdk.encodeAddress(pubkey);
+		nextOwner = owner;
+		feeWithdrawTo = feeWithdrawTo || owner;
+	});
 
 	async function deployFactory() {
 		const signer = getTransactionSignerAccount();
@@ -53,6 +77,58 @@
 			console.log('');
 		}
 	}
+
+	async function grant() {
+		if (!nextOwner) return;
+		if (!algosdk.isValidAddress(nextOwner)) return;
+
+		const signer = getTransactionSignerAccount();
+
+		const client = new PoolFactoryClient(
+			{
+				resolveBy: 'id',
+				id: appId,
+				sender: signer,
+			},
+			nodeClient
+		);
+
+		const resp = await client.grant({
+			manager: nextOwner,
+		});
+		console.log(resp);
+		await new Promise((r) => setTimeout(r, 5000));
+		window.location.reload();
+	}
+
+	async function withdrawFee() {
+		const token = $knownTokens.find((t) => t.id === feeTokenId);
+		if (!token) return;
+		const amount = convertDecimals(feeAmount * 1e6, 6, token.decimals);
+		console.log('Withdraw:', amount);
+		const signer = getTransactionSignerAccount();
+		const client = new PoolFactoryClient(
+			{
+				resolveBy: 'id',
+				id: appId,
+				sender: signer,
+			},
+			nodeClient
+		);
+
+		const id: [number, number] =
+			token.type === TokenType.ASA ? [token.id, 0] : token.type === TokenType.SMART ? [0, token.id] : [0, 0];
+		console.log(id);
+		const resp = await client.withdraw(
+			{
+				id: id,
+				amount,
+				to: feeWithdrawTo,
+			},
+			{ sendParams: { populateAppCallResources: true } }
+		);
+		console.log(resp);
+	}
 </script>
 
 {#if owner === $connectedAccount}
@@ -75,6 +151,38 @@
 				<div class="w-full max-w-[610px] flex flex-col justify-center">
 					<button class="btn btn-primary btn-sm" on:click={deployFactory}>Update Contract</button>
 				</div>
+
+				<br />
+
+				<div class="w-full max-w-[610px] flex flex-col justify-center">
+					<div>New Owner:</div>
+					<input class="input bg-gray-200 bg-opacity-5" type="text" bind:value={nextOwner} />
+				</div>
+				{#if owner != nextOwner}
+					<div class="w-full max-w-[610px] flex flex-col justify-center">
+						<button class="btn btn-primary btn-sm" on:click={grant}>Grant</button>
+					</div>
+				{/if}
+
+				<br />
+
+				<div class="w-full max-w-[610px] flex flex-col justify-center">
+					<div>Fee Token ID:</div>
+					<input class="input bg-gray-200 bg-opacity-5" type="number" bind:value={feeTokenId} />
+				</div>
+				<div class="w-full max-w-[610px] flex flex-col justify-center">
+					<div>Fee Token Amount:</div>
+					<input class="input bg-gray-200 bg-opacity-5" type="number" bind:value={feeAmount} />
+				</div>
+				<div class="w-full max-w-[610px] flex flex-col justify-center">
+					<div>Fee Withdraw To:</div>
+					<input class="input bg-gray-200 bg-opacity-5" type="text" bind:value={feeWithdrawTo} />
+				</div>
+				{#if feeAmount}
+					<div class="w-full max-w-[610px] flex flex-col justify-center">
+						<button class="btn btn-primary btn-sm" on:click={withdrawFee}>Withdraw Fee</button>
+					</div>
+				{/if}
 			{/if}
 		</div>
 	</section>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Pool } from './Pool.algo';
 import { Ownable } from './lib/Ownable.algo';
 import { ASA } from './pool/constants';
@@ -170,7 +171,7 @@ export class PoolFactory extends Ownable {
         fee: globals.minTxnFee,
       });
     } else if (id[1] > 0) {
-      sendMethodCall<[Address, uint256], uint256>({
+      sendMethodCall<[Address, uint256], boolean>({
         applicationID: AppID.fromUint64(id[1]),
         sender: this.app.address,
         name: 'arc200_transfer',

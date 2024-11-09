@@ -243,19 +243,19 @@ grant:
 createApplication:
 	proto 0 0
 
-	// src/contracts/PoolFactory.algo.ts:31
+	// src/contracts/PoolFactory.algo.ts:32
 	// this.bootstrapFee.value = 2_000_000
 	byte 0x626f6f7473747261705f666565 // "bootstrap_fee"
 	int 2_000_000
 	app_global_put
 
-	// src/contracts/PoolFactory.algo.ts:32
+	// src/contracts/PoolFactory.algo.ts:33
 	// this.platformFee.value = <uint256>1_000_000_000_000
 	byte 0x706c6174666f726d5f666565 // "platform_fee"
 	byte 0x000000000000000000000000000000000000000000000000000000e8d4a51000
 	app_global_put
 
-	// src/contracts/PoolFactory.algo.ts:33
+	// src/contracts/PoolFactory.algo.ts:34
 	// this.warden.value = this.txn.sender
 	byte 0x77617264656e // "warden"
 	txn Sender
@@ -354,7 +354,7 @@ createPool:
 	// Push empty bytes after the frame pointer to reserve space for local variables
 	byte 0x
 
-	// src/contracts/PoolFactory.algo.ts:46
+	// src/contracts/PoolFactory.algo.ts:47
 	// verifyPayTxn(payTxn, {
 	//       sender: this.txn.sender,
 	//       receiver: this.app.address,
@@ -389,7 +389,7 @@ createPool:
 	assert
 
 	// *if2_condition
-	// src/contracts/PoolFactory.algo.ts:52
+	// src/contracts/PoolFactory.algo.ts:53
 	// alphaType === ASA
 	frame_dig -5 // alphaType: uint8
 	int 1
@@ -397,7 +397,7 @@ createPool:
 	bz *if2_end
 
 	// *if2_consequent
-	// src/contracts/PoolFactory.algo.ts:53
+	// src/contracts/PoolFactory.algo.ts:54
 	// sendAssetTransfer({
 	//         xferAsset: AssetID.fromUint64(alphaId),
 	//         sender: this.app.address,
@@ -409,27 +409,27 @@ createPool:
 	int axfer
 	itxn_field TypeEnum
 
-	// src/contracts/PoolFactory.algo.ts:54
+	// src/contracts/PoolFactory.algo.ts:55
 	// xferAsset: AssetID.fromUint64(alphaId)
 	frame_dig -4 // alphaId: uint64
 	itxn_field XferAsset
 
-	// src/contracts/PoolFactory.algo.ts:55
+	// src/contracts/PoolFactory.algo.ts:56
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:56
+	// src/contracts/PoolFactory.algo.ts:57
 	// assetReceiver: this.app.address
 	global CurrentApplicationAddress
 	itxn_field AssetReceiver
 
-	// src/contracts/PoolFactory.algo.ts:57
+	// src/contracts/PoolFactory.algo.ts:58
 	// assetAmount: 0
 	int 0
 	itxn_field AssetAmount
 
-	// src/contracts/PoolFactory.algo.ts:58
+	// src/contracts/PoolFactory.algo.ts:59
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -439,7 +439,7 @@ createPool:
 
 *if2_end:
 	// *if3_condition
-	// src/contracts/PoolFactory.algo.ts:61
+	// src/contracts/PoolFactory.algo.ts:62
 	// betaType === ASA
 	frame_dig -7 // betaType: uint8
 	int 1
@@ -447,7 +447,7 @@ createPool:
 	bz *if3_end
 
 	// *if3_consequent
-	// src/contracts/PoolFactory.algo.ts:62
+	// src/contracts/PoolFactory.algo.ts:63
 	// sendAssetTransfer({
 	//         xferAsset: AssetID.fromUint64(betaId),
 	//         sender: this.app.address,
@@ -459,27 +459,27 @@ createPool:
 	int axfer
 	itxn_field TypeEnum
 
-	// src/contracts/PoolFactory.algo.ts:63
+	// src/contracts/PoolFactory.algo.ts:64
 	// xferAsset: AssetID.fromUint64(betaId)
 	frame_dig -6 // betaId: uint64
 	itxn_field XferAsset
 
-	// src/contracts/PoolFactory.algo.ts:64
+	// src/contracts/PoolFactory.algo.ts:65
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:65
+	// src/contracts/PoolFactory.algo.ts:66
 	// assetReceiver: this.app.address
 	global CurrentApplicationAddress
 	itxn_field AssetReceiver
 
-	// src/contracts/PoolFactory.algo.ts:66
+	// src/contracts/PoolFactory.algo.ts:67
 	// assetAmount: 0
 	int 0
 	itxn_field AssetAmount
 
-	// src/contracts/PoolFactory.algo.ts:67
+	// src/contracts/PoolFactory.algo.ts:68
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -488,7 +488,7 @@ createPool:
 	itxn_submit
 
 *if3_end:
-	// src/contracts/PoolFactory.algo.ts:71
+	// src/contracts/PoolFactory.algo.ts:72
 	// sendMethodCall<[AppID, Address, StaticBytes<32>, StaticBytes<8>, uint64, uint8, uint64, uint8, uint256], void>({
 	//       name: 'createApplication',
 	//       methodArgs: [
@@ -517,7 +517,7 @@ createPool:
 	method "createApplication(uint64,address,byte[32],byte[8],uint64,uint8,uint64,uint8,uint256)void"
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:73
+	// src/contracts/PoolFactory.algo.ts:74
 	// methodArgs: [
 	//         this.app,
 	//         this.app.address,
@@ -555,7 +555,7 @@ createPool:
 	frame_dig -8 // swapFee: uint256
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:84
+	// src/contracts/PoolFactory.algo.ts:85
 	// approvalProgram: Pool.approvalProgramPages()
 	byte b64 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
 	itxn_field ApprovalProgramPages
@@ -564,37 +564,37 @@ createPool:
 	byte b64 rEkVSSIJTFJQsCNDigIBJwSL/zgQIQQTQQADiPinJwpkJwdkF4v/iPtojACL/osASZMkDkQorEkVSSIJTFKI/kCMAIk2GglJFSISRDYaCEkVIxJEFzYaBxc2GgZJFSMSRBc2GgUXNhoESRUhBxJENhoDSRUiEkQ2GgJJFSISRDYaAReIAAIjQ4oJACuL/mcnEYv9ZycSi/xnJxOAAQZnJwwnDYEKIQSUFqNJkyQORCisSRVJIglMUmcnECUnBSVPAlRnJwiL/2cnCYv7ZycKi/lnJwaL+hZXBwFnJweL+BZXBwFnJwuL92eJiAACI0OKAAAxACtkEkQnEGQlUyMTRCcQIycFJU8CVGcyCicMZL8nBmQXIxJBAAonCWQpMgqI9f1EJwdkFyMSQQAKJwpkKTIKiPXqRImABCRqIzU2GgCOAf8AAIAEZX0T7IAEtq4aJScVgATsmWBBJw6ABLuzGfMnD4AEtUIhJYAESpaPj4AETiKjuoAEM26NX4AEZjBC+4AEvEpUAIAEyY3QVScWgARnQ0AxgAR59bCNgARwgEdpgATYNadGgAQzoQNcgARULg8LgATOMYo6gATFsZbOgAQCwfLQgAS+x22HNhoAjhnvM+9C71Hva++I77jwhfDj8Q7xu/K68sjzAPMo817ztfPQ8/j0HvSF+Fr6e/2O/ej+6ACABEb3ZTM2GgCOAfNdAIAEJIfDLDYaAI4B82YA
 	itxn_field ApprovalProgramPages
 
-	// src/contracts/PoolFactory.algo.ts:85
+	// src/contracts/PoolFactory.algo.ts:86
 	// clearStateProgram: Pool.clearProgram()
 	byte b64 Cg==
 	itxn_field ClearStateProgram
 
-	// src/contracts/PoolFactory.algo.ts:86
+	// src/contracts/PoolFactory.algo.ts:87
 	// extraProgramPages: 3
 	int 3
 	itxn_field ExtraProgramPages
 
-	// src/contracts/PoolFactory.algo.ts:87
+	// src/contracts/PoolFactory.algo.ts:88
 	// localNumByteSlice: Pool.schema.local.numByteSlice
 	int 0
 	itxn_field LocalNumByteSlice
 
-	// src/contracts/PoolFactory.algo.ts:88
+	// src/contracts/PoolFactory.algo.ts:89
 	// localNumUint: Pool.schema.local.numUint
 	int 0
 	itxn_field LocalNumUint
 
-	// src/contracts/PoolFactory.algo.ts:89
+	// src/contracts/PoolFactory.algo.ts:90
 	// globalNumByteSlice: Pool.schema.global.numByteSlice
 	int 9
 	itxn_field GlobalNumByteSlice
 
-	// src/contracts/PoolFactory.algo.ts:90
+	// src/contracts/PoolFactory.algo.ts:91
 	// globalNumUint: Pool.schema.global.numUint
 	int 3
 	itxn_field GlobalNumUint
 
-	// src/contracts/PoolFactory.algo.ts:91
+	// src/contracts/PoolFactory.algo.ts:92
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -602,12 +602,12 @@ createPool:
 	// Submit inner transaction
 	itxn_submit
 
-	// src/contracts/PoolFactory.algo.ts:93
+	// src/contracts/PoolFactory.algo.ts:94
 	// poolId = this.itxn.createdApplicationID
 	itxn CreatedApplicationID
 	frame_bury 0 // poolId: uint64
 
-	// src/contracts/PoolFactory.algo.ts:95
+	// src/contracts/PoolFactory.algo.ts:96
 	// sendPayment({
 	//       sender: this.app.address,
 	//       receiver: poolId.address,
@@ -618,19 +618,19 @@ createPool:
 	int pay
 	itxn_field TypeEnum
 
-	// src/contracts/PoolFactory.algo.ts:96
+	// src/contracts/PoolFactory.algo.ts:97
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:97
+	// src/contracts/PoolFactory.algo.ts:98
 	// receiver: poolId.address
 	frame_dig 0 // poolId: uint64
 	app_params_get AppAddress
 	pop
 	itxn_field Receiver
 
-	// src/contracts/PoolFactory.algo.ts:98
+	// src/contracts/PoolFactory.algo.ts:99
 	// amount: globals.minBalance * 5 + globals.minTxnFee * 10
 	global MinBalance
 	int 5
@@ -641,7 +641,7 @@ createPool:
 	+
 	itxn_field Amount
 
-	// src/contracts/PoolFactory.algo.ts:99
+	// src/contracts/PoolFactory.algo.ts:100
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -649,7 +649,7 @@ createPool:
 	// Submit inner transaction
 	itxn_submit
 
-	// src/contracts/PoolFactory.algo.ts:102
+	// src/contracts/PoolFactory.algo.ts:103
 	// this.PoolCreated.log({
 	//       poolId: poolId,
 	//       alphaId: alphaId,
@@ -680,7 +680,7 @@ createPool:
 	concat
 	log
 
-	// src/contracts/PoolFactory.algo.ts:111
+	// src/contracts/PoolFactory.algo.ts:112
 	// return poolId.id;
 	frame_dig 0 // poolId: uint64
 
@@ -703,7 +703,7 @@ createPool:
 poolBootstrap:
 	proto 1 0
 
-	// src/contracts/PoolFactory.algo.ts:115
+	// src/contracts/PoolFactory.algo.ts:116
 	// sendMethodCall<[], void>({
 	//       name: 'bootstrap',
 	//       methodArgs: [],
@@ -717,19 +717,19 @@ poolBootstrap:
 	method "bootstrap()void"
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:117
-	// methodArgs: []
 	// src/contracts/PoolFactory.algo.ts:118
+	// methodArgs: []
+	// src/contracts/PoolFactory.algo.ts:119
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:119
+	// src/contracts/PoolFactory.algo.ts:120
 	// applicationID: poolId
 	frame_dig -1 // poolId: AppID
 	itxn_field ApplicationID
 
-	// src/contracts/PoolFactory.algo.ts:120
+	// src/contracts/PoolFactory.algo.ts:121
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -737,7 +737,7 @@ poolBootstrap:
 	// Submit inner transaction
 	itxn_submit
 
-	// src/contracts/PoolFactory.algo.ts:123
+	// src/contracts/PoolFactory.algo.ts:124
 	// this.PoolBootstrap.log({
 	//       poolId: poolId,
 	//     })
@@ -772,7 +772,7 @@ poolBootstrap:
 setFee:
 	proto 1 1
 
-	// src/contracts/PoolFactory.algo.ts:129
+	// src/contracts/PoolFactory.algo.ts:130
 	// assert(this.warden.value === this.txn.sender, "unauthorized")
 	byte 0x77617264656e // "warden"
 	app_global_get
@@ -782,13 +782,13 @@ setFee:
 	// unauthorized
 	assert
 
-	// src/contracts/PoolFactory.algo.ts:130
+	// src/contracts/PoolFactory.algo.ts:131
 	// this.bootstrapFee.value = fee
 	byte 0x626f6f7473747261705f666565 // "bootstrap_fee"
 	frame_dig -1 // fee: uint64
 	app_global_put
 
-	// src/contracts/PoolFactory.algo.ts:131
+	// src/contracts/PoolFactory.algo.ts:132
 	// return true;
 	int 1
 	retsub
@@ -823,7 +823,7 @@ setFee:
 setPlatformFee:
 	proto 1 1
 
-	// src/contracts/PoolFactory.algo.ts:135
+	// src/contracts/PoolFactory.algo.ts:136
 	// assert(this.warden.value === this.txn.sender, "unauthorized")
 	byte 0x77617264656e // "warden"
 	app_global_get
@@ -833,13 +833,13 @@ setPlatformFee:
 	// unauthorized
 	assert
 
-	// src/contracts/PoolFactory.algo.ts:136
+	// src/contracts/PoolFactory.algo.ts:137
 	// this.platformFee.value = fee
 	byte 0x706c6174666f726d5f666565 // "platform_fee"
 	frame_dig -1 // fee: uint256
 	app_global_put
 
-	// src/contracts/PoolFactory.algo.ts:137
+	// src/contracts/PoolFactory.algo.ts:138
 	// return true;
 	int 1
 	retsub
@@ -869,7 +869,7 @@ setPlatformFee:
 setPoolManager:
 	proto 2 0
 
-	// src/contracts/PoolFactory.algo.ts:141
+	// src/contracts/PoolFactory.algo.ts:142
 	// assert(this.warden.value === this.txn.sender, "unauthorized")
 	byte 0x77617264656e // "warden"
 	app_global_get
@@ -879,7 +879,7 @@ setPoolManager:
 	// unauthorized
 	assert
 
-	// src/contracts/PoolFactory.algo.ts:142
+	// src/contracts/PoolFactory.algo.ts:143
 	// sendMethodCall<[Address], void>({
 	//       name: 'grant',
 	//       methodArgs: [manager],
@@ -893,22 +893,22 @@ setPoolManager:
 	method "grant(address)void"
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:144
+	// src/contracts/PoolFactory.algo.ts:145
 	// methodArgs: [manager]
 	frame_dig -2 // manager: Address
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:145
+	// src/contracts/PoolFactory.algo.ts:146
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:146
+	// src/contracts/PoolFactory.algo.ts:147
 	// applicationID: poolId
 	frame_dig -1 // poolId: AppID
 	itxn_field ApplicationID
 
-	// src/contracts/PoolFactory.algo.ts:147
+	// src/contracts/PoolFactory.algo.ts:148
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -942,7 +942,7 @@ setPoolManager:
 setPoolFee:
 	proto 2 0
 
-	// src/contracts/PoolFactory.algo.ts:152
+	// src/contracts/PoolFactory.algo.ts:153
 	// assert(this.warden.value === this.txn.sender, "unauthorized")
 	byte 0x77617264656e // "warden"
 	app_global_get
@@ -952,7 +952,7 @@ setPoolFee:
 	// unauthorized
 	assert
 
-	// src/contracts/PoolFactory.algo.ts:153
+	// src/contracts/PoolFactory.algo.ts:154
 	// sendMethodCall<[uint256], boolean>({
 	//       name: 'setFees',
 	//       methodArgs: [fee],
@@ -966,22 +966,22 @@ setPoolFee:
 	method "setFees(uint256)bool"
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:155
+	// src/contracts/PoolFactory.algo.ts:156
 	// methodArgs: [fee]
 	frame_dig -2 // fee: uint256
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:156
+	// src/contracts/PoolFactory.algo.ts:157
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:157
+	// src/contracts/PoolFactory.algo.ts:158
 	// applicationID: poolId
 	frame_dig -1 // poolId: AppID
 	itxn_field ApplicationID
 
-	// src/contracts/PoolFactory.algo.ts:158
+	// src/contracts/PoolFactory.algo.ts:159
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1038,7 +1038,7 @@ setPoolFee:
 withdraw:
 	proto 3 0
 
-	// src/contracts/PoolFactory.algo.ts:163
+	// src/contracts/PoolFactory.algo.ts:164
 	// assert(this.txn.sender === this.warden.value, "unauthorized")
 	txn Sender
 	byte 0x77617264656e // "warden"
@@ -1049,7 +1049,7 @@ withdraw:
 	assert
 
 	// *if4_condition
-	// src/contracts/PoolFactory.algo.ts:164
+	// src/contracts/PoolFactory.algo.ts:165
 	// id[0] > 0
 	frame_dig -3 // id: [uint64, uint64]
 	extract 0 8
@@ -1059,7 +1059,7 @@ withdraw:
 	bz *if4_elseif1_condition
 
 	// *if4_consequent
-	// src/contracts/PoolFactory.algo.ts:165
+	// src/contracts/PoolFactory.algo.ts:166
 	// sendAssetTransfer({
 	//         xferAsset: AssetID.fromUint64(id[0]),
 	//         sender: this.app.address,
@@ -1071,24 +1071,24 @@ withdraw:
 	int axfer
 	itxn_field TypeEnum
 
-	// src/contracts/PoolFactory.algo.ts:166
+	// src/contracts/PoolFactory.algo.ts:167
 	// xferAsset: AssetID.fromUint64(id[0])
 	frame_dig -3 // id: [uint64, uint64]
 	extract 0 8
 	btoi
 	itxn_field XferAsset
 
-	// src/contracts/PoolFactory.algo.ts:167
+	// src/contracts/PoolFactory.algo.ts:168
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:168
+	// src/contracts/PoolFactory.algo.ts:169
 	// assetReceiver: to
 	frame_dig -1 // to: Address
 	itxn_field AssetReceiver
 
-	// src/contracts/PoolFactory.algo.ts:169
+	// src/contracts/PoolFactory.algo.ts:170
 	// assetAmount: <uint64>amount
 	frame_dig -2 // amount: uint256
 	dup
@@ -1102,7 +1102,7 @@ withdraw:
 	btoi
 	itxn_field AssetAmount
 
-	// src/contracts/PoolFactory.algo.ts:170
+	// src/contracts/PoolFactory.algo.ts:171
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1112,7 +1112,7 @@ withdraw:
 	b *if4_end
 
 *if4_elseif1_condition:
-	// src/contracts/PoolFactory.algo.ts:172
+	// src/contracts/PoolFactory.algo.ts:173
 	// id[1] > 0
 	frame_dig -3 // id: [uint64, uint64]
 	extract 8 8
@@ -1122,8 +1122,8 @@ withdraw:
 	bz *if4_else
 
 	// *if4_elseif1_consequent
-	// src/contracts/PoolFactory.algo.ts:173
-	// sendMethodCall<[Address, uint256], uint256>({
+	// src/contracts/PoolFactory.algo.ts:174
+	// sendMethodCall<[Address, uint256], boolean>({
 	//         applicationID: AppID.fromUint64(id[1]),
 	//         sender: this.app.address,
 	//         name: 'arc200_transfer',
@@ -1133,29 +1133,29 @@ withdraw:
 	itxn_begin
 	int appl
 	itxn_field TypeEnum
-	method "arc200_transfer(address,uint256)uint256"
+	method "arc200_transfer(address,uint256)bool"
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:174
+	// src/contracts/PoolFactory.algo.ts:175
 	// applicationID: AppID.fromUint64(id[1])
 	frame_dig -3 // id: [uint64, uint64]
 	extract 8 8
 	btoi
 	itxn_field ApplicationID
 
-	// src/contracts/PoolFactory.algo.ts:175
+	// src/contracts/PoolFactory.algo.ts:176
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:177
+	// src/contracts/PoolFactory.algo.ts:178
 	// methodArgs: [to, amount]
 	frame_dig -1 // to: Address
 	itxn_field ApplicationArgs
 	frame_dig -2 // amount: uint256
 	itxn_field ApplicationArgs
 
-	// src/contracts/PoolFactory.algo.ts:178
+	// src/contracts/PoolFactory.algo.ts:179
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1167,10 +1167,12 @@ withdraw:
 	-
 	itxnas Logs
 	extract 4 0
+	int 0
+	getbit
 	b *if4_end
 
 *if4_else:
-	// src/contracts/PoolFactory.algo.ts:181
+	// src/contracts/PoolFactory.algo.ts:182
 	// sendPayment({
 	//         sender: this.app.address,
 	//         receiver: to,
@@ -1181,17 +1183,17 @@ withdraw:
 	int pay
 	itxn_field TypeEnum
 
-	// src/contracts/PoolFactory.algo.ts:182
+	// src/contracts/PoolFactory.algo.ts:183
 	// sender: this.app.address
 	global CurrentApplicationAddress
 	itxn_field Sender
 
-	// src/contracts/PoolFactory.algo.ts:183
+	// src/contracts/PoolFactory.algo.ts:184
 	// receiver: to
 	frame_dig -1 // to: Address
 	itxn_field Receiver
 
-	// src/contracts/PoolFactory.algo.ts:184
+	// src/contracts/PoolFactory.algo.ts:185
 	// amount: <uint64>amount
 	frame_dig -2 // amount: uint256
 	dup
@@ -1205,7 +1207,7 @@ withdraw:
 	btoi
 	itxn_field Amount
 
-	// src/contracts/PoolFactory.algo.ts:185
+	// src/contracts/PoolFactory.algo.ts:186
 	// fee: globals.minTxnFee
 	global MinTxnFee
 	itxn_field Fee
@@ -1214,7 +1216,7 @@ withdraw:
 	itxn_submit
 
 *if4_end:
-	// src/contracts/PoolFactory.algo.ts:188
+	// src/contracts/PoolFactory.algo.ts:189
 	// this.Withdraw.log({
 	//       to: to,
 	//       amount: amount,

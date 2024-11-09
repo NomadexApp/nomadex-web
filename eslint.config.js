@@ -36,7 +36,7 @@ export default tseslint.config(
 		}
 	},
 	{
-		files: ['**/*.algo.ts'],
+		files: ['src/contracts/**/*.algo.ts'],
 		rules: {
 			'@typescript-eslint/no-unused-vars': 'off',
 		}
