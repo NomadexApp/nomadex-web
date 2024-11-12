@@ -57,6 +57,7 @@
 				return asset;
 			});
 		}
+		if (all) return pools.slice(0);
 		return pools.slice(0, 10);
 	}
 
