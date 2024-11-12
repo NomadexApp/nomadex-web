@@ -46,7 +46,7 @@
 
 	$: if (my) fetchBalances();
 
-	function filterPools(searchText: string, my: boolean, pools: Pool[], _: any) {
+	function filterPools(searchText: string, my: boolean, all: boolean, pools: Pool[], _: any) {
 		if (my) return pools.filter((p) => poolBalances?.[p.poolId]);
 		if (searchText) {
 			return pools.filter((p) => {
@@ -61,7 +61,7 @@
 		return pools.slice(0, 10);
 	}
 
-	$: filteredPools = filterPools(searchText, my, $knownPools, poolBalances);
+	$: filteredPools = filterPools(searchText, my, all, $knownPools, poolBalances);
 </script>
 
 {#if !$page.params.poolId}
