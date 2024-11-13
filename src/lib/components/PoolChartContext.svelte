@@ -148,9 +148,8 @@
 		const getTime = (event: (typeof events)[0]) => event.txn['round-time'];
 		const getPrice = (event: (typeof events)[0]) => {
 			let viaPrice =
-				Number(convertDecimals(event.poolBals[0], 6, 6)) /
+				Number(convertDecimals(event.poolBals[0], tokenA.decimals, 6)) /
 				Number(convertDecimals(event.poolBals[1], tokenB.decimals, 6));
-			viaPrice = viaPrice < 0.001 && tokenB.symbol === 'VIA' ? 0 : viaPrice;
 
 			if (viaPrice) {
 				return pricingCurrency === 0 ? 1 / viaPrice : viaPrice;
@@ -225,7 +224,11 @@
 	function convertAmt(amount: number, token: Token) {
 		const pool = $knownPools.find((p) => p.assets[0].id === 0 && p.assets[1].id === token.id);
 		if (typeof pool === 'undefined') return 0;
-		const priceOfToken = Number((BigInt(pool.balances[0]) * BigInt(1e6)) / BigInt(pool.balances[1])) / 1e6;
+		const priceOfToken =
+			Number(
+				(convertDecimals(BigInt(pool.balances[0]), pool.assets[0].decimals, 6) * BigInt(1e6)) /
+					convertDecimals(BigInt(pool.balances[1]), pool.assets[1].decimals, 6)
+			) / 1e6;
 		return priceOfToken * amount;
 	}
 </script>
