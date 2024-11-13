@@ -23,13 +23,13 @@
 		children: ArbNode[];
 	};
 
-	function log(node: ArbNode, pre = '') {
-		if (!node) return;
-		console.log(`${pre}${node.pool.assets.map((a) => a.symbol).join('/')}`);
-		for (const child of node.children) {
-			log(child, `${pre}\t`);
-		}
-	}
+	// function log(node: ArbNode, pre = '') {
+	// 	if (!node) return;
+	// 	console.log(`${pre}${node.pool.assets.map((a) => a.symbol).join('/')}`);
+	// 	for (const child of node.children) {
+	// 		log(child, `${pre}\t`);
+	// 	}
+	// }
 
 	function buildPaths(node: ArbNode, filteredPools: Pool[], rootAsset: Token) {
 		const assets = [node.pool.assets[node.fromAsset], node.pool.assets[(node.fromAsset + 1) % 2]];
@@ -90,14 +90,6 @@
 	}
 
 	$effect.root(() => buildTrees());
-	// $effect(() => {
-	// 	for (const tree of trees) {
-	// 		for (const node of tree) {
-	// 			console.log(node.pool.assets.map((a) => a.symbol).join('/'));
-	// 		}
-	// 		console.log('   ');
-	// 	}
-	// });
 
 	function simulate(amount: bigint, tree: ReturnType<typeof processTrees>[0]) {
 		for (const node of tree.nodes) {
@@ -168,32 +160,36 @@
 	let amount = $derived(BigInt(Math.floor(amountInput * 1e6)));
 </script>
 
-<TokenInput bind:value={amountInput} token={$knownTokens[0].symbol} />
-<br />
+<div class="max-w-[600px] mx-auto">
+	<TokenInput bind:value={amountInput} token={$knownTokens[0].symbol} />
+	<br />
 
-{#each processTrees(trees)
-	.sort((a, b) => (simulate(amount, b) < simulate(amount, a) ? -1 : 1))
-	.filter((a) => simulate(amount, a) > amount) as tree}
-	{@const outAmount = simulate(amount, tree)}
-	<div class="tree">
-		<div class="flex justify-between">
-			{tree.path}
-		</div>
-		<div>
-			<div>
-				MIN_TVL: {(tree.minTvl / 1e6).toLocaleString()} VOI
+	{#each processTrees(trees)
+		.sort((a, b) => (simulate(amount, b) < simulate(amount, a) ? -1 : 1))
+		.filter((a) => simulate(amount, a) > amount) as tree}
+		{@const outAmount = simulate(amount, tree)}
+		<div class="tree">
+			<div class="flex justify-between">
+				{tree.path.join(' ==> ')} ==> VOI
 			</div>
 			<div>
-				OUT: {(Number(outAmount) / 1e6).toLocaleString()} VOI
+				<div class="text-gray-300">
+					MIN_TVL: {(tree.minTvl / 1e6).toLocaleString()} VOI
+				</div>
+				<div class="text-gray-300">
+					OUT: {(Number(outAmount) / 1e6).toLocaleString()} VOI
+				</div>
+				<div class="flex justify-end">
+					<button class="btn btn-ghost" onclick={() => build(amount, tree)}>Submit</button>
+				</div>
 			</div>
-			<button onclick={() => build(amount, tree)}>Submit</button>
 		</div>
-	</div>
-{/each}
+	{/each}
+</div>
 
 <style>
 	.tree {
-		padding: 0.5rem 1rem;
+		padding: 1rem 1rem;
 		background: #00000020;
 		margin-bottom: 0.25rem;
 		display: flex;
