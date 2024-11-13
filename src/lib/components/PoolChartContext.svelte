@@ -3,7 +3,7 @@
 	import { type SwapTxn } from '$lib/utils/events';
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
 	import { browser } from '$app/environment';
-	import { knownPools, knownTokens, TokenType, type Pool } from '$lib';
+	import { knownPools, knownTokens, TokenType, type Pool, type Token } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { convertDecimals } from '$lib/utils/numbers';
@@ -221,6 +221,13 @@
 
 	let innerWidth = browser ? window.innerWidth : 0;
 	let chartWidth = 0;
+
+	function convertAmt(amount: number, token: Token) {
+		const pool = $knownPools.find((p) => p.assets[0].id === 0 && p.assets[1].id === token.id);
+		if (typeof pool === 'undefined') return 0;
+		const priceOfToken = Number((BigInt(pool.balances[0]) * BigInt(1e6)) / BigInt(pool.balances[1])) / 1e6;
+		return priceOfToken * amount;
+	}
 </script>
 
 <svelte:window bind:innerWidth />
@@ -247,13 +254,22 @@
 		</button>
 		<h1 class="text-3xl">
 			{tokenB.symbol}
+			{#if tokenA.symbol != 'VOI'}
+				{@const voiPrice = convertAmt(price, tokenA)}
+				{#if voiPrice}
+					<span class="text-[1rem] text-gray-400">
+						≈ {voiPrice < 0.1 ? Number(voiPrice.toFixed(6)) : voiPrice.toLocaleString('en')}
+						VOI
+					</span>
+				{/if}
+			{/if}
 		</h1>
 	</div>
 	<div class="flex flex-wrap gap-4 justify-between items-center w-full max-w-[900px]">
 		{#if context !== 'limit'}
 			<div class="cursor-pointer flex flex-col">
 				<span class="text-2xl">
-					Price ≈ {price < 0.1 ? Number(price.toFixed(10)) : price.toLocaleString('en')}
+					Price ≈ {price < 0.1 ? Number(price.toFixed(6)) : price.toLocaleString('en')}
 					{pricingDirection.split('/')[1]}
 				</span>
 				<span></span>
