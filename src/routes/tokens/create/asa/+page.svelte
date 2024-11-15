@@ -6,16 +6,16 @@
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { knownTokens } from '$lib';
 
-	let name = '';
-	let symbol = '';
-	let decimals = 6;
-	let totalSupply = 10_000_000_000;
-	let manager = $connectedAccount;
-	let reserve = $connectedAccount;
-	let clawback = '';
-	let freeze = '';
-	let assetURL = '';
-	let assetMetadataHash = '';
+	let name = $state('');
+	let symbol = $state('');
+	let decimals = $state(6);
+	let totalSupply = $state(10_000_000_000);
+	let manager = $state($connectedAccount);
+	let reserve = $state($connectedAccount);
+	let clawback = $state('');
+	let freeze = $state('');
+	let assetURL = $state('');
+	let assetMetadataHash = $state('');
 
 	async function createArc200Token() {
 		manager = $connectedAccount;
@@ -70,18 +70,21 @@
 		}
 	}
 
-	$: decimals = Math.max(0, Math.min(18, Math.floor(decimals)));
-	$: totalSupply = Math.max(0, Math.min(2 ** 64, Math.floor(totalSupply)));
+	$effect(() => {
+		decimals = Math.max(0, Math.min(18, Math.floor(decimals)));
+		totalSupply = Math.max(0, Math.min(2 ** 64, Math.floor(totalSupply)));
+	});
 
-	$: isValid =
+	let isValid = $derived(
 		algosdk.isValidAddress(manager) &&
-		name.length >= 1 &&
-		name.length < 33 &&
-		name.match(/^\w[\s\w_-]*$/) &&
-		symbol.length >= 1 &&
-		symbol.length < 9 &&
-		symbol.match(/^[\w]+$/) &&
-		!$knownTokens.find((tok) => tok.symbol.toLowerCase() === symbol.toLowerCase());
+			name.length >= 1 &&
+			name.length < 33 &&
+			name.match(/^\w[\s\w_-]*$/) &&
+			symbol.length >= 1 &&
+			symbol.length < 9 &&
+			symbol.match(/^[\w]+$/) &&
+			!$knownTokens.find((tok) => tok.symbol.toLowerCase() === symbol.toLowerCase())
+	);
 </script>
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
@@ -91,14 +94,14 @@
 			<input
 				class="input input-secondary bg-[#00000040]"
 				type="text"
-				on:keypress|preventDefault
-				on:paste|preventDefault
+				onkeypress={(e) => e.preventDefault()}
+				onpaste={(e) => e.preventDefault()}
 				bind:value={manager}
 			/>
 		</div>
 		{#if !algosdk.isValidAddress(manager)}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={() => (manager = $connectedAccount)}>Set to My Address</button>
+				<button class="btn btn-primary btn-sm" onclick={() => (manager = $connectedAccount)}>Set to My Address</button>
 			</div>
 		{/if}
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
@@ -168,7 +171,7 @@
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<button
 				class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}"
-				on:click={isValid && $connectedAccount ? createArc200Token : () => {}}>Create ASA</button
+				onclick={isValid && $connectedAccount ? createArc200Token : () => {}}>Create ASA</button
 			>
 		</div>
 	</div>

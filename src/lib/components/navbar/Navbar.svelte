@@ -6,12 +6,12 @@
 	import { openModal } from '../modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
 	import { addNotification } from '$lib/components/Notify.svelte';
-	import { getAccountBalance } from '$lib/stores/onchain';
-	import { knownPools } from '$lib';
+	import { knownPools, knownTokens } from '$lib';
 	import { pageContentRefresh } from '$lib/utils';
+	import BalanceSubscriber from '$lib/components/BalanceSubscriber.svelte';
 
 	const { page } = getStores();
-	let scrollY = 0;
+	let scrollY = $state(0);
 </script>
 
 <svelte:window bind:scrollY />
@@ -37,32 +37,32 @@
 				<a class:active={$page.url.pathname.startsWith('/tokens')} href="/tokens">Token</a>
 			</li>
 
-			<!-- <li class="flex">
-				<a class:active={$page.url.pathname.startsWith('/limit')} href="/limit/_/buy"> Limit </a>
-			</li> -->
-
 			<li class="flex">
 				<a
 					class:active={$page.url.pathname.startsWith('/analytics')}
 					href="/analytics/{$knownPools?.[0]?.id ?? 0}"
-					on:click={() => pageContentRefresh()}
+					onclick={() => pageContentRefresh()}
 				>
 					Analytics
 				</a>
 			</li>
 		</ul>
 		<div class="actions ml-auto flex gap-2">
-			<!-- <UseWallet /> -->
 			{#if $connectedAccount}
+				{@const userKey = `${$connectedAccount}:0`}
 				<span class="connected-info flex flex-col items-end p-2 rounded text-sm cursor-default">
-					{#await getAccountBalance($connectedAccount)}
-						<span class="text-nowrap">0 VOI</span>
-					{:then balance}
-						<span class="text-nowrap">{(balance / 1e6).toLocaleString()} VOI</span>
-					{/await}
+					<BalanceSubscriber
+						subscriptions={{
+							[userKey]: $knownTokens[0],
+						}}
+					>
+						{#snippet balance_result(result)}
+							<span class="text-nowrap">{(Number(result[userKey]) / 1e6).toLocaleString()} VOI</span>
+						{/snippet}
+					</BalanceSubscriber>
 					<button
 						class="font-bold"
-						on:click={() => {
+						onclick={() => {
 							navigator.clipboard.writeText($connectedAccount);
 							addNotification('info', 'Copied to clipboard', 1000);
 						}}
@@ -72,7 +72,7 @@
 				</span>
 				<button
 					class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary"
-					on:click={() => walletDisconnect()}
+					onclick={() => walletDisconnect()}
 				>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Disconnect
@@ -80,7 +80,7 @@
 			{:else}
 				<button
 					class="btn btn-ghost bg-[#00000040] hover:bg-[#00000050] text-primary"
-					on:click={() => openModal(ConnectWallet, {})}
+					onclick={() => openModal(ConnectWallet, {})}
 				>
 					<span class="inline-block h-6 w-6"><MdAccountBalanceWallet /></span>
 					Connect Wallet
@@ -104,14 +104,6 @@
 		position: fixed;
 		top: 0;
 		z-index: 1000;
-		/* clip-path: polygon(
-			0 0,
-			100% 0,
-			100% 100%,
-			calc(100% - var(--edge-width)) calc(100% - var(--edge-height)),
-			var(--edge-width) calc(100% - var(--edge-height)),
-			0 100%
-		); */
 	}
 
 	.navbar-wrapper.scrolled {
@@ -175,38 +167,22 @@
 		height: 5px;
 		border: 2.5px solid currentColor;
 		border-radius: 8px;
-		/* animation: animate 100s linear infinite; */
 	}
-
-	/* @keyframes animate {
-		0% {
-			background: black;
-		}
-		50% {
-			background: #222222;
-		}
-		100% {
-			background: black;
-		}
-	} */
 
 	ul a {
 		text-decoration: none;
 		color: currentColor;
 		font-weight: 400;
-		/* padding: 0.25rem 0.5rem; */
 		transition: 100ms all;
 		font-size: 17px;
 		justify-content: center;
 		align-items: center;
-		/* opacity: 0.7; */
 	}
 
 	ul li {
 		justify-content: center;
 		align-items: center;
 		padding: 0 0.25rem;
-		/* background: #ffff66; */
 		border-radius: 8px;
 		height: 2rem;
 	}

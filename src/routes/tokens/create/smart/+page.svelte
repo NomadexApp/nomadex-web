@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/components/UseWallet.svelte';
+	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import { nodeClient } from '$lib/_shared';
 	import algosdk from 'algosdk';
-	import { SmartAssetClient } from '../../../../contracts/clients/SmartAssetClient';
+	import { SmartAssetClient } from '$lib/../contracts/clients/SmartAssetClient';
 	import { goto } from '$app/navigation';
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { knownTokens } from '$lib';
 
-	let manager = $connectedAccount;
-	let name = '';
-	let symbol = '';
-	let decimals = 6;
-	let totalSupply = 10_000_000_000;
+	let manager = $state($connectedAccount);
+	let name = $state('');
+	let symbol = $state('');
+	let decimals = $state(6);
+	let totalSupply = $state(10_000_000_000);
 
 	function strToFixedBytes(str: string, length: number) {
 		str = str.slice(0, length);
@@ -88,18 +88,21 @@
 		}
 	}
 
-	$: decimals = Math.max(0, Math.min(18, Math.floor(decimals)));
-	$: totalSupply = Math.max(0, Math.min(2 ** 64, Math.floor(totalSupply)));
+	$effect(() => {
+		decimals = Math.max(0, Math.min(18, Math.floor(decimals)));
+		totalSupply = Math.max(0, Math.min(2 ** 64, Math.floor(totalSupply)));
+	});
 
-	$: isValid =
+	let isValid = $derived(
 		algosdk.isValidAddress(manager) &&
-		name.length >= 1 &&
-		name.length < 33 &&
-		name.match(/^\w[\s\w_-]*$/) &&
-		symbol.length >= 1 &&
-		symbol.length < 9 &&
-		symbol.match(/^[\w]+$/) &&
-		!$knownTokens.find((tok) => tok.symbol.toLowerCase() === symbol.toLowerCase());
+			name.length >= 1 &&
+			name.length < 33 &&
+			name.match(/^\w[\s\w_-]*$/) &&
+			symbol.length >= 1 &&
+			symbol.length < 9 &&
+			symbol.match(/^[\w]+$/) &&
+			!$knownTokens.find((tok) => tok.symbol.toLowerCase() === symbol.toLowerCase())
+	);
 </script>
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
@@ -108,11 +111,17 @@
 		<div class="br"></div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Manager Address:</div>
-			<input class="input input-secondary bg-[#00000040]" type="text" on:keypress|preventDefault on:paste|preventDefault bind:value={$connectedAccount} />
+			<input
+				class="input input-secondary bg-[#00000040]"
+				type="text"
+				onkeypress={(e) => e.preventDefault()}
+				onpaste={(e) => e.preventDefault()}
+				bind:value={$connectedAccount}
+			/>
 		</div>
 		{#if !algosdk.isValidAddress(manager)}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary btn-sm" on:click={() => (manager = $connectedAccount)}>Set to My Address</button>
+				<button class="btn btn-primary btn-sm" onclick={() => (manager = $connectedAccount)}>Set to My Address</button>
 			</div>
 		{/if}
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
@@ -125,18 +134,33 @@
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Decimals:</div>
-			<input class="input input-secondary bg-[#00000040]" type="number" max={18} min={0} step={1} bind:value={decimals} />
+			<input
+				class="input input-secondary bg-[#00000040]"
+				type="number"
+				max={18}
+				min={0}
+				step={1}
+				bind:value={decimals}
+			/>
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Total Supply</div>
-			<input class="input input-secondary bg-[#00000040]" type="number" min={0} max={2 ** 64} step={1} bind:value={totalSupply} />
+			<input
+				class="input input-secondary bg-[#00000040]"
+				type="number"
+				min={0}
+				max={2 ** 64}
+				step={1}
+				bind:value={totalSupply}
+			/>
 		</div>
 		<div>
 			Total Supply: {totalSupply.toLocaleString('en')}{decimals ? '.' : ''}{Array(decimals).fill('0').join('')}
 		</div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
-			<button class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}" on:click={isValid && $connectedAccount ? createArc200Token : () => {}}
-				>Create ARC200 Token</button
+			<button
+				class="btn {isValid && $connectedAccount ? 'btn-primary' : 'btn-ghost'}"
+				onclick={isValid && $connectedAccount ? createArc200Token : () => {}}>Create ARC200 Token</button
 			>
 		</div>
 	</div>

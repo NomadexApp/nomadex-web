@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { type Token, knownTokens, knownPools, tokensAndPoolsRefresh } from '$lib';
+	import { knownTokens, knownPools, tokensAndPoolsRefresh } from '$lib';
 	import { getStores } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import { pageContentRefresh } from '$lib/utils';
 	import algosdk from 'algosdk';
@@ -10,9 +8,8 @@
 	import LiquidityForm from '$lib/components/form/LiquidityForm.svelte';
 	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
-	import { writable } from 'svelte/store';
-	import BalanceSubscriber from './BalanceSubscriber.svelte';
-	import { SCALE } from '../../../../contracts/pool/constants';
+	import BalanceSubscriber from '$lib/components/BalanceSubscriber.svelte';
+	import { SCALE } from '$lib/../contracts/pool/constants';
 	import ChangeLiquidity from './ChangeLiquidity.svelte';
 
 	const { page } = getStores();
@@ -26,37 +23,14 @@
 
 	let action = $page.params.action;
 
-	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
+	let inputTokenLpt = $state(0);
+	let inputTokenA = $state(0);
+	let inputTokenB = $state(0);
 
-	function setSelectedToken(token: Token, index: number) {
-		if (index === 0) {
-			if (tokenA.symbol !== token.symbol) {
-				updateRoute(token, tokenB);
-			}
-		} else {
-			if (tokenB.symbol !== token.symbol) {
-				updateRoute(tokenA, token);
-			}
-		}
-	}
+	let disabled = $state(false);
+	let loading = $state(false);
 
-	function updateRoute(aToken: Token, bToken: Token) {
-		if (aToken.symbol !== tokenA.symbol || bToken.symbol !== tokenB.symbol) {
-			goto(`/liquidity/${bToken.symbol}`, { replaceState: true });
-			pageContentRefresh(0);
-		}
-	}
-
-	$: browser && tokens && tokenA && tokenB && updateRoute(tokenA, tokenB);
-
-	let inputTokenLpt: number = 0;
-	let inputTokenA: number = 0;
-	let inputTokenB: number = 0;
-
-	let disabled = false;
-	let loading = false;
-
-	let timeout: NodeJS.Timeout;
+	let timeout = $state<NodeJS.Timeout>();
 
 	type InputLptOpts = Record<'poolLptBalance' | 'poolTokenABalance' | 'poolTokenBBalance', bigint | number>;
 	async function onInputTokenLpt({ poolLptBalance, poolTokenABalance, poolTokenBBalance }: InputLptOpts) {
@@ -115,38 +89,13 @@
 		}
 	}
 
-	async function changeLiquidity() {
-		const prev = disabled;
-		disabled = true;
-		// TODO
-		disabled = prev;
-	}
-
-	// let lastPoolArc200Balance = 0n;
-	// let lastPoolAlgoBalance = 0;
-
-	// function change() {
-	// 	if (action === 'remove') {
-	// 		onInputTokenLpt();
-	// 	} else {
-	// 		if (inputTokenA) {
-	// 			onInputTokenA();
-	// 			lastPoolArc200Balance = $poolTokenBBalance;
-	// 			lastPoolAlgoBalance = $currentPoolState.amount;
-	// 		}
-	// 	}
-	// }
-	// $: if ($poolTokenBBalance && $currentPoolState.amount && ($poolTokenBBalance !== lastPoolArc200Balance || $currentPoolState.amount !== lastPoolAlgoBalance)) {
-	// 	change();
-	// }
-
-	$: poolTokenAKey = `${algosdk.getApplicationAddress(pool.poolId)}:${tokenA.id}`;
-	$: poolTokenBKey = `${algosdk.getApplicationAddress(pool.poolId)}:${tokenB.id}`;
-	$: poolLptKey = `${algosdk.getApplicationAddress(pool.poolId)}:${pool.poolId}`;
-	$: userAlgoKey = `${$connectedAccount}:0`;
-	$: userTokenAKey = `${$connectedAccount}:${tokenA.id}`;
-	$: userTokenBKey = `${$connectedAccount}:${tokenB.id}`;
-	$: userLptKey = `${$connectedAccount}:${pool.poolId}`;
+	let poolTokenAKey = $state(`${algosdk.getApplicationAddress(pool.poolId)}:${tokenA.id}`);
+	let poolTokenBKey = $state(`${algosdk.getApplicationAddress(pool.poolId)}:${tokenB.id}`);
+	let poolLptKey = $state(`${algosdk.getApplicationAddress(pool.poolId)}:${pool.poolId}`);
+	let userAlgoKey = $state(`${$connectedAccount}:0`);
+	let userTokenAKey = $state(`${$connectedAccount}:${tokenA.id}`);
+	let userTokenBKey = $state(`${$connectedAccount}:${tokenB.id}`);
+	let userLptKey = $state(`${$connectedAccount}:${pool.poolId}`);
 
 	function getPoolShare(userLpt: bigint, poolLpt: bigint) {
 		const issued = LPT_TOTAL_SUPPLY - poolLpt;
@@ -167,108 +116,108 @@
 			[poolLptKey]: pool,
 			[userLptKey]: pool,
 		}}
-		let:result
-		let:updateBalances
 	>
-		{@const poolLptBalance = result[poolLptKey]}
-		{@const userLptBalance = result[userLptKey]}
-		{@const userPoolShare = getPoolShare(result[userLptKey], result[poolLptKey])}
-		{@const userTokenABalance = result[userTokenAKey]}
-		{@const userTokenBBalance = result[userTokenBKey]}
-		{@const poolTokenABalance = result[poolTokenAKey]}
-		{@const poolTokenBBalance = result[poolTokenBKey]}
+		{#snippet balance_result(result, updateBalances)}
+			{@const poolLptBalance = result[poolLptKey]}
+			{@const userLptBalance = result[userLptKey]}
+			{@const userPoolShare = getPoolShare(result[userLptKey], result[poolLptKey])}
+			{@const userTokenABalance = result[userTokenAKey]}
+			{@const userTokenBBalance = result[userTokenBKey]}
+			{@const poolTokenABalance = result[poolTokenAKey]}
+			{@const poolTokenBBalance = result[poolTokenBKey]}
 
-		{@const userLptBalanceInRange = Number(convertDecimals(userLptBalance, 6, 6)) / 1e6}
-		{@const poolLptBalanceInRange = Number(convertDecimals(poolLptBalance, 6, 6)) / 1e6}
-		{@const userTokenABalanceInRange = Number(convertDecimals(userTokenABalance, tokenA.decimals, 6)) / 1e6}
-		{@const userTokenBBalanceInRange = Number(convertDecimals(userTokenBBalance, tokenB.decimals, 6)) / 1e6}
-		{@const poolTokenABalanceInRange = Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6)) / 1e6}
-		{@const poolTokenBBalanceInRange = Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) / 1e6}
+			{@const userLptBalanceInRange = Number(convertDecimals(userLptBalance, 6, 6)) / 1e6}
+			{@const poolLptBalanceInRange = Number(convertDecimals(poolLptBalance, 6, 6)) / 1e6}
+			{@const userTokenABalanceInRange = Number(convertDecimals(userTokenABalance, tokenA.decimals, 6)) / 1e6}
+			{@const userTokenBBalanceInRange = Number(convertDecimals(userTokenBBalance, tokenB.decimals, 6)) / 1e6}
+			{@const poolTokenABalanceInRange = Number(convertDecimals(poolTokenABalance, tokenA.decimals, 6)) / 1e6}
+			{@const poolTokenBBalanceInRange = Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) / 1e6}
 
-		{@const maxLptBalanceError = Number(inputTokenLpt) > userLptBalanceInRange}
-		{@const maxBalanceError =
-			Number(inputTokenA) > userTokenABalanceInRange || Number(inputTokenB) > userTokenBBalanceInRange}
-		{@const maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError}
+			{@const maxLptBalanceError = Number(inputTokenLpt) > userLptBalanceInRange}
+			{@const maxBalanceError =
+				Number(inputTokenA) > userTokenABalanceInRange || Number(inputTokenB) > userTokenBBalanceInRange}
+			{@const maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError}
 
-		<ChangeLiquidity
-			let:addLiquidity
-			let:removeLiquidity
-			onUpdate={() => {
-				updateBalances();
-				tokensAndPoolsRefresh();
-			}}
-		>
-			<LiquidityForm
-				{action}
-				{pool}
-				{tokenA}
-				{tokenB}
-				bind:tokenAInput={inputTokenA}
-				bind:tokenBInput={inputTokenB}
-				bind:tokenLptInput={inputTokenLpt}
-				disabled={disabled || !inputTokenB || !inputTokenA || maxError}
-				tokenLptBalance={Number(result[userLptKey]) / 1e6}
-				poolShare={userPoolShare}
-				poolTokenABalance={poolTokenABalanceInRange}
-				poolTokenBBalance={poolTokenBBalanceInRange}
-				tokenABalance={userTokenABalanceInRange}
-				tokenBBalance={userTokenBBalanceInRange}
-				onInputTokenLpt={() =>
-					onInputTokenLpt({
-						poolLptBalance,
-						poolTokenABalance,
-						poolTokenBBalance,
-					})}
-				onInputTokenA={() =>
-					onInputTokenA({
-						poolLptBalance,
-						poolTokenABalance,
-						poolTokenBBalance,
-					})}
-				onInputTokenB={() =>
-					onInputTokenB({
-						poolLptBalance,
-						poolTokenABalance,
-						poolTokenBBalance,
-					})}
-				handleSubmit={async () => {
-					if ($connectedAccount) {
-						if (!disabled) {
-							try {
-								if (action === 'add') {
-									console.log(
-										'Add:',
-										await addLiquidity({
-											pool,
-											tokenA,
-											tokenB,
-											inputTokenA,
-											inputTokenB,
-										})
-									);
-									updateBalances();
-								} else if (action === 'remove') {
-									console.log(
-										'Remove:',
-										await removeLiquidity({
-											pool,
-											inputTokenLpt,
-										})
-									);
-									updateBalances();
-								}
-							} catch (e) {
-								console.error(`Error ${action}ing liquidity`);
-								console.error(e);
-							}
-							pageContentRefresh(0);
-						}
-					} else {
-						openModal(ConnectWallet, {});
-					}
+			<ChangeLiquidity
+				let:addLiquidity
+				let:removeLiquidity
+				onUpdate={() => {
+					updateBalances();
+					tokensAndPoolsRefresh();
 				}}
-			/>
-		</ChangeLiquidity>
+			>
+				<LiquidityForm
+					{action}
+					{pool}
+					{tokenA}
+					{tokenB}
+					bind:tokenAInput={inputTokenA}
+					bind:tokenBInput={inputTokenB}
+					bind:tokenLptInput={inputTokenLpt}
+					disabled={disabled || !inputTokenB || !inputTokenA || maxError}
+					tokenLptBalance={Number(result[userLptKey]) / 1e6}
+					poolShare={userPoolShare}
+					poolTokenABalance={poolTokenABalanceInRange}
+					poolTokenBBalance={poolTokenBBalanceInRange}
+					tokenABalance={userTokenABalanceInRange}
+					tokenBBalance={userTokenBBalanceInRange}
+					onInputTokenLpt={() =>
+						onInputTokenLpt({
+							poolLptBalance,
+							poolTokenABalance,
+							poolTokenBBalance,
+						})}
+					onInputTokenA={() =>
+						onInputTokenA({
+							poolLptBalance,
+							poolTokenABalance,
+							poolTokenBBalance,
+						})}
+					onInputTokenB={() =>
+						onInputTokenB({
+							poolLptBalance,
+							poolTokenABalance,
+							poolTokenBBalance,
+						})}
+					handleSubmit={async () => {
+						if ($connectedAccount) {
+							if (!disabled) {
+								try {
+									if (action === 'add') {
+										console.log(
+											'Add:',
+											await addLiquidity({
+												pool,
+												tokenA,
+												tokenB,
+												inputTokenA,
+												inputTokenB,
+											})
+										);
+										updateBalances();
+									} else if (action === 'remove') {
+										console.log(
+											'Remove:',
+											await removeLiquidity({
+												pool,
+												inputTokenLpt,
+											})
+										);
+										updateBalances();
+									}
+								} catch (e) {
+									console.error(`Error ${action}ing liquidity`);
+									console.error(e);
+								}
+								pageContentRefresh(0);
+							}
+						} else {
+							openModal(ConnectWallet, {});
+						}
+					}}
+				/>
+			</ChangeLiquidity>
+		{/snippet}
 	</BalanceSubscriber>
 {:else}
 	<h3>Token Not Found</h3>

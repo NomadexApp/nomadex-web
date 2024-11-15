@@ -3,9 +3,9 @@
 	import { nodeClient } from '$lib/_shared';
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
-	import { PoolClient } from '../../../../contracts/clients/PoolClient';
+	import { PoolClient } from '$lib/../contracts/clients/PoolClient';
 	import { convertDecimals } from '$lib/utils/numbers';
-	import { PoolFactoryClient } from '../../../../contracts/clients/PoolFactoryClient';
+	import { PoolFactoryClient } from '$lib/../contracts/clients/PoolFactoryClient';
 	import { page } from '$app/stores';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
 	import { PUBLIC_NETWORK } from '$env/static/public';

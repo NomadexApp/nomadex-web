@@ -5,14 +5,14 @@
 	import { onMount } from 'svelte';
 	import { MySmartAsset } from '$lib/MySmartAsset';
 
-	let appId = Number($page.params.tokenId);
-	let currentManager = '';
-	let manager = '';
-	let name = '';
-	let symbol = '';
-	let decimals = 0;
-	let totalSupply = '0';
-	let loading = false;
+	let appId = $state(Number($page.params.tokenId));
+	let currentManager = $state('');
+	let manager = $state('');
+	let name = $state('');
+	let symbol = $state('');
+	let decimals = $state(0);
+	let totalSupply = $state('0');
+	let loading = $state(false);
 
 	onMount(async () => {
 		loading = true;
@@ -48,8 +48,8 @@
 			<div>Arc200 Token Id:</div>
 			<input
 				class="input input-secondary bg-[#00000040]"
-				on:keypress|preventDefault
-				on:paste|preventDefault
+				onkeypress={(e) => e.preventDefault()}
+				onpaste={(e) => e.preventDefault()}
 				type="number"
 				value={appId}
 			/>
@@ -82,7 +82,7 @@
 			</div>
 			{#if algosdk.isValidAddress(manager) && manager !== currentManager}
 				<div class="w-full max-w-[610px] flex flex-col justify-center">
-					<button class="btn btn-primary btn-sm" on:click={() => (manager = $connectedAccount)}>Change Manager</button>
+					<button class="btn btn-primary btn-sm" onclick={() => (manager = $connectedAccount)}>Change Manager</button>
 				</div>
 			{/if}
 		{/if}

@@ -7,17 +7,17 @@
 	import { goto } from '$app/navigation';
 	import { knownPools } from '$lib';
 
-	let appId = Number($page.params.tokenId);
-	let currentManager = '';
-	let manager = '';
-	let reserve = '';
-	let freeze = '';
-	let clawback = '';
-	let name = '';
-	let symbol = '';
-	let decimals = 0;
-	let totalSupply = '0';
-	let loading = false;
+	let appId = $state(Number($page.params.tokenId));
+	let currentManager = $state('');
+	let manager = $state('');
+	let reserve = $state('');
+	let freeze = $state('');
+	let clawback = $state('');
+	let name = $state('');
+	let symbol = $state('');
+	let decimals = $state(0);
+	let totalSupply = $state('0');
+	let loading = $state(false);
 
 	onMount(async () => {
 		loading = true;
@@ -58,8 +58,8 @@
 			<div>ASA Id:</div>
 			<input
 				class="input input-secondary bg-[#00000040]"
-				on:keypress|preventDefault
-				on:paste|preventDefault
+				onkeypress={(e) => e.preventDefault()}
+				onpaste={(e) => e.preventDefault()}
 				type="number"
 				value={appId}
 			/>
@@ -92,7 +92,7 @@
 			</div>
 			{#if algosdk.isValidAddress(manager) && manager !== currentManager}
 				<div class="w-full max-w-[610px] flex flex-col justify-center">
-					<button class="btn btn-primary btn-sm" on:click={() => (manager = $connectedAccount)}>Change Manager</button>
+					<button class="btn btn-primary btn-sm" onclick={() => (manager = $connectedAccount)}>Change Manager</button>
 				</div>
 			{/if}
 		{/if}
@@ -120,7 +120,7 @@
 
 		{#if $connectedAccount && symbol}
 			<div class="w-full max-w-[610px] flex flex-col justify-center">
-				<button class="btn btn-primary" class:btn-outline={loading} disabled={loading} on:click={createVoiPool}>
+				<button class="btn btn-primary" class:btn-outline={loading} disabled={loading} onclick={createVoiPool}>
 					{#if $knownPools.find((pool) => pool.assets.find((as) => as.id === appId))}
 						Configure
 					{:else}

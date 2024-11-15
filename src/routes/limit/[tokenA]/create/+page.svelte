@@ -7,7 +7,7 @@
 	import algosdk from 'algosdk';
 	import { connectedAccount, getTransactionSignerAccount, signAndSendTransections } from '$lib/components/UseWallet.svelte';
 	import Contract from 'arc200js';
-	import { LimitOrders001Client } from '../../../../contracts/clients/LimitOrders001Client';
+	import { LimitOrders001Client } from '$lib/../contracts/clients/LimitOrders001Client';
 
 	let limitOrders: {
 		orderId: number;
