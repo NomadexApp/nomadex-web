@@ -16,7 +16,7 @@
 	let name = '';
 	let symbol = '';
 	let decimals = 0;
-	let totalSupply = 0;
+	let totalSupply = '0';
 	let loading = false;
 
 	onMount(async () => {
@@ -32,7 +32,12 @@
 			name = resp.params.name;
 			symbol = resp.params['unit-name'];
 			decimals = resp.params.decimals;
-			totalSupply = resp.params.total;
+
+			const supply = resp.params.total;
+			totalSupply =
+				(BigInt(supply) / 10n ** BigInt(decimals)).toLocaleString() +
+				'.' +
+				(10n ** BigInt(decimals)).toString().slice(1);
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -51,27 +56,33 @@
 		<div class="br"></div>
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>ASA Id:</div>
-			<input class="input input-secondary bg-[#00000040]" on:keypress|preventDefault on:paste|preventDefault type="number" value={appId} />
+			<input
+				class="input input-secondary bg-[#00000040]"
+				on:keypress|preventDefault
+				on:paste|preventDefault
+				type="number"
+				value={appId}
+			/>
 		</div>
 
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Token Name:</div>
-			<input class="input input-secondary bg-[#00000040]" type="text" bind:value={name} />
+			<input class="input input-secondary bg-[#00000040]" type="text" value={name} />
 		</div>
 
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Token Symbol:</div>
-			<input class="input input-secondary bg-[#00000040]" type="text" bind:value={symbol} />
+			<input class="input input-secondary bg-[#00000040]" type="text" value={symbol} />
 		</div>
 
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Decimals:</div>
-			<input class="input input-secondary bg-[#00000040]" type="number" bind:value={decimals} />
+			<input class="input input-secondary bg-[#00000040]" type="number" value={decimals} />
 		</div>
 
 		<div class="w-full max-w-[610px] flex flex-col justify-center">
 			<div>Total Supply:</div>
-			<input class="input input-secondary bg-[#00000040]" type="number" bind:value={totalSupply} />
+			<input class="input input-secondary bg-[#00000040]" type="text" value={totalSupply} />
 		</div>
 
 		{#if currentManager}
