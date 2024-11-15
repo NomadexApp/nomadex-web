@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { get, writable } from 'svelte/store';
 	import { NetworkId, WalletManager, WalletId } from '@txnlab/use-wallet';
 	import { PUBLIC_NETWORK, PUBLIC_WALLET_CONNECT_PROJECT_ID } from '$env/static/public';

@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export function readableNumber(number: number): string {
 		if (number < 1000) {
 			return Number(number.toFixed(2)).toString();
