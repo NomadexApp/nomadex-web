@@ -2,8 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
+	let {} = $props();
+
 	onMount(async () => {
-		let timeout: NodeJS.Timeout;
 		const searchParams = new URLSearchParams(location.search);
 		if (searchParams.has('from') && searchParams.has('at')) {
 			const from = searchParams.get('from');

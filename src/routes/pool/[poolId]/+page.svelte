@@ -6,6 +6,8 @@
 	import { pageContentRefresh } from '$lib/utils';
 	import Online from './Online.svelte';
 
+	let {} = $props();
+
 	const { page } = getStores();
 	const pool = $knownPools.find((pool) => pool.poolId === Number($page.params.poolId));
 	if (!pool) throw Error('pool not found');
@@ -13,23 +15,12 @@
 	const tokenA = pool.assets[0];
 	const tokenB = pool.assets[1];
 
-	let tokens: [Token, Token] | undefined = [tokenA, tokenB];
-
-	let selectionPk = '';
-	let stateProofPk = '';
-	let votePk = '';
-	let voteFirst = 0;
-	let voteLast = 0;
-	let voteKeyDilution = 0;
-
-	function updateRoute(aToken: Token, bToken: Token) {
-		if (aToken.symbol !== tokenA.symbol || bToken.symbol !== tokenB.symbol) {
-			goto(`/liquidity/${bToken.symbol}`, { replaceState: true });
-			pageContentRefresh(0);
-		}
-	}
-
-	$: browser && tokens && tokenA && tokenB && updateRoute(tokenA, tokenB);
+	let selectionPk = $state('');
+	let stateProofPk = $state('');
+	let votePk = $state('');
+	let voteFirst = $state(0);
+	let voteLast = $state(0);
+	let voteKeyDilution = $state(0);
 </script>
 
 <section class="flex flex-col justify-center items-center h-full">
@@ -41,7 +32,7 @@
 				tokensAndPoolsRefresh();
 			}}
 		>
-			<form on:submit|preventDefault class="flex flex-col gap-2 w-full max-w-[448px]">
+			<form onsubmit={(e) => e.preventDefault()} class="flex flex-col gap-2 w-full max-w-[448px]">
 				<h4 class="text-left text-xl">Consensus</h4>
 				<div class="h-full flex flex-col justify-start items-center gap-3 w-full">
 					<div class="w-full max-w-[610px] flex flex-col justify-center">
@@ -69,12 +60,18 @@
 						<input class="input input-secondary bg-[#00000040]" type="number" bind:value={voteKeyDilution} />
 					</div>
 					<div class="w-full max-w-[610px] flex flex-col justify-center">
-						<button class="btn btn-ghost bg-[#00000040]" on:click={() => registerOnline({ pool, selectionPk, stateProofPk, votePk, voteFirst, voteLast, voteKeyDilution })}>
+						<button
+							class="btn btn-ghost bg-[#00000040]"
+							onclick={() =>
+								registerOnline({ pool, selectionPk, stateProofPk, votePk, voteFirst, voteLast, voteKeyDilution })}
+						>
 							Register Online
 						</button>
 					</div>
 					<div class="w-full max-w-[610px] flex flex-col justify-center">
-						<button class="btn btn-ghost bg-[#00000040]" on:click={() => registerOffline({ pool })}> Register Offline </button>
+						<button class="btn btn-ghost bg-[#00000040]" onclick={() => registerOffline({ pool })}>
+							Register Offline
+						</button>
 					</div>
 				</div>
 				<div class="br"></div>

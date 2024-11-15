@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Pool, type Token } from '$lib';
+	import type { Pool } from '$lib';
 	import { nodeClient } from '$lib/_shared';
 	import { getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import { PoolClient } from '../../../contracts/clients/PoolClient';
@@ -16,7 +16,15 @@
 		voteLast: number;
 		voteKeyDilution: number;
 	};
-	async function registerOnline({ pool, selectionPk, stateProofPk, votePk, voteFirst, voteLast, voteKeyDilution }: AddLiquidityOpts) {
+	async function registerOnline({
+		pool,
+		selectionPk,
+		stateProofPk,
+		votePk,
+		voteFirst,
+		voteLast,
+		voteKeyDilution,
+	}: AddLiquidityOpts) {
 		const remove = addNotification('pending', `Register online...`);
 
 		const poolClient = new PoolClient(

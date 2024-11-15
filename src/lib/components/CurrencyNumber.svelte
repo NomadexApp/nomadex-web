@@ -13,7 +13,7 @@
 </script>
 
 <script lang="ts">
-	export let amount = 0;
+	let { amount = 0 } = $props();
 </script>
 
 {#if amount < 0.1}

@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { nodeClient } from '$lib/_shared';
-	import Button from '$lib/components/button/Button.svelte';
 	import TextInput from '$lib/components/form/TextInput.svelte';
 	import ConnectWallet from '$lib/components/modal/ConnectWallet.svelte';
 	import { openModal } from '$lib/components/modal/Modal.svelte';
 	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
-	import MdAccountBalanceWallet from '$lib/icons/MdAccountBalanceWallet.svelte';
 	import { getAccountBalance } from '$lib/stores/onchain';
 	import { pageContentRefresh } from '$lib/utils';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';

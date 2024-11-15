@@ -16,8 +16,9 @@
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { PUBLIC_NETWORK } from '$env/static/public';
 	import { MyPool } from 'nomadex-client';
+	import type { Snippet } from 'svelte';
 
-	export let onUpdate = () => {};
+	let { onUpdate = () => {}, child }: { onUpdate: () => void; child: Snippet<[typeof handleSwap]> } = $props();
 
 	async function handleSwap({ pool, tokenA, tokenB, amountA, amountB, isDirectionAlphaToBeta }: SwapAlphaBetaOpts) {
 		const remove = addNotification(
@@ -41,4 +42,4 @@
 	}
 </script>
 
-<slot {handleSwap} />
+{@render child(handleSwap)}

@@ -97,6 +97,8 @@
 	import ErrorIcon from '$lib/icons/MdError.svelte';
 	import SuccessIcon from '$lib/icons/MdCheckCircle.svelte';
 	import MdCloseIcon from '$lib/icons/MdClose.svelte';
+
+	let {} = $props();
 </script>
 
 {#if $notifications.length}
@@ -124,7 +126,7 @@
 					{notification.message.slice(0, 100)}{notification.message.length > 100 ? '...' : ''}
 				</div>
 				<div class="icon close">
-					<button on:click={() => notification.remove()}>
+					<button onclick={() => notification.remove()}>
 						<MdCloseIcon />
 					</button>
 				</div>

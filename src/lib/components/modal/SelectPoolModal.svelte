@@ -1,26 +1,26 @@
 <script lang="ts">
 	import type { Pool } from '$lib';
-	import { convertDecimals } from '$lib/utils/numbers';
 	import TextInput from '../form/TextInput.svelte';
 
-	export let close: Function;
-	export let pools: Pool[] = [];
-	export let handleSelect: (pool: Pool) => void = () => {};
+	let {
+		close,
+		pools = [],
+		handleSelect = () => {},
+	}: { close: Function; pools?: Pool[]; handleSelect?: (pool: Pool) => void } = $props();
 
-	let tokenSearch = '';
-	let filteredPools: Pool[] = [];
+	let tokenSearch = $state('');
 
-	let balances = {};
+	let filteredPools = $derived(
+		tokenSearch
+			? pools.filter(
+					(pool) =>
+						pool.id.toString() === tokenSearch ||
+						pool.assets.find((asset) => asset.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`)))
+				)
+			: pools
+	);
 
-	$: filteredPools = tokenSearch
-		? pools.filter(
-				(pool) =>
-					pool.id.toString() === tokenSearch ||
-					pool.assets.find((asset) => asset.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`)))
-			)
-		: pools;
-
-	$: finalPools = [...filteredPools].sort((a, b) => b.tvl - a.tvl);
+	let finalPools = $derived([...filteredPools].sort((a, b) => b.tvl - a.tvl));
 </script>
 
 <form>
@@ -34,7 +34,7 @@
 		{#each finalPools as pool}
 			<button
 				class="text-left token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
-				on:click={() => {
+				onclick={() => {
 					handleSelect(pool);
 					close();
 				}}
@@ -66,7 +66,7 @@
 </form>
 
 <div class="buttons">
-	<button class="btn btn-ghost w-full" on:click={() => close()}>Close</button>
+	<button class="btn btn-ghost w-full" onclick={() => close()}>Close</button>
 </div>
 
 <style>

@@ -9,14 +9,17 @@
 
 	const { page } = getStores();
 
-	let searchText = '';
+	let { children }: { children: Snippet } = $props();
+
+	let searchText = $state('');
 
 	import PoolInfo from '$lib/components/PoolInfo.svelte';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 
-	import { onMount } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 
-	let poolBalances: { [k: string]: { alpha: bigint; beta: bigint; lpt: bigint; issuedLpt: bigint } };
+	let poolBalances: { [k: string]: { alpha: bigint; beta: bigint; lpt: bigint; issuedLpt: bigint } } | undefined =
+		$state(undefined);
 
 	onMount(async () => {
 		// const response = await getPoolBalances($connectedAccount);
@@ -41,10 +44,12 @@
 		poolBalances = poolBalances;
 	}
 
-	$: my = Boolean($page.url.pathname.match('/your-positions'));
-	$: all = Boolean($page.url.pathname.match('/pool/all'));
+	let my = $derived(Boolean($page.url.pathname.match('/your-positions')));
+	let all = $derived(Boolean($page.url.pathname.match('/pool/all')));
 
-	$: if (my) fetchBalances();
+	$effect(() => {
+		if (my) fetchBalances();
+	});
 
 	function filterPools(searchText: string, my: boolean, all: boolean, pools: Pool[], _: any) {
 		if (my) return pools.filter((p) => poolBalances?.[p.poolId]);
@@ -61,7 +66,7 @@
 		return pools.slice(0, 10);
 	}
 
-	$: filteredPools = filterPools(searchText, my, all, $knownPools, poolBalances);
+	let filteredPools = $derived(filterPools(searchText, my, all, $knownPools, poolBalances));
 </script>
 
 {#if !$page.params.poolId}
@@ -133,7 +138,7 @@
 	<div class="br"></div>
 {/if}
 
-<slot />
+{@render children()}
 
 <style>
 	form {

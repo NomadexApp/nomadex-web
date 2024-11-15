@@ -139,83 +139,83 @@
 			{@const maxError = action === 'remove' ? maxLptBalanceError : maxBalanceError}
 
 			<ChangeLiquidity
-				let:addLiquidity
-				let:removeLiquidity
 				onUpdate={() => {
 					updateBalances();
 					tokensAndPoolsRefresh();
 				}}
 			>
-				<LiquidityForm
-					{action}
-					{pool}
-					{tokenA}
-					{tokenB}
-					bind:tokenAInput={inputTokenA}
-					bind:tokenBInput={inputTokenB}
-					bind:tokenLptInput={inputTokenLpt}
-					disabled={disabled || !inputTokenB || !inputTokenA || maxError}
-					tokenLptBalance={Number(result[userLptKey]) / 1e6}
-					poolShare={userPoolShare}
-					poolTokenABalance={poolTokenABalanceInRange}
-					poolTokenBBalance={poolTokenBBalanceInRange}
-					tokenABalance={userTokenABalanceInRange}
-					tokenBBalance={userTokenBBalanceInRange}
-					onInputTokenLpt={() =>
-						onInputTokenLpt({
-							poolLptBalance,
-							poolTokenABalance,
-							poolTokenBBalance,
-						})}
-					onInputTokenA={() =>
-						onInputTokenA({
-							poolLptBalance,
-							poolTokenABalance,
-							poolTokenBBalance,
-						})}
-					onInputTokenB={() =>
-						onInputTokenB({
-							poolLptBalance,
-							poolTokenABalance,
-							poolTokenBBalance,
-						})}
-					handleSubmit={async () => {
-						if ($connectedAccount) {
-							if (!disabled) {
-								try {
-									if (action === 'add') {
-										console.log(
-											'Add:',
-											await addLiquidity({
-												pool,
-												tokenA,
-												tokenB,
-												inputTokenA,
-												inputTokenB,
-											})
-										);
-										updateBalances();
-									} else if (action === 'remove') {
-										console.log(
-											'Remove:',
-											await removeLiquidity({
-												pool,
-												inputTokenLpt,
-											})
-										);
-										updateBalances();
+				{#snippet child(addLiquidity, removeLiquidity)}
+					<LiquidityForm
+						{action}
+						{pool}
+						{tokenA}
+						{tokenB}
+						bind:tokenAInput={inputTokenA}
+						bind:tokenBInput={inputTokenB}
+						bind:tokenLptInput={inputTokenLpt}
+						disabled={disabled || !inputTokenB || !inputTokenA || maxError}
+						tokenLptBalance={Number(result[userLptKey]) / 1e6}
+						poolShare={userPoolShare}
+						poolTokenABalance={poolTokenABalanceInRange}
+						poolTokenBBalance={poolTokenBBalanceInRange}
+						tokenABalance={userTokenABalanceInRange}
+						tokenBBalance={userTokenBBalanceInRange}
+						onInputTokenLpt={() =>
+							onInputTokenLpt({
+								poolLptBalance,
+								poolTokenABalance,
+								poolTokenBBalance,
+							})}
+						onInputTokenA={() =>
+							onInputTokenA({
+								poolLptBalance,
+								poolTokenABalance,
+								poolTokenBBalance,
+							})}
+						onInputTokenB={() =>
+							onInputTokenB({
+								poolLptBalance,
+								poolTokenABalance,
+								poolTokenBBalance,
+							})}
+						handleSubmit={async () => {
+							if ($connectedAccount) {
+								if (!disabled) {
+									try {
+										if (action === 'add') {
+											console.log(
+												'Add:',
+												await addLiquidity({
+													pool,
+													tokenA,
+													tokenB,
+													inputTokenA,
+													inputTokenB,
+												})
+											);
+											updateBalances();
+										} else if (action === 'remove') {
+											console.log(
+												'Remove:',
+												await removeLiquidity({
+													pool,
+													inputTokenLpt,
+												})
+											);
+											updateBalances();
+										}
+									} catch (e) {
+										console.error(`Error ${action}ing liquidity`);
+										console.error(e);
 									}
-								} catch (e) {
-									console.error(`Error ${action}ing liquidity`);
-									console.error(e);
+									pageContentRefresh(0);
 								}
-								pageContentRefresh(0);
+							} else {
+								openModal(ConnectWallet, {});
 							}
-						} else {
-							openModal(ConnectWallet, {});
-						}
-					}}
-				/>
+						}}
+					/>
+				{/snippet}
 			</ChangeLiquidity>
 		{/snippet}
 	</BalanceSubscriber>

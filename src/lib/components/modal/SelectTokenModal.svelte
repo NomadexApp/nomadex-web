@@ -3,25 +3,29 @@
 	import { convertDecimals } from '$lib/utils/numbers';
 	import TextInput from '../form/TextInput.svelte';
 
-	export let close: Function;
-	export let tokens: Token[] = [];
-	export let handleSelect: (token: Token) => void = () => {};
+	let {
+		close,
+		tokens = [],
+		handleSelect = () => {},
+	}: { close: Function; tokens?: Token[]; handleSelect?: (token: Token) => void } = $props();
 
-	let tokenSearch = '';
-	let filteredTokens: Token[] = [];
+	let tokenSearch = $state('');
+	let balances = $state({});
 
-	let balances = {};
+	let filteredTokens = $derived(
+		tokenSearch
+			? tokens.filter(
+					(token) =>
+						token.id.toString() === tokenSearch ||
+						token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
+				)
+			: tokens
+	);
 
-	$: filteredTokens = tokenSearch
-		? tokens.filter(
-				(token) =>
-					token.id.toString() === tokenSearch ||
-					token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
-			)
-		: tokens;
-
-	$: finalTokensList = [...filteredTokens].sort(
-		(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
+	let finalTokensList = $derived(
+		[...filteredTokens].sort(
+			(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
+		)
 	);
 </script>
 
@@ -36,7 +40,7 @@
 		{#each finalTokensList as token}
 			<button
 				class="text-left token flex gap-4 bg-[#f0f0f005] hover:bg-[#f0f0f010] rounded p-2 cursor-pointer"
-				on:click={() => {
+				onclick={() => {
 					handleSelect(token);
 					close();
 				}}
@@ -67,7 +71,7 @@
 </form>
 
 <div class="buttons">
-	<button class="btn btn-ghost w-full" on:click={() => close()}>Close</button>
+	<button class="btn btn-ghost w-full" onclick={() => close()}>Close</button>
 </div>
 
 <style>

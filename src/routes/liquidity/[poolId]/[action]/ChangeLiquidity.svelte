@@ -11,8 +11,15 @@
 	import { PUBLIC_NETWORK } from '$env/static/public';
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { MyPool } from 'nomadex-client';
+	import type { Snippet } from 'svelte';
 
-	export let onUpdate = () => {};
+	let {
+		onUpdate = () => {},
+		child,
+	}: {
+		onUpdate: () => void;
+		child: Snippet<[typeof addLiquidity, typeof removeLiquidity]>;
+	} = $props();
 
 	type AddLiquidityOpts = { pool: Pool; tokenA: Token; tokenB: Token; inputTokenA: number; inputTokenB: number };
 	async function addLiquidity({ pool, tokenA, tokenB, inputTokenA, inputTokenB }: AddLiquidityOpts) {
@@ -114,10 +121,11 @@
 	}
 </script>
 
-<slot {addLiquidity} {removeLiquidity} />
+{@render child(addLiquidity, removeLiquidity)}
+
 {#await factoryClient.getGlobalState() then res}
 	{#if algosdk.encodeAddress(res.warden?.asByteArray() ?? Uint8Array.from([])) === $connectedAccount}
 		<br />
-		<button class="text-sm absolute left-[50vw] translate-x-[-50%]" on:click={updateContract}>Update Contract</button>
+		<button class="text-sm absolute left-[50vw] translate-x-[-50%]" onclick={updateContract}>Update Contract</button>
 	{/if}
 {/await}

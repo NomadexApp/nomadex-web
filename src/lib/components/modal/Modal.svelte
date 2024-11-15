@@ -1,29 +1,31 @@
 <script module lang="ts">
+	import type { Component, ComponentProps, Snippet } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	export const component = writable<ConstructorOfATypedSvelteComponent | undefined>();
-	export const props = writable<Record<string, any> | undefined>();
+	export const component = writable<Component<{ close: () => void }, {}, ''> | undefined>();
+	export const modalProps = writable<Record<string, any> | undefined>();
 
-	export function openModal(comp: ConstructorOfATypedSvelteComponent, props_: Record<string, any>) {
-		props.set(props_);
+	export function openModal(comp: Component<{ close: () => void }, {}, ''>, props_: Record<string, any>) {
+		modalProps.set(props_);
 		component.set(comp);
 	}
 </script>
 
 <script lang="ts">
-	export let open = true;
+	let { open = $bindable(true), child }: { open?: boolean; child: Snippet<[() => void]> } = $props();
 
 	function close() {
 		open = false;
 		component.set(undefined);
-		props.set(undefined);
+		modalProps.set(undefined);
 	}
 </script>
 
 <dialog {open}>
-	<slot {close} />
+	{@render child(close)}
 </dialog>
-<div on:keydown class="overlay" on:click={close} />
+
+<a aria-label="close" href={null} class="overlay" onclick={close}></a>
 
 <style>
 	dialog {

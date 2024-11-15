@@ -2,7 +2,11 @@
 	import { goto } from '$app/navigation';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 
-	$: if (!$connectedAccount) {
-		goto('/pool');
-	}
+	let {} = $props();
+
+	$effect(() => {
+		if (!$connectedAccount) {
+			goto('/pool');
+		}
+	});
 </script>

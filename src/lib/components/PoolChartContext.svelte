@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import { type SwapTxn } from '$lib/utils/events';
 	import CandleChart, { type PriceCandleData } from '$lib/chart/CandleChart.svelte';
 	import { browser } from '$app/environment';
-	import { knownPools, knownTokens, TokenType, type Pool, type Token } from '$lib';
+	import { knownPools, type Pool, type Token } from '$lib';
 	import { getStores } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { convertDecimals } from '$lib/utils/numbers';
 	import { openModal } from './modal/Modal.svelte';
-	import SelectTokenModal from './modal/SelectTokenModal.svelte';
 	import { pageContentRefresh } from '../utils';
 	import { ABITupleType } from 'algosdk';
 	import { PUBLIC_NETWORK } from '$env/static/public';
@@ -23,8 +22,15 @@
 
 	const [tokenA, tokenB] = pool.assets;
 
-	export let price = 0;
-	export let context = 'analytics';
+	let {
+		price = $bindable(0),
+		context = 'analytics',
+		allevents,
+	}: {
+		price?: number;
+		context?: string;
+		allevents: Snippet<[Token, Token, ((typeof swapEvents)[0] | (typeof depositEvents)[0])[]]>;
+	} = $props();
 
 	let swapEvents: {
 		sender: string;
@@ -33,7 +39,7 @@
 		direction: number;
 		poolBals: [bigint, bigint];
 		txn: SwapTxn;
-	}[] = [];
+	}[] = $state([]);
 	let depositEvents: {
 		sender: string;
 		amts: [bigint, bigint];
@@ -41,14 +47,16 @@
 		adding: boolean;
 		poolBals: [bigint, bigint];
 		txn: SwapTxn;
-	}[] = [];
-	let pricingDirection: string = `${tokenB.symbol}/${tokenA.symbol}`;
-	let timescale = browser
-		? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m']))
-		: Timescale['15m'];
-	let logarithmic = false;
+	}[] = $state([]);
+	let pricingDirection: string = $state(`${tokenB.symbol}/${tokenA.symbol}`);
+	let timescale = $state(
+		browser ? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['15m'])) : Timescale['15m']
+	);
+	let logarithmic = $state(false);
 
-	$: browser && localStorage.setItem('timescale', JSON.stringify(timescale));
+	$effect(() => {
+		browser && localStorage.setItem('timescale', JSON.stringify(timescale));
+	});
 
 	async function loadEvents() {
 		const response = await fetch(
@@ -134,7 +142,7 @@
 		return () => clearInterval(interval);
 	});
 
-	let priceData: PriceCandleData[] = [];
+	let priceData: PriceCandleData[] = $state([]);
 
 	async function generateDataByTime(priceOf: string, duration = timescale) {
 		const _priceData: PriceCandleData[] = [];
@@ -218,8 +226,8 @@
 		}
 	}
 
-	let innerWidth = browser ? window.innerWidth : 0;
-	let chartWidth = 0;
+	let innerWidth = $state(browser ? window.innerWidth : 0);
+	let chartWidth = $state(0);
 
 	function convertAmt(amount: number, token: Token) {
 		const pool = $knownPools.find((p) => p.assets[0].id === 0 && p.assets[1].id === token.id);
@@ -240,7 +248,7 @@
 		<button
 			aria-label="tokens"
 			class="currency flex justify-center items-center mt-[0.1rem] p-2 py-0 w-[2.2rem] h-[1.8rem] rounded text-white bg-transparent"
-			on:click={() => {
+			onclick={() => {
 				openModal(SelectPoolModal, {
 					pools: [...$knownPools],
 					handleSelect(p) {
@@ -280,7 +288,7 @@
 			<div>
 				<button
 					class="btn btn-sm btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white hidden sm:inline-flex rounded-[4px]"
-					on:click={() => {
+					onclick={() => {
 						logarithmic = !logarithmic;
 						generateDataByTime(pricingDirection);
 					}}>{logarithmic ? 'linear' : 'log'}</button
@@ -289,7 +297,7 @@
 					class="btn btn-sm {timescale === Timescale['15m']
 						? 'btn-primary'
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-					on:click={() => {
+					onclick={() => {
 						timescale = Timescale['15m'];
 						generateDataByTime(pricingDirection);
 					}}>15m</button
@@ -298,7 +306,7 @@
 					class="btn btn-sm {timescale === Timescale['30m']
 						? 'btn-primary'
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-					on:click={() => {
+					onclick={() => {
 						timescale = Timescale['30m'];
 						generateDataByTime(pricingDirection);
 					}}>30m</button
@@ -307,7 +315,7 @@
 					class="btn btn-sm {timescale === Timescale['1hr']
 						? 'btn-primary'
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-					on:click={() => {
+					onclick={() => {
 						timescale = Timescale['1hr'];
 						generateDataByTime(pricingDirection);
 					}}>1hr</button
@@ -316,7 +324,7 @@
 					class="btn btn-sm {timescale === Timescale['4hr']
 						? 'btn-primary'
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-					on:click={() => {
+					onclick={() => {
 						timescale = Timescale['4hr'];
 						generateDataByTime(pricingDirection);
 					}}>4hr</button
@@ -325,7 +333,7 @@
 					class="btn btn-sm {timescale === Timescale['1d']
 						? 'btn-primary'
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-					on:click={() => {
+					onclick={() => {
 						timescale = Timescale['1d'];
 						generateDataByTime(pricingDirection);
 					}}>1d</button
@@ -347,12 +355,11 @@
 		</div>
 	{/if}
 
-	<slot
-		name="all-events"
-		{tokenA}
-		{tokenB}
-		events={[...swapEvents, ...depositEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])}
-	/>
+	{@render allevents(
+		tokenA,
+		tokenB,
+		[...swapEvents, ...depositEvents].sort((a, b) => b.txn['confirmed-round'] - a.txn['confirmed-round'])
+	)}
 </section>
 
 <style>

@@ -1,3 +1,7 @@
+<script lang="ts">
+	let {} = $props();
+</script>
+
 <svg
 	xmlns="http://www.w3.org/2000/svg"
 	version="1.0"
@@ -12,7 +16,6 @@
 		/>
 	</g>
 </svg>
-
 
 <style>
 	svg {

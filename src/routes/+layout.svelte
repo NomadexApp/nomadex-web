@@ -3,7 +3,7 @@
 	import '../tailwind.css';
 	import Navbar from '$lib/components/navbar/Navbar.svelte';
 	import Footer from '$lib/components/footer/Footer.svelte';
-	import Modal, { component, props } from '$lib/components/modal/Modal.svelte';
+	import Modal, { component, modalProps } from '$lib/components/modal/Modal.svelte';
 	import Notify from '$lib/components/Notify.svelte';
 	import { connectedAccount } from '$lib/components/UseWallet.svelte';
 	import { pageContentRefresh, pageContentRefreshPending } from '$lib/utils';
@@ -68,7 +68,7 @@
 			<Modal let:close>
 				{#if $component}
 					{@const Comp = $component}
-					<Comp {close} {...$props} />
+					<Comp {close} {...$modalProps} />
 				{/if}
 			</Modal>
 		{/if}

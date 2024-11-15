@@ -51,27 +51,28 @@
 			{@const poolTokenBBalanceInRange = Number(convertDecimals(poolTokenBBalance, tokenB.decimals, 6)) / 1e6}
 
 			<Swap
-				let:handleSwap
 				onUpdate={() => {
 					updateBalances();
 					tokensAndPoolsRefresh();
 				}}
 			>
-				<SwapPage
-					{tokenA}
-					{tokenB}
-					{pool}
-					{alphaToken}
-					{betaToken}
-					{userTokenABalanceInRange}
-					{userTokenBBalanceInRange}
-					{poolTokenABalanceInRange}
-					{poolTokenBBalanceInRange}
-					{poolTokenABalance}
-					{poolTokenBBalance}
-					{handleSwap}
-					{updateBalances}
-				/>
+				{#snippet child(handleSwap)}
+					<SwapPage
+						{tokenA}
+						{tokenB}
+						{pool}
+						{alphaToken}
+						{betaToken}
+						{userTokenABalanceInRange}
+						{userTokenBBalanceInRange}
+						{poolTokenABalanceInRange}
+						{poolTokenBBalanceInRange}
+						{poolTokenABalance}
+						{poolTokenBBalance}
+						{handleSwap}
+						{updateBalances}
+					/>
+				{/snippet}
 			</Swap>
 		{/snippet}
 	</BalanceSubscriber>
