@@ -65,11 +65,13 @@
 		<Footer />
 		<Notify />
 		{#if $component}
-			<Modal let:close>
-				{#if $component}
-					{@const Comp = $component}
-					<Comp {close} {...$modalProps} />
-				{/if}
+			<Modal>
+				{#snippet child(close)}
+					{#if $component}
+						{@const Comp = $component}
+						<Comp {close} {...$modalProps} />
+					{/if}
+				{/snippet}
 			</Modal>
 		{/if}
 	</section>

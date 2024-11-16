@@ -21,8 +21,8 @@
 		}) as Pool
 	);
 
-	let alphaToken = $derived(pool.assets[0]);
-	let betaToken = $derived(pool.assets[1]);
+	let alphaToken = $derived(pool?.assets[0]);
+	let betaToken = $derived(pool?.assets[1]);
 
 	let poolTokenAKey = $derived(pool ? `${algosdk.getApplicationAddress(pool.poolId)}:${tokenA.id}` : '');
 	let poolTokenBKey = $derived(pool ? `${algosdk.getApplicationAddress(pool.poolId)}:${tokenB.id}` : '');
