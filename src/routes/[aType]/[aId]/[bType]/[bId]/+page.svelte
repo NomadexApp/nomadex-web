@@ -56,7 +56,7 @@
 					tokensAndPoolsRefresh();
 				}}
 			>
-				{#snippet child?.(handleSwap)}
+				{#snippet child(handleSwap)}
 					<SwapPage
 						{tokenA}
 						{tokenB}
