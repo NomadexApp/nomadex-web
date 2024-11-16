@@ -138,7 +138,7 @@
 	<div class="br"></div>
 {/if}
 
-{@render children()}
+{@render children?.()}
 
 <style>
 	form {
