@@ -121,7 +121,7 @@
 	}
 </script>
 
-{@render child(addLiquidity, removeLiquidity)}
+{@render child?.(addLiquidity, removeLiquidity)}
 
 {#await factoryClient.getGlobalState() then res}
 	{#if algosdk.encodeAddress(res.warden?.asByteArray() ?? Uint8Array.from([])) === $connectedAccount}

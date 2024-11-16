@@ -42,4 +42,4 @@
 	}
 </script>
 
-{@render child(handleSwap)}
+{@render child?.(handleSwap)}

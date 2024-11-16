@@ -144,7 +144,7 @@
 					tokensAndPoolsRefresh();
 				}}
 			>
-				{#snippet child(addLiquidity, removeLiquidity)}
+				{#snippet child?.(addLiquidity, removeLiquidity)}
 					<LiquidityForm
 						{action}
 						{pool}

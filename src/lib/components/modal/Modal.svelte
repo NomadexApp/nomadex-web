@@ -22,7 +22,7 @@
 </script>
 
 <dialog {open}>
-	{@render child(close)}
+	{@render child?.(close)}
 </dialog>
 
 <a aria-label="close" href={null} class="overlay" onclick={close}></a>
