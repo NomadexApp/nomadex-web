@@ -172,7 +172,7 @@
 	function calc(trees: ArbNode[][]) {
 		let maxProfit = 0n;
 		let maxProfitableAmount = 0;
-		for (let i = 1; i < 10000; i += 100) {
+		for (let i = 1; i < 10000; i += 10) {
 			const points = getPoints(i, trees);
 			if (!points.length) break;
 			const amt = BigInt(Math.floor(i * 1e6));
