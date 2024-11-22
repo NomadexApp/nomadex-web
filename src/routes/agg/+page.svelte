@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { knownPools, knownTokens, type Pool, type Token } from '$lib';
+	import { knownPools, knownTokens, loadTokensAndPools, type Pool, type Token } from '$lib';
 	import { MyPool } from 'nomadex-client';
 	import { sha512_256 } from 'js-sha512';
-	import Arb from './Arb.svelte';
 	import { calculateOutTokens } from '$lib/utils/howMuch';
-	import CurrencyNumber from '$lib/components/CurrencyNumber.svelte';
 	import TokenInput from '$lib/components/form/TokenInput.svelte';
 	import { nodeClient } from '$lib/_shared';
 	import { PUBLIC_NETWORK } from '$env/static/public';
@@ -12,6 +10,7 @@
 	import algosdk from 'algosdk';
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
+	import { pageContentRefresh } from '$lib/utils';
 
 	const {} = $props();
 
@@ -107,9 +106,8 @@
 	}
 
 	async function build(amount: bigint, tree: ReturnType<typeof processTrees>[0]) {
-		const remove = addNotification('pending', 'building txns');
+		const remove = addNotification('pending', 'txns pending...');
 		try {
-			const inAmount = amount;
 			const signer = getTransactionSignerAccount();
 			const transactions: algosdk.Transaction[] = [];
 			for (const node of tree.nodes) {
@@ -141,7 +139,6 @@
 			}
 			atc = await populateAppCallResources(atc, nodeClient);
 			const txns = atc.buildGroup().map((tx) => tx.txn);
-			remove?.();
 			const resp = await nodeClient
 				.sendRawTransaction(
 					await signer.signer(
@@ -151,6 +148,10 @@
 				)
 				.do();
 			console.log('Sent:', resp);
+			await new Promise((r) => setTimeout(r, 9_000));
+			await loadTokensAndPools();
+			remove?.();
+			pageContentRefresh();
 		} catch (e) {
 			console.error(e);
 			remove?.();
@@ -158,15 +159,48 @@
 	}
 	let amountInput = $state(1);
 	let amount = $derived(BigInt(Math.floor(amountInput * 1e6)));
+
+	function getPoints(amtInput: number, trees: ArbNode[][]) {
+		const amount = BigInt(Math.floor(amtInput * 1e6));
+		return processTrees(trees)
+			.filter((a) => simulate(amount, a) > amount)
+			.sort((a, b) => (simulate(amount, b) < simulate(amount, a) ? -1 : 1));
+	}
+
+	let points = $derived(getPoints(amountInput, trees));
+
+	function calc(trees: ArbNode[][]) {
+		let maxProfit = 0n;
+		let maxProfitableAmount = 0;
+		for (let i = 1; i < 10000; i += 100) {
+			const points = getPoints(i, trees);
+			if (!points.length) break;
+			const amt = BigInt(Math.floor(i * 1e6));
+			const out = simulate(amt, points[0]);
+			if (out > amt) {
+				const profit = out - amt;
+				if (profit > maxProfit) {
+					maxProfit = profit;
+					maxProfitableAmount = i;
+				}
+			}
+			if (i === 1) {
+				i -= 1;
+			}
+		}
+		amountInput = maxProfitableAmount;
+	}
+
+	$effect(() => {
+		calc(trees);
+	});
 </script>
 
 <div class="max-w-[600px] mx-auto">
 	<TokenInput bind:value={amountInput} token={$knownTokens[0].symbol} />
 	<br />
 
-	{#each processTrees(trees)
-		.sort((a, b) => (simulate(amount, b) < simulate(amount, a) ? -1 : 1))
-		.filter((a) => simulate(amount, a) > amount) as tree}
+	{#each points as tree}
 		{@const outAmount = simulate(amount, tree)}
 		<div class="tree">
 			<div class="flex justify-between">
