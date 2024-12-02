@@ -14,8 +14,6 @@
 
 	const {} = $props();
 
-	let arbs: { pool: Pool; arbWith: Pool[] }[] = $state([]);
-
 	type ArbNode = {
 		pool: Pool;
 		fromAsset: number;
