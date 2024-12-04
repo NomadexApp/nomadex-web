@@ -1,3 +1,6 @@
+import typography from '@tailwindcss/typography';
+import daisyui from 'daisyui';
+
 const theme = {
 	default: {
 		'--rounded-box': '8px',
@@ -53,5 +56,5 @@ export default {
 	theme: {
 		extend: {},
 	},
-	plugins: [require('@tailwindcss/typography'), require('daisyui')],
+	plugins: [typography, daisyui],
 };
