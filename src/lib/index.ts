@@ -43,7 +43,7 @@ export const arePoolsLoaded = writable(false);
 
 export const contracts = {
 	voitest: {
-		poolFcatory: 0,
+		poolFcatory: 8319,
 	},
 	voimain: {
 		poolFcatory: 411751,
