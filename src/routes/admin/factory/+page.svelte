@@ -21,6 +21,10 @@
 	let feeWithdrawTo = '';
 
 	onMount(async () => {
+		if (!appId) {
+			owner = $connectedAccount;
+			return;
+		}
 		const client = new PoolFactoryClient(
 			{
 				resolveBy: 'id',
