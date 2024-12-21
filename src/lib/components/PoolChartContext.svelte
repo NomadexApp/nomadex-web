@@ -49,15 +49,14 @@
 		txn: SwapTxn;
 	}[] = $state([]);
 	let pricingDirection: string = $state(`${tokenB.symbol}/${tokenA.symbol}`);
-	let timescale = $state(
-		browser && localStorage.getItem('timescale') && localStorage.getItem('timescale') !== 'undefined'
-			? JSON.parse(localStorage.getItem('timescale') ?? JSON.stringify(Timescale['1hr']))
-			: Timescale['1hr']
-	);
+	let timescale = $state(browser ? (Number(localStorage.getItem('timescale')) ?? Timescale['1hr']) : Timescale['1hr']);
 	let logarithmic = $state(false);
 
 	$effect(() => {
-		browser && localStorage.setItem('timescale', JSON.stringify(timescale));
+		if (browser && typeof timescale === 'number') {
+			console.log('SET:', { timescale });
+			localStorage.setItem('timescale', `${timescale}`);
+		}
 	});
 
 	async function loadEvents() {
