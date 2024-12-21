@@ -331,9 +331,6 @@
 					}}>1w</button
 				>
 			</div>
-			<textarea>
-				{JSON.stringify(Timescale)}
-			</textarea>
 		{/if}
 	</div>
 	{#if context !== 'limit'}
