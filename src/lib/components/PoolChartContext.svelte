@@ -60,7 +60,7 @@
 
 	async function loadEvents() {
 		const response = await fetch(
-			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=250`
+			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=${pool.id === 429995 ? 1000 : 250}`
 		);
 		const jsonResponse: { round: number; time: number; appId: number; txid: string; logs: string[] }[] =
 			await response.json();
@@ -294,15 +294,6 @@
 					}}>{logarithmic ? 'linear' : 'log'}</button
 				>
 				<button
-					class="btn btn-sm {timescale === Timescale['15m']
-						? 'btn-primary'
-						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-					onclick={() => {
-						timescale = Timescale['15m'];
-						generateDataByTime(pricingDirection);
-					}}>15m</button
-				>
-				<button
 					class="btn btn-sm {timescale === Timescale['30m']
 						? 'btn-primary'
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
@@ -321,15 +312,6 @@
 					}}>1hr</button
 				>
 				<button
-					class="btn btn-sm {timescale === Timescale['4hr']
-						? 'btn-primary'
-						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
-					onclick={() => {
-						timescale = Timescale['4hr'];
-						generateDataByTime(pricingDirection);
-					}}>4hr</button
-				>
-				<button
 					class="btn btn-sm {timescale === Timescale['1d']
 						? 'btn-primary'
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
@@ -337,6 +319,15 @@
 						timescale = Timescale['1d'];
 						generateDataByTime(pricingDirection);
 					}}>1d</button
+				>
+				<button
+					class="btn btn-sm {timescale === Timescale['1w']
+						? 'btn-primary'
+						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
+					onclick={() => {
+						timescale = Timescale['1w'];
+						generateDataByTime(pricingDirection);
+					}}>1w</button
 				>
 			</div>
 		{/if}
