@@ -161,7 +161,7 @@ export async function loadTokensAndPools() {
 		}
 	}
 
-	knownPools.update(() => validPools.sort((a, b) => a.poolId - b.poolId).sort((a, b) => {
+	knownPools.update(() => validPools.sort((a, b) => {
 		return b.tvl - a.tvl;
 	}));
 	knownTokens.update(() => validTokens.toSorted((a, b) => {
