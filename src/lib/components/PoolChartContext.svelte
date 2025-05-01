@@ -61,75 +61,53 @@
 
 	async function loadEvents() {
 		const response = await fetch(
-			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=${pool.id === 429995 ? 1000 : 250}`
+			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=1000`
 		);
-		const jsonResponse: { round: number; time: number; appId: number; txid: string; logs: string[] }[] =
-			await response.json();
+		const jsonResponse: {
+			id: string;
+			in: [string, string, string];
+			out: [string, string, string];
+			pool: number;
+			round: number;
+			sender: string;
+			timestamp: number;
+			tvl: [string, string];
+			type: number;
+		}[] = await response.json();
 		if (!jsonResponse) return console.log('Events response not defined');
-		const allSwapEvents: [string, [bigint, bigint], [bigint, bigint], [bigint, bigint], string, number, number][] = [];
-		const allDepositEvents: [
-			string,
-			bigint | [bigint, bigint],
-			bigint | [bigint, bigint],
-			[bigint, bigint],
-			string,
-			number,
-			number,
-		][] = [];
 		for (const event of jsonResponse ?? []) {
-			for (const log of event.logs ?? []) {
-				const buff = Uint8Array.from(Buffer.from(log, 'base64'));
-				if (log.startsWith('cEjQ6')) {
-					// Swap
-					allSwapEvents.push([
-						...(ABITupleType.from(`(address,(uint256,uint256),(uint256,uint256),(uint256,uint256))`).decode(
-							buff.slice(4)
-						) as any),
-						event.txid,
-						event.round,
-						event.time,
-					] as any);
-				} else if (log.startsWith('PQE+f')) {
-					// Deposit
-					allDepositEvents.push([
-						...(ABITupleType.from(`(address,(uint256,uint256),uint256,(uint256,uint256))`).decode(
-							buff.slice(4)
-						) as any),
-						event.txid,
-						event.round,
-						event.time,
-					] as any);
-				} else if (log.startsWith('po5lX')) {
-					// Withdraw
-					allDepositEvents.push([
-						...(ABITupleType.from(`(address,uint256,(uint256,uint256),(uint256,uint256))`).decode(
-							buff.slice(4)
-						) as any),
-						event.txid,
-						event.round,
-						event.time,
-					] as any);
-				}
+			if (event.type === 0) {
+				swapEvents.push({
+					sender: event.sender,
+					fromAmount: Number(BigInt(event.in[0]) < BigInt(event.in[1]) ? BigInt(event.in[1]) : BigInt(event.in[0])),
+					toAmount: Number(BigInt(event.out[0]) < BigInt(event.out[1]) ? BigInt(event.out[1]) : BigInt(event.out[0])),
+					direction: BigInt(event.in[0]) < BigInt(event.in[1]) ? 1 : 0,
+					poolBals: [BigInt(event.tvl[0]), BigInt(event.tvl[1])],
+					txn: { id: event.id, 'confirmed-round': event.round, 'round-time': event.timestamp } as any,
+				});
+			} else if (event.type === 1) {
+				depositEvents.push({
+					adding: true,
+					amts: [BigInt(event.in[0]), BigInt(event.in[1])],
+					lpt: BigInt(event.out[2]),
+					poolBals: [BigInt(event.tvl[0]), BigInt(event.tvl[1])],
+					sender: event.sender,
+					txn: { id: event.id, 'confirmed-round': event.round, 'round-time': event.timestamp } as any,
+				});
+			} else if (event.type === 2) {
+				depositEvents.push({
+					adding: false,
+					amts: [BigInt(event.out[0]), BigInt(event.out[1])],
+					lpt: BigInt(event.in[2]),
+					poolBals: [BigInt(event.tvl[0]), BigInt(event.tvl[1])],
+					sender: event.sender,
+					txn: { id: event.id, 'confirmed-round': event.round, 'round-time': event.timestamp } as any,
+				});
 			}
 		}
 
-		swapEvents = allSwapEvents.map((event) => ({
-			sender: event[0],
-			fromAmount: Number(event[1][0] < event[1][1] ? event[1][1] : event[1][0]),
-			toAmount: Number(event[2][0] < event[2][1] ? event[2][1] : event[2][0]),
-			direction: event[1][0] < event[1][1] ? 1 : 0,
-			poolBals: event[3],
-			txn: { id: event[4], 'confirmed-round': event[5], 'round-time': event[6] } as any,
-		}));
-
-		depositEvents = allDepositEvents.map((event) => ({
-			sender: event[0],
-			adding: event[1] instanceof Array,
-			lpt: (event[1] instanceof Array ? event[2] : event[1]) as bigint,
-			amts: (event[1] instanceof Array ? event[1] : event[2]) as [bigint, bigint],
-			poolBals: event[3],
-			txn: { id: event[4], 'confirmed-round': event[5], 'round-time': event[6] } as any,
-		}));
+		swapEvents = [...swapEvents].sort((a, b) => a.txn['round-time'] - b.txn['round-time']);
+		depositEvents = [...depositEvents].sort((a, b) => a.txn['round-time'] - b.txn['round-time']);
 
 		generateDataByTime(pricingDirection, timescale);
 	}
