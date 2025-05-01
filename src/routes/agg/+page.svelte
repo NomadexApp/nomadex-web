@@ -49,9 +49,10 @@
 	let trees: ArbNode[][] = $state([]);
 
 	function buildTrees() {
-		for (const pool of $knownPools) {
+		const pools = $knownPools.slice(0, 15);
+		for (const pool of pools) {
 			if (pool.assets[0].id !== 0) continue;
-			const tree = buildPaths({ pool: pool, fromAsset: 0, children: [] }, $knownPools, $knownTokens[0]);
+			const tree = buildPaths({ pool: pool, fromAsset: 0, children: [] }, pools, $knownTokens[0]);
 			if (tree.children.length) trees.push(...treeToPaths(tree, []));
 		}
 	}
@@ -86,7 +87,9 @@
 		return Object.entries(paths).map(([id, v]) => ({ id, ...v }));
 	}
 
-	$effect.root(() => buildTrees());
+	$effect.root(() => {
+		buildTrees();
+	});
 
 	function simulate(amount: bigint, tree: ReturnType<typeof processTrees>[0]) {
 		for (const node of tree.nodes) {
@@ -170,7 +173,7 @@
 	function calc(trees: ArbNode[][]) {
 		let maxProfit = 0n;
 		let maxProfitableAmount = 0;
-		for (let i = 1; i < 3000; i += 100) {
+		for (let i = 1; i < 1000; i += 100) {
 			const points = getPoints(i, trees);
 			if (!points.length) break;
 			const amt = BigInt(Math.floor(i * 1e6));
@@ -190,7 +193,9 @@
 	}
 
 	$effect(() => {
-		calc(trees);
+		if (amountInput === 1) {
+			calc(trees);
+		}
 	});
 </script>
 
