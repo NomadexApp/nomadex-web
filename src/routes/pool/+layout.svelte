@@ -33,7 +33,6 @@
 		poolBalances = {};
 		for (const pool of jsonResponse) {
 			const issuedLpt = BigInt(pool.balance.issuedLpt);
-			console.log(issuedLpt);
 			const lpt = BigInt(pool.balance.lpt);
 			poolBalances[pool.id] = {
 				alpha: issuedLpt > 0n ? (BigInt(pool.balance.alpha) * lpt) / issuedLpt : 0n,
@@ -53,7 +52,7 @@
 	});
 
 	function filterPools(searchText: string, my: boolean, all: boolean, pools: Pool[], _: any) {
-		if (my) return pools.filter((p) => poolBalances?.[p.poolId] && poolBalances?.[p.poolId].issuedLpt > 0n);
+		if (my) return pools.filter((p) => poolBalances?.[p.poolId]?.alpha && poolBalances?.[p.poolId].issuedLpt > 0n);
 		if (searchText) {
 			return pools.filter((p) => {
 				const asset =
