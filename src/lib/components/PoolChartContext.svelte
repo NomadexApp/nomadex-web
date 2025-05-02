@@ -52,6 +52,9 @@
 	let logarithmic = $state(false);
 
 	$effect(() => {
+		if (timescale === 0) {
+			timescale = Timescale['1hr'];
+		}
 		if (browser && typeof timescale === 'number') {
 			console.log('SET:', { timescale });
 			localStorage.setItem('timescale', `${timescale}`);
@@ -60,7 +63,7 @@
 
 	async function loadEvents() {
 		const response = await fetch(
-			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=${window.innerWidth <= 500 ? 100 : 1000}`
+			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=${window.innerWidth <= 500 ? 500 : 1000}`
 		);
 		const jsonResponse: {
 			id: string;
@@ -74,9 +77,11 @@
 			type: number;
 		}[] = await response.json();
 		if (!jsonResponse) return console.log('Events response not defined');
+		const swapEventsCopy: typeof swapEvents = [];
+		const depositEventsCopy: typeof depositEvents = [];
 		for (const event of jsonResponse ?? []) {
 			if (event.type === 0) {
-				swapEvents.push({
+				swapEventsCopy.push({
 					sender: event.sender,
 					fromAmount: Number(BigInt(event.in[0]) < BigInt(event.in[1]) ? BigInt(event.in[1]) : BigInt(event.in[0])),
 					toAmount: Number(BigInt(event.out[0]) < BigInt(event.out[1]) ? BigInt(event.out[1]) : BigInt(event.out[0])),
@@ -85,7 +90,7 @@
 					txn: { id: event.id, 'confirmed-round': event.round, 'round-time': event.timestamp } as any,
 				});
 			} else if (event.type === 1) {
-				depositEvents.push({
+				depositEventsCopy.push({
 					adding: true,
 					amts: [BigInt(event.in[0]), BigInt(event.in[1])],
 					lpt: BigInt(event.out[2]),
@@ -94,7 +99,7 @@
 					txn: { id: event.id, 'confirmed-round': event.round, 'round-time': event.timestamp } as any,
 				});
 			} else if (event.type === 2) {
-				depositEvents.push({
+				depositEventsCopy.push({
 					adding: false,
 					amts: [BigInt(event.out[0]), BigInt(event.out[1])],
 					lpt: BigInt(event.in[2]),
@@ -105,8 +110,8 @@
 			}
 		}
 
-		swapEvents = [...swapEvents].sort((a, b) => a.txn['round-time'] - b.txn['round-time']);
-		depositEvents = [...depositEvents].sort((a, b) => a.txn['round-time'] - b.txn['round-time']);
+		swapEvents = [...swapEventsCopy].sort((a, b) => a.txn['round-time'] - b.txn['round-time']);
+		depositEvents = [...depositEventsCopy].sort((a, b) => a.txn['round-time'] - b.txn['round-time']);
 
 		generateDataByTime(pricingDirection, timescale);
 	}
@@ -158,23 +163,19 @@
 		};
 
 		let close = -1;
+		const fromTime = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000);
+		const currentTime = Math.floor(Date.now() / 1000);
 
-		for (
-			let time = Math.floor(getStartOfHour(getTime(events[0]) * 1000) / 1000) + 0.1;
-			time < Math.floor(Date.now() / 1000);
-			time += duration
-		) {
+		for (let time = fromTime; time < currentTime; time += duration) {
 			const matchingEvents = events.filter((e) => getTime(e) >= time && getTime(e) < time + duration);
 			if (matchingEvents.length) {
 				for (const event of matchingEvents) {
 					event['price'] = getPrice(event);
 				}
-
 				const _low = matchingEvents.reduce((l, e) => Math.min(l, getPrice(e)), Number.MAX_SAFE_INTEGER);
 				const _high = matchingEvents.reduce((h, e) => Math.max(h, getPrice(e)), 0);
 				const _close = getPrice(matchingEvents[matchingEvents.length - 1]);
 				const _open = close < 0 ? _close : close;
-
 				_priceData.push({
 					x: time * 1000,
 					o: _open,
@@ -182,7 +183,6 @@
 					h: _high,
 					l: _low,
 				});
-
 				close = _close;
 				price = _close;
 			} else {
