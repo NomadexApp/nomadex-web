@@ -9,7 +9,6 @@
 	import { convertDecimals } from '$lib/utils/numbers';
 	import { openModal } from './modal/Modal.svelte';
 	import { pageContentRefresh } from '../utils';
-	import { ABITupleType } from 'algosdk';
 	import { PUBLIC_NETWORK } from '$env/static/public';
 	import { Timescale } from '$lib/chart/type';
 	import SelectPoolModal from './modal/SelectPoolModal.svelte';
@@ -61,7 +60,7 @@
 
 	async function loadEvents() {
 		const response = await fetch(
-			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=1000`
+			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=${window.innerWidth <= 500 ? 100 : 1000}`
 		);
 		const jsonResponse: {
 			id: string;
