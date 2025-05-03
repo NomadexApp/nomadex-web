@@ -42,9 +42,14 @@
 				>
 					<div class="flex justify-between">
 						<a
-							href={token.type === TokenType.ALGO ? null : `/tokens/${token.id}/${token.type === TokenType.SMART ? 'smart' : token.type === TokenType.ASA ? 'asa' : ''}`}
+							href={token.type === TokenType.ALGO
+								? null
+								: `/tokens/${token.id}/${token.type === TokenType.SMART ? 'smart' : token.type === TokenType.ASA ? 'asa' : ''}`}
 							class="flex w-full items-center gap-2"
 						>
+							<span class="rounded-full overflow-hidden">
+								<img src="/tokens/{token.id}.png" alt="" class="max-w-6" />
+							</span>
 							<span class="name text-lg text-bold">
 								{#if token.id}
 									{token.symbol}
