@@ -3,6 +3,7 @@ import { get, writable } from 'svelte/store';
 import { PoolFactoryClient } from '../contracts/clients/PoolFactoryClient';
 import { nodeClient } from './_shared';
 import algosdk from 'algosdk';
+import { getWellknownAssetIds } from './wellknown';
 
 export enum TokenType {
 	ALGO = 0,
@@ -183,10 +184,22 @@ export async function loadTokensAndPools() {
 				return 0;
 			})
 	);
+	const wellKnown = getWellknownAssetIds();
 	knownTokens.update(() =>
-		validTokens.toSorted((a, b) => {
-			return a.id - b.id;
-		})
+		validTokens
+			.toSorted((a, b) => {
+				return a.id - b.id;
+			})
+			.toSorted((a, b) => {
+				if (wellKnown.includes(a.id) && wellKnown.includes(b.id)) {
+					return 0;
+				} else if (wellKnown.includes(a.id)) {
+					return -1;
+				} else if (wellKnown.includes(b.id)) {
+					return 1;
+				}
+				return 0;
+			})
 	);
 
 	arePoolsLoaded.set(true);

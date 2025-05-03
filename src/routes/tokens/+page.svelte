@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { knownPools, knownTokens, TokenType } from '$lib';
 	import { onChainStateWatcher, type AccountState } from '$lib/stores/onchain';
-	import { goto } from '$app/navigation';
 	import algosdk from 'algosdk';
 
 	const poolsState: Record<string, AccountState> = {};
