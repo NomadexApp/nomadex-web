@@ -2,7 +2,7 @@
 	import { getStores } from '$app/stores';
 	import { PUBLIC_NETWORK } from '$env/static/public';
 	import { knownPools, type Pool } from '$lib';
-	// import { getPoolBalances } from '$lib/_shared';
+	import { readableNumber } from '$lib/components/CurrencyNumber.svelte';
 	import FormTitle from '$lib/components/form/FormTitle.svelte';
 	import TextInput from '$lib/components/form/TextInput.svelte';
 	import Join from '$lib/components/join/Join.svelte';
@@ -109,7 +109,12 @@
 		<div class="pools mb-8 text-base sm:bg-[#00000033] sm:rounded-[8px] flex flex-col gap-2">
 			<div class="pool hidden sm:grid">
 				<div>Name</div>
-				<div>{my ? 'Value' : 'TVL'}</div>
+				<div
+					class="cursor-default"
+					title={my ? '' : `${readableNumber($knownPools.reduce((acc, p) => acc + p.tvl, 0) / 1e6)} VOI locked`}
+				>
+					{my ? 'Value' : 'TVL'}
+				</div>
 				<div class="inline-flex items-start">VOL<span class="text-xs -mt-1 text-gray-300">7d</span></div>
 				<div>APR</div>
 				<div>&nbsp;</div>
