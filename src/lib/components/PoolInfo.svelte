@@ -40,7 +40,7 @@
 		<div class="inline-flex justify-center items-center mr-2">
 			<span
 				class="inline-flex w-2 h-2 rounded-full {online ? 'bg-green-500' : 'bg-gray-400'}"
-				title={online ? 'Online' : 'Offline'}
+				title={online ? 'Consensus: Participating' : 'Consensus: Not Participating'}
 			></span>
 		</div>
 
