@@ -3,8 +3,11 @@
 	import { knownPools, knownTokens, TokenType } from '$lib';
 	import { onChainStateWatcher, type AccountState } from '$lib/stores/onchain';
 	import algosdk from 'algosdk';
+	import { getWellknownAssetIds } from '$lib/wellknown';
 
 	const poolsState: Record<string, AccountState> = {};
+
+	const wellknown = getWellknownAssetIds();
 
 	onMount(() => {
 		const watchers: ReturnType<typeof onChainStateWatcher.getAccountWatcher>[] = [];
@@ -46,9 +49,11 @@
 								: `/tokens/${token.id}/${token.type === TokenType.SMART ? 'smart' : token.type === TokenType.ASA ? 'asa' : ''}`}
 							class="flex w-full items-center gap-2"
 						>
-							<span class="rounded-full overflow-hidden">
-								<img src="/tokens/{token.id}.png" alt="" class="max-w-6" />
-							</span>
+							{#if wellknown.includes(token.id)}
+								<span class="rounded-full overflow-hidden">
+									<img src="/tokens/{token.id}.png" alt="" class="max-w-6" />
+								</span>
+							{/if}
 							<span class="name text-lg text-bold">
 								{#if token.id}
 									{token.symbol}
