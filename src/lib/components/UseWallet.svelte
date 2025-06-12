@@ -7,9 +7,9 @@
 
 	export const metadata = {
 		name: 'Nomadex',
-		url: 'https://voi.nomadex.app',
-		description: 'nomadex | decentalized exchange',
-		icons: ['https://voi.nomadex.app/favicon.svg'],
+		url: globalThis?.location.origin,
+		description: 'decentalized exchange',
+		icons: [`${globalThis?.location.origin}/favicon.svg`],
 	};
 
 	export const walletManager = new WalletManager({
@@ -45,7 +45,6 @@
 		if (preferReconnect) await walletManager.resumeSessions();
 		else await walletManager.getWallet(type)?.connect();
 
-		console.log('Manager:', walletManager);
 		const account = walletManager.activeAccount;
 		if (!account) return;
 
