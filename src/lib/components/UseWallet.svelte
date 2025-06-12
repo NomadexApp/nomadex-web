@@ -33,6 +33,7 @@
 			port: '',
 			token: '',
 		},
+		network: NetworkId.MAINNET,
 	});
 
 	export async function walletConnect(preferReconnect?: boolean, type?: WalletId): Promise<void> {
