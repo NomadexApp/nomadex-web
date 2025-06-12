@@ -33,7 +33,6 @@
 			port: '',
 			token: '',
 		},
-		network: NetworkId.MAINNET,
 	});
 
 	export async function walletConnect(preferReconnect?: boolean, type?: WalletId): Promise<void> {
@@ -46,6 +45,7 @@
 		if (preferReconnect) await walletManager.resumeSessions();
 		else await walletManager.getWallet(type)?.connect();
 
+		console.log('Manager:', walletManager);
 		const account = walletManager.activeAccount;
 		if (!account) return;
 
