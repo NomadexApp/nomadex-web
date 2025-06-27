@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { knownApr, type Pool } from '$lib';
+	import { knownAprBoost, type Pool } from '$lib';
 	import { readableNumber } from './CurrencyNumber.svelte';
 
 	export let pool: Pool;
@@ -56,7 +56,7 @@
 		{tokenA.symbol}
 	</div>
 	<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
-		{Math.max(0, Number(((pool.apr ?? 0) + (knownApr[pool.poolId] ?? 0)).toFixed((pool.apr ?? 0) > 10 ? 0 : 2)))} %
+		{Math.max(0, Number(((pool.apr ?? 0) + (knownAprBoost[pool.poolId] ?? 0)).toFixed((pool.apr ?? 0) > 10 ? 0 : 2)))} %
 	</div>
 	<div class="w-full flex justify-end">
 		{#if balances && balances.lpt > 0n}
