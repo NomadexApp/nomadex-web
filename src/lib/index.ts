@@ -1,9 +1,9 @@
-import { PUBLIC_NETWORK } from '$env/static/public';
-import { get, writable } from 'svelte/store';
-import { PoolFactoryClient } from '../contracts/clients/PoolFactoryClient';
-import { nodeClient } from './_shared';
-import algosdk from 'algosdk';
-import { getWellknownAssetIds } from './wellknown';
+import { PUBLIC_NETWORK } from "$env/static/public";
+import { get, writable } from "svelte/store";
+import { PoolFactoryClient } from "../contracts/clients/PoolFactoryClient";
+import { nodeClient } from "./_shared";
+import algosdk from "algosdk";
+import { getWellknownAssetIds } from "./wellknown";
 
 export enum TokenType {
 	ALGO = 0,
@@ -33,9 +33,18 @@ export type Pool = {
 };
 
 export const platformFee = writable<bigint>();
-export const knownTokens = writable<Token[]>([{ symbol: 'VOI', id: 0, type: TokenType.ALGO, decimals: 6, unit: 1e6 }]);
+export const knownTokens = writable<Token[]>([{
+	symbol: "VOI",
+	id: 0,
+	type: TokenType.ALGO,
+	decimals: 6,
+	unit: 1e6,
+}]);
 
 export const knownPools = writable<Pool[]>([]);
+export const knownApr = {
+	411756: 28.75,
+};
 
 export const arePoolsLoaded = writable(false);
 
@@ -58,7 +67,12 @@ export async function loadTokensAndPools() {
 		arePoolsLoaded.set(true);
 		return;
 	}
-	const tokensSnap: { id: number; symbol: string; decimals: number; type: number }[] = await (
+	const tokensSnap: {
+		id: number;
+		symbol: string;
+		decimals: number;
+		type: number;
+	}[] = await (
 		await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/tokens`)
 	).json();
 	const tokens = tokensSnap.map((token) => {
@@ -77,10 +91,10 @@ export async function loadTokensAndPools() {
 				.map((token) => ({
 					id: token.id,
 					symbol: token.symbol,
-					type: <TokenType>token.type,
+					type: <TokenType> token.type,
 					decimals: token.decimals,
 					unit: 10 ** token.decimals,
-				}))
+				})),
 		);
 
 	// console.log('Tokens:', validTokens);
@@ -96,7 +110,9 @@ export async function loadTokensAndPools() {
 		volume: [string, string];
 		apr: number;
 		online: boolean;
-	}[] = await (await fetch(`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools`)).json();
+	}[] = await (await fetch(
+		`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools`,
+	)).json();
 	const pools = poolsSnap.map((pool) => {
 		return {
 			id: pool.id,
@@ -117,10 +133,15 @@ export async function loadTokensAndPools() {
 			poolId: pool.id,
 			swapFee: pool.swapFee,
 			type: TokenType.SMART,
-			assets: <[Token, Token]>[pool.alphaId, pool.betaId].map((id) => validTokens.find((t) => t.id === id)),
+			assets: <[Token, Token]> [pool.alphaId, pool.betaId].map((id) =>
+				validTokens.find((t) => t.id === id)
+			),
 			balances: pool.balances,
 			tvl: 0,
-			volume: [BigInt(pool.volume[0]), BigInt(pool.volume[1])] as [bigint, bigint],
+			volume: [BigInt(pool.volume[0]), BigInt(pool.volume[1])] as [
+				bigint,
+				bigint,
+			],
 			apr: pool.apr,
 			online: pool.online ?? false,
 		}))
@@ -131,14 +152,14 @@ export async function loadTokensAndPools() {
 	const factory = new PoolFactoryClient(
 		{
 			id: factoryId,
-			resolveBy: 'id',
+			resolveBy: "id",
 		},
-		nodeClient
+		nodeClient,
 	);
 	const state = await factory.getGlobalState();
 	const buff = state.platformFee?.asByteArray();
 	if (!buff) return;
-	platformFee.set(algosdk.ABIType.from('uint256').decode(buff) as bigint);
+	platformFee.set(algosdk.ABIType.from("uint256").decode(buff) as bigint);
 
 	// console.log('Platform Fee (%):', (Number(get(platformFee)) * 100) / SCALE);
 
@@ -146,10 +167,15 @@ export async function loadTokensAndPools() {
 		const [alpha, beta] = pool.assets;
 		const algoIdx = [alpha, beta].findIndex((a) => a.id === 0);
 		if (algoIdx > -1) {
-			if (pool['balances'].reduce((acc, x) => Boolean(acc && Number(x)), true)) {
-				pool.tvl = Number(pool['balances'][algoIdx]) * 2;
+			if (
+				pool["balances"].reduce(
+					(acc, x) => Boolean(acc && Number(x)),
+					true,
+				)
+			) {
+				pool.tvl = Number(pool["balances"][algoIdx]) * 2;
 			} else {
-				pool.tvl = Number(pool['balances'][algoIdx]);
+				pool.tvl = Number(pool["balances"][algoIdx]);
 			}
 		}
 	}
@@ -158,13 +184,19 @@ export async function loadTokensAndPools() {
 		if (pool.assets[0].type === TokenType.ALGO) continue;
 		const pools = pool.assets.map((asset) => {
 			if (asset.type !== TokenType.ALGO) {
-				return validPools.find((p) => p.assets[0].id === 0 && p.assets[1].id === asset.id);
+				return validPools.find((p) =>
+					p.assets[0].id === 0 && p.assets[1].id === asset.id
+				);
 			}
 		});
 		if ((pools[0]?.tvl ?? 0) > (pools[1]?.tvl ?? 0) && pools[0]) {
-			pool.tvl = (2 * (Number(pool.balances[0]) * Number(pools[0].balances[0]))) / Number(pools[0].balances[1]);
+			pool.tvl = (2 *
+				(Number(pool.balances[0]) * Number(pools[0].balances[0]))) /
+				Number(pools[0].balances[1]);
 		} else if (pools[1]) {
-			pool.tvl = (2 * (Number(pool.balances[1]) * Number(pools[1].balances[0]))) / Number(pools[1].balances[1]);
+			pool.tvl = (2 *
+				(Number(pool.balances[1]) * Number(pools[1].balances[0]))) /
+				Number(pools[1].balances[1]);
 		}
 	}
 
