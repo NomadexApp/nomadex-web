@@ -165,6 +165,7 @@
 		const amount = BigInt(Math.floor(amtInput * 1e6));
 		return processTrees(trees)
 			.filter((a) => simulate(amount, a) > amount)
+			.filter((a) => a.path.length > 2)
 			.sort((a, b) => (simulate(amount, b) < simulate(amount, a) ? -1 : 1));
 	}
 
