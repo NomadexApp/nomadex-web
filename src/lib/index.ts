@@ -44,6 +44,10 @@ export const knownTokens = writable<Token[]>([{
 export const knownPools = writable<Pool[]>([]);
 export const knownAprBoost = {
 	411756: 28.75,
+	411789: 14.375,
+	40176866: 14.375,
+	40176894: 14.375,
+	40215993: 14.375,
 };
 
 export const arePoolsLoaded = writable(false);
