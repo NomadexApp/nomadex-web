@@ -52,7 +52,7 @@
 		{readableNumber((pool.tvl / 1e6) * (my ? sharePercent / 100 : 1))} VOI
 	</div>
 	<div class="hidden sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
-		{readableNumber(Number(pool.volume[0] ?? 0) / 1e6)}
+		{readableNumber(Number(pool.volume[0] ?? 0) / 10 ** tokenA.decimals)}
 		{tokenA.symbol}
 	</div>
 	<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
