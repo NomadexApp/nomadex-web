@@ -6,7 +6,7 @@
 	import TokenInput from '$lib/components/form/TokenInput.svelte';
 	import { nodeClient } from '$lib/_shared';
 	import { PUBLIC_NETWORK } from '$env/static/public';
-	import { getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
+	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
 	import algosdk from 'algosdk';
 	import { addNotification } from '$lib/components/Notify.svelte';
 	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
@@ -111,26 +111,37 @@
 		try {
 			const signer = getTransactionSignerAccount();
 			const transactions: algosdk.Transaction[] = [];
-			for (const node of tree.nodes) {
-				const fromIndex = node.fromAsset;
-				const toIndex = (node.fromAsset + 1) % 2;
-				const out = calculateOutTokens(
-					amount,
-					BigInt(node.pool.balances[fromIndex]),
-					BigInt(node.pool.balances[toIndex]),
-					(BigInt(node.pool.swapFee) * 27n) / 10n
-				);
-				const contract = new MyPool(node.pool.id, PUBLIC_NETWORK as any, nodeClient, signer);
-				const txns = await contract.buildSwapTxns(
-					node.pool.assets[fromIndex],
-					node.pool.assets[toIndex],
-					amount,
-					out,
-					fromIndex === 0,
-					false
-				);
-				transactions.push(...txns);
-				amount = out;
+			const info = await nodeClient.accountInformation($connectedAccount).do();
+			const available = Math.min(Number(amount), info.amount - info['min-balance'] - 10_000_000);
+			let remainingAmount = Number(amount);
+			while (remainingAmount > 0) {
+				const useAmount = Math.min(remainingAmount, available);
+				remainingAmount = remainingAmount - useAmount;
+				amount = BigInt(useAmount);
+				console.log(useAmount / 1e6, 'Voi');
+				for (const node of tree.nodes) {
+					const fromIndex = node.fromAsset;
+					const toIndex = (node.fromAsset + 1) % 2;
+					const out = calculateOutTokens(
+						amount,
+						BigInt(node.pool.balances[fromIndex]),
+						BigInt(node.pool.balances[toIndex]),
+						(BigInt(node.pool.swapFee) * 27n) / 10n
+					);
+					node.pool.balances[fromIndex] = (BigInt(node.pool.balances[fromIndex]) + amount).toString();
+					node.pool.balances[toIndex] = (BigInt(node.pool.balances[toIndex]) - out).toString();
+					const contract = new MyPool(node.pool.id, PUBLIC_NETWORK as any, nodeClient, signer);
+					const txns = await contract.buildSwapTxns(
+						node.pool.assets[fromIndex],
+						node.pool.assets[toIndex],
+						amount,
+						out,
+						fromIndex === 0,
+						false
+					);
+					transactions.push(...txns);
+					amount = out;
+				}
 			}
 			let atc = new algosdk.AtomicTransactionComposer();
 			const mpt = algosdk.makeEmptyTransactionSigner();
