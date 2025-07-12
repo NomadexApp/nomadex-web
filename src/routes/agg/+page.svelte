@@ -114,10 +114,12 @@
 			const info = await nodeClient.accountInformation($connectedAccount).do();
 			const available = Math.min(Number(amount), info.amount - info['min-balance'] - 10_000_000);
 			let remainingAmount = Number(amount);
-			while (remainingAmount > 0) {
+			let count = 0;
+			while (remainingAmount > 0 && count < 5) {
 				const useAmount = Math.min(remainingAmount, available);
 				remainingAmount = remainingAmount - useAmount;
 				amount = BigInt(useAmount);
+				count++;
 				console.log(useAmount / 1e6, 'Voi');
 				for (const node of tree.nodes) {
 					const fromIndex = node.fromAsset;
