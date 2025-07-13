@@ -49,10 +49,14 @@
 	let trees: ArbNode[][] = $state([]);
 
 	function buildTrees() {
-		const pools = $knownPools.slice(0, 15);
+		const pools = $knownPools.slice(0, 25);
 		for (const pool of pools) {
 			if (pool.assets[0].id !== 0) continue;
-			const tree = buildPaths({ pool: pool, fromAsset: 0, children: [] }, pools, $knownTokens[0]);
+			const tree = buildPaths(
+				{ pool: { ...pool, balances: [...pool.balances] }, fromAsset: 0, children: [] },
+				pools,
+				$knownTokens[0]
+			);
 			if (tree.children.length) trees.push(...treeToPaths(tree, []));
 		}
 	}
@@ -87,8 +91,20 @@
 		return Object.entries(paths).map(([id, v]) => ({ id, ...v }));
 	}
 
+	let amountInput = $state(1);
+	let amount = $derived(BigInt(Math.floor(amountInput * 1e6)));
+
 	$effect.root(() => {
-		buildTrees();
+		const unsub = knownPools.subscribe(() => {
+			buildTrees();
+			amountInput = 1;
+		});
+		const interval = setInterval(() => loadTokensAndPools, 10000);
+		return () => {
+			unsub();
+			clearInterval(interval);
+			console.log('unsub');
+		};
 	});
 
 	function simulate(amount: bigint, tree: ReturnType<typeof processTrees>[0]) {
@@ -114,13 +130,12 @@
 			const info = await nodeClient.accountInformation($connectedAccount).do();
 			const available = Math.min(Number(amount), info.amount - info['min-balance'] - 10_000_000);
 			let remainingAmount = Number(amount);
-			let count = 0;
-			while (remainingAmount > 0 && count < 5) {
+			while (remainingAmount > 0) {
 				const useAmount = Math.min(remainingAmount, available);
 				remainingAmount = remainingAmount - useAmount;
 				amount = BigInt(useAmount);
-				count++;
-				console.log(useAmount / 1e6, 'Voi');
+				console.log(`Invest: ${(useAmount / 1e6).toLocaleString()} Voi`);
+				let batchLength = 0;
 				for (const node of tree.nodes) {
 					const fromIndex = node.fromAsset;
 					const toIndex = (node.fromAsset + 1) % 2;
@@ -141,10 +156,14 @@
 						fromIndex === 0,
 						false
 					);
+					batchLength += txns.length;
 					transactions.push(...txns);
 					amount = out;
 				}
+				console.log(`Outcome: ${(Number(amount) / 1e6).toLocaleString()} Voi`);
+				if (transactions.length + batchLength > 16) break;
 			}
+			console.log('Transactions:', transactions.length);
 			let atc = new algosdk.AtomicTransactionComposer();
 			const mpt = algosdk.makeEmptyTransactionSigner();
 			for (const txn of transactions) {
@@ -165,14 +184,12 @@
 			await new Promise((r) => setTimeout(r, 9_000));
 			await loadTokensAndPools();
 			remove?.();
-			pageContentRefresh();
+			// pageContentRefresh();
 		} catch (e) {
 			console.error(e);
 			remove?.();
 		}
 	}
-	let amountInput = $state(1);
-	let amount = $derived(BigInt(Math.floor(amountInput * 1e6)));
 
 	function getPoints(amtInput: number, trees: ArbNode[][]) {
 		const amount = BigInt(Math.floor(amtInput * 1e6));
