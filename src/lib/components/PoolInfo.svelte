@@ -39,7 +39,7 @@
 		</object>
 		<div class="inline-flex justify-center items-center mr-2">
 			<span
-				class="inline-flex w-2 h-2 rounded-full {online ? 'bg-green-500' : 'bg-gray-400'}"
+				class="inline-flex w-2 h-2 rounded-full {online ? 'bg-green-500 animate-online' : 'bg-gray-100 opacity-10'}"
 				title={online ? 'Consensus: Participating' : 'Consensus: Not Participating'}
 			></span>
 		</div>
@@ -73,5 +73,22 @@
 <style>
 	.pool > div:not(.hidden) {
 		display: inline-flex;
+	}
+	.animate-online {
+		animation: bubble 5s infinite ease-in;
+	}
+	@keyframes bubble {
+		0% {
+			transform: scale(0.7);
+			opacity: 1.0;
+		}
+		99% {
+			transform: scale(1.0);
+			opacity: 0.2;
+		}
+		100% {
+			transform: scale(0.7);
+			opacity: 1.0;
+		}
 	}
 </style>
