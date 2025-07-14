@@ -206,18 +206,18 @@ export async function loadTokensAndPools() {
 
 	knownPools.update(() =>
 		validPools
-			.sort((a, b) => {
-				return b.tvl - a.tvl;
-			})
-			.sort((a, b) => {
-				if (a.volume[0] === 0n && b.volume[0] === 0n) {
-					return 0;
-				} else if (a.volume[0] === 0n) {
-					return 1;
-				} else if (b.volume[0] === 0n) {
-					return -1;
-				}
-				return 0;
+			.toSorted((a, b) => {
+				let scoreB = b.tvl;
+				if (b.online) scoreB *= 2;
+				if (b.volume[0] > 0n) scoreB *= 2;
+				if (knownAprBoost[b.id]) scoreB *= 2;
+				scoreB *= 1 + b.apr / 50;
+				let scoreA = a.tvl;
+				if (a.online) scoreA *= 2;
+				if (a.volume[0] > 0n) scoreA *= 2;
+				if (knownAprBoost[b.id]) scoreA *= 2;
+				scoreA *= 1 + b.apr / 50;
+				return scoreB - scoreA;
 			})
 	);
 	const wellKnown = getWellknownAssetIds();
