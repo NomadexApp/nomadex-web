@@ -52,7 +52,7 @@
 								<td class="text-left px-4 py-2 hidden sm:table-cell">
 									<a
 										class="text-white flex-grow text-[0.8rem] sm:text-[1rem]"
-										href="https://avmexplorer.com/tx/{event.txn.id}"
+										href="https://block.voi.network/explorer/transaction/{event.txn.id}"
 										target="_blank"
 										referrerpolicy="no-referrer"
 									>
@@ -62,7 +62,7 @@
 								<td class="text-left px-4 py-2 hidden sm:table-cell">
 									<a
 										class="text-white flex-grow text-[0.8rem] sm:text-[1rem]"
-										href="https://avmexplorer.com/address/{event.sender}"
+										href="https://block.voi.network/explorer/account/{event.sender}"
 										target="_blank"
 										referrerpolicy="no-referrer"
 									>
@@ -76,7 +76,7 @@
 								</td>
 								<td class="text-left px-4 py-2 hidden lg:table-cell">
 									<a
-										href="https://avmexplorer.com/block/{event.txn['confirmed-round']}"
+										href="https://block.voi.network/explorer/block/{event.txn['confirmed-round']}"
 										target="_blank"
 										referrerpolicy="no-referrer"
 										class="text-white flex-grow text-[0.8rem] sm:text-[1rem]"
