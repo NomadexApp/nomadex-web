@@ -174,7 +174,7 @@
 			} else if (token.type === 1) {
 				const asset = info.assets.find((asset) => asset['asset-id'] === token.id);
 				if (!asset) continue;
-				const available = Number(asset['amount']);
+				const available = Number(asset['amount']) - 2;
 				if (available <= 0) continue;
 				console.log(token.symbol, available / 10 ** token.decimals);
 				const atc = await client
@@ -193,7 +193,7 @@
 				);
 			} else if (token.type === 2) {
 				const asset = MySmartAsset.from(token.id, nodeClient);
-				const available = await asset.arc200BalanceOf(factoryAddress);
+				const available = (await asset.arc200BalanceOf(factoryAddress)) - 2n;
 				if (available <= 0n) continue;
 				const amount = convertDecimals(available, token.decimals, 6);
 				console.log(token.symbol, Number(amount) / 10 ** 6);
