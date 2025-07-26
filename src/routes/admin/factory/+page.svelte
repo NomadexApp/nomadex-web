@@ -108,8 +108,7 @@
 
 	async function withdrawFee() {
 		const token = $knownTokens.find((t) => t.id === feeTokenId);
-		if (!token) return;
-		const amount = convertDecimals(feeAmount * 1e6, 6, token.decimals);
+		const amount = token ? convertDecimals(feeAmount * 1e6, 6, token.decimals) : feeAmount;
 		console.log('Withdraw:', amount);
 		const signer = getTransactionSignerAccount();
 		const client = new PoolFactoryClient(
@@ -121,8 +120,13 @@
 			nodeClient
 		);
 
-		const id: [number, number] =
-			token.type === TokenType.ASA ? [token.id, 0] : token.type === TokenType.SMART ? [0, token.id] : [0, 0];
+		const id: [number, number] = token
+			? token.type === TokenType.ASA
+				? [token.id, 0]
+				: token.type === TokenType.SMART
+					? [0, token.id]
+					: [0, 0]
+			: [feeTokenId, 0];
 		console.log(id);
 		const resp = await client.withdraw(
 			{
