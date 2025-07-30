@@ -196,6 +196,7 @@
 					})
 				);
 			} else if (token.type === 2) {
+				if(token.id === 404004) continue;
 				const asset = MySmartAsset.from(token.id, nodeClient);
 				const available = (await asset.arc200BalanceOf(factoryAddress)) - 2n;
 				if (available <= 0n) continue;
