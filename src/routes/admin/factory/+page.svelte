@@ -199,8 +199,7 @@
 				const asset = MySmartAsset.from(token.id, nodeClient);
 				const available = (await asset.arc200BalanceOf(factoryAddress)) - 2n;
 				if (available <= 0n) continue;
-				const amount = convertDecimals(available, token.decimals, 6);
-				console.log(token.symbol, Number(amount) / 10 ** 6);
+				console.log(token.symbol, Number(convertDecimals(available, token.decimals, 6)) / 1e6);
 				const atc = await client
 					.compose()
 					.withdraw({
