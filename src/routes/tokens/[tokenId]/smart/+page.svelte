@@ -3,7 +3,8 @@
 	import algosdk from 'algosdk';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { MySmartAsset } from '$lib/MySmartAsset';
+	import { MySmartAsset } from 'nomadex-client';
+	import { nodeClient } from '$lib/_shared';
 
 	let appId = $state(Number($page.params.tokenId));
 	let currentManager = $state('');
@@ -17,7 +18,7 @@
 	onMount(async () => {
 		loading = true;
 		try {
-			const client = new MySmartAsset(appId);
+			const client = new MySmartAsset(appId, nodeClient);
 
 			name = await client.arc200Name();
 

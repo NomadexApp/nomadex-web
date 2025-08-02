@@ -1,5 +1,5 @@
 import { nodeClient } from '$lib/_shared';
-import { MySmartAsset } from '$lib/MySmartAsset';
+import { MySmartAsset } from 'nomadex-client';
 import { readable, writable } from 'svelte/store';
 
 type AppState = {
@@ -145,7 +145,7 @@ export function watchArc200Balance(
 
 	const update = async () => {
 		try {
-			const balance = await MySmartAsset.from(appId).arc200BalanceOf(address);
+			const balance = await MySmartAsset.from(appId, nodeClient).arc200BalanceOf(address);
 			if (typeof balance === 'bigint') {
 				store.set(balance);
 			}
@@ -175,7 +175,7 @@ export function watchPoolTotalSupply(appId: number, duration = 15_000): ReturnTy
 
 	const update = async () => {
 		try {
-			const supply = await MySmartAsset.from(appId).arc200TotalSupply();
+			const supply = await MySmartAsset.from(appId, nodeClient).arc200TotalSupply();
 			if (typeof supply === 'bigint') {
 				store.set(supply);
 			}
