@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Pool } from '$lib';
+	import { getWellknownAssetIds } from '$lib/wellknown';
 	import TextInput from '../form/TextInput.svelte';
 
 	let {
@@ -21,6 +22,8 @@
 	);
 
 	let finalPools = $derived([...filteredPools].sort((a, b) => b.tvl - a.tvl));
+
+	const wellknown = getWellknownAssetIds();
 </script>
 
 <form>
@@ -47,8 +50,8 @@
 						>
 							<object
 								title={asset.symbol}
-								data="/tokens/{asset.id}.png"
-								type="image/png"
+								data={wellknown.includes(asset.id) ? `/tokens/${asset.id}.png` : ''}
+								type={wellknown.includes(asset.id) ? 'image/png' : ''}
 								class="hidden sm:flex icon avatar w-7 h-7 bg-[#3a635f] rounded-full justify-center items-center"
 							>
 								?

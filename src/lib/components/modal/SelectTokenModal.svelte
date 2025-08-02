@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Token } from '$lib';
 	import { convertDecimals } from '$lib/utils/numbers';
+	import { getWellknownAssetIds } from '$lib/wellknown';
 	import TextInput from '../form/TextInput.svelte';
 
 	let {
@@ -27,6 +28,8 @@
 			(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
 		)
 	);
+
+	const wellknown = getWellknownAssetIds();
 </script>
 
 <form>
@@ -48,8 +51,8 @@
 				<div class="icon avatar w-10 h-10 bg-[#f0f0f005] rounded-full flex justify-center items-center">
 					<object
 						title={token.symbol}
-						data="/tokens/{token.id}.png"
-						type="image/png"
+						data={wellknown.includes(token.id) ? `/tokens/${token.id}.png` : ''}
+						type={wellknown.includes(token.id) ? 'image/png' : ''}
 						class="hidden sm:flex icon avatar w-7 h-7 bg-[#3a635f] rounded-full justify-center items-center"
 					>
 						?
