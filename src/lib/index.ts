@@ -1,7 +1,7 @@
 import { PUBLIC_NETWORK } from "$env/static/public";
 import { get, writable } from "svelte/store";
 import { PoolFactoryClient } from "../contracts/clients/PoolFactoryClient";
-import { nodeClient } from "./_shared";
+import { indexerClient, nodeClient } from "./_shared";
 import algosdk from "algosdk";
 import { getWellknownAssetIds } from "./wellknown";
 
@@ -53,6 +53,9 @@ export const knownAprBoost = {
 export const arePoolsLoaded = writable(false);
 
 export const contracts = {
+	localnet: {
+		poolFcatory: 1002,
+	},
 	voitest: {
 		poolFcatory: 8319,
 	},
@@ -68,6 +71,52 @@ export const contractsConstants = {
 export async function loadTokensAndPools() {
 	const factoryId = contracts[PUBLIC_NETWORK].poolFcatory;
 	if (!factoryId) {
+		arePoolsLoaded.set(true);
+		return;
+	}
+	if (PUBLIC_NETWORK === "localnet") {
+		const assets = await indexerClient.searchForAssets().do();
+		const apps = await indexerClient.searchForApplications().do();
+		const smart = apps.applications.map((app) => {
+			console.log(app);
+			const asset = {
+				id: app.id,
+				symbol: "",
+				type: TokenType.SMART,
+				decimals: 0,
+				unit: 1e0,
+			};
+			app.params["global-state"].forEach((state) => {
+				const key = Buffer.from(state.key, "base64").toString();
+				if (key === "symbol") {
+					asset.symbol = Buffer.from(state.value.bytes, "base64")
+						.toString().replace(/\0/g, "");
+				}
+				if (key === "decimals") {
+					asset.decimals = state.value.uint;
+					asset.unit = 10 ** state.value.uint;
+				}
+			});
+			return asset;
+		});
+		knownTokens.set([
+			{
+				id: 0,
+				symbol: "ALGO",
+				type: TokenType.ALGO,
+				decimals: 6,
+				unit: 1e6,
+			},
+			...assets.assets.map((asa) => ({
+				id: asa.index,
+				symbol: asa.params["unit-name"],
+				type: TokenType.ASA,
+				decimals: asa.params.decimals,
+				unit: 10 ** asa.params.decimals,
+			})),
+			...smart,
+		]);
+		knownPools.set([]);
 		arePoolsLoaded.set(true);
 		return;
 	}
