@@ -1666,6 +1666,307 @@ bootstrap:
 	log
 	retsub
 
+// asa_id(): AssetID
+asa_id:
+	proto 0 1
+
+	// src/contracts/SmartAsset.algo.ts:41
+	// return AssetID.fromUint64(40266686);
+	int 40266686
+	retsub
+
+// arc200_exchange()(uint64,address)
+*abi_route_arc200_exchange:
+	// The ABI return prefix
+	byte 0x151f7c75
+
+	// execute arc200_exchange()(uint64,address)
+	callsub arc200_exchange
+	concat
+	log
+	int 1
+	return
+
+// arc200_exchange(): [uint64, Address]
+arc200_exchange:
+	proto 0 1
+
+	// src/contracts/SmartAsset.algo.ts:45
+	// return [this.asa_id().id, this.app.address];
+	callsub asa_id
+	itob
+	global CurrentApplicationAddress
+	concat
+	retsub
+
+// post_update()void
+*abi_route_post_update:
+	// execute post_update()void
+	callsub post_update
+	int 1
+	return
+
+// post_update(): void
+post_update:
+	proto 0 0
+
+	// src/contracts/SmartAsset.algo.ts:49
+	// assert(this.txn.sender === this.warden.value, "manager only")
+	txn Sender
+	byte 0x77617264656e // "warden"
+	app_global_get
+	==
+
+	// manager only
+	assert
+
+	// src/contracts/SmartAsset.algo.ts:50
+	// sendAssetTransfer({
+	//       xferAsset: this.asa_id(),
+	//       assetSender: this.app.address,
+	//       assetReceiver: this.app.address,
+	//       assetAmount: 0,
+	//       fee: 0
+	//     })
+	itxn_begin
+	int axfer
+	itxn_field TypeEnum
+
+	// src/contracts/SmartAsset.algo.ts:51
+	// xferAsset: this.asa_id()
+	callsub asa_id
+	itxn_field XferAsset
+
+	// src/contracts/SmartAsset.algo.ts:52
+	// assetSender: this.app.address
+	global CurrentApplicationAddress
+	itxn_field AssetSender
+
+	// src/contracts/SmartAsset.algo.ts:53
+	// assetReceiver: this.app.address
+	global CurrentApplicationAddress
+	itxn_field AssetReceiver
+
+	// src/contracts/SmartAsset.algo.ts:54
+	// assetAmount: 0
+	int 0
+	itxn_field AssetAmount
+
+	// src/contracts/SmartAsset.algo.ts:55
+	// fee: 0
+	int 0
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+	retsub
+
+// arc200_redeem(uint64)void
+*abi_route_arc200_redeem:
+	// amount: uint64
+	txna ApplicationArgs 1
+	btoi
+
+	// execute arc200_redeem(uint64)void
+	callsub arc200_redeem
+	int 1
+	return
+
+// arc200_redeem(amount: uint64): void
+arc200_redeem:
+	proto 1 0
+
+	// src/contracts/SmartAsset.algo.ts:61
+	// assert(this.txn.groupIndex > 0, "invalid group")
+	txn GroupIndex
+	int 0
+	>
+
+	// invalid group
+	assert
+
+	// src/contracts/SmartAsset.algo.ts:62
+	// verifyAssetTransferTxn(this.txnGroup[this.txn.groupIndex - 1], {
+	//       xferAsset: this.asa_id(),
+	//       assetSender: this.txn.sender,
+	//       assetReceiver: this.app.address,
+	//       assetAmount: { greaterThanEqualTo: amount },
+	//       assetCloseTo: globals.zeroAddress,
+	//       rekeyTo: globals.zeroAddress
+	//     })
+	txn GroupIndex
+	int 1
+	-
+	store 248 // verifyTxn index
+
+	// verify axfer
+	load 248 // verifyTxn index
+	gtxns TypeEnum
+	int axfer
+	==
+
+	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"typeEnum","expected":"axfer"}
+	assert
+
+	// verify xferAsset
+	load 248 // verifyTxn index
+	gtxns XferAsset
+	callsub asa_id
+	==
+
+	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"xferAsset","expected":"this.asa_id()"}
+	assert
+
+	// verify assetSender
+	load 248 // verifyTxn index
+	gtxns AssetSender
+	txn Sender
+	==
+
+	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"assetSender","expected":"this.txn.sender"}
+	assert
+
+	// verify assetReceiver
+	load 248 // verifyTxn index
+	gtxns AssetReceiver
+	global CurrentApplicationAddress
+	==
+
+	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"assetReceiver","expected":"this.app.address"}
+	assert
+
+	// verify assetAmount
+	load 248 // verifyTxn index
+	gtxns AssetAmount
+	frame_dig -1 // amount: uint64
+	>=
+
+	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"assetAmount","condition":"greaterThanEqualTo","expected":">=amount"}
+	assert
+
+	// verify assetCloseTo
+	load 248 // verifyTxn index
+	gtxns AssetCloseTo
+	global ZeroAddress
+	==
+
+	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"assetCloseTo","expected":"globals.zeroAddress"}
+	assert
+
+	// verify rekeyTo
+	load 248 // verifyTxn index
+	gtxns RekeyTo
+	global ZeroAddress
+	==
+
+	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"rekeyTo","expected":"globals.zeroAddress"}
+	assert
+
+	// src/contracts/SmartAsset.algo.ts:70
+	// this.transfer(this.app.address, this.txn.sender, amount as uint256)
+	frame_dig -1 // amount: uint64
+	itob
+	dup
+	bitlen
+	int 256
+	<=
+
+	// amount as uint256 overflowed 256 bits
+	assert
+	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+	b&
+	dup
+	len
+	dup
+	int 32
+	-
+	swap
+	substring3
+	txn Sender
+	global CurrentApplicationAddress
+	callsub transfer
+	retsub
+
+// arc200_swapBack(uint64)void
+*abi_route_arc200_swapBack:
+	// amount: uint64
+	txna ApplicationArgs 1
+	btoi
+
+	// execute arc200_swapBack(uint64)void
+	callsub arc200_swapBack
+	int 1
+	return
+
+// arc200_swapBack(amount: uint64): void
+arc200_swapBack:
+	proto 1 0
+
+	// src/contracts/SmartAsset.algo.ts:75
+	// this.transfer(this.txn.sender, this.app.address, amount as uint256)
+	frame_dig -1 // amount: uint64
+	itob
+	dup
+	bitlen
+	int 256
+	<=
+
+	// amount as uint256 overflowed 256 bits
+	assert
+	byte 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+	b&
+	dup
+	len
+	dup
+	int 32
+	-
+	swap
+	substring3
+	global CurrentApplicationAddress
+	txn Sender
+	callsub transfer
+
+	// src/contracts/SmartAsset.algo.ts:76
+	// sendAssetTransfer({
+	//       xferAsset: this.asa_id(),
+	//       assetSender: this.app.address,
+	//       assetReceiver: this.txn.sender,
+	//       assetAmount: amount,
+	//       fee: 0
+	//     })
+	itxn_begin
+	int axfer
+	itxn_field TypeEnum
+
+	// src/contracts/SmartAsset.algo.ts:77
+	// xferAsset: this.asa_id()
+	callsub asa_id
+	itxn_field XferAsset
+
+	// src/contracts/SmartAsset.algo.ts:78
+	// assetSender: this.app.address
+	global CurrentApplicationAddress
+	itxn_field AssetSender
+
+	// src/contracts/SmartAsset.algo.ts:79
+	// assetReceiver: this.txn.sender
+	txn Sender
+	itxn_field AssetReceiver
+
+	// src/contracts/SmartAsset.algo.ts:80
+	// assetAmount: amount
+	frame_dig -1 // amount: uint64
+	itxn_field AssetAmount
+
+	// src/contracts/SmartAsset.algo.ts:81
+	// fee: 0
+	int 0
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+	retsub
+
 *create_NoOp:
 	method "createApplication(address,byte[32],byte[8],uint8,uint256)void"
 	txna ApplicationArgs 0
@@ -1693,8 +1994,12 @@ bootstrap:
 	method "manager()address"
 	method "grant(address)void"
 	method "bootstrap(pay)void"
+	method "arc200_exchange()(uint64,address)"
+	method "post_update()void"
+	method "arc200_redeem(uint64)void"
+	method "arc200_swapBack(uint64)void"
 	txna ApplicationArgs 0
-	match *abi_route_arc200_name *abi_route_arc200_symbol *abi_route_arc200_decimals *abi_route_arc200_totalSupply *abi_route_arc200_balanceOf *abi_route_arc200_allowance *abi_route_arc200_transfer *abi_route_arc200_approve *abi_route_arc200_transferFrom *abi_route_supportsInterface *abi_route_zeroAddress *abi_route_hasBox *abi_route_createBalanceBox *abi_route_createAllowanceBox *abi_route_noop *abi_route_manager *abi_route_grant *abi_route_bootstrap
+	match *abi_route_arc200_name *abi_route_arc200_symbol *abi_route_arc200_decimals *abi_route_arc200_totalSupply *abi_route_arc200_balanceOf *abi_route_arc200_allowance *abi_route_arc200_transfer *abi_route_arc200_approve *abi_route_arc200_transferFrom *abi_route_supportsInterface *abi_route_zeroAddress *abi_route_hasBox *abi_route_createBalanceBox *abi_route_createAllowanceBox *abi_route_noop *abi_route_manager *abi_route_grant *abi_route_bootstrap *abi_route_arc200_exchange *abi_route_post_update *abi_route_arc200_redeem *abi_route_arc200_swapBack
 
 	// this contract does not implement the given ABI method for call NoOp
 	err

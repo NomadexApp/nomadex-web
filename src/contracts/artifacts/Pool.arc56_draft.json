@@ -21582,10 +21582,10 @@
   "compilerInfo": {
     "compiler": "algod",
     "compilerVersion": {
-      "major": 3,
-      "minor": 25,
-      "patch": 0,
-      "commitHash": "9855f57c"
+      "major": 4,
+      "minor": 1,
+      "patch": 2,
+      "commitHash": "088f89dd"
     }
   }
 }

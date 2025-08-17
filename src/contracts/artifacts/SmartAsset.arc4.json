@@ -307,6 +307,44 @@
           "desc": ""
         }
       ]
+    },
+    {
+      "name": "arc200_exchange",
+      "args": [],
+      "returns": {
+        "type": "(uint64,address)"
+      }
+    },
+    {
+      "name": "post_update",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "arc200_redeem",
+      "args": [
+        {
+          "name": "amount",
+          "type": "uint64"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "arc200_swapBack",
+      "args": [
+        {
+          "name": "amount",
+          "type": "uint64"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
     }
   ],
   "events": [
