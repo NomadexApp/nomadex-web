@@ -1549,21 +1549,9 @@ bootstrap:
 
 	// src/contracts/SmartAsset.algo.ts:22
 	// verifyPayTxn(txn, {
-	//       sender: this.txn.sender,
 	//       receiver: this.app.address,
 	//       amount: { greaterThanEqualTo: 2 * globals.minBalance },
-	//       closeRemainderTo: globals.zeroAddress,
-	//       rekeyTo: globals.zeroAddress,
 	//     })
-	// verify sender
-	frame_dig -1 // txn: PayTxn
-	gtxns Sender
-	txn Sender
-	==
-
-	// transaction verification failed: {"txn":"txn","field":"sender","expected":"this.txn.sender"}
-	assert
-
 	// verify receiver
 	frame_dig -1 // txn: PayTxn
 	gtxns Receiver
@@ -1584,25 +1572,7 @@ bootstrap:
 	// transaction verification failed: {"txn":"txn","field":"amount","condition":"greaterThanEqualTo","expected":">=2 * globals.minBalance"}
 	assert
 
-	// verify closeRemainderTo
-	frame_dig -1 // txn: PayTxn
-	gtxns CloseRemainderTo
-	global ZeroAddress
-	==
-
-	// transaction verification failed: {"txn":"txn","field":"closeRemainderTo","expected":"globals.zeroAddress"}
-	assert
-
-	// verify rekeyTo
-	frame_dig -1 // txn: PayTxn
-	gtxns RekeyTo
-	global ZeroAddress
-	==
-
-	// transaction verification failed: {"txn":"txn","field":"rekeyTo","expected":"globals.zeroAddress"}
-	assert
-
-	// src/contracts/SmartAsset.algo.ts:29
+	// src/contracts/SmartAsset.algo.ts:26
 	// assert(this.txn.sender === this.warden.value, 'only manager can call bootstrap')
 	txn Sender
 	byte 0x77617264656e // "warden"
@@ -1612,7 +1582,7 @@ bootstrap:
 	// only manager can call bootstrap
 	assert
 
-	// src/contracts/SmartAsset.algo.ts:30
+	// src/contracts/SmartAsset.algo.ts:27
 	// assert(!this.initialized.value && !this.balances(this.txn.sender).exists, 'already initialized')
 	byte 0x696e697469616c697a6564 // "initialized"
 	app_global_get
@@ -1632,7 +1602,7 @@ bootstrap:
 	// already initialized
 	assert
 
-	// src/contracts/SmartAsset.algo.ts:31
+	// src/contracts/SmartAsset.algo.ts:28
 	// this.initialized.value = true
 	byte 0x696e697469616c697a6564 // "initialized"
 	int 1
@@ -1642,14 +1612,14 @@ bootstrap:
 	setbit
 	app_global_put
 
-	// src/contracts/SmartAsset.algo.ts:32
+	// src/contracts/SmartAsset.algo.ts:29
 	// this.balances(this.txn.sender).value = this.totalSupply.value
 	txn Sender
 	byte 0x746f74616c5f737570706c79 // "total_supply"
 	app_global_get
 	box_put
 
-	// src/contracts/SmartAsset.algo.ts:33
+	// src/contracts/SmartAsset.algo.ts:30
 	// this.arc200_Transfer.log({
 	//       from: globals.zeroAddress,
 	//       to: this.txn.sender,
@@ -1670,7 +1640,7 @@ bootstrap:
 asa_id:
 	proto 0 1
 
-	// src/contracts/SmartAsset.algo.ts:41
+	// src/contracts/SmartAsset.algo.ts:38
 	// return AssetID.fromUint64(40266686);
 	int 40266686
 	retsub
@@ -1691,7 +1661,7 @@ asa_id:
 arc200_exchange:
 	proto 0 1
 
-	// src/contracts/SmartAsset.algo.ts:45
+	// src/contracts/SmartAsset.algo.ts:42
 	// return [this.asa_id().id, this.app.address];
 	callsub asa_id
 	itob
@@ -1710,7 +1680,7 @@ arc200_exchange:
 post_update:
 	proto 0 0
 
-	// src/contracts/SmartAsset.algo.ts:49
+	// src/contracts/SmartAsset.algo.ts:46
 	// assert(this.txn.sender === this.warden.value, "manager only")
 	txn Sender
 	byte 0x77617264656e // "warden"
@@ -1720,10 +1690,10 @@ post_update:
 	// manager only
 	assert
 
-	// src/contracts/SmartAsset.algo.ts:50
+	// src/contracts/SmartAsset.algo.ts:47
 	// sendAssetTransfer({
 	//       xferAsset: this.asa_id(),
-	//       assetSender: this.app.address,
+	//       sender: this.app.address,
 	//       assetReceiver: this.app.address,
 	//       assetAmount: 0,
 	//       fee: 0
@@ -1732,27 +1702,27 @@ post_update:
 	int axfer
 	itxn_field TypeEnum
 
-	// src/contracts/SmartAsset.algo.ts:51
+	// src/contracts/SmartAsset.algo.ts:48
 	// xferAsset: this.asa_id()
 	callsub asa_id
 	itxn_field XferAsset
 
-	// src/contracts/SmartAsset.algo.ts:52
-	// assetSender: this.app.address
+	// src/contracts/SmartAsset.algo.ts:49
+	// sender: this.app.address
 	global CurrentApplicationAddress
-	itxn_field AssetSender
+	itxn_field Sender
 
-	// src/contracts/SmartAsset.algo.ts:53
+	// src/contracts/SmartAsset.algo.ts:50
 	// assetReceiver: this.app.address
 	global CurrentApplicationAddress
 	itxn_field AssetReceiver
 
-	// src/contracts/SmartAsset.algo.ts:54
+	// src/contracts/SmartAsset.algo.ts:51
 	// assetAmount: 0
 	int 0
 	itxn_field AssetAmount
 
-	// src/contracts/SmartAsset.algo.ts:55
+	// src/contracts/SmartAsset.algo.ts:52
 	// fee: 0
 	int 0
 	itxn_field Fee
@@ -1776,7 +1746,7 @@ post_update:
 arc200_redeem:
 	proto 1 0
 
-	// src/contracts/SmartAsset.algo.ts:61
+	// src/contracts/SmartAsset.algo.ts:58
 	// assert(this.txn.groupIndex > 0, "invalid group")
 	txn GroupIndex
 	int 0
@@ -1785,10 +1755,10 @@ arc200_redeem:
 	// invalid group
 	assert
 
-	// src/contracts/SmartAsset.algo.ts:62
+	// src/contracts/SmartAsset.algo.ts:59
 	// verifyAssetTransferTxn(this.txnGroup[this.txn.groupIndex - 1], {
 	//       xferAsset: this.asa_id(),
-	//       assetSender: this.txn.sender,
+	//       sender: this.txn.sender,
 	//       assetReceiver: this.app.address,
 	//       assetAmount: { greaterThanEqualTo: amount },
 	//       assetCloseTo: globals.zeroAddress,
@@ -1817,13 +1787,13 @@ arc200_redeem:
 	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"xferAsset","expected":"this.asa_id()"}
 	assert
 
-	// verify assetSender
+	// verify sender
 	load 248 // verifyTxn index
-	gtxns AssetSender
+	gtxns Sender
 	txn Sender
 	==
 
-	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"assetSender","expected":"this.txn.sender"}
+	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"sender","expected":"this.txn.sender"}
 	assert
 
 	// verify assetReceiver
@@ -1862,7 +1832,7 @@ arc200_redeem:
 	// transaction verification failed: {"txn":"this.txnGroup[this.txn.groupIndex - 1]","field":"rekeyTo","expected":"globals.zeroAddress"}
 	assert
 
-	// src/contracts/SmartAsset.algo.ts:70
+	// src/contracts/SmartAsset.algo.ts:67
 	// this.transfer(this.app.address, this.txn.sender, amount as uint256)
 	frame_dig -1 // amount: uint64
 	itob
@@ -1902,7 +1872,7 @@ arc200_redeem:
 arc200_swapBack:
 	proto 1 0
 
-	// src/contracts/SmartAsset.algo.ts:75
+	// src/contracts/SmartAsset.algo.ts:72
 	// this.transfer(this.txn.sender, this.app.address, amount as uint256)
 	frame_dig -1 // amount: uint64
 	itob
@@ -1926,10 +1896,10 @@ arc200_swapBack:
 	txn Sender
 	callsub transfer
 
-	// src/contracts/SmartAsset.algo.ts:76
+	// src/contracts/SmartAsset.algo.ts:73
 	// sendAssetTransfer({
 	//       xferAsset: this.asa_id(),
-	//       assetSender: this.app.address,
+	//       sender: this.app.address,
 	//       assetReceiver: this.txn.sender,
 	//       assetAmount: amount,
 	//       fee: 0
@@ -1938,27 +1908,27 @@ arc200_swapBack:
 	int axfer
 	itxn_field TypeEnum
 
-	// src/contracts/SmartAsset.algo.ts:77
+	// src/contracts/SmartAsset.algo.ts:74
 	// xferAsset: this.asa_id()
 	callsub asa_id
 	itxn_field XferAsset
 
-	// src/contracts/SmartAsset.algo.ts:78
-	// assetSender: this.app.address
+	// src/contracts/SmartAsset.algo.ts:75
+	// sender: this.app.address
 	global CurrentApplicationAddress
-	itxn_field AssetSender
+	itxn_field Sender
 
-	// src/contracts/SmartAsset.algo.ts:79
+	// src/contracts/SmartAsset.algo.ts:76
 	// assetReceiver: this.txn.sender
 	txn Sender
 	itxn_field AssetReceiver
 
-	// src/contracts/SmartAsset.algo.ts:80
+	// src/contracts/SmartAsset.algo.ts:77
 	// assetAmount: amount
 	frame_dig -1 // amount: uint64
 	itxn_field AssetAmount
 
-	// src/contracts/SmartAsset.algo.ts:81
+	// src/contracts/SmartAsset.algo.ts:78
 	// fee: 0
 	int 0
 	itxn_field Fee

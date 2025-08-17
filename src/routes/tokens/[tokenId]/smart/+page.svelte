@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { connectedAccount } from '$lib/components/UseWallet.svelte';
-	import algosdk from 'algosdk';
+	import { connectedAccount, getTransactionSignerAccount } from '$lib/components/UseWallet.svelte';
+	import { SmartAssetClient, APP_SPEC } from '$lib/../contracts/clients/SmartAssetClient';
+	import algosdk, { makeEmptyTransactionSigner } from 'algosdk';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { MySmartAsset } from 'nomadex-client';
 	import { nodeClient } from '$lib/_shared';
+	import { populateAppCallResources } from '@algorandfoundation/algokit-utils';
+	import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';
 
 	let appId = $state(Number($page.params.tokenId));
 	let currentManager = $state('');
@@ -32,13 +35,142 @@
 				'.' +
 				(10n ** BigInt(decimals)).toString().slice(1);
 
-			manager = await client.manager();
+			currentManager = manager = await client.manager();
 		} catch (e) {
 			console.error(e);
 		} finally {
 			loading = false;
 		}
 	});
+
+	async function grant(manager: string) {
+		try {
+			const client = new SmartAssetClient(
+				{
+					id: appId,
+					resolveBy: 'id',
+					sender: getTransactionSignerAccount(),
+				},
+				nodeClient
+			);
+			const resp = await client.grant({
+				manager: manager,
+			});
+			console.log('Confimed:', resp.confirmation?.confirmedRound);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	async function updateSmartAsset() {
+		try {
+			const client = new SmartAssetClient(
+				{
+					id: appId,
+					resolveBy: 'id',
+					sender: getTransactionSignerAccount(),
+				},
+				nodeClient
+			);
+			const resp = await client.update.updateApplication({});
+			console.log('Confimed:', resp.confirmation?.confirmedRound);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	async function postUpdate() {
+		try {
+			const client = new SmartAssetClient(
+				{
+					id: appId,
+					resolveBy: 'id',
+					sender: getTransactionSignerAccount(),
+				},
+				nodeClient
+			);
+			let atc = await client
+				.compose()
+				.postUpdate(
+					{},
+					{
+						sendParams: { fee: AlgoAmount.MicroAlgos(algosdk.ALGORAND_MIN_TX_FEE * 2) },
+					}
+				)
+				.atc();
+			atc = await populateAppCallResources(atc, nodeClient);
+			const resp = await atc.execute(nodeClient, 3);
+
+			console.log('Confimed:', resp.confirmedRound);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	async function testRedeem() {
+		try {
+			const signer = getTransactionSignerAccount();
+			const params = await nodeClient.getTransactionParams().do();
+			const client = new SmartAssetClient(
+				{
+					id: appId,
+					resolveBy: 'id',
+					sender: signer,
+				},
+				nodeClient
+			);
+			let compose = client.compose();
+			compose.addTransaction({
+				txn: algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+					from: signer.addr,
+					to: algosdk.getApplicationAddress(appId),
+					assetIndex: 40266686,
+					amount: 0,
+					suggestedParams: params,
+				}),
+				signer: signer.signer,
+			});
+			compose.arc200Redeem({ amount: 0 });
+			let atc = await compose.atc();
+			atc = await populateAppCallResources(atc, nodeClient);
+			const resp = await atc.execute(nodeClient, 3);
+
+			console.log('Confimed:', resp.confirmedRound);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	async function swapBack() {
+		try {
+			const signer = getTransactionSignerAccount();
+			const params = await nodeClient.getTransactionParams().do();
+			const client = new SmartAssetClient(
+				{
+					id: appId,
+					resolveBy: 'id',
+					sender: signer,
+				},
+				nodeClient
+			);
+			const compose = client.compose();
+			compose.arc200SwapBack(
+				{
+					amount: 0,
+				},
+				{
+					sendParams: { fee: AlgoAmount.MicroAlgos(algosdk.ALGORAND_MIN_TX_FEE * 2) },
+				}
+			);
+			let atc = await compose.atc();
+			atc = await populateAppCallResources(atc, nodeClient);
+			const resp = await atc.execute(nodeClient, 3);
+
+			console.log('Confimed:', resp.confirmedRound);
+		} catch (e) {
+			console.error(e);
+		}
+	}
 </script>
 
 <section class="pt-12 p-4 h-full flex flex-row justify-evenly items-center gap-3">
@@ -81,10 +213,25 @@
 				<div>Manager Address:</div>
 				<input class="input input-secondary bg-[#00000040]" type="text" bind:value={manager} />
 			</div>
-			{#if algosdk.isValidAddress(manager) && manager !== currentManager}
+			{#if algosdk.isValidAddress(manager) && manager !== currentManager && algosdk.isValidAddress(manager)}
 				<div class="w-full max-w-[610px] flex flex-col justify-center">
-					<button class="btn btn-primary btn-sm" onclick={() => (manager = $connectedAccount)}>Change Manager</button>
+					<button class="btn btn-primary btn-sm" onclick={() => grant(manager)}>Change Manager</button>
 				</div>
+			{:else if currentManager === $connectedAccount}
+				<div class="w-full max-w-[610px] flex flex-col justify-center">
+					<button class="btn btn-primary btn-sm" onclick={() => updateSmartAsset()}>Update Contract</button>
+				</div>
+				{#if [412682].includes(appId)}
+					<div class="w-full max-w-[610px] flex flex-col justify-center">
+						<button class="btn btn-primary btn-sm" onclick={() => postUpdate()}>Post Update</button>
+					</div>
+					<div class="w-full max-w-[610px] flex flex-col justify-center">
+						<button class="btn btn-primary btn-sm" onclick={() => testRedeem()}>Test Redeem</button>
+					</div>
+					<div class="w-full max-w-[610px] flex flex-col justify-center">
+						<button class="btn btn-primary btn-sm" onclick={() => swapBack()}>Test Swap Back</button>
+					</div>
+				{/if}
 			{/if}
 		{/if}
 

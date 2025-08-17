@@ -20,11 +20,8 @@ export class SmartAsset extends Contract.extend(Arc200, Ownable) {
 
   bootstrap(txn: PayTxn): void {
     verifyPayTxn(txn, {
-      sender: this.txn.sender,
       receiver: this.app.address,
       amount: { greaterThanEqualTo: 2 * globals.minBalance },
-      closeRemainderTo: globals.zeroAddress,
-      rekeyTo: globals.zeroAddress,
     });
     assert(this.txn.sender === this.warden.value, 'only manager can call bootstrap');
     assert(!this.initialized.value && !this.balances(this.txn.sender).exists, 'already initialized');
@@ -49,7 +46,7 @@ export class SmartAsset extends Contract.extend(Arc200, Ownable) {
     assert(this.txn.sender === this.warden.value, "manager only");
     sendAssetTransfer({
       xferAsset: this.asa_id(),
-      assetSender: this.app.address,
+      sender: this.app.address,
       assetReceiver: this.app.address,
       assetAmount: 0,
       fee: 0
@@ -61,7 +58,7 @@ export class SmartAsset extends Contract.extend(Arc200, Ownable) {
     assert(this.txn.groupIndex > 0, "invalid group");
     verifyAssetTransferTxn(this.txnGroup[this.txn.groupIndex - 1], {
       xferAsset: this.asa_id(),
-      assetSender: this.txn.sender,
+      sender: this.txn.sender,
       assetReceiver: this.app.address,
       assetAmount: { greaterThanEqualTo: amount },
       assetCloseTo: globals.zeroAddress,
@@ -75,7 +72,7 @@ export class SmartAsset extends Contract.extend(Arc200, Ownable) {
     this.transfer(this.txn.sender, this.app.address, amount as uint256);
     sendAssetTransfer({
       xferAsset: this.asa_id(),
-      assetSender: this.app.address,
+      sender: this.app.address,
       assetReceiver: this.txn.sender,
       assetAmount: amount,
       fee: 0
