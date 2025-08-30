@@ -47,7 +47,18 @@
 		poolBals: [bigint, bigint];
 		txn: SwapTxn;
 	}[] = $state([]);
-	let pricingDirection: string = $state(`${tokenB.symbol}/${tokenA.symbol}`);
+
+	function getSortCurrency() {
+		const dir: [string, string] = [tokenB.symbol, tokenA.symbol];
+		if (pool.id === 411756) {
+			dir.reverse();
+		} else if ([41242862].includes(pool.id)) {
+			dir.reverse();
+		}
+		return dir;
+	}
+
+	let pricingDirection = $state<[string, string]>(getSortCurrency());
 	let timescale = $state(browser ? (Number(localStorage.getItem('timescale')) ?? Timescale['1hr']) : Timescale['1hr']);
 	let logarithmic = $state(false);
 
@@ -113,7 +124,7 @@
 		swapEvents = [...swapEventsCopy].sort((a, b) => a.txn['round-time'] - b.txn['round-time']);
 		depositEvents = [...depositEventsCopy].sort((a, b) => a.txn['round-time'] - b.txn['round-time']);
 
-		generateDataByTime(pricingDirection, timescale);
+		generateDataByTime(timescale);
 	}
 
 	onMount(() => {
@@ -127,14 +138,14 @@
 
 	let priceData: PriceCandleData[] = $state([]);
 
-	async function generateDataByTime(priceOf: string, duration = timescale) {
+	async function generateDataByTime(duration = timescale) {
 		const _priceData: PriceCandleData[] = [];
 		const events = [...swapEvents].filter((e) => (e.direction === 0 ? e.fromAmount : e.toAmount) > 10);
 		// console.log('events:', events);
 
 		if (!events.length) return;
 
-		let pricingCurrency = priceOf === `VOI/${tokenB.symbol}` ? 0 : 1;
+		let pricingCurrency = pricingDirection[0] === tokenB.symbol ? 1 : 0;
 
 		const getTime = (event: (typeof events)[0]) => event.txn['round-time'];
 		const getPrice = (event: (typeof events)[0]) => {
@@ -242,9 +253,9 @@
 			</svg>
 		</button>
 		<h1 class="text-3xl">
-			{tokenB.symbol}
-			{#if tokenA.symbol != 'VOI'}
-				{@const voiPrice = convertAmt(price, tokenA)}
+			{pricingDirection[0]}
+			{#if !pricingDirection.includes('VOI')}
+				{@const voiPrice = convertAmt(price, pricingDirection[0] === tokenA.symbol ? tokenB : tokenA)}
 				{#if voiPrice}
 					<span class="text-[1rem] text-gray-400">
 						≈ {voiPrice < 0.1 ? Number(voiPrice.toFixed(6)) : voiPrice.toLocaleString('en')}
@@ -259,7 +270,7 @@
 			<div class="cursor-pointer flex flex-col">
 				<span class="text-2xl">
 					Price ≈ {price < 0.1 ? Number(price.toFixed(6)) : price.toLocaleString('en')}
-					{pricingDirection.split('/')[1]}
+					{pricingDirection[1]}
 				</span>
 				<span></span>
 			</div>
@@ -268,7 +279,7 @@
 					class="btn btn-sm btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white hidden sm:inline-flex rounded-[4px]"
 					onclick={() => {
 						logarithmic = !logarithmic;
-						generateDataByTime(pricingDirection);
+						generateDataByTime();
 					}}>{logarithmic ? 'linear' : 'log'}</button
 				>
 				<button
@@ -277,7 +288,7 @@
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 					onclick={() => {
 						timescale = Timescale['30m'];
-						generateDataByTime(pricingDirection);
+						generateDataByTime();
 					}}>30m</button
 				>
 				<button
@@ -286,7 +297,7 @@
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 					onclick={() => {
 						timescale = Timescale['1hr'];
-						generateDataByTime(pricingDirection);
+						generateDataByTime();
 					}}>1hr</button
 				>
 				<button
@@ -295,7 +306,7 @@
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 					onclick={() => {
 						timescale = Timescale['1d'];
-						generateDataByTime(pricingDirection);
+						generateDataByTime();
 					}}>1d</button
 				>
 				<button
@@ -304,7 +315,7 @@
 						: 'btn-ghost border-none bg-[#00000040] hover:bg-[#00000040] hover:opacity-70 text-white'} hidden sm:inline-flex rounded-[4px]"
 					onclick={() => {
 						timescale = Timescale['1w'];
-						generateDataByTime(pricingDirection);
+						generateDataByTime();
 					}}>1w</button
 				>
 			</div>
@@ -316,11 +327,7 @@
 			bind:clientWidth={chartWidth}
 			style="min-height: {chartWidth / 2.6}px;"
 		>
-			<CandleChart
-				label={`Price of ${pricingDirection.split('/').join(' in ')}`}
-				{logarithmic}
-				data={priceData.slice(-50)}
-			/>
+			<CandleChart label={`Price of ${pricingDirection.join(' in ')}`} {logarithmic} data={priceData.slice(-50)} />
 		</div>
 	{/if}
 
