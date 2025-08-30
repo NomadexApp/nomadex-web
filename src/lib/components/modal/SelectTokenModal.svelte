@@ -13,19 +13,32 @@
 	let tokenSearch = $state('');
 	let balances = $state({});
 
+	function unique(tokens: Token[]) {
+		const result: Token[] = [];
+		for (const token of tokens) {
+			if (result.map((r) => r.id).includes(token.id)) continue;
+			result.push(token);
+		}
+		return result;
+	}
+
 	let filteredTokens = $derived(
-		tokenSearch
-			? tokens.filter(
-					(token) =>
-						token.id.toString() === tokenSearch ||
-						token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
-				)
-			: tokens
+		unique(
+			tokenSearch
+				? tokens.filter(
+						(token) =>
+							token.id.toString() === tokenSearch ||
+							token.symbol.toLowerCase().match(new RegExp(`^${tokenSearch.toLowerCase()}`))
+					)
+				: tokens
+		)
 	);
 
 	let finalTokensList = $derived(
-		[...filteredTokens].sort(
-			(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
+		unique(
+			[...filteredTokens].sort(
+				(a, b) => Number(balances[b.id] || 0) / 10 ** b.decimals - Number(balances[a.id] || 0) / 10 ** a.decimals
+			)
 		)
 	);
 
@@ -49,14 +62,16 @@
 				}}
 			>
 				<div class="icon avatar w-10 h-10 bg-[#f0f0f005] rounded-full flex justify-center items-center">
-					<object
-						title={token.symbol}
-						data={wellknown.includes(token.id) ? `/tokens/${token.id}.png` : ''}
-						type={wellknown.includes(token.id) ? 'image/png' : ''}
-						class="hidden sm:flex icon avatar w-7 h-7 bg-[#3a635f] rounded-full justify-center items-center"
-					>
-						?
-					</object>
+					{#key token.id}
+						<object
+							title={token.symbol}
+							data={wellknown.includes(token.id) ? `/tokens/${token.id}.png` : ''}
+							type={wellknown.includes(token.id) ? 'image/png' : ''}
+							class="hidden sm:flex icon avatar w-7 h-7 bg-[#3a635f] rounded-full justify-center items-center"
+						>
+							?
+						</object>
+					{/key}
 				</div>
 				<div class="flex flex-col text-sm flex-grow">
 					<span class="name">{token.symbol}</span>
