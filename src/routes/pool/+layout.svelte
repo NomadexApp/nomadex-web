@@ -63,7 +63,7 @@
 			});
 		}
 		if (all) return pools.slice(0);
-		return pools.slice(0, 10);
+		return pools.slice(0, 15);
 	}
 
 	let filteredPools = $derived(filterPools(searchText, my, all, $knownPools, poolBalances));
