@@ -59,14 +59,38 @@
 		{Math.max(0, Number(((pool.apr ?? 0) + (knownAprBoost[pool.poolId] ?? 0)).toFixed((pool.apr ?? 0) > 10 ? 0 : 2)))} %
 	</div>
 	<div class="w-full flex justify-end">
+		<button aria-label={null} class="btn btn-sm btn-square btn-ghost text-white">
+			<a
+				aria-label={null}
+				class="scale-150 font-thin"
+				href="/{pool.assets[0].type}/{pool.assets[0].id}/{pool.assets[1].type}/{pool.assets[1].id}"
+			>
+				<svg
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					style="width: 10px;"
+				>
+					<polyline points="17 1 21 5 17 9" />
+					<path d="M21 5H3v8" />
+					<polyline points="7 23 3 19 7 15" />
+					<path d="M3 19h18v-8" />
+				</svg>
+			</a>
+		</button>
+		<button class="btn btn-sm btn-square btn-ghost text-white">
+			<a class="scale-150 font-thin" href="/liquidity/{pool.id}/add">+</a>
+		</button>
 		{#if balances && balances.lpt > 0n}
 			<button class="btn btn-sm btn-square btn-ghost text-white">
 				<a class="scale-150 font-thin" href="/liquidity/{pool.id}/remove">-</a>
 			</button>
 		{/if}
-		<button class="btn btn-sm btn-square btn-ghost text-white">
-			<a class="scale-150 font-thin" href="/liquidity/{pool.id}/add">+</a>
-		</button>
 	</div>
 </div>
 
@@ -80,15 +104,15 @@
 	@keyframes bubble {
 		0% {
 			transform: scale(0.7);
-			opacity: 1.0;
+			opacity: 1;
 		}
 		99% {
-			transform: scale(1.0);
+			transform: scale(1);
 			opacity: 0.2;
 		}
 		100% {
 			transform: scale(0.7);
-			opacity: 1.0;
+			opacity: 1;
 		}
 	}
 </style>
