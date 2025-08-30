@@ -58,39 +58,49 @@
 	<div class="flex sm:inline-flex items-center w-[40%] sm:w-[50px] text-nowrap">
 		{Math.max(0, Number(((pool.apr ?? 0) + (knownAprBoost[pool.poolId] ?? 0)).toFixed((pool.apr ?? 0) > 10 ? 0 : 2)))} %
 	</div>
-	<div class="w-full flex justify-end">
-		<button aria-label={null} class="btn btn-sm btn-square btn-ghost text-white">
-			<a
-				aria-label={null}
-				class="scale-150 font-thin"
-				href="/{pool.assets[0].type}/{pool.assets[0].id}/{pool.assets[1].type}/{pool.assets[1].id}"
+	<div class="w-full flex justify-end gap-4">
+		<a class="scale-125 font-thin" href="/liquidity/{pool.id}/add">+</a>
+		<a class="scale-125 font-thin" href="/liquidity/{pool.id}/remove">-</a>
+		<a
+			aria-label={null}
+			class="scale-150 font-thin"
+			href="/{pool.assets[0].type}/{pool.assets[0].id}/{pool.assets[1].type}/{pool.assets[1].id}"
+		>
+			<svg
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				style="width: 8px;"
 			>
-				<svg
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					style="width: 10px;"
-				>
-					<polyline points="17 1 21 5 17 9" />
-					<path d="M21 5H3v8" />
-					<polyline points="7 23 3 19 7 15" />
-					<path d="M3 19h18v-8" />
-				</svg>
-			</a>
-		</button>
-		<button class="btn btn-sm btn-square btn-ghost text-white">
-			<a class="scale-150 font-thin" href="/liquidity/{pool.id}/add">+</a>
-		</button>
-		{#if balances && balances.lpt > 0n}
-			<button class="btn btn-sm btn-square btn-ghost text-white">
-				<a class="scale-150 font-thin" href="/liquidity/{pool.id}/remove">-</a>
-			</button>
-		{/if}
+				<polyline points="17 1 21 5 17 9" />
+				<path d="M21 5H3v8" />
+				<polyline points="7 23 3 19 7 15" />
+				<path d="M3 19h18v-8" />
+			</svg>
+		</a>
+		<a aria-label={null} class="scale-150 font-thin" href="/analytics/{pool.id}">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				style="width: 10px;"
+			>
+				<line x1="18" y1="20" x2="18" y2="10" />
+				<line x1="12" y1="20" x2="12" y2="4" />
+				<line x1="6" y1="20" x2="6" y2="14" />
+			</svg>
+		</a>
 	</div>
 </div>
 
