@@ -52,7 +52,9 @@
 		const dir: [string, string] = [tokenB.symbol, tokenA.symbol];
 		if (pool.id === 411756) {
 			dir.reverse();
-		} else if ([41242862].includes(pool.id)) {
+		} else if ([0].includes(pool.id)) {
+			dir.reverse();
+		} else if (['INDEX'].includes(dir[1])) {
 			dir.reverse();
 		}
 		return dir;
