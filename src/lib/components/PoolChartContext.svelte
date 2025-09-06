@@ -76,7 +76,7 @@
 
 	async function loadEvents() {
 		const response = await fetch(
-			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=${window.innerWidth <= 500 ? 500 : 4096}`
+			`https://${PUBLIC_NETWORK}-analytics.nomadex.app/pools/${$page.params.poolId}?limit=${window.innerWidth <= 500 ? 500 : 2048}`
 		);
 		const jsonResponse: {
 			id: string;
