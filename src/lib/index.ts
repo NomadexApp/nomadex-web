@@ -257,14 +257,15 @@ export async function loadTokensAndPools() {
 		validPools
 			.toSorted((a, b) => {
 				let scoreB = b.tvl;
-				if (b.online) scoreB *= 2;
-				if (b.volume[0] > 0n) scoreB *= 2;
-				if (knownAprBoost[b.id]) scoreB *= 2;
+				const scale = 1;
+				// if (b.online) scoreB *= scale;
+				if (b.volume[0] > 0n) scoreB *= scale;
+				if (knownAprBoost[b.id]) scoreB *= scale;
 				scoreB *= 1 + b.apr / 50;
 				let scoreA = a.tvl;
-				if (a.online) scoreA *= 2;
-				if (a.volume[0] > 0n) scoreA *= 2;
-				if (knownAprBoost[b.id]) scoreA *= 2;
+				// if (a.online) scoreA *= scale;
+				if (a.volume[0] > 0n) scoreA *= scale;
+				if (knownAprBoost[b.id]) scoreA *= scale;
 				scoreA *= 1 + b.apr / 50;
 				return scoreB - scoreA;
 			})
