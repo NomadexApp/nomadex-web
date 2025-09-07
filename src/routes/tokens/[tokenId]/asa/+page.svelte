@@ -130,6 +130,9 @@
 				</button>
 			</div>
 		{/if}
+		<div class="w-full max-w-[610px] flex flex-col justify-center">
+			<a class="btn btn-primary" href="/tokens/{appId}/asa/holders">See Holders</a>
+		</div>
 	</div>
 </section>
 
