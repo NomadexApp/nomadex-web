@@ -45,10 +45,7 @@
 		</section>
 	{:else}
 		<div class="h-full flex flex-col justify-start items-center gap-3 w-full font-mono">
-			<div class="br"></div>
-			<div class="br"></div>
-
-			<div class="flex gap-3 max-w-[610px] w-full">
+			<div class="flex justify-between max-w-[610px] w-full">
 				{#each Object.entries(stats) as [note, amounts]}
 					<div class="">
 						<div>{note}</div>
@@ -68,7 +65,7 @@
 						{/if}
 					</a>
 					<div class="flex gap-2">
-						<div>{holder.amount / unit}</div>
+						<div>{Math.floor((holder.amount * 1e6) / unit) / 1e6}</div>
 					</div>
 				</div>
 			{/each}
