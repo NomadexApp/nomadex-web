@@ -19,7 +19,7 @@ const args = {
 	},
 } as const;
 
-const network = args[PUBLIC_NETWORK as keyof typeof args];
+export const network = args[PUBLIC_NETWORK as keyof typeof args];
 
 export const nodeClient = new algosdk.Algodv2(
 	network.api[0],

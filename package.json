@@ -30,6 +30,7 @@
 		"@walletconnect/modal": "^2.6.2",
 		"@walletconnect/sign-client": "^2.16.2",
 		"@walletconnect/types": "^2.11.0",
+		"@xarmian/envoi-sdk": "^0.2.1",
 		"algoscript": "^0.102.0-1",
 		"algosdk": "^2.7.0",
 		"autoprefixer": "^10.4.16",

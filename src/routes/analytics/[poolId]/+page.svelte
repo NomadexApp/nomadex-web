@@ -3,6 +3,7 @@
 	import CurrencyNumber from '$lib/components/CurrencyNumber.svelte';
 	import { timeAgo } from '$lib/utils';
 	import { convertDecimals } from '$lib/utils/numbers';
+	import { getEnvoi } from '$lib/envoi';
 
 	let {} = $props();
 </script>
@@ -66,7 +67,15 @@
 										target="_blank"
 										referrerpolicy="no-referrer"
 									>
-										{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
+										{#await getEnvoi(event.sender)}
+											{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
+										{:then envoi}
+											{#if envoi}
+												{envoi}
+											{:else}
+												{event.sender.slice(0, 3)}...{event.sender.slice(-3)}
+											{/if}
+										{/await}
 									</a>
 								</td>
 								<td class="text-left px-4 py-2 hidden lg:table-cell">

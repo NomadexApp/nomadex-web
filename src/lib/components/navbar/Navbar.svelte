@@ -9,6 +9,7 @@
 	import { knownPools, knownTokens } from '$lib';
 	import { pageContentRefresh } from '$lib/utils';
 	import BalanceSubscriber from '$lib/components/BalanceSubscriber.svelte';
+	import { getEnvoi } from '$lib/envoi';
 
 	const { page } = getStores();
 	let scrollY = $state(0);
@@ -67,7 +68,15 @@
 							addNotification('info', 'Copied to clipboard', 1000);
 						}}
 					>
-						{$connectedAccount.slice(0, 3)}...{$connectedAccount.slice(-3)}
+						{#await getEnvoi($connectedAccount)}
+							{$connectedAccount.slice(0, 3)}...{$connectedAccount.slice(-3)}
+						{:then envoi}
+							{#if envoi}
+								{envoi}
+							{:else}
+								{$connectedAccount.slice(0, 3)}...{$connectedAccount.slice(-3)}
+							{/if}
+						{/await}
 					</button>
 				</span>
 				<button

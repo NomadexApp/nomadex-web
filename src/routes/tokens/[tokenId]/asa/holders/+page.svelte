@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { knownPools } from '$lib';
 	import { indexerClient, nodeClient } from '$lib/_shared';
+	import { getEnvoi } from '$lib/envoi';
 	import algosdk from 'algosdk';
 
 	let appId = $state(Number($page.params.tokenId));
@@ -59,7 +60,15 @@
 			{#each holders as holder}
 				<div class="w-full max-w-[610px] flex justify-between">
 					<a href="https://block.voi.network/explorer/account/{holder.address}" target="_blank">
-						{holder.address.slice(0, 12)}...{holder.address.slice(-12)}
+						{#await getEnvoi(holder.address)}
+							{holder.address.slice(0, 12)}...{holder.address.slice(-12)}
+						{:then envoi}
+							{#if envoi}
+								{envoi}
+							{:else}
+								{holder.address.slice(0, 12)}...{holder.address.slice(-12)}
+							{/if}
+						{/await}
 						{#if holder.note !== 'Holder'}
 							<span>{holder.note}</span>
 						{/if}
