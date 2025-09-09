@@ -15,7 +15,9 @@ export async function getEnvoi(address: string) {
         if (cache.has(address)) return cache.get(address);
         const promise = pending.get(address) ??
             resolver.http.getNameFromAddress(address);
-        pending.set(address, promise);
+        if (!pending.has(address)) {
+            pending.set(address, promise);
+        }
         const name = await promise;
         const envoi = name?.[0];
         if (envoi) {
@@ -28,6 +30,7 @@ export async function getEnvoi(address: string) {
         return envoi;
     } catch (e) {
         cache.set(address, "");
+        pending.delete(address);
         return "";
     }
 }
