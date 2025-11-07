@@ -18,7 +18,7 @@
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@tailwindcss/typography": "^0.5.10",
 		"@tanstack/store": "^0.5.5",
-		"@txnlab/use-wallet": "3.4.0",
+		"@txnlab/use-wallet": "./packages/use-wallet",
 		"@types/eslint": "^9.6.0",
 		"@types/luxon": "^3.3.7",
 		"@types/node": "^20.10.5",
