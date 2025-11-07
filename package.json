@@ -84,6 +84,12 @@
     "luxon": "^3.4.4"
   },
   "trustedDependencies": [
-    "es5-ext"
+    "@sveltejs/kit",
+    "bufferutil",
+    "es5-ext",
+    "esbuild",
+    "keccak",
+    "secp256k1",
+    "utf-8-validate"
   ]
 }
